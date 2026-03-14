@@ -148,13 +148,13 @@ public class RingOfSevenCurses : YuWanRelicModel
         {
             return false;
         }
-        
+
         if (room.RoomType == RoomType.Monster || room.RoomType == RoomType.Boss)
         {
             rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, room.RoomType), 3, player));
         }
 
-        if (room.RoomType == RoomType.Monster && Owner.RunState.Rng.Niche.NextFloat(0f, 1f) <= 0.5f)
+        if (room.RoomType == RoomType.Monster && Owner.RunState.Rng.Niche.NextFloat() < 0.5f)
         {
             rewards.Add(new RelicReward(player));
         }
@@ -168,6 +168,23 @@ public class RingOfSevenCurses : YuWanRelicModel
             return amount * 0.5m;
         }
         return amount;
+    }
+
+    public override IReadOnlyList<LocString> ModifyExtraRestSiteHealText(Player player, IReadOnlyList<LocString> currentExtraText)
+    {
+        if (player != Owner)
+        {
+            return currentExtraText;
+        }
+
+        var list = new List<LocString>(currentExtraText);
+        var extraText = new LocString("relics", "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText");
+        decimal baseHeal = (decimal)player.Creature.MaxHp * 0.3m;
+        decimal actualHeal = baseHeal * 0.5m;
+        int actualHealInt = (int)actualHeal;
+        extraText.Add("ActualHeal", actualHealInt.ToString());
+        list.Add(extraText);
+        return list;
     }
 
     public override async Task AfterCombatVictory(CombatRoom room)
