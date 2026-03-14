@@ -1,0 +1,60 @@
+{
+    "author": "Alchyr",
+    "name": "Slay the Spire 2 Mod",
+    "description": "A Slay the Spire 2 mod relying on BaseLib",
+    "identity": "Alchyr.Sts2Mod",
+    "shortName": "alchyrsts2mod",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    },
+    "sourceName": "YuWanCard",
+    "sources": [
+        {
+            "modifiers":[
+                {
+                    "condition": true,
+                    "exclude":[
+                        ".git/**",
+                        ".godot/**",
+                        ".idea/**",
+                        "Properties/**",
+                        "nuget.config",
+                        "README.md"
+                    ]
+                }
+            ]
+        }
+    ],
+    "symbols": {
+        "ModAuthor":{
+            "type": "parameter",
+            "dataType": "string",
+            "isRequired": "true",
+            "replaces": "{ModAuthor}"
+        },
+        "PublicizeSts":{
+            "type": "parameter",
+            "dataType":"bool",
+            "defaultValue": "false",
+            "replaces": "{PublicizeSts}",
+            "description": "If enabled, private and protected symbols in the Slay the Spire 2 .dll will be publicized.\nMay cause issues if inheriting from basegame Godot scripts."
+        },
+        "NullableChecks":{
+            "type": "parameter",
+            "dataType":"choice",
+            "choices": [
+                {
+                    "choice": "enable",
+                    "description": "More strict handling of possibly null values."
+                },
+                {
+                    "choice": "disable",
+                    "description": ""
+                }
+            ],
+            "replaces": "{NullableChecks}",
+            "defaultValue": "enable"
+        }
+    }
+}

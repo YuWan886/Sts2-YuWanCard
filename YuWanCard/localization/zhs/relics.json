@@ -1,0 +1,12 @@
+{
+  "YUWANCARD-SEVEN_CURSES_SELECT.title": "七咒之戒",
+  "YUWANCARD-SEVEN_CURSES_SELECT.description": "获得七咒之戒遗物",
+  "YUWANCARD-SEVEN_CURSES_SKIP.title": "跳过",
+  "YUWANCARD-SEVEN_CURSES_SKIP.description": "不选择七咒之戒，继续。",
+  "YUWANCARD-SEVEN_CURSES_MODIFIER.title": "七咒之戒",
+  "YUWANCARD-SEVEN_CURSES_MODIFIER.description": "获得七咒之戒遗物",
+  "YUWANCARD-RING_OF_SEVEN_CURSES.title": "七咒之戒",
+  "YUWANCARD-RING_OF_SEVEN_CURSES.description": "受到的伤害 +50%，对非 BOSS 类敌人伤害 -25%，获得的 [gold] 格挡 [/gold]-20%，获得金币 -50%，[gold] 休息处 [/gold] 回复血量 -50%，每回合开始时抽一张 [gold] 诅咒牌 [/gold]，击杀 BOSS 血量上限 -25%。能量 +1，抽牌 +1，[gold] 药水槽位 [/gold]+1，[gold] 卡牌奖励 [/gold]+1，对 BOSS 伤害 +50%，普通敌人概率掉落 [gold] 遗物 [/gold]，在选择每一层房间时可以无视路线。",
+  "YUWANCARD-RING_OF_SEVEN_CURSES.flavor": "七道诅咒，七种力量。",
+  "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText": "回复最大生命值的[red]15%[/red]（{ActualHeal}）。"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "YuWanCard",
+  "name": "YuWanCard",
+  "author": "一条鱼丸_",
+  "description": "pig card",
+  "version": "v0.1.1",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": ["BaseLib"],
+  "affects_gameplay": true
+}
