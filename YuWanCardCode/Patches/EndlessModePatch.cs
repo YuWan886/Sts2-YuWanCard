@@ -16,6 +16,7 @@ public class EndlessModePatch
 {
     private static readonly MethodInfo StateGetter = AccessTools.PropertyGetter(typeof(RunManager), "State");
     private static readonly MethodInfo ClearScreensMethod = AccessTools.Method(typeof(RunManager), "ClearScreens");
+    private static readonly MethodInfo ExitCurrentRoomsMethod = AccessTools.Method(typeof(RunManager), "ExitCurrentRooms");
     private static readonly MethodInfo FadeInMethod = AccessTools.Method(typeof(RunManager), "FadeIn", [typeof(bool)]);
 
     [HarmonyPrefix]
@@ -55,6 +56,7 @@ public class EndlessModePatch
         }
 
         ClearScreensMethod.Invoke(runManager, null);
+        await (Task)ExitCurrentRoomsMethod.Invoke(runManager, null)!;
 
         runManager.GenerateRooms();
         

@@ -122,9 +122,10 @@ YuWanCard/
 3. **本地化**：
    - 使用游戏的本地化系统
    - 本地化文件位于 `YuWanCard/localization/zhs/`
-   - 卡牌本地化键格式：`{ModId}-{CardId}.title` / `.description`
+   - 卡牌本地化键格式：`{ModId}-{CardId}.title` / `.description` / `.selectionScreenPrompt`（选择界面提示）
    - 能力本地化键格式：`{ModId}-{PowerId}.title` / `.description` / `.smartDescription`
-   - 遗物本地化键格式：`{ModId}-{RelicId}.title` / `.description` / `.flavor`
+   - 遗物本地化键格式：`{ModId}-{RelicId}.title` / `.description` / `.flavor` / `.additionalRestSiteHealText`（额外文本）
+   - 事件选项本地化键格式：`{ModId}-{OptionId}.title` / `.description`
 
 4. **美术风格**：
    - 贴近游戏原生美术风格
@@ -136,14 +137,24 @@ YuWanCard/
 5. **卡牌设计**：
    - 使用 `DynamicVar` 系统处理卡牌数值（伤害、格挡、能量等）
    - 使用 `CommonActions` 简化常见游戏动作
-   - 正确使用 `TargetType` 指定目标类型
+   - 正确使用 `TargetType` 指定目标类型：
+     - `TargetType.Self`：自身
+     - `TargetType.AllAllies`：所有队友
+     - `TargetType.AnyAlly`：任意队友
+     - `TargetType.AllEnemies`：所有敌人
+     - `TargetType.AnyEnemy`：任意敌人
    - 合理设置稀有度和费用
+   - 多人游戏限制：使用 `CardMultiplayerConstraint` 指定（如 `GiveYou`、`PigSacrifice` 仅限多人）
+   - 升级效果：实现 `OnUpgrade()` 方法处理升级逻辑
 
 6. **能力设计**：
    - 继承 `CustomPowerModel` 并实现相应事件方法
    - 使用 `CustomPackedIconPath` 指定图标路径
    - 正确设置 `PowerType` 和 `StackType`
-   - 实现事件触发方法（如 `AfterSideTurnStart`）
+   - 实现事件触发方法：
+     - `AfterSideTurnStart()`：回合开始时触发（如 `PigDoubtPower` 每回合获得随机能力）
+     - 其他事件方法根据需求实现
+   - 安全性检查：使用 IL 分析避免赋予怪物专属能力
 
 7. **遗物设计**：
    - 继承 `CustomRelicModel` 并实现相应钩子方法
@@ -172,7 +183,7 @@ YuWanCard/
 
 - 游戏源代码：[others/sts2-src/](others/sts2-src/)
 - BaseLib 项目：[others/BaseLib-StS2-master](others/BaseLib-StS2-master)
-- BaseLib 使用指南：[BaseLib使用指南.md](BaseLib使用指南.md)
+- BaseLib 使用指南：[BaseLib 使用指南.md](BaseLib 使用指南.md)
 - STS2 Mod 文档：https://github.com/Cany0udance/EarlySts2ModdingGuides/wiki
 - MCP 工具：context7（文档查询）、github（代码搜索）
 - 智能体：Search（代码库搜索）
