@@ -12,8 +12,8 @@ public abstract partial class YuWanRelicModel : CustomRelicModel
     protected virtual string IconBasePath => $"res://YuWanCard/images/relics/{RelicId}";
 
     public override string PackedIconPath => $"{IconBasePath}.png";
-    protected override string BigIconPath => $"{IconBasePath}.png";
-    protected override string PackedIconOutlinePath => $"{IconBasePath}_outline.png";
+    public override string BigIconPath => $"{IconBasePath}.png";
+    public override string PackedIconOutlinePath => $"{IconBasePath}_outline.png";
 
     protected YuWanRelicModel() : base()
     {

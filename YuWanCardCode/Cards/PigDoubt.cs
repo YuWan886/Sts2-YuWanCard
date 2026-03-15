@@ -11,7 +11,7 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigDoubt : YuWanCardModel
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    public override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new PowerVar<PigDoubtPower>(1m)
     ];
@@ -25,13 +25,13 @@ public class PigDoubt : YuWanCardModel
     {
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<PigDoubtPower>(Owner.Creature, DynamicVars["PigDoubtPower"].BaseValue, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         DynamicVars["PigDoubtPower"].UpgradeValueBy(1m);
     }

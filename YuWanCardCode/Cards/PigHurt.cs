@@ -14,9 +14,9 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigHurt : YuWanCardModel
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<VulnerablePower>()];
+    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<VulnerablePower>()];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<VulnerablePower>(1m)];
+    public override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<VulnerablePower>(1m)];
 
     public PigHurt() : base(
         baseCost: 1,
@@ -27,12 +27,12 @@ public class PigHurt : YuWanCardModel
     {
     }
     
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<VulnerablePower>(CombatState!.HittableEnemies, 2, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         DynamicVars.Vulnerable.UpgradeValueBy(2);
     }

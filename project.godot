@@ -18,6 +18,10 @@ config/icon="res://icon.svg"
 
 project/assembly_name="YuWanCard"
 
+[editor]
+
+export/exclude_filters="others/*"
+
 [rendering]
 
 renderer/rendering_method="mobile"

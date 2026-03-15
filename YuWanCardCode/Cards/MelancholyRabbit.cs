@@ -20,7 +20,7 @@ public class MelancholyRabbit : YuWanCardModel
     {
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         int blockAmount = Owner.Creature.CurrentHp;
         if (blockAmount > 0)
@@ -29,7 +29,7 @@ public class MelancholyRabbit : YuWanCardModel
         }
     }
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
         RemoveKeyword(CardKeyword.Exhaust);

@@ -12,9 +12,9 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigThink : YuWanCardModel
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [EnergyHoverTip];
+    public override IEnumerable<IHoverTip> ExtraHoverTips => [EnergyHoverTip];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(2)];
+    public override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(2)];
 
     public PigThink() : base(
         baseCost: 1,
@@ -25,7 +25,7 @@ public class PigThink : YuWanCardModel
     {
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         IEnumerable<Creature> teammates = from c in CombatState!.GetTeammatesOf(Owner.Creature)
                                           where c != null && c.IsAlive && c.IsPlayer
@@ -36,7 +36,7 @@ public class PigThink : YuWanCardModel
         }
     }
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
         DynamicVars.Energy.UpgradeValueBy(1m);

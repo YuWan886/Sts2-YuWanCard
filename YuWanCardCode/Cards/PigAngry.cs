@@ -12,9 +12,9 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigAngry : YuWanCardModel
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>()];
+    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>()];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(4m)];
+    public override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(4m)];
 
     public PigAngry() : base(
         baseCost: 2,
@@ -25,12 +25,12 @@ public class PigAngry : YuWanCardModel
     {
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<StrengthPower>(CombatState!.GetTeammatesOf(Owner.Creature), DynamicVars.Strength.BaseValue, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
         DynamicVars.Strength.UpgradeValueBy(2m);

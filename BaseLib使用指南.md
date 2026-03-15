@@ -116,6 +116,7 @@ public class MyCustomCard : CustomCardModel
 **重要属性和方法**：
 - `GainsBlock`：自动检测卡牌是否有格挡效果（通过检查 DynamicVars 中是否有 BlockVar 或 CalculatedBlockVar）
 - `CustomFrame`：自定义卡牌框贴图（可选）
+- `CustomPortraitPath`：自定义卡牌立绘路径（可选）
 - `CanonicalVars`：定义卡牌的动态变量（伤害、格挡、能量等）
 - `OnPlay`：卡牌打出时的逻辑
 - `OnUpgrade`：卡牌升级时的逻辑
@@ -210,6 +211,22 @@ public class MyCustomCharacter : CustomCharacterModel
 - `StartingGold`：99
 - `AttackAnimDelay`：0.15f
 - `CastAnimDelay`：0.25f
+
+**自定义能量计数器**：
+可以使用 `CustomEnergyCounter` 结构体来自定义能量计数器的外观：
+
+```csharp
+public override CustomEnergyCounter? CustomEnergyCounter => new(
+    layer => $"res://textures/energy/my_character_energy_layer{layer}.png",
+    outlineColor: new Color(1, 0, 0),
+    burstColor: new Color(1, 0.5f, 0)
+);
+```
+
+`CustomEnergyCounter` 构造函数参数：
+- `pathFunc`：`Func<int, string>` - 根据层数（1-5）返回对应贴图路径
+- `outlineColor`：`Color` - 轮廓颜色
+- `burstColor`：`Color` - 能量爆发粒子颜色
 
 ### 2.3 自定义遗物 (CustomRelicModel)
 
@@ -322,6 +339,7 @@ public class MyCustomCardPool : CustomCardPoolModel
 - `IsShared` 为 true 时，池会自动注册到 `ModelDb.AllSharedCardPools`
 - `CustomFrame` 用于自定义卡牌框贴图（Ancient 稀有度忽略此逻辑）
 - 如果不重写 `CardFrameMaterialPath`，会自动使用 `ShaderColor` 生成 HSV 着色器材质
+- 可通过 `BigEnergyIconPath` 和 `TextEnergyIconPath` 自定义能量图标
 
 ### 2.6 自定义药水 (CustomPotionModel)
 
@@ -439,6 +457,10 @@ public class MyCustomPotionPool : CustomPotionPoolModel
 }
 ```
 
+**能量图标属性**：
+- `BigEnergyIconPath`：大能量图标路径
+- `TextEnergyIconPath`：文本能量图标路径
+
 ### 2.9 自定义遗物池 (CustomRelicPoolModel)
 
 继承 `CustomRelicPoolModel` 来创建自定义遗物池：
@@ -458,6 +480,10 @@ public class MyCustomRelicPool : CustomRelicPoolModel
     protected override IEnumerable<RelicModel> GenerateAllRelics() => [];
 }
 ```
+
+**能量图标属性**：
+- `BigEnergyIconPath`：大能量图标路径
+- `TextEnergyIconPath`：文本能量图标路径
 
 ## 3. 配置系统
 
@@ -660,7 +686,6 @@ var selectedAndRemove = weightedList.GetRandom(rng, remove: true);
 weightedList.Insert(0, "Option 0", 3);
 
 var count = weightedList.Count;
-var totalWeight = weightedList.TotalWeight;
 ```
 
 **实现接口**：
@@ -669,20 +694,27 @@ var totalWeight = weightedList.TotalWeight;
 
 ### 4.6 SpireField
 
-用于创建自定义字段（Harmony 补丁）：
+用于创建自定义字段（Harmony 补丁），基于 `ConditionalWeakTable` 实现：
 
 ```csharp
 using BaseLib.Utils;
 
-private static readonly SpireField<int> MyCustomField = new("MyMod_MyCustomField");
+private static readonly SpireField<Creature, int> MyCustomField = new(() => 0);
 
 MyCustomField.Set(creature, 10);
 var value = MyCustomField.Get(creature);
+
+MyCustomField[creature] = 20;
 ```
+
+**构造函数参数**：
+- `defaultVal`：`Func<TVal?>` 或 `Func<TKey, TVal?>` - 获取默认值的函数
+
+**注意**：SpireField 是 `ConditionalWeakTable` 的封装，适用于存储引用类型键的附加数据。值类型会被装箱，效率较低。
 
 ## 5. 自定义动态变量
 
-BaseLib 提供了两个自定义动态变量：
+BaseLib 提供了三个自定义动态变量：
 
 ### 5.1 PersistVar
 
@@ -710,6 +742,25 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 // 在 CanonicalVars 中使用
 protected override IEnumerable<DynamicVar> CanonicalVars => [new RefundVar(1)];
 ```
+
+### 5.3 ExhaustiveVar
+
+表示卡牌的"耗尽"次数（整场游戏中打出次数限制，至少保留 1 次）：
+
+```csharp
+using BaseLib.Cards.Variables;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+
+// 在 CanonicalVars 中使用
+protected override IEnumerable<DynamicVar> CanonicalVars => [new ExhaustiveVar(3)];
+
+// 获取剩余次数
+int remaining = ExhaustiveVar.ExhaustiveCount(card, 3);
+```
+
+**与 PersistVar 的区别**：
+- `PersistVar`：每回合重置，用于"本回合可打出 X 次"的卡牌
+- `ExhaustiveVar`：整场游戏有效，用于"本场战斗总共可打出 X 次"的卡牌，且至少保留 1 次机会
 
 ## 6. 最佳实践
 
@@ -835,7 +886,7 @@ public abstract partial class YuWanCardModel(int baseCost, CardType type, CardRa
 
     protected virtual string PortraitBasePath => $"res://YuWanCard/images/card_portraits/{CardId}";
 
-    public override string PortraitPath => $"{PortraitBasePath}.png";
+    public override string? CustomPortraitPath => $"{PortraitBasePath}.png";
 
     [GeneratedRegex(@"([a-z])([A-Z])", RegexOptions.Compiled)]
     private static partial Regex MyRegex();

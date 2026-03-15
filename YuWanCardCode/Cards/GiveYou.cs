@@ -23,7 +23,7 @@ public class GiveYou : YuWanCardModel
     {
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Target == null) return;
 
@@ -55,7 +55,7 @@ public class GiveYou : YuWanCardModel
         }
     }
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         RemoveKeyword(CardKeyword.Exhaust);
         EnergyCost.UpgradeBy(-1);

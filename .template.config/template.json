@@ -19,7 +19,6 @@
                         ".godot/**",
                         ".idea/**",
                         "Properties/**",
-                        "nuget.config",
                         "README.md"
                     ]
                 }

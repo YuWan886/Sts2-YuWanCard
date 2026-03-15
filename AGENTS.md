@@ -1,15 +1,15 @@
 ### 项目概述
 
-YuWanCard 是一个基于 BaseLib 框架开发的 Slay the Spire 2 模组，实现了 11 张"猪"主题的无色卡牌、1 个能力效果和 1 个先古之民遗物。
+YuWanCard 是一个基于 BaseLib 框架开发的 Slay the Spire 2 模组，实现了 12 张"猪"主题的无色卡牌、1 个能力效果和 1 个先古之民遗物。
 
 **模组信息**：
 - ID: `YuWanCard`
-- 版本: `v0.1.1`
+- 版本: `v0.1.2`
 - 作者: `一条鱼丸_`
 - 依赖: `BaseLib`
 
 **内容概览**：
-- 11 张无色卡牌
+- 12 张无色卡牌（包含猪主题卡牌和其他主题卡牌）
 - 1 个能力（猪疑惑）
 - 1 个先古之民遗物（七咒之戒）
 - 1 个 Neow 事件选项（七咒之戒 modifier）
@@ -34,7 +34,7 @@ YuWanCard/
 ├── packages/                  # NuGet 包目录
 ├── YuWanCard/                 # 模组资源目录
 │   ├── images/
-│   │   ├── card_portraits/    # 卡牌立绘 (11 张)
+│   │   ├── card_portraits/    # 卡牌立绘 (12 张)
 │   │   ├── powers/            # 能力图标
 │   │   └── relics/            # 遗物图标
 │   ├── localization/zhs/      # 简体中文本地化
@@ -43,16 +43,26 @@ YuWanCard/
 │   │   └── relics.json        # 遗物本地化
 │   └── mod_image.png          # 模组图标
 ├── YuWanCardCode/             # 模组源代码目录
-│   ├── Cards/                 # 卡牌定义 (11 张)
-│   │   ├── xxxx.cs            # xxx
+│   ├── Cards/                 # 卡牌定义 (12 张)
+│   │   ├── PigHurt.cs         # 猪受伤
+│   │   ├── PigThink.cs        # 猪思考
+│   │   ├── PigAngry.cs        # 猪愤怒
+│   │   ├── PigSleep.cs        # 猪睡觉
+│   │   ├── PigSacrifice.cs    # 猪献祭
+│   │   ├── PigDoubt.cs        # 猪疑惑
+│   │   ├── Nyjk.cs            # 你已急哭
+│   │   ├── GiveYou.cs         # 我给你
+│   │   ├── Wyjk.cs            # 我已急哭
+│   │   ├── MelancholyRabbit.cs # 忧郁是一种感觉
+│   │   ├── SadArmyWin.cs      # 哀兵必胜
 │   │   └── YuWanCardModel.cs  # 卡牌基类
 │   ├── Patches/               # Harmony 补丁
 │   │   └── NeowSevenCursesPatch.cs # Neow 事件七咒之戒选项
 │   ├── Powers/                # 能力定义
-│   │   ├── xxxxx.cs           # xxx
+│   │   ├── PigDoubtPower.cs   # 猪疑惑能力
 │   │   └── YuWanPowerModel.cs # 能力基类
 │   └── Relics/                # 遗物定义
-│       ├── xxxx.cs            # 七咒之戒
+│       ├── RingOfSevenCurses.cs # 七咒之戒
 │       └── YuWanRelicModel.cs # 遗物基类
 ├── others/                    # 参考资源目录
 ├── MainFile.cs                # 模组入口文件
@@ -141,12 +151,16 @@ YuWanCard/
    - 正确设置 `RelicRarity`
    - 常用钩子方法：
      - `AfterObtained()`：获得遗物时触发
-     - `ModifyDamageMultiplicative()`：修改伤害倍率
-     - `ModifyBlockMultiplicative()`：修改格挡倍率
-     - `ModifyMaxEnergy()`：修改最大能量
-     - `ModifyHandDraw()`：修改抽牌数
-     - `ModifyRestSiteHealAmount()`：修改休息处回复血量
+     - `ModifyDamageMultiplicative()`：修改伤害倍率（七咒之戒：受伤 +50%，打 BOSS+50%，打小怪 -25%）
+     - `ModifyBlockMultiplicative()`：修改格挡倍率（七咒之戒：-20%）
+     - `ModifyMaxEnergy()`：修改最大能量（七咒之戒：+1）
+     - `ModifyHandDraw()`：修改抽牌数（七咒之戒：+1）
+     - `ModifyRestSiteHealAmount()`：修改休息处回复血量（七咒之戒：-50%）
      - `ShouldAllowSelectingMoreCardRewards()`：允许选择更多卡牌奖励
+     - `TryModifyRewards()`：修改奖励（七咒之戒：卡牌奖励 +1，50% 概率额外遗物）
+     - `AfterGoldGained()`：获得金币后处理（七咒之戒：-50% 金币）
+     - `AfterPlayerTurnStart()`：玩家回合开始时（七咒之戒：获得诅咒牌）
+     - `AfterCombatVictory()`：战斗胜利后（七咒之戒：BOSS 战后 -25% 最大生命）
 
 8. **Harmony 补丁**：
    - 用于修改游戏原有行为（如添加 Neow 事件选项）

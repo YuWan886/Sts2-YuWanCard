@@ -12,9 +12,9 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class Nyjk : YuWanCardModel
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<WeakPower>()];
+    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<WeakPower>()];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<WeakPower>(1m)];
+    public override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<WeakPower>(1m)];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
@@ -27,7 +27,7 @@ public class Nyjk : YuWanCardModel
     {
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Target != null)
         {
@@ -40,7 +40,7 @@ public class Nyjk : YuWanCardModel
         }
     }
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         RemoveKeyword(CardKeyword.Exhaust);
         DynamicVars.Weak.UpgradeValueBy(1m);

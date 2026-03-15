@@ -13,7 +13,7 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigSleep : YuWanCardModel
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    public override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(10m, ValueProp.Move),
         new HealVar(5m)
@@ -30,14 +30,14 @@ public class PigSleep : YuWanCardModel
     {
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         await CreatureCmd.Heal(Owner.Creature, DynamicVars.Heal.BaseValue);
         PlayerCmd.EndTurn(Owner, canBackOut: false);
     }
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
         DynamicVars.Block.UpgradeValueBy(10m);

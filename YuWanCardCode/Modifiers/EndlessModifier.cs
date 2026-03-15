@@ -40,7 +40,7 @@ public class EndlessModifier : ModifierModel
     public override LocString NeowOptionTitle => new("modifiers", ModifierId + ".neow_title");
     public override LocString NeowOptionDescription => new("modifiers", ModifierId + ".neow_description");
 
-    protected override string IconPath => "res://YuWanCard/images/modifiers/endless.png";
+    public override string IconPath => "res://YuWanCard/images/modifiers/endless.png";
 
     public int EffectiveLoopCount => Math.Max(0, EndlessLoopCount);
 
@@ -157,12 +157,12 @@ public class EndlessModifier : ModifierModel
         return true;
     }
 
-    protected override void AfterRunCreated(RunState runState)
+    public override void AfterRunCreated(RunState runState)
     {
         MainFile.Logger.Info($"Endless modifier initialized. Loop: {EndlessLoopCount}, TotalActs: {TotalActsCleared}");
     }
 
-    protected override void AfterRunLoaded(RunState runState)
+    public override void AfterRunLoaded(RunState runState)
     {
         MainFile.Logger.Info($"Endless modifier loaded. Loop: {EndlessLoopCount}, TotalActs: {TotalActsCleared}");
     }

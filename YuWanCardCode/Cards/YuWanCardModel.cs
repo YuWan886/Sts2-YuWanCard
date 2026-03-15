@@ -15,7 +15,8 @@ public abstract partial class YuWanCardModel(int baseCost, CardType type, CardRa
     protected virtual string FrameBasePath => $"res://YuWanCard/images/card_frames/{CardId}";
 
     public override string PortraitPath => $"{PortraitBasePath}.png";
-    public override string BetaPortraitPath => $"{PortraitBasePath}_beta.png";
+
+    public override string? CustomPortraitPath => $"{PortraitBasePath}.png";
 
     public override Texture2D? CustomFrame
     {
