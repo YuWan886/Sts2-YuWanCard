@@ -353,9 +353,9 @@ public class MyCustomPotion : CustomPotionModel
 - `PackedImagePath`：药水贴图路径
 - `PackedOutlinePath`：药水轮廓贴图路径
 
-### 2.7 自定义古代 (CustomAncientModel)
+### 2.7 自定义先古之民 (CustomAncientModel)
 
-继承 `CustomAncientModel` 来创建自定义古代事件：
+继承 `CustomAncientModel` 来创建自定义先古之民事件：
 
 ```csharp
 using BaseLib.Abstracts;
@@ -404,17 +404,17 @@ public class MyCustomAncient : CustomAncientModel
 ```
 
 **重要方法**：
-- `IsValidForAct(ActModel act)`：检查古代是否适用于指定章节（建议检查 `act.ActNumber == 2 or 3`）
-- `ShouldForceSpawn(ActModel act, AncientEventModel? rngChosenAncient)`：是否强制生成此古代（谨慎使用，可能导致模组冲突）
+- `IsValidForAct(ActModel act)`：检查先古之民是否适用于指定章节（建议检查 `act.ActNumber == 2 or 3`）
+- `ShouldForceSpawn(ActModel act, AncientEventModel? rngChosenAncient)`：是否强制生成此先古之民（谨慎使用，可能导致模组冲突）
 - `MakeOptionPools`：创建选项池（抽象属性，必须实现）
 
 **选项池工具**：
 - `MakePool(params RelicModel[] options)`：从遗物模型创建加权列表
-- `MakePool(params AncientOption[] options)`：从古代选项创建加权列表
-- `AncientOption<T>(int weight, ...)`：创建古代选项（支持遗物预处理和变体）
+- `MakePool(params AncientOption[] options)`：从先古之民选项创建加权列表
+- `AncientOption<T>(int weight, ...)`：创建先古之民选项（支持遗物预处理和变体）
 
 **本地化**：
-古代事件使用特定的本地化键格式：
+先古之民事件使用特定的本地化键格式：
 - 首次访问：`{Id.Entry}.talk.firstvisitEver.0-0.ancient`
 - 角色对话：`{Id.Entry}.talk.{CharacterId}.{index}-{line}.ancient` 或 `.char`
 - 通用对话：`{Id.Entry}.talk.ANY.{index}-{line}.ancient` 或 `.char`
@@ -1024,9 +1024,9 @@ public override RelicModel? GetUpgradeReplacement()
 }
 ```
 
-### 9.3 自定义古代选项
+### 9.3 自定义先古之民选项
 
-创建带有变体的古代选项：
+创建带有变体的先古之民选项：
 
 ```csharp
 protected override OptionPools MakeOptionPools => new OptionPools(
@@ -1048,6 +1048,6 @@ BaseLib 为 StS2 模组开发提供了一个强大的基础框架，它简化了
 - 所有自定义模型都需要使用 `PoolAttribute` 属性
 - 配置属性必须是静态属性
 - 角色视觉场景需要包含必要的节点
-- 古代事件需要实现 `MakeOptionPools` 属性
+- 先古之民事件需要实现 `MakeOptionPools` 属性
 - 使用 `CommonActions` 简化常见的游戏动作
 - 使用 `MainFile.Logger` 进行日志记录

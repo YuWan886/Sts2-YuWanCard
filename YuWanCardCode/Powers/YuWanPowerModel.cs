@@ -1,7 +1,5 @@
 using System.Text.RegularExpressions;
 using BaseLib.Abstracts;
-using BaseLib.Extensions;
-using BaseLib.Utils;
 
 namespace YuWanCard.Powers;
 

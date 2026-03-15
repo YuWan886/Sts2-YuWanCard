@@ -88,11 +88,6 @@ public class PigDoubtPower : YuWanPowerModel
             bool result = AnalyzePowerSafety(powerType);
             SafetyCache[powerType] = result;
             
-            if (!result)
-            {
-                MainFile.Logger.Debug($"[PigDoubtPower] 排除危险能力：{powerType.Name}");
-            }
-            
             return result;
         }
     }
