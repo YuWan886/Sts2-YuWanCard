@@ -184,6 +184,5 @@ YuWanCard/
 - 游戏源代码：[others/sts2-src/](others/sts2-src/)
 - BaseLib 项目：[others/BaseLib-StS2-master](others/BaseLib-StS2-master)
 - BaseLib 使用指南：[BaseLib 使用指南.md](BaseLib 使用指南.md)
-- STS2 Mod 文档：https://github.com/Cany0udance/EarlySts2ModdingGuides/wiki
 - MCP 工具：context7（文档查询）、github（代码搜索）
 - 智能体：Search（代码库搜索）
