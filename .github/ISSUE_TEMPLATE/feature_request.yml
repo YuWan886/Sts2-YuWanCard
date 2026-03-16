@@ -1,0 +1,55 @@
+name: 功能请求
+description: 为 YuWanCard 模组提出新功能建议
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您的建议！请填写以下信息帮助我们了解您的需求。
+
+  - type: textarea
+    id: feature
+    attributes:
+      label: 功能描述
+      description: 请清晰描述您希望添加的功能
+      placeholder: "例如：添加一张新的猪主题卡牌..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 功能动机
+      description: 为什么您认为这个功能有用？
+      placeholder: "例如：这个功能可以..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 建议的解决方案
+      description: 您有关于如何实现这个功能的想法吗？
+      placeholder: "例如：可以通过修改...来实现"
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: 功能类型
+      description: 这是什么类型的功能？
+      options:
+        - 新卡牌
+        - 新能力
+        - 新遗物
+        - 新事件
+        - 游戏机制修改
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 其他信息
+      description: 还有其他需要补充的信息吗？（可选）

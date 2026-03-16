@@ -1,0 +1,112 @@
+name: Bug 反馈
+description: 报告 YuWanCard 模组的问题
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您反馈问题！请填写以下信息以帮助我们定位问题。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 请清晰描述您遇到的问题
+      placeholder: "例如：使用猪受伤卡牌时游戏崩溃"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 请描述如何复现这个问题
+      placeholder: |
+        1. 进入游戏
+        2. 选择角色
+        3. 使用某张卡牌
+        4. 出现错误
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期行为
+      description: 您期望发生什么？
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+      description: 实际发生了什么？
+    validations:
+      required: true
+
+  - type: input
+    id: mod-version
+    attributes:
+      label: 模组版本
+      description: 您使用的 YuWanCard 版本
+      placeholder: "例如：v0.1.5"
+    validations:
+      required: true
+
+  - type: input
+    id: game-version
+    attributes:
+      label: 游戏版本
+      description: 您使用的 Slay the Spire 2 版本
+      placeholder: "例如：v0.99.1"
+    validations:
+      required: true
+
+  - type: textarea
+    id: other-mods
+    attributes:
+      label: 其他已安装模组
+      description: 请列出其他已安装的模组（如果有）
+      placeholder: "例如：BaseLib, 其他模组..."
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## ⚠️ 重要：游戏日志
+        **请务必上传游戏日志文件，这对于定位问题至关重要！**
+
+        日志文件位置：`%AppData%\SlayTheSpire2\logs\`
+        
+        主要日志文件：
+        - `godot.log` - 游戏主日志
+        - 其他相关日志文件
+
+        如何找到日志：
+        1. 按 `Win + R` 打开运行窗口
+        2. 输入 `%AppData%\SlayTheSpire2\logs` 并回车
+        3. 将日志文件拖拽到下方的上传区域
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 游戏日志
+      description: 请上传游戏日志文件或将相关内容粘贴到此处
+      placeholder: "将日志文件拖拽到此处，或粘贴日志内容..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 截图
+      description: 如果有截图，请上传（可选）
+      placeholder: "将截图拖拽到此处..."
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 其他信息
+      description: 还有其他需要补充的信息吗？（可选）
