@@ -23,11 +23,6 @@ class NeowSevenCursesPatch
             return;
         }
 
-        if (__instance.Owner.RunState.Modifiers.Count > 0)
-        {
-            return;
-        }
-
         var originalOptions = __result.ToList();
         _originalOptions[__instance] = originalOptions;
 
