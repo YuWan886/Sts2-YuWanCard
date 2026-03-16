@@ -1,3 +1,10 @@
+<div align="center">
+  <img style="width: 256px; height: 116px;" src="YuWanCard\mod_image.png" alt="logo" />
+
+  <h1>YuWan Card</h1>
+  <p><em>pig card</em></p>
+</div>
+
 > [!IMPORTANT]
 > 本mod使用ai进行开发，可能会存在错误。
 
@@ -38,9 +45,10 @@
 | 无尽 | 爬塔无止境，直至死亡。敌人随循环次数增强（血量+20%/层，力量+1/层，BOSS额外增强）。选择时获得10点最大生命。 |
 
 ## 安装
-1. 下载最新版本[Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest)
-2. 下载前置依赖mod[Baselib](https://github.com/Alchyr/BaseLib-StS2)
-3. 解压到游戏目录下的`mods`文件夹中
+1. 对应游戏版本为`**v0.99.1**`
+2. 下载最新版本[Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest)
+3. 下载前置依赖mod[Baselib](https://github.com/Alchyr/BaseLib-StS2)
+4. 解压到游戏目录下的`mods`文件夹中
 
 ## CREDITS
 - 可爱的猪猪 - [PigHub](https://www.pighub.top/)

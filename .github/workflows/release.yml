@@ -65,17 +65,45 @@ jobs:
         fi
         echo "✅ 标签存在：${{ steps.vars.outputs.TAG_NAME }}"
 
+    - name: Generate Release Notes
+      id: release_notes
+      run: |
+        # 获取上一个标签
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        
+        # 生成发布说明
+        echo "## 更新内容" > release_notes.md
+        echo "" >> release_notes.md
+        
+        if [ -n "$PREVIOUS_TAG" ]; then
+          echo "自 $PREVIOUS_TAG 以来的更改：" >> release_notes.md
+          echo "" >> release_notes.md
+          
+          # 获取提交列表并格式化
+          git log ${PREVIOUS_TAG}..HEAD --pretty=format:"## %s by @%an in [ #%cH ](https://github.com/${{ github.repository }}/commit/%cH)" --reverse >> release_notes.md
+          echo "" >> release_notes.md
+        else
+          echo "首次发布" >> release_notes.md
+          echo "" >> release_notes.md
+          
+          # 获取所有提交
+          git log --pretty=format:"## %s by @%an in [ #%cH ](https://github.com/${{ github.repository }}/commit/%cH)" --reverse >> release_notes.md
+          echo "" >> release_notes.md
+        fi
+        
+        echo "" >> release_notes.md
+        echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG:-HEAD}...${{ steps.vars.outputs.TAG_NAME }}" >> release_notes.md
+        
+        echo "RELEASE_NOTES_FILE=release_notes.md" >> $GITHUB_OUTPUT
+
     - name: Create Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         RELEASE_CMD="gh release create \"${{ steps.vars.outputs.TAG_NAME }}\" \
           --repo=\"${{ github.repository }}\" \
-          --title=\"${{ steps.vars.outputs.RELEASE_TITLE }}\""
-        
-        if [[ "${{ steps.vars.outputs.GENERATE_NOTES }}" == "true" ]]; then
-          RELEASE_CMD="$RELEASE_CMD --generate-notes"
-        fi
+          --title=\"${{ steps.vars.outputs.RELEASE_TITLE }}\" \
+          --notes-file=\"${{ steps.release_notes.outputs.RELEASE_NOTES_FILE }}\""
         
         if [[ "${{ steps.vars.outputs.IS_PRERELEASE }}" == "true" ]]; then
           RELEASE_CMD="$RELEASE_CMD --prerelease"
