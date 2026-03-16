@@ -68,10 +68,8 @@ jobs:
     - name: Generate Release Notes
       id: release_notes
       run: |
-        # 获取上一个标签
         PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
         
-        # 生成发布说明
         echo "## 更新内容" > release_notes.md
         echo "" >> release_notes.md
         
@@ -79,15 +77,13 @@ jobs:
           echo "自 $PREVIOUS_TAG 以来的更改：" >> release_notes.md
           echo "" >> release_notes.md
           
-          # 获取提交列表并格式化
-          git log ${PREVIOUS_TAG}..HEAD --pretty=format:"## %s by @%an in [ #%cH ](https://github.com/${{ github.repository }}/commit/%cH)" --reverse >> release_notes.md
+          git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s by @%an ([%h](https://github.com/${{ github.repository }}/commit/%H))" --reverse >> release_notes.md
           echo "" >> release_notes.md
         else
           echo "首次发布" >> release_notes.md
           echo "" >> release_notes.md
           
-          # 获取所有提交
-          git log --pretty=format:"## %s by @%an in [ #%cH ](https://github.com/${{ github.repository }}/commit/%cH)" --reverse >> release_notes.md
+          git log --pretty=format:"- %s by @%an ([%h](https://github.com/${{ github.repository }}/commit/%H))" --reverse >> release_notes.md
           echo "" >> release_notes.md
         fi
         
