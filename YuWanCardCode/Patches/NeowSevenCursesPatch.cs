@@ -1,8 +1,6 @@
-using System.Reflection;
+using System.Collections.Concurrent;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
@@ -10,12 +8,14 @@ using YuWanCard.Relic;
 
 namespace YuWanCard.Patches;
 
-[HarmonyPatch(typeof(Neow), "GenerateInitialOptions")]
+[HarmonyPatch(typeof(Neow))]
 class NeowSevenCursesPatch
 {
-    private static IReadOnlyList<EventOption>? _originalOptions;
+    private static readonly ConcurrentDictionary<Neow, List<EventOption>> _originalOptions = new();
+    private static readonly System.Reflection.MethodInfo? _setEventStateMethod = typeof(EventModel).GetMethod("SetEventState", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, [typeof(LocString), typeof(IEnumerable<EventOption>)], null);
 
     [HarmonyPostfix]
+    [HarmonyPatch("GenerateInitialOptions")]
     static void AddSevenCursesOption(Neow __instance, ref IReadOnlyList<EventOption> __result)
     {
         if (__instance.Owner == null)
@@ -23,53 +23,52 @@ class NeowSevenCursesPatch
             return;
         }
 
-        _originalOptions = __result;
+        if (__instance.Owner.RunState.Modifiers.Count > 0)
+        {
+            return;
+        }
+
+        var originalOptions = __result.ToList();
+        _originalOptions[__instance] = originalOptions;
 
         var relic = ModelDb.Relic<RingOfSevenCurses>().ToMutable();
         relic.Owner = __instance.Owner;
-        
-        EventOption sevenCursesOption = EventOption.FromRelic(
+
+        var sevenCursesOptions = new List<EventOption>
+        {
+            EventOption.FromRelic(
             relic,
             __instance,
-            () => SelectSevenCurses(__instance),
+            async () =>
+            {
+                await MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain<RingOfSevenCurses>(__instance.Owner);
+                if (_originalOptions.TryGetValue(__instance, out var options))
+                {
+                    _setEventStateMethod?.Invoke(__instance, [__instance.InitialDescription, options]);
+                }
+            },
             "YUWANCARD-SEVEN_CURSES_SELECT"
-        );
-        
+        )
+        };
+
         LocString skipTitle = new("relics", "YUWANCARD-SEVEN_CURSES_SKIP.title");
         LocString skipDescription = new("relics", "YUWANCARD-SEVEN_CURSES_SKIP.description");
-        EventOption skipOption = new(
+        sevenCursesOptions.Add(new EventOption(
             __instance,
-            () => SkipSevenCurses(__instance),
+            () =>
+            {
+                if (_originalOptions.TryGetValue(__instance, out var options))
+                {
+                    _setEventStateMethod?.Invoke(__instance, [__instance.InitialDescription, options]);
+                }
+                return Task.CompletedTask;
+            },
             skipTitle,
             skipDescription,
             "YUWANCARD-SEVEN_CURSES_SKIP",
-            Array.Empty<IHoverTip>()
-        );
-        
-        __result = [sevenCursesOption, skipOption];
-    }
+            Array.Empty<MegaCrit.Sts2.Core.HoverTips.IHoverTip>()
+        ));
 
-    private static async Task SelectSevenCurses(Neow neow)
-    {
-        if (neow.Owner != null)
-        {
-            await RelicCmd.Obtain<RingOfSevenCurses>(neow.Owner);
-        }
-        
-        if (_originalOptions != null && _originalOptions.Count > 0)
-        {
-            MethodInfo? setEventStateMethod = typeof(EventModel).GetMethod("SetEventState", BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(LocString), typeof(IEnumerable<EventOption>)], null);
-            setEventStateMethod?.Invoke(neow, [neow.InitialDescription, _originalOptions]);
-        }
-    }
-
-    private static Task SkipSevenCurses(Neow neow)
-    {
-        if (_originalOptions != null && _originalOptions.Count > 0)
-        {
-            MethodInfo? setEventStateMethod = typeof(EventModel).GetMethod("SetEventState", BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(LocString), typeof(IEnumerable<EventOption>)], null);
-            setEventStateMethod?.Invoke(neow, [neow.InitialDescription, _originalOptions]);
-        }
-        return Task.CompletedTask;
+        __result = sevenCursesOptions;
     }
 }
