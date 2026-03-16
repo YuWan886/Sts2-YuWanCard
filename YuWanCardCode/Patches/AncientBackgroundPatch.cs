@@ -36,6 +36,29 @@ public static class ImageHelperGetRoomIconPathPatch
     }
 }
 
+[HarmonyPatch(typeof(ImageHelper), "GetRoomIconOutlinePath")]
+public static class ImageHelperGetRoomIconOutlinePathPatch
+{
+    private static readonly Dictionary<string, string> CustomAncientOutlineIconPaths = new()
+    {
+        ["YUWANCARD-PIG_PIG"] = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig_outline.png"
+    };
+    
+    [HarmonyPrefix]
+    public static bool Prefix(MapPointType mapPointType, RoomType roomType, ModelId? modelId, ref string? __result)
+    {
+        if (mapPointType == MapPointType.Ancient && modelId != null)
+        {
+            if (CustomAncientOutlineIconPaths.TryGetValue(modelId.Entry, out var customPath))
+            {
+                __result = customPath;
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 [HarmonyPatch(typeof(ImageHelper), "GetImagePath")]
 public static class ImageHelperGetImagePathPatch
 {
