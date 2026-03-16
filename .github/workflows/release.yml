@@ -1,0 +1,87 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+    - '*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        type: string
+      release_title:
+        description: '发布标题 (可选)'
+        required: false
+        type: string
+      is_prerelease:
+        description: '是否为预发布版本'
+        required: false
+        default: false
+        type: boolean
+      generate_notes:
+        description: '自动生成发布说明'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        # 手动触发时检出指定版本
+        ref: ${{ github.event.inputs.version || github.ref }}
+
+    - name: Set Release Variables
+      id: vars
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          echo "TAG_NAME=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          echo "IS_PRERELEASE=${{ github.event.inputs.is_prerelease }}" >> $GITHUB_OUTPUT
+          echo "GENERATE_NOTES=${{ github.event.inputs.generate_notes }}" >> $GITHUB_OUTPUT
+          if [[ -n "${{ github.event.inputs.release_title }}" ]]; then
+            echo "RELEASE_TITLE=${{ github.event.inputs.release_title }}" >> $GITHUB_OUTPUT
+          else
+            echo "RELEASE_TITLE=Release ${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "TAG_NAME=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
+          echo "GENERATE_NOTES=true" >> $GITHUB_OUTPUT
+          echo "RELEASE_TITLE=Release ${{ github.ref_name }}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Check if Tag Exists
+      run: |
+        if ! git rev-parse "${{ steps.vars.outputs.TAG_NAME }}" >/dev/null 2>&1; then
+          echo "❌ 错误：标签 ${{ steps.vars.outputs.TAG_NAME }} 不存在"
+          echo "请先创建标签：git tag ${{ steps.vars.outputs.TAG_NAME }} && git push origin ${{ steps.vars.outputs.TAG_NAME }}"
+          exit 1
+        fi
+        echo "✅ 标签存在：${{ steps.vars.outputs.TAG_NAME }}"
+
+    - name: Create Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        RELEASE_CMD="gh release create \"${{ steps.vars.outputs.TAG_NAME }}\" \
+          --repo=\"${{ github.repository }}\" \
+          --title=\"${{ steps.vars.outputs.RELEASE_TITLE }}\""
+        
+        if [[ "${{ steps.vars.outputs.GENERATE_NOTES }}" == "true" ]]; then
+          RELEASE_CMD="$RELEASE_CMD --generate-notes"
+        fi
+        
+        if [[ "${{ steps.vars.outputs.IS_PRERELEASE }}" == "true" ]]; then
+          RELEASE_CMD="$RELEASE_CMD --prerelease"
+        fi
+        
+        echo "执行命令：$RELEASE_CMD"
+        eval $RELEASE_CMD
+        
+        echo "✅ Release 创建成功：${{ steps.vars.outputs.TAG_NAME }}"
