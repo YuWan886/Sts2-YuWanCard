@@ -45,7 +45,7 @@ class NeowSevenCursesPatch
                 selectDescription,
                 "YUWANCARD-SEVEN_CURSES_SELECT",
                 Array.Empty<MegaCrit.Sts2.Core.HoverTips.IHoverTip>()
-            )
+            ).WithRelic<RingOfSevenCurses>(__instance.Owner)
         };
 
         LocString skipTitle = new("relics", "YUWANCARD-SEVEN_CURSES_SKIP.title");

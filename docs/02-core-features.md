@@ -53,6 +53,32 @@ public class MyCustomCard : CustomCardModel
 - `CanonicalVars`：定义卡牌的动态变量（伤害、格挡、能量等）
 - `OnPlay`：卡牌打出时的逻辑
 - `OnUpgrade`：卡牌升级时的逻辑
+- `MultiplayerConstraint`：多人游戏限制（默认 `CardMultiplayerConstraint.None`）
+
+**CardMultiplayerConstraint 多人游戏限制**：
+```csharp
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+
+[Pool(typeof(ColorlessCardPool))]
+public class MyMultiplayerCard : CustomCardModel
+{
+    public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
+
+    public MyMultiplayerCard() : base(
+        baseCost: 1,
+        type: CardType.Skill,
+        rarity: CardRarity.Uncommon,
+        target: TargetType.AnyAlly
+    )
+    {
+    }
+}
+```
+
+| 值 | 说明 |
+|----|------|
+| `CardMultiplayerConstraint.None` | 无限制（默认值），单人/多人模式都会出现 |
+| `CardMultiplayerConstraint.MultiplayerOnly` | 仅限多人游戏，单人模式不会出现 |
 
 **DynamicVar 常用类型**：
 - `DamageVar(decimal)`：伤害变量

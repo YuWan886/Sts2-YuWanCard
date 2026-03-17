@@ -43,26 +43,16 @@ YuWanCard/
 │   │   └── relics.json        # 遗物本地化
 │   └── mod_image.png          # 模组图标
 ├── YuWanCardCode/             # 模组源代码目录
-│   ├── Cards/                 # 卡牌定义 (12 张)
-│   │   ├── PigHurt.cs         # 猪受伤
-│   │   ├── PigThink.cs        # 猪思考
-│   │   ├── PigAngry.cs        # 猪愤怒
-│   │   ├── PigSleep.cs        # 猪睡觉
-│   │   ├── PigSacrifice.cs    # 猪献祭
-│   │   ├── PigDoubt.cs        # 猪疑惑
-│   │   ├── Nyjk.cs            # 你已急哭
-│   │   ├── GiveYou.cs         # 我给你
-│   │   ├── Wyjk.cs            # 我已急哭
-│   │   ├── MelancholyRabbit.cs # 忧郁是一种感觉
-│   │   ├── SadArmyWin.cs      # 哀兵必胜
+│   ├── Cards/                 # 卡牌定义
+│   │   ├── xxx.cs             # xxx
 │   │   └── YuWanCardModel.cs  # 卡牌基类
 │   ├── Patches/               # Harmony 补丁
 │   │   └── NeowSevenCursesPatch.cs # Neow 事件七咒之戒选项
 │   ├── Powers/                # 能力定义
-│   │   ├── PigDoubtPower.cs   # 猪疑惑能力
+│   │   ├── xxxx.cs            # xx能力
 │   │   └── YuWanPowerModel.cs # 能力基类
 │   └── Relics/                # 遗物定义
-│       ├── RingOfSevenCurses.cs # 七咒之戒
+│       ├── xxx.cs             # 七咒之戒
 │       └── YuWanRelicModel.cs # 遗物基类
 ├── others/                    # 参考资源目录
 ├── MainFile.cs                # 模组入口文件
