@@ -8,5 +8,8 @@
   "YUWANCARD-RING_OF_SEVEN_CURSES.title": "Ring of Seven Curses",
   "YUWANCARD-RING_OF_SEVEN_CURSES.description": "Damage taken +50%, damage to non-Boss enemies -25%, [gold]Block[/gold] gained -20%, Gold gained -50%, [gold]Rest Site[/gold] HP recovery -50%, gain a [gold]Curse card[/gold] at the start of each turn, max HP -25% after killing a Boss. Energy +1, Draw +1, [gold]Potion slots[/gold] +1, [gold]Card rewards[/gold] +1, damage to Bosses +50%, normal enemies have a chance to drop [gold]Relics[/gold], can ignore path when selecting rooms on each floor.",
   "YUWANCARD-RING_OF_SEVEN_CURSES.flavor": "Seven curses, seven powers.",
-  "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText": "[gold][Ring of Seven Curses][/gold] heal 15% of max HP ({ActualHeal})."
+  "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText": "[gold][Ring of Seven Curses][/gold] heal 15% of max HP ({ActualHeal}).",
+  "YUWANCARD-TEN_YEAR_BAMBOO.title": "Ten Year Bamboo",
+  "YUWANCARD-TEN_YEAR_BAMBOO.description": "Gain {BlockBonus} [gold]Block[/gold] at the start of each turn. Defeating Elite enemies increases Block by 2. Defeating Bosses increases Block by 5.",
+  "YUWANCARD-TEN_YEAR_BAMBOO.flavor": "Ten years of bamboo, tough and resilient."
 }

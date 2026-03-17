@@ -26,24 +26,26 @@ class NeowSevenCursesPatch
         var originalOptions = __result.ToList();
         _originalOptions[__instance] = originalOptions;
 
-        var relic = ModelDb.Relic<RingOfSevenCurses>().ToMutable();
-        relic.Owner = __instance.Owner;
+        LocString selectTitle = new("relics", "YUWANCARD-SEVEN_CURSES_SELECT.title");
+        LocString selectDescription = new("relics", "YUWANCARD-SEVEN_CURSES_SELECT.description");
 
         var sevenCursesOptions = new List<EventOption>
         {
-            EventOption.FromRelic(
-            relic,
-            __instance,
-            async () =>
-            {
-                await MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain<RingOfSevenCurses>(__instance.Owner);
-                if (_originalOptions.TryGetValue(__instance, out var options))
+            new EventOption(
+                __instance,
+                async () =>
                 {
-                    _setEventStateMethod?.Invoke(__instance, [__instance.InitialDescription, options]);
-                }
-            },
-            "YUWANCARD-SEVEN_CURSES_SELECT"
-        )
+                    await MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain<RingOfSevenCurses>(__instance.Owner);
+                    if (_originalOptions.TryGetValue(__instance, out var options))
+                    {
+                        _setEventStateMethod?.Invoke(__instance, [__instance.InitialDescription, options]);
+                    }
+                },
+                selectTitle,
+                selectDescription,
+                "YUWANCARD-SEVEN_CURSES_SELECT",
+                Array.Empty<MegaCrit.Sts2.Core.HoverTips.IHoverTip>()
+            )
         };
 
         LocString skipTitle = new("relics", "YUWANCARD-SEVEN_CURSES_SKIP.title");
