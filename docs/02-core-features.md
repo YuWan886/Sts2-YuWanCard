@@ -432,6 +432,26 @@ public class MyCustomPower : CustomPowerModel
 - `OnApply(Creature source, int amount)` 能力被应用时触发
 - `OnRemove()`：能力被移除时触发
 
+### ICustomPower 接口
+
+如果你的能力需要继承自其他能力类（而不是直接继承 `PowerModel`），可以实现 `ICustomPower` 接口：
+
+```csharp
+using BaseLib.Abstracts;
+using MegaCrit.Sts2.Core.Models;
+
+public class MyCustomPower : SomeOtherPower, ICustomPower
+{
+    public string? CustomPackedIconPath => "res://MyMod/images/powers/my_power.png";
+    public string? CustomBigIconPath => "res://MyMod/images/powers/my_power.png";
+    public string? CustomBigBetaIconPath => null;
+}
+```
+
+**说明**：
+- `CustomPowerModel` 同时继承了 `PowerModel` 和 `ICustomPower`，适合大多数情况
+- `ICustomPower` 接口适合需要继承其他能力类的情况
+
 ## 自定义卡牌池 (CustomCardPoolModel)
 
 继承 `CustomCardPoolModel` 来创建自定义卡牌池：

@@ -15,7 +15,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 
-namespace YuWanCard.Relic;
+namespace YuWanCard.Relics;
 
 [Pool(typeof(SharedRelicPool))]
 public class RingOfSevenCurses : YuWanRelicModel

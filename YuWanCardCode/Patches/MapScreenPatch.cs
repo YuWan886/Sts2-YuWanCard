@@ -2,7 +2,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Runs;
-using YuWanCard.Relic;
+using YuWanCard.Relics;
 
 namespace YuWanCard.Patches;
 

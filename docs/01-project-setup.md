@@ -82,3 +82,20 @@ public class MyCustomRelic : CustomRelicModel
 - **药水池**：`SharedPotionPool`、`IroncladPotionPool`、`SilentPotionPool`、`DefectPotionPool`、`RegentPotionPool`、`NecrobinderPotionPool`、`EventPotionPool`、`TokenPotionPool`
 
 **注意**：使用卡牌池类型时需要引入命名空间 `MegaCrit.Sts2.Core.Models.CardPools`。
+
+## ICustomModel 接口
+
+`ICustomModel` 是一个标记接口，用于确定是否需要添加模组前缀到 ID。BaseLib 会自动为所有实现此接口的模型添加模组前缀，确保不同模组的内容不会冲突。
+
+**自动实现 ICustomModel 的基类**：
+- `CustomCardModel`
+- `CustomCharacterModel`
+- `CustomRelicModel`
+- `CustomPowerModel`（通过 `ICustomPower`）
+- `CustomPotionModel`
+- `CustomAncientModel`
+- `CustomCardPoolModel`
+- `CustomRelicPoolModel`
+- `CustomPotionPoolModel`
+
+**前缀生成规则**：前缀基于类型的命名空间生成。

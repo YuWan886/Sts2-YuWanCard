@@ -138,6 +138,77 @@ var count = weightedList.Count;
 - `IList<T>`：支持列表操作
 - `IWeighted`：支持权重接口
 
+## AncientDialogueUtil
+
+用于处理先古之民对话本地化：
+
+```csharp
+using BaseLib.Utils;
+
+// 获取音效路径
+string sfxPath = AncientDialogueUtil.SfxPath("MYMOD-MY_ANCIENT.talk.firstvisitEver.0-0.ancient");
+
+// 生成本地化基础键
+string baseKey = AncientDialogueUtil.BaseLocKey("MY_ANCIENT", "Ironclad"); // "MY_ANCIENT.talk.Ironclad."
+
+// 获取对话列表
+var dialogues = AncientDialogueUtil.GetDialoguesForKey("ancients", baseKey, log);
+```
+
+**方法说明**：
+- `SfxPath(string dialogueLoc)`：根据对话本地化键获取音效路径
+- `BaseLocKey(string ancientId, string charId)`：生成角色对话的基础本地化键
+- `GetDialoguesForKey(string locTable, string baseKey, StringBuilder? log)`：获取指定键的所有对话
+
+## OptionPools
+
+用于构建先古之民的选项池：
+
+```csharp
+using BaseLib.Utils;
+
+// 使用三个独立池（每个选项一个池）
+var pools = new OptionPools(pool1, pool2, pool3);
+
+// 使用两个池（前两个选项共用一个池）
+var pools = new OptionPools(pool12, pool3);
+
+// 使用单个池（所有选项共用一个池）
+var pools = new OptionPools(pool);
+
+// 获取所有选项
+var allOptions = pools.AllOptions;
+
+// 随机抽取选项
+var selectedOptions = pools.Roll(rng);
+```
+
+## AncientOption
+
+先古之民选项抽象类：
+
+```csharp
+using BaseLib.Utils;
+
+// 从遗物创建基础选项
+var option = (AncientOption)ModelDb.Relic<MyRelic>();
+
+// 创建带权重的选项
+var option = new AncientOption<MyRelic>(weight: 2);
+
+// 创建带预处理和变体的选项
+var option = new AncientOption<MyRelic>(weight: 1)
+{
+    ModelPrep = relic => relic.Setup(),
+    Variants = relic => new[] { relic, relic.UpgradedVersion }
+};
+```
+
+**属性说明**：
+- `Weight`：选项权重
+- `AllVariants`：所有变体遗物
+- `ModelForOption`：当前选项对应的遗物模型
+
 ## SpireField
 
 用于创建自定义字段（Harmony 补丁），基于 `ConditionalWeakTable` 实现：

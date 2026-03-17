@@ -77,7 +77,7 @@ jobs:
           echo "自 $PREVIOUS_TAG 以来的更改：" >> release_notes.md
           echo "" >> release_notes.md
           
-          git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s by @%an ([%h](https://github.com/${{ github.repository }}/commit/%H))" --reverse >> release_notes.md
+          git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))" --reverse >> release_notes.md
           echo "" >> release_notes.md
         else
           echo "首次发布" >> release_notes.md

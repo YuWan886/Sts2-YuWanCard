@@ -79,6 +79,37 @@ await config.Load();
 config.Changed();
 ```
 
+## ModConfig 基类方法
+
+### UI 创建方法
+
+```csharp
+// 创建开关选项
+var tickbox = config.MakeToggleOption(parent, property);
+
+// 创建下拉选项
+var dropdown = config.MakeDropdownOption(parent, property);
+
+// 创建选项容器
+var container = ModConfig.MakeOptionContainer(parent, name, labelText);
+
+// 创建分隔线
+var divider = ModConfig.CreateDivider();
+
+// 创建章节标签
+var sectionLabel = config.CreateSectionLabel("Section Name");
+```
+
+### 辅助方法
+
+```csharp
+// 获取标签文本（支持本地化）
+string label = config.GetLabelText("EnableFeature");
+
+// 检查是否有设置项
+bool hasSettings = config.HasSettings();
+```
+
 ## SavedProperty 属性
 
 `SavedProperty` 属性用于标记需要持久化保存的属性，适用于遗物、Modifier 等需要在游戏存档中保存状态的对象：
@@ -150,3 +181,15 @@ public class SavedPropertiesTypeCachePatch
     }
 }
 ```
+
+## 配置 UI 组件
+
+BaseLib 提供了以下配置 UI 组件：
+
+| 组件 | 说明 |
+|------|------|
+| `NConfigTickbox` | 开关选项 |
+| `NConfigDropdown` | 下拉选项 |
+| `NConfigDropdownItem` | 下拉选项项 |
+| `NConfigButton` | 配置按钮 |
+| `NModConfigPopup` | 模组配置弹窗 |

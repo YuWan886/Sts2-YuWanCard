@@ -9,7 +9,7 @@ using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 
-namespace YuWanCard.Relic;
+namespace YuWanCard.Relics;
 
 [Pool(typeof(SharedRelicPool))]
 public class TenYearBamboo : YuWanRelicModel
@@ -17,7 +17,7 @@ public class TenYearBamboo : YuWanRelicModel
     [SavedProperty]
     public int BlockBonus { get; set; } = 1;
 
-    public override RelicRarity Rarity => RelicRarity.Uncommon;
+    public override RelicRarity Rarity => RelicRarity.Rare;
 
     public override bool ShowCounter => true;
 
