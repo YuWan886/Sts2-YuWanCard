@@ -46,7 +46,7 @@ public class RainDark : YuWanCardModel
 
         foreach (var teammate in teammates)
         {
-            await CreatureCmd.SetCurrentHp(teammate, 10m);
+            await CreatureCmd.SetCurrentHp(teammate, 6m);
 
             await PowerCmd.Apply<IntangiblePower>(teammate, DynamicVars["IntangiblePower"].BaseValue, Owner.Creature, this);
 

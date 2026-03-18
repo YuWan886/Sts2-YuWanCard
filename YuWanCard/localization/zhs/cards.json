@@ -27,5 +27,7 @@
   "YUWANCARD-RAIN_DARK.title": "雨落狂流之暗",
   "YUWANCARD-RAIN_DARK.description": "所有玩家血量变为10，获得{IntangiblePower:diff()}层[gold]无实体[/gold]，将当前能量翻倍，接下来{RainDarkPower:diff()}回合获得的能量翻倍，抽满手牌。",
   "YUWANCARD-RAIN_DARK_SELECT.title": "雨落狂流之暗",
-  "YUWANCARD-RAIN_DARK_SELECT.description": "将一张[gold]雨落狂流之暗[/gold]加入手牌。"
+  "YUWANCARD-RAIN_DARK_SELECT.description": "将一张[gold]雨落狂流之暗[/gold]加入手牌。",
+  "YUWANCARD-TEN_THOUSAND_SWORDS.title": "万剑归宗",
+  "YUWANCARD-TEN_THOUSAND_SWORDS.description": "将其他玩家的[gold]锻造值[/gold]叠加到自己身上，然后清空其他玩家的[gold]锻造值[/gold]。"
 }
