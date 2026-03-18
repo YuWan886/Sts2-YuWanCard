@@ -54,7 +54,7 @@
 
 ## 安装
 1. 对应游戏版本为`v0.99.1`
-2. 下载最新版本[Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest)
+2. 下载最新版本[Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [加速下载](https://gh-proxy.com/) | [备用下载](https://pan.quark.cn/s/734161e964f3)
 3. 下载前置依赖mod[Baselib](https://github.com/Alchyr/BaseLib-StS2)
 4. 解压到游戏目录下的`mods`文件夹中
 
