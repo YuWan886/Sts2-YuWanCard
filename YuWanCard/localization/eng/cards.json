@@ -21,5 +21,11 @@
   "YUWANCARD-MELANCHOLY_RABBIT.title": "Melancholy Is A Feeling",
   "YUWANCARD-MELANCHOLY_RABBIT.description": "Gain [gold]Block[/gold] equal to your current HP.",
   "YUWANCARD-SAD_ARMY_WIN.title": "Sad Army Wins",
-  "YUWANCARD-SAD_ARMY_WIN.description": "When your HP is below 10%, kill {IfUpgraded:show:all|one} enemies."
+  "YUWANCARD-SAD_ARMY_WIN.description": "When your HP is below 10%, kill {IfUpgraded:show:all|one} enemies.",
+  "YUWANCARD-REVIVE_KAI.title": "Revive!",
+  "YUWANCARD-REVIVE_KAI.description": "Revive a fallen ally and restore {IfUpgraded:show:100%|50%} of their max HP.",
+  "YUWANCARD-RAIN_DARK.title": "Rain Dark",
+  "YUWANCARD-RAIN_DARK.description": "All players' HP becomes 10, gain {IntangiblePower:diff()} stack of [gold]Intangible[/gold], double current Energy, gain double Energy for the next {RainDarkPower:diff()} turns, draw to max hand size.",
+  "YUWANCARD-RAIN_DARK_SELECT.title": "Rain Dark",
+  "YUWANCARD-RAIN_DARK_SELECT.description": "Add a [gold]Rain Dark[/gold] to your hand."
 }

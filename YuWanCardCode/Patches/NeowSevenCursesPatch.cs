@@ -18,7 +18,7 @@ class NeowSevenCursesPatch
     [HarmonyPatch("GenerateInitialOptions")]
     static void AddSevenCursesOption(Neow __instance, ref IReadOnlyList<EventOption> __result)
     {
-        if (__instance.Owner == null)
+        if (__instance.Owner == null || __instance.Owner.RunState.Modifiers.Count > 0)
         {
             return;
         }
@@ -43,7 +43,7 @@ class NeowSevenCursesPatch
                 },
                 selectTitle,
                 selectDescription,
-                "YUWANCARD-SEVEN_CURSES_SELECT",
+                "YUWANCARD-SEVEN_CURSES",
                 Array.Empty<MegaCrit.Sts2.Core.HoverTips.IHoverTip>()
             ).WithRelic<RingOfSevenCurses>(__instance.Owner)
         };
