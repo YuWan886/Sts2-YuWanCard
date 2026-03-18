@@ -30,7 +30,7 @@
 | 忧郁是一种感觉 | 2 | 稀有 | 技能 | 获得等同于当前生命值的格挡 |
 | 哀兵必胜 | 3 | 稀有 | 技能 | 血量 10% 以下时击杀一名敌人 |
 | 复活吧！ | 4 | 稀有 | 技能 | 复活一名已死亡的队友，恢复 50% 最大生命值（多人模式） |
-| 雨落狂流之暗 | 3 | 先古 | 技能 | 所有玩家血量变为 6，获得 3 层无实体，将当前能量翻倍，接下来 3 回合获的能量翻倍，抽满手牌，消耗 |
+| 雨落狂流之暗 | 2 | 先古 | 技能 | 所有玩家血量变为 6，获得 3 层无实体，将当前能量翻倍，接下来 3 回合获的能量翻倍，抽满手牌，消耗 |
 
 ### 能力
 
@@ -60,7 +60,7 @@
 
 ## 安装
 1. 对应游戏版本为 `v0.99.1`
-2. 下载最新版本 [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [加速下载](https://gh-proxy.com/) | [备用下载](https://pan.quark.cn/s/734161e964f3)
+2. 下载最新版本 [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [加速下载](https://gh-proxy.com/) | [备用下载](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
 3. 下载前置依赖 mod[Baselib](https://github.com/Alchyr/BaseLib-StS2)
 4. 解压到游戏目录下的 `mods` 文件夹中
 

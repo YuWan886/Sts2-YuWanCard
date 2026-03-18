@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
@@ -22,15 +23,7 @@ public class PigPig : CustomAncientModel
 {
     private const string IconBasePath = "res://YuWanCard/images/ancients/pig_pig";
 
-    private static readonly HashSet<string> PigCardIds =
-    [
-        "YUWANCARD-PIG_HURT",
-        "YUWANCARD-PIG_THINK",
-        "YUWANCARD-PIG_ANGRY",
-        "YUWANCARD-PIG_SLEEP",
-        "YUWANCARD-PIG_SACRIFICE",
-        "YUWANCARD-PIG_DOUBT"
-    ];
+    private static readonly Regex PigCardPattern = new(@"^YUWANCARD-PIG_", RegexOptions.Compiled);
 
     public PigPig() : base(autoAdd: true)
     {
@@ -44,11 +37,79 @@ public class PigPig : CustomAncientModel
     private const string RunHistoryIconPath = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig.png";
     private const string RunHistoryIconOutlinePathStr = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig_outline.png";
     
+    private static Texture2D? _cachedRunHistoryIcon;
+    private static Texture2D? _cachedRunHistoryIconOutline;
+    
     public override string? CustomScenePath => "res://YuWanCard/scenes/ancients/pig_pig.tscn";
     public override string? CustomMapIconPath => $"{IconBasePath}.png";
     public override string? CustomMapIconOutlinePath => $"{IconBasePath}.png";
-    public override Texture2D? CustomRunHistoryIcon => GD.Load<Texture2D>(RunHistoryIconPath);
-    public override Texture2D? CustomRunHistoryIconOutline => GD.Load<Texture2D>(RunHistoryIconOutlinePathStr);
+    
+    public override Texture2D? CustomRunHistoryIcon
+    {
+        get
+        {
+            if (_cachedRunHistoryIcon == null)
+            {
+                _cachedRunHistoryIcon = GD.Load<Texture2D>(RunHistoryIconPath);
+                if (_cachedRunHistoryIcon == null)
+                {
+                    MainFile.Logger.Warn($"Failed to load PigPig run history icon from {RunHistoryIconPath}");
+                }
+            }
+            return _cachedRunHistoryIcon;
+        }
+    }
+    
+    public override Texture2D? CustomRunHistoryIconOutline
+    {
+        get
+        {
+            if (_cachedRunHistoryIconOutline == null)
+            {
+                _cachedRunHistoryIconOutline = GD.Load<Texture2D>(RunHistoryIconOutlinePathStr);
+                if (_cachedRunHistoryIconOutline == null)
+                {
+                    MainFile.Logger.Warn($"Failed to load PigPig run history outline icon from {RunHistoryIconOutlinePathStr}");
+                }
+            }
+            return _cachedRunHistoryIconOutline;
+        }
+    }
+
+    public override IEnumerable<string> GetAssetPaths(IRunState runState)
+    {
+        foreach (var path in base.GetAssetPaths(runState))
+        {
+            yield return path;
+        }
+        
+        yield return RunHistoryIconPath;
+        yield return RunHistoryIconOutlinePathStr;
+        yield return CustomMapIconPath!;
+    }
+
+    private string FirstVisit => $"{Id.Entry}.talk.firstvisitEver.0-0.ancient";
+    
+    protected override AncientDialogueSet DefineDialogues()
+    {
+        var sfxPath = AncientDialogueUtil.SfxPath(FirstVisit);
+        var firstVisit = new AncientDialogue(sfxPath);
+
+        var characterDialogues = new Dictionary<string, IReadOnlyList<AncientDialogue>>();
+        
+        foreach (var character in ModelDb.AllCharacters)
+        {
+            var baseKey = AncientDialogueUtil.BaseLocKey(Id.Entry, character.Id.Entry);
+            characterDialogues[character.Id.Entry] = AncientDialogueUtil.GetDialoguesForKey("ancients", baseKey);
+        }
+        
+        return new AncientDialogueSet
+        {
+            FirstVisitEverDialogue = firstVisit,
+            CharacterDialogues = characterDialogues,
+            AgnosticDialogues = AncientDialogueUtil.GetDialoguesForKey("ancients", AncientDialogueUtil.BaseLocKey(Id.Entry, "ANY"))
+        };
+    }
 
     protected override OptionPools MakeOptionPools => new(
         MakePool(ModelDb.Relic<MegaCrit.Sts2.Core.Models.Relics.Circlet>()),
@@ -130,7 +191,7 @@ public class PigPig : CustomAncientModel
         var allCards = colorlessPool.GetUnlockedCards(Owner!.UnlockState, Owner.RunState.CardMultiplayerConstraint);
         
         return [.. allCards
-            .Where(c => PigCardIds.Contains(c.Id.Entry))
+            .Where(c => PigCardPattern.IsMatch(c.Id.Entry))
             .Select(c => Owner.RunState.CreateCard(c, Owner))];
     }
 

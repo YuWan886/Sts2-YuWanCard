@@ -30,7 +30,7 @@
 | Melancholy Is A Feeling | 2 | Rare | Skill | Gain Block equal to current HP |
 | Sad Soldiers Win | 3 | Rare | Skill | Kill an enemy when HP is below 10% |
 | Resurrect! | 4 | Rare | Skill | Resurrect a dead ally with 50% max HP (Multiplayer) |
-| Rain Dark | 3 | Ancient | Skill | Set all players' HP to 6, gain 3 stacks of Intangible, double current energy, double energy gained for next 3 turns, draw full hand, Exhaust |
+| Rain Dark | 2 | Ancient | Skill | Set all players' HP to 6, gain 3 stacks of Intangible, double current energy, double energy gained for next 3 turns, draw full hand, Exhaust |
 
 ### Powers
 
@@ -60,7 +60,7 @@
 
 ## Installation
 1. Game version: `v0.99.1`
-2. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [Mirror](https://gh-proxy.com/) | [Backup](https://pan.quark.cn/s/734161e964f3)
+2. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [Mirror](https://gh-proxy.com/) | [Backup](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
 3. Download the required dependency mod [Baselib](https://github.com/Alchyr/BaseLib-StS2)
 4. Extract to the `mods` folder in the game directory
 
