@@ -1,8 +1,60 @@
 # 配置系统
 
-BaseLib 提供了一个简单的配置系统，用于管理模组的设置。
+BaseLib 提供了一个完整的配置系统，用于管理模组的设置。
 
-## 创建配置类
+## SimpleModConfig（推荐）
+
+`SimpleModConfig` 是一个简化配置类，可以自动从属性生成 UI：
+
+```csharp
+using BaseLib.Config;
+using Godot;
+
+internal class MyModConfig : SimpleModConfig
+{
+    [ConfigSection("游戏设置")]
+    public static bool EnableFeature { get; set; } = true;
+
+    [ConfigSection("难度设置")]
+    public static DifficultyLevel Difficulty { get; set; } = DifficultyLevel.Normal;
+
+    [SliderRange(0.1, 4.0, 0.05)]
+    [SliderLabelFormat("{0:0.00}x")]
+    [ConfigSection("数值调整")]
+    public static double DamageMultiplier { get; set; } = 1.0;
+
+    public MyModConfig() : base() { }
+
+    public override void SetupConfigUI(Control optionContainer)
+    {
+        GenerateOptionsForAllProperties(optionContainer);
+    }
+}
+
+public enum DifficultyLevel
+{
+    Easy,
+    Normal,
+    Hard
+}
+```
+
+**配置特性**：
+
+| 特性 | 用途 |
+|------|------|
+| `[ConfigSection("名称")]` | 标记配置分区，自动生成分区标题 |
+| `[SliderRange(min, max, step)]` | 设置滑块范围和步长 |
+| `[SliderLabelFormat("格式")]` | 设置滑块标签格式 |
+
+**重要说明**：
+- 配置属性必须是**静态属性**（`static`）
+- 配置属性必须有 `get` 和 `set` 访问器
+- 使用 `GenerateOptionsForAllProperties` 自动生成所有选项
+
+## 创建配置类（手动方式）
+
+如果需要更精细的控制，可以继承 `ModConfig` 并手动创建 UI：
 
 ```csharp
 using BaseLib.Config;
@@ -21,20 +73,6 @@ public class MyModConfig : ModConfig
         MakeDropdownOption(optionContainer, typeof(MyModConfig).GetProperty(nameof(Difficulty))!);
     }
 }
-
-public enum DifficultyLevel
-{
-    Easy,
-    Normal,
-    Hard
-}
-```
-
-**重要说明**：
-- 配置属性必须是**静态属性**（`static`）
-- 配置属性必须有 `get` 和 `set` 访问器
-- 使用 `MakeToggleOption` 创建开关选项
-- 使用 `MakeDropdownOption` 创建下拉选项（仅支持枚举类型）
 
 ## 注册配置
 
@@ -189,7 +227,47 @@ BaseLib 提供了以下配置 UI 组件：
 | 组件 | 说明 |
 |------|------|
 | `NConfigTickbox` | 开关选项 |
+| `NConfigSlider` | 滑块选项 |
 | `NConfigDropdown` | 下拉选项 |
 | `NConfigDropdownItem` | 下拉选项项 |
 | `NConfigButton` | 配置按钮 |
+| `NConfigOptionRow` | 配置选项行容器 |
 | `NModConfigPopup` | 模组配置弹窗 |
+
+### 手动创建 UI 组件
+
+```csharp
+public override void SetupConfigUI(Control optionContainer)
+{
+    // 创建分区标题
+    CreateSectionHeader("游戏设置");
+
+    // 创建开关选项
+    var tickbox = CreateRawTickboxControl(typeof(MyModConfig).GetProperty(nameof(EnableFeature))!);
+    optionContainer.AddChild(tickbox);
+
+    // 创建滑块选项
+    var slider = CreateRawSliderControl(typeof(MyModConfig).GetProperty(nameof(DamageMultiplier))!);
+    optionContainer.AddChild(slider);
+
+    // 创建下拉选项
+    var dropdown = CreateRawDropdownControl(typeof(MyModConfig).GetProperty(nameof(Difficulty))!);
+    optionContainer.AddChild(dropdown);
+}
+```
+
+### SimpleModConfig 辅助方法
+
+```csharp
+// 创建开关选项行（包含标签和控件）
+var tickboxRow = config.CreateToggleOption(property);
+
+// 创建滑块选项行
+var sliderRow = config.CreateSliderOption(property);
+
+// 创建下拉选项行
+var dropdownRow = config.CreateDropdownOption(property);
+
+// 创建分区标题
+var sectionLabel = config.CreateSectionHeader("Section Name");
+```

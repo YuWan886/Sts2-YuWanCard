@@ -94,6 +94,129 @@ public class MyMultiplayerCard : CustomCardModel
 - 使用 `CanonicalKeywords` 属性返回卡牌关键词
 - 使用 `AddKeyword(CardKeyword)` 和 `RemoveKeyword(CardKeyword)` 方法在升级时修改关键词
 
+**ExtraHoverTips 能力提示显示**：
+
+使用 `ExtraHoverTips` 属性可以在卡牌悬停时显示额外信息（如卡牌给予的能力介绍）：
+
+```csharp
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Models.Powers;
+
+[Pool(typeof(ColorlessCardPool))]
+public class RainDark : CustomCardModel
+{
+    // 显示卡牌给予的能力介绍
+    public override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        HoverTipFactory.FromPower<IntangiblePower>(),
+        HoverTipFactory.FromPower<RainDarkPower>()
+    ];
+
+    public RainDark() : base(
+        baseCost: 3,
+        type: CardType.Skill,
+        rarity: CardRarity.Ancient,
+        target: TargetType.AllAllies
+    )
+    {
+    }
+}
+```
+
+**常用 HoverTips 类型**：
+
+| 方法 | 说明 | 示例 |
+|------|------|------|
+| `HoverTipFactory.FromPower<TPower>()` | 显示能力介绍 | `HoverTipFactory.FromPower<StrengthPower>()` |
+| `HoverTipFactory.Static(StaticHoverTip.Block)` | 显示格挡图标 | `HoverTipFactory.Static(StaticHoverTip.Block)` |
+| `base.EnergyHoverTip` | 显示能量图标 | 直接继承自基类 |
+| `HoverTipFactory.FromKeyword(CardKeyword)` | 显示关键词介绍 | `HoverTipFactory.FromKeyword(CardKeyword.Exhaust)` |
+
+**完整示例**：
+
+```csharp
+using System.Linq;
+using BaseLib.Utils;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.CardPools;
+using MegaCrit.Sts2.Core.Models.Powers;
+
+[Pool(typeof(ColorlessCardPool))]
+public class RainDark : CustomCardModel
+{
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+
+    public override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new PowerVar<IntangiblePower>(3m),
+        new PowerVar<RainDarkPower>(3m)
+    ];
+
+    // 显示卡牌给予的能力介绍
+    public override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        HoverTipFactory.FromPower<IntangiblePower>(),
+        HoverTipFactory.FromPower<RainDarkPower>()
+    ];
+
+    public RainDark() : base(
+        baseCost: 3,
+        type: CardType.Skill,
+        rarity: CardRarity.Ancient,
+        target: TargetType.AllAllies
+    )
+    {
+    }
+
+    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        var teammates = CombatState!.GetTeammatesOf(Owner.Creature)
+            .Where(c => c != null && c.IsAlive && c.IsPlayer)
+            .ToList();
+
+        foreach (var teammate in teammates)
+        {
+            await CreatureCmd.SetCurrentHp(teammate, 10m);
+            await PowerCmd.Apply<IntangiblePower>(teammate, 3m, Owner.Creature, this);
+            await PowerCmd.Apply<RainDarkPower>(teammate, 3m, Owner.Creature, this);
+            
+            var player = teammate.Player;
+            if (player != null && player.PlayerCombatState != null)
+            {
+                int currentEnergy = player.PlayerCombatState.Energy;
+                if (currentEnergy > 0)
+                {
+                    await PlayerCmd.GainEnergy(currentEnergy, player);
+                }
+
+                var hand = MegaCrit.Sts2.Core.Entities.Cards.PileType.Hand.GetPile(player);
+                int cardsToDraw = 10 - hand.Cards.Count;
+                if (cardsToDraw > 0)
+                {
+                    await CardPileCmd.Draw(choiceContext, cardsToDraw, player);
+                }
+            }
+        }
+    }
+
+    public override void OnUpgrade()
+    {
+        AddKeyword(CardKeyword.Retain);
+    }
+}
+```
+
+**注意事项**：
+- `ExtraHoverTips` 属性会在卡牌悬停时显示在卡牌描述下方
+- 对于给予能力的卡牌，强烈建议添加对应的能力 HoverTips
+- 对于包含格挡、能量等效果的卡牌，可以添加对应的静态图标提示
+- HoverTips 会按照列表顺序依次显示
+
 ## 自定义角色 (CustomCharacterModel)
 
 继承 `CustomCharacterModel` 来创建自定义角色：
@@ -186,6 +309,31 @@ public override CustomEnergyCounter? CustomEnergyCounter => new(
 - `pathFunc`：`Func<int, string>` - 根据层数（1-5）返回对应贴图路径
 - `outlineColor`：`Color` - 轮廓颜色
 - `burstColor`：`Color` - 能量爆发粒子颜色
+
+### SetupAnimationState 静态方法
+
+`SetupAnimationState` 是一个静态辅助方法，用于简化动画状态设置：
+
+```csharp
+public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller)
+{
+    return SetupAnimationState(
+        controller,
+        idleName: "idle",           // 待机动画名称
+        idleLoop: true,             // 待机动画是否循环
+        deadName: "dead",           // 死亡动画名称
+        deadLoop: false,            // 死亡动画是否循环
+        hitName: "hit",             // 受击动画名称
+        hitLoop: false,             // 受击动画是否循环
+        attackName: "attack",       // 攻击动画名称
+        attackLoop: false,          // 攻击动画是否循环
+        castName: "cast",           // 施法动画名称
+        castLoop: false,            // 施法动画是否循环
+        relaxedName: "relaxed",     // 放松动画名称
+        relaxedLoop: true           // 放松动画是否循环
+    );
+}
+```
 
 ## 自定义遗物 (CustomRelicModel)
 
@@ -608,6 +756,60 @@ private void FinishEvent()
 **自定义场景**：
 - 场景文件应放在 `res://MyMod/scenes/ancients/` 目录
 - 需要配合 Harmony 补丁修改 `EventModel.BackgroundScenePath` 属性
+
+### AncientOption 工具
+
+`AncientOption` 是先古之民选项的抽象类：
+
+```csharp
+using BaseLib.Utils;
+
+// 从遗物创建基础选项（隐式转换）
+AncientOption option = ModelDb.Relic<MyRelic>();
+
+// 创建带权重的选项
+var weightedOption = new AncientOption<MyRelic>(weight: 2);
+
+// 创建带预处理和变体的选项
+var advancedOption = new AncientOption<MyRelic>(weight: 1)
+{
+    ModelPrep = relic => relic.Setup(),
+    Variants = relic => new[] { relic, relic.UpgradedVersion }
+};
+```
+
+**AncientOption 属性**：
+
+| 属性 | 描述 |
+|------|------|
+| `Weight` | 选项权重，影响随机选择概率 |
+| `AllVariants` | 所有变体遗物列表 |
+| `ModelForOption` | 当前选项对应的遗物模型 |
+| `ModelPrep` | 遗物预处理函数 |
+| `Variants` | 变体生成函数 |
+
+### OptionPools 构造
+
+`OptionPools` 有三种构造方式：
+
+```csharp
+using BaseLib.Utils;
+
+// 方式1：三个独立池（每个选项使用独立池）
+var pools1 = new OptionPools(pool1, pool2, pool3);
+
+// 方式2：两个池（前两个选项共用一个池）
+var pools2 = new OptionPools(pool12, pool3);
+
+// 方式3：单个池（所有选项共用一个池）
+var pools3 = new OptionPools(pool);
+
+// 获取所有选项
+var allOptions = pools.AllOptions;
+
+// 随机抽取选项
+var selectedOptions = pools.Roll(rng);
+```
 
 ## 自定义药水池 (CustomPotionPoolModel)
 

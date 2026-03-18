@@ -256,3 +256,101 @@ var availableCards = ModelDb.CardPool<ColorlessCardPool>()
 3. **需要玩家选择的卡牌**：使用 `PlayerChoiceSynchronizer` 同步
 4. **效果只执行一次**：使用 `LocalContext.IsMe` 检查
 5. **全局效果**：不需要检查 `IsMe`，会自动同步
+
+## 模组互操作 (ModInterop)
+
+### 创建软依赖
+
+使用 `ModInterop` 创建对其他模组的软依赖：
+
+```csharp
+using BaseLib.Utils.ModInterop;
+
+[ModInterop("OtherModId")]
+public class OtherModInterop : InteropClassWrapper
+{
+    [InteropTarget]
+    public static Type? OtherModCardType { get; set; }
+
+    public static CardModel? GetOtherModCard()
+    {
+        if (OtherModCardType == null) return null;
+        return Activator.CreateInstance(OtherModCardType) as CardModel;
+    }
+}
+```
+
+### 检查依赖状态
+
+```csharp
+// 检查目标模组是否加载
+if (OtherModInterop.IsLoaded)
+{
+    var card = OtherModInterop.GetOtherModCard();
+    // 使用 card...
+}
+```
+
+### 最佳实践
+
+1. **始终检查 null**：使用互操作目标前检查是否为 null
+2. **使用 IsLoaded**：检查目标模组是否已加载
+3. **提供降级方案**：目标模组不存在时提供替代功能
+4. **文档说明**：在模组说明中标注可选依赖
+
+## IL 补丁最佳实践
+
+### 使用 InstructionPatcher
+
+推荐使用 BaseLib 提供的 `InstructionPatcher` 简化 Transpiler：
+
+```csharp
+using BaseLib.Utils.Patching;
+using HarmonyLib;
+
+[HarmonyTranspiler]
+public static IEnumerable<CodeInstruction> MyTranspiler(IEnumerable<CodeInstruction> instructions)
+{
+    var patcher = new InstructionPatcher(instructions);
+
+    while (patcher.Find(new IMatcher[]
+    {
+        InstructionMatcher.OpCode(OpCodes.Call, oldMethod)
+    }))
+    {
+        patcher.GetLabels(out var labels);
+        patcher.Replace(new CodeInstruction(OpCodes.Call, newMethod).WithLabels(labels));
+    }
+
+    return patcher;
+}
+```
+
+### 保留标签
+
+修改指令时务必保留标签，否则可能导致跳转错误：
+
+```csharp
+patcher.GetLabels(out var labels);
+patcher.Replace(new CodeInstruction(...).WithLabels(labels));
+```
+
+### 调试 IL 补丁
+
+1. **使用日志输出指令**：
+```csharp
+foreach (var instr in instructions)
+{
+    MainFile.Logger.Debug($"{instr.opcode} {instr.operand}");
+}
+```
+
+2. **使用 dnSpy 或 ILSpy**：查看原始方法的 IL 代码
+
+3. **逐步调试**：先匹配再修改，确认位置正确
+
+### 常见问题
+
+1. **标签丢失**：使用 `GetLabels` 保留标签
+2. **匹配失败**：检查操作码和操作数是否正确
+3. **堆栈不平衡**：确保指令序列的堆栈操作正确

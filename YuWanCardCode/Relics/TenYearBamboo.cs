@@ -14,8 +14,18 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class TenYearBamboo : YuWanRelicModel
 {
+    private int _blockBonus = 1;
+
     [SavedProperty]
-    public int BlockBonus { get; set; } = 1;
+    public int BlockBonus
+    {
+        get => _blockBonus;
+        set
+        {
+            _blockBonus = value;
+            DynamicVars["BlockBonus"].BaseValue = value;
+        }
+    }
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 
@@ -43,16 +53,14 @@ public class TenYearBamboo : YuWanRelicModel
         }
         if (room.RoomType == RoomType.Elite)
         {
-            BlockBonus += 2;
+            BlockBonus += 1;
             Flash();
-            DynamicVars["BlockBonus"].BaseValue = BlockBonus;
             MainFile.Logger.Info($"TenYearBamboo: Elite defeated, block bonus increased to {BlockBonus}");
         }
         else if (room.RoomType == RoomType.Boss)
         {
-            BlockBonus += 5;
+            BlockBonus += 3;
             Flash();
-            DynamicVars["BlockBonus"].BaseValue = BlockBonus;
             MainFile.Logger.Info($"TenYearBamboo: Boss defeated, block bonus increased to {BlockBonus}");
         }
 

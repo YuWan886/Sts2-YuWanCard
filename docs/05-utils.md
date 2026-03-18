@@ -1,5 +1,73 @@
 # 工具类
 
+## 扩展方法
+
+BaseLib 提供了多个扩展方法类，简化常见操作：
+
+### ActModelExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 获取章节编号（1/2/3）
+int actNumber = actModel.ActNumber();
+```
+
+### DynamicVarExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 为变量添加提示框
+var myVar = new PersistVar(2).WithTooltip();
+
+// 计算格挡值（考虑各种加成）
+decimal block = blockVar.CalculateBlock(creature, ValueProp.None, cardPlay, card);
+```
+
+### StringExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 移除 ID 前缀
+string id = "MYMOD-MY_CARD".RemovePrefix(); // 返回 "MY_CARD"
+```
+
+### TypePrefix
+
+```csharp
+using BaseLib.Extensions;
+
+// 获取类型的前缀（基于命名空间）
+string prefix = typeof(MyCard).GetPrefix();
+
+// 获取根命名空间
+string rootNs = typeof(MyCard).GetRootNamespace();
+```
+
+### IEnumerableExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 格式化为可读字符串
+var items = new[] { "a", "b", "c" };
+string readable = items.AsReadable(); // "a, b, c"
+
+// 带行号的输出
+string numbered = items.NumberedLines();
+```
+
+### FloatExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 根据快速模式调整时间
+float delay = 0.5f.OrFast(); // 快速模式下返回更小的值
+```
+
 ## GodotUtils
 
 用于处理 Godot 节点和场景：
@@ -285,4 +353,117 @@ public class CustomModelRegistrationPatch
         }
     }
 }
+```
+
+## IL 补丁工具 (Patching)
+
+BaseLib 提供了 IL 指令匹配和修补工具，简化 Transpiler 编写：
+
+### InstructionMatcher
+
+流式 API 匹配 IL 指令序列：
+
+```csharp
+using BaseLib.Utils.Patching;
+using HarmonyLib;
+
+// 创建匹配器
+var matcher = new InstructionMatcher(codeInstructions);
+
+// 匹配指令序列
+matcher
+    .Match(OpCodes.Ldarg_0)
+    .Match(OpCodes.Call, AccessTools.Method(typeof(SomeClass), "SomeMethod"))
+    .Match(OpCodes.Stloc_0);
+
+// 获取匹配位置
+int position = matcher.Pos;
+```
+
+### InstructionPatcher
+
+IL 指令修补器：
+
+```csharp
+using BaseLib.Utils.Patching;
+using HarmonyLib;
+
+public static IEnumerable<CodeInstruction> MyTranspiler(IEnumerable<CodeInstruction> instructions)
+{
+    var patcher = new InstructionPatcher(instructions);
+
+    // 查找并替换
+    while (patcher.Find(
+        new IMatcher[] { InstructionMatcher.OpCode(OpCodes.Call, someMethod) }))
+    {
+        // 获取标签
+        patcher.GetLabels(out var labels);
+
+        // 替换指令
+        patcher.Replace(new CodeInstruction(OpCodes.Call, myMethod).WithLabels(labels));
+    }
+
+    return patcher;
+}
+```
+
+**InstructionPatcher 关键方法**：
+
+| 方法 | 描述 |
+|------|------|
+| `Find(params IMatcher[])` | 查找匹配的指令序列 |
+| `Step(int amt)` | 移动位置 |
+| `GetLabels(out List<Label>)` | 获取当前位置的标签 |
+| `Insert(IEnumerable<CodeInstruction>)` | 插入指令 |
+| `Replace(CodeInstruction)` | 替换当前指令 |
+| `Remove()` | 移除当前指令 |
+
+### IMatcher 接口
+
+自定义指令匹配器：
+
+```csharp
+public interface IMatcher
+{
+    bool Matches(CodeInstruction instruction);
+}
+```
+
+**内置匹配器**：
+- `InstructionMatcher.OpCode(opCode)`：匹配操作码
+- `InstructionMatcher.OpCode(opCode, operand)`：匹配操作码和操作数
+- `InstructionMatcher.Call(method)`：匹配方法调用
+
+### HarmonyExtensions
+
+用于补丁异步方法的扩展：
+
+```csharp
+using BaseLib.Extensions;
+
+// 补丁异步方法
+harmony.PatchAsyncMoveNext(typeof(MyClass), "MyAsyncMethod");
+```
+
+## GeneratedNodePool
+
+自定义节点池工具，用于不使用场景文件的池化对象：
+
+```csharp
+using BaseLib.Utils;
+
+public class MyPooledNode : Node
+{
+    public static readonly GeneratedNodePool<MyPooledNode> Pool = new(() => new MyPooledNode());
+
+    public void Reset()
+    {
+        // 重置节点状态
+    }
+}
+
+// 使用
+var node = MyPooledNode.Pool.Get();
+// ... 使用节点 ...
+MyPooledNode.Pool.Return(node);
 ```

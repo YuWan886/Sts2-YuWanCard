@@ -1,5 +1,62 @@
 # 扩展功能
 
+## 模组互操作 (ModInterop)
+
+BaseLib 提供了模组间互操作系统，允许模组之间进行软依赖交互：
+
+### 创建互操作类
+
+```csharp
+using BaseLib.Utils.ModInterop;
+
+[ModInterop("OtherModId")]
+public class OtherModInterop : InteropClassWrapper
+{
+    [InteropTarget]
+    public static MethodInfo? SomeMethod { get; set; }
+
+    [InteropTarget]
+    public static Type? SomeType { get; set; }
+
+    public static void DoSomething()
+    {
+        if (SomeMethod != null)
+        {
+            SomeMethod.Invoke(null, new object[] { "arg" });
+        }
+    }
+}
+```
+
+**特性说明**：
+
+| 特性 | 用途 |
+|------|------|
+| `[ModInterop("ModId")]` | 标记互操作类，指定目标模组 ID |
+| `[InteropTarget]` | 标记互操作目标（方法、类型等） |
+
+### 使用互操作
+
+```csharp
+// 检查目标模组是否加载
+if (OtherModInterop.IsLoaded)
+{
+    OtherModInterop.DoSomething();
+}
+
+// 获取目标模组的类型
+var targetType = OtherModInterop.SomeType;
+if (targetType != null)
+{
+    var instance = Activator.CreateInstance(targetType);
+}
+```
+
+**重要说明**：
+- ModInterop 使用软依赖，目标模组不存在时不会报错
+- 互操作类会在目标模组加载时自动绑定
+- 使用前检查 `IsLoaded` 或目标是否为 null
+
 ## 自定义卡牌变量
 
 你可以创建自己的动态变量：
@@ -230,4 +287,151 @@ MyCustomField.Set(creature, 10);
 var value = MyCustomField.Get(creature);
 
 MyCustomField[creature] = 20;
+```
+
+## IL 补丁工具
+
+BaseLib 提供了简化 Transpiler 编写的工具：
+
+### InstructionPatcher 示例
+
+```csharp
+using BaseLib.Utils.Patching;
+using HarmonyLib;
+
+[HarmonyPatch(typeof(TargetClass), nameof(TargetClass.TargetMethod))]
+public class MyTranspilerPatch
+{
+    [HarmonyTranspiler]
+    public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        var patcher = new InstructionPatcher(instructions);
+
+        // 查找并替换方法调用
+        while (patcher.Find(new IMatcher[]
+        {
+            InstructionMatcher.OpCode(OpCodes.Call, AccessTools.Method(typeof(TargetClass), "OldMethod"))
+        }))
+        {
+            patcher.GetLabels(out var labels);
+            patcher.Replace(new CodeInstruction(OpCodes.Call, 
+                AccessTools.Method(typeof(MyClass), "NewMethod")).WithLabels(labels));
+        }
+
+        return patcher;
+    }
+}
+```
+
+### 复杂匹配示例
+
+```csharp
+// 匹配多个指令序列
+while (patcher.Find(new IMatcher[]
+{
+    InstructionMatcher.OpCode(OpCodes.Ldarg_0),
+    InstructionMatcher.OpCode(OpCodes.Ldfld, someField),
+    InstructionMatcher.OpCode(OpCodes.Callvirt, someMethod)
+}))
+{
+    // 在匹配位置前插入代码
+    patcher.Step(-1);
+    patcher.Insert(new[]
+    {
+        new CodeInstruction(OpCodes.Ldarg_0),
+        new CodeInstruction(OpCodes.Call, myCheckMethod)
+    });
+}
+```
+
+### InstructionMatcher 流式 API
+
+```csharp
+var matcher = new InstructionMatcher(instructions);
+
+// 流式匹配
+if (matcher
+    .Match(OpCodes.Ldarg_0)
+    .Match(OpCodes.Call, methodA)
+    .Match(OpCodes.Stloc_0)
+    .Success)
+{
+    // 匹配成功，处理代码
+}
+```
+
+## 自定义牌堆 (CustomPile)
+
+继承 `CustomPile` 创建自定义牌堆：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyCustomPile : CustomPile
+{
+    public MyCustomPile(Player player) : base(player)
+    {
+    }
+
+    public override string PileName => "My Custom Pile";
+
+    // 自定义牌堆逻辑
+}
+```
+
+**使用 SpireField 存储自定义牌堆**：
+
+```csharp
+private static readonly SpireField<PlayerCombatState, MyCustomPile> MyPileField = new(() => null!);
+
+public static MyCustomPile GetMyPile(Player player)
+{
+    var pile = MyPileField.Get(player.PlayerCombatState);
+    if (pile == null)
+    {
+        pile = new MyCustomPile(player);
+        MyPileField.Set(player.PlayerCombatState, pile);
+    }
+    return pile;
+}
+```
+
+## IHealAmountModifier 接口
+
+实现 `IHealAmountModifier` 接口可以修改治疗量：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyHealModifier : IHealAmountModifier
+{
+    public decimal ModifyHealAdditive(Creature creature, decimal amount)
+    {
+        return amount + 5; // 额外治疗 5 点
+    }
+
+    public decimal ModifyHealMultiplicative(Creature creature, decimal amount)
+    {
+        return amount * 1.5m; // 治疗 150%
+    }
+}
+```
+
+**执行顺序**：
+1. `IHealAmountModifier.ModifyHealAdditive()`
+2. `AbstractModel.ModifyHealAmount()`
+3. `IHealAmountModifier.ModifyHealMultiplicative()`
+
+## 自定义能量图标池
+
+实现 `ICustomEnergyIconPool` 接口为卡牌池添加自定义能量图标：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyCardPool : CustomCardPoolModel, ICustomEnergyIconPool
+{
+    public string? BigEnergyIconPath => "res://MyMod/images/ui/energy_big.png";
+    public string? TextEnergyIconPath => "res://MyMod/images/ui/energy_text.png";
+}
 ```

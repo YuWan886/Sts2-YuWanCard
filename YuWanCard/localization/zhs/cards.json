@@ -23,5 +23,7 @@
   "YUWANCARD-SAD_ARMY_WIN.title": "哀兵必胜",
   "YUWANCARD-SAD_ARMY_WIN.description": "当你的血量处于10%以下，则击杀{IfUpgraded:show:所有|一名}敌人。",
   "YUWANCARD-REVIVE_KAI.title": "复活吧！",
-  "YUWANCARD-REVIVE_KAI.description": "复活一名已死亡的队友，并恢复其{IfUpgraded:show:100%|50%}最大生命值。"
+  "YUWANCARD-REVIVE_KAI.description": "复活一名已死亡的队友，并恢复其{IfUpgraded:show:100%|50%}最大生命值。",
+  "YUWANCARD-RAIN_DARK.title": "雨落狂流之暗",
+  "YUWANCARD-RAIN_DARK.description": "所有玩家血量变为10，获得{IntangiblePower:diff()}层[gold]无实体[/gold]，将当前能量翻倍，接下来{RainDarkPower:diff()}回合获得的能量翻倍，抽满手牌。"
 }

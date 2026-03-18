@@ -1,5 +1,8 @@
 {
   "YUWANCARD-PIG_DOUBT_POWER.title": "猪疑惑",
   "YUWANCARD-PIG_DOUBT_POWER.description": "每回合获得{Amount}个随机的[gold]能力[/gold]。",
-  "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "每回合获得{Amount}个随机的[gold]能力[/gold]。"
+  "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "每回合获得{Amount}个随机的[gold]能力[/gold]。",
+  "YUWANCARD-RAIN_DARK_POWER.title": "雨落狂流",
+  "YUWANCARD-RAIN_DARK_POWER.description": "获得的能量翻倍。",
+  "YUWANCARD-RAIN_DARK_POWER.smartDescription": "获得的能量翻倍。"
 }

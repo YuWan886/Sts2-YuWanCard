@@ -97,5 +97,53 @@ public class MyCustomRelic : CustomRelicModel
 - `CustomCardPoolModel`
 - `CustomRelicPoolModel`
 - `CustomPotionPoolModel`
+- `CustomPile`
+- `PlaceholderCharacterModel`
 
 **前缀生成规则**：前缀基于类型的命名空间生成。
+
+## PlaceholderCharacterModel
+
+`PlaceholderCharacterModel` 是一个占位角色模型，使用现有角色的资源：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyPlaceholderCharacter : PlaceholderCharacterModel
+{
+    public MyPlaceholderCharacter() : base(
+        baseCharacter: ModelDb.Character<Ironclad>(),
+        name: "My Character"
+    )
+    {
+        StartingHealth = 70;
+        StartingGold = 99;
+    }
+}
+```
+
+**用途**：
+- 快速创建使用现有角色视觉的自定义角色
+- 测试和原型开发
+- 不需要创建新视觉资源的情况
+
+## CustomPile
+
+`CustomPile` 是自定义牌堆基类：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyCustomPile : CustomPile
+{
+    public MyCustomPile(Player player) : base(player)
+    {
+    }
+
+    public override string PileName => "My Custom Pile";
+}
+```
+
+**用途**：
+- 创建特殊的卡牌存储区域
+- 实现自定义的卡牌管理逻辑

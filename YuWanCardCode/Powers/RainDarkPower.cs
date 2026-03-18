@@ -1,0 +1,67 @@
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
+
+namespace YuWanCard.Powers;
+
+public class RainDarkPower : YuWanPowerModel
+{
+    private Player? _subscribedPlayer;
+    private bool _isProcessing;
+
+    public override PowerType Type => PowerType.Buff;
+
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
+    {
+        var player = Owner.Player;
+        if (player != null && player.PlayerCombatState != null)
+        {
+            _subscribedPlayer = player;
+            player.PlayerCombatState.EnergyChanged += OnEnergyChanged;
+        }
+        return Task.CompletedTask;
+    }
+
+    public override Task AfterRemoved(Creature owner)
+    {
+        if (_subscribedPlayer != null && _subscribedPlayer.PlayerCombatState != null)
+        {
+            _subscribedPlayer.PlayerCombatState.EnergyChanged -= OnEnergyChanged;
+        }
+        return Task.CompletedTask;
+    }
+
+    private async void OnEnergyChanged(int oldEnergy, int newEnergy)
+    {
+        if (_isProcessing) return;
+
+        if (newEnergy > oldEnergy && _subscribedPlayer != null)
+        {
+            _isProcessing = true;
+            try
+            {
+                int gained = newEnergy - oldEnergy;
+                await PlayerCmd.GainEnergy(gained, _subscribedPlayer);
+            }
+            finally
+            {
+                _isProcessing = false;
+            }
+        }
+    }
+
+    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    {
+        if (side == Owner.Side)
+        {
+            await PowerCmd.TickDownDuration(this);
+        }
+    }
+}

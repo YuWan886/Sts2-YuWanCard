@@ -8,6 +8,6 @@
   "YUWANCARD-RING_OF_SEVEN_CURSES.flavor": "七道诅咒，七种力量。",
   "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText": "[gold][七咒之戒][/gold]回复最大生命值的[red]15%（{ActualHeal}）[/red]。",
   "YUWANCARD-TEN_YEAR_BAMBOO.title": "10年孤竹",
-  "YUWANCARD-TEN_YEAR_BAMBOO.description": "每回合开始获得{BlockBonus}层[gold]格挡[/gold]。击败精英敌人时，格挡层数+2。击败BOSS时，格挡层数+5。",
+  "YUWANCARD-TEN_YEAR_BAMBOO.description": "每回合开始获得{BlockBonus}层[gold]格挡[/gold]。击败精英敌人时，格挡层数+1。击败BOSS时，格挡层数+3。",
   "YUWANCARD-TEN_YEAR_BAMBOO.flavor": "10年孤竹，特性坚韧。"
 }
