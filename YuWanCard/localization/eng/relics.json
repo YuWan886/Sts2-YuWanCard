@@ -10,6 +10,6 @@
   "YUWANCARD-RING_OF_SEVEN_CURSES.flavor": "Seven curses, seven powers.",
   "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText": "[gold][Ring of Seven Curses][/gold] heal 15% of max HP ({ActualHeal}).",
   "YUWANCARD-TEN_YEAR_BAMBOO.title": "Ten Year Bamboo",
-  "YUWANCARD-TEN_YEAR_BAMBOO.description": "Gain {BlockBonus} [gold]Block[/gold] at the start of each turn. Defeating Elite enemies increases Block by 2. Defeating Bosses increases Block by 5.",
+  "YUWANCARD-TEN_YEAR_BAMBOO.description": "Gain {BlockBonus} [gold]Block[/gold] at the start of each turn. Defeating Elite enemies increases Block by 1. Defeating Bosses increases Block by 3.",
   "YUWANCARD-TEN_YEAR_BAMBOO.flavor": "Ten years of bamboo, tough and resilient."
 }

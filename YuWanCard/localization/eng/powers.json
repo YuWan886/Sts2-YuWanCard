@@ -1,8 +1,11 @@
 {
   "YUWANCARD-PIG_DOUBT_POWER.title": "Pig Doubt",
-  "YUWANCARD-PIG_DOUBT_POWER.description": "Gain {PigDoubtPower} random [gold]Powers[/gold] each turn.",
+  "YUWANCARD-PIG_DOUBT_POWER.description": "Gain 1 random [gold]Power[/gold] each turn.",
   "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "Gain {PigDoubtPower} random [gold]Powers[/gold] each turn.",
   "YUWANCARD-RAIN_DARK_POWER.title": "Rain Dark",
   "YUWANCARD-RAIN_DARK_POWER.description": "Energy gained is doubled.",
-  "YUWANCARD-RAIN_DARK_POWER.smartDescription": "Energy gained is doubled."
+  "YUWANCARD-RAIN_DARK_POWER.smartDescription": "Energy gained is doubled.",
+  "YUWANCARD-PIG_BANKRUPTCY_POWER.title": "Pig Bankruptcy",
+  "YUWANCARD-PIG_BANKRUPTCY_POWER.description": "All cards in hand cost 0 this turn, but they all have Exhaust.",
+  "YUWANCARD-PIG_BANKRUPTCY_POWER.smartDescription": "All cards in hand cost 0 this turn, but they all have Exhaust."
 }

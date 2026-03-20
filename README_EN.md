@@ -24,13 +24,20 @@
 | Pig Sleep | 3 | Rare | Skill | End turn, gain 10 Block, heal 5 HP |
 | Pig Sacrifice | 3 | Rare | Skill | Give 50% of HP and Block to target ally (Multiplayer) |
 | Pig Doubt | 3 | Rare | Power | Gain a random Power each turn |
-| You Already Crying | 1 | Uncommon | Skill | Apply 1 stack of Weak to an enemy, remove 50% of its Block |
+| Pig Slacking | 1 | Uncommon | Skill | Retain your hand this turn. Gain 2 Energy next turn |
+| Pig Bankruptcy | 0 | Rare | Skill | All cards in hand cost 0 this turn, but they all have Exhaust |
+| Pig Charge | 1 | Token | Attack | Deal 9 damage. Gain 1 Strength this turn |
+| Pig Barrage | 1 | Token | Attack | Deal 3 damage 3 times to an enemy |
+| Pig Shield Break | 1 | Token | Attack | Remove 50% of an enemy's Block and deal 5 damage |
+| Pig King | 0 | Rare | Skill | Choose 3 cards from your hand, transform them into Pig Charge, Pig Barrage, and Pig Shield Break. Exhaust |
+| You Are Crying | 1 | Uncommon | Skill | Apply 1 stack of Weak to an enemy, remove 50% of its Block |
 | I Give You | 1 | Uncommon | Skill | Choose a card from hand to give to target ally (Multiplayer) |
-| I Already Crying | 3 | Uncommon | Power | All players gain 2 energy |
+| I Am Crying | 3 | Uncommon | Power | All players gain 2 energy |
 | Melancholy Is A Feeling | 2 | Rare | Skill | Gain Block equal to current HP |
-| Sad Soldiers Win | 3 | Rare | Skill | Kill an enemy when HP is below 10% |
-| Resurrect! | 4 | Rare | Skill | Resurrect a dead ally with 50% max HP (Multiplayer) |
+| Sad Army Wins | 3 | Rare | Skill | Kill an enemy when HP is below 10% |
+| Revive! | 4 | Rare | Skill | Resurrect a dead ally with 50% max HP (Multiplayer) |
 | Rain Dark | 2 | Ancient | Skill | Set all players' HP to 6, gain 3 stacks of Intangible, double current energy, double energy gained for next 3 turns, draw full hand, Exhaust |
+| Ten Thousand Swords | 1 | Uncommon | Skill | Stack all other players' Forge Points onto yourself, then clear other players' Forge Points. Exhaust (Multiplayer) |
 
 ### Powers
 
@@ -38,13 +45,14 @@
 |------|--------|
 | Pig Doubt | Gain random Power each turn |
 | Rain Dark | Double energy gained |
+| Pig Bankruptcy | All cards in hand cost 0 this turn, but they all have Exhaust |
 
 ### Relics
 
 | Name | Type | Rarity | Effect |
 |------|------|--------|--------|
-| Seven Curses Ring | Ancient | Ancient | Take +50% damage, -25% damage to non-BOSS, -20% Block, -50% gold, -50% rest site heal, gain Curse card each turn, -25% max HP after killing BOSS; +1 energy, +1 draw, +1 potion slot, +1 card reward, +50% damage to BOSS, chance for normal enemies to drop relics, can ignore path selection |
-| 10 Year Lone Bamboo | Shared | Uncommon | Gain 1 Block at start of each turn. +1 Block stack when defeating Elite, +3 Block stacks when defeating BOSS |
+| Ring of Seven Curses | Ancient | Ancient | Take +50% damage, -25% damage to non-BOSS, -20% Block, -50% gold, -50% rest site heal, gain Curse card each turn, -25% max HP after killing BOSS; +1 energy, +1 draw, +1 potion slot, +1 card reward, +50% damage to BOSS, chance for normal enemies to drop relics, can ignore path selection |
+| Ten Year Bamboo | Shared | Uncommon | Gain 1 Block at start of each turn. +1 Block stack when defeating Elite, +3 Block stacks when defeating BOSS |
 
 ### Ancient One
 

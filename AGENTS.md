@@ -1,18 +1,20 @@
 ### 项目概述
 
-YuWanCard 是一个基于 BaseLib 框架开发的 Slay the Spire 2 模组，实现了 13 张无色卡牌、2 个能力效果和 1 个先古之民遗物。
+YuWanCard 是一个基于 BaseLib 框架开发的 Slay the Spire 2 模组，实现了 20 张无色卡牌、4 个能力效果、2 个遗物、1 个先古之民和 1 个 Neow 事件选项。
 
 **模组信息**：
 - ID: `YuWanCard`
-- 版本: `v0.1.2`
+- 版本: `v0.2.0`
 - 作者: `一条鱼丸_`
 - 依赖: `BaseLib`
 
 **内容概览**：
-- 13 张无色卡牌（包含猪主题卡牌、雨落狂流之暗等）
-- 2 个能力（猪疑惑、雨落狂流）
-- 1 个先古之民遗物（七咒之戒）
+- 20 张无色卡牌（包含猪主题卡牌、雨落狂流之暗等）
+- 4 个能力（猪疑惑、雨落狂流、猪破产、猪冲锋力量）
+- 2 个遗物（七咒之戒、10年孤竹）
+- 1 个先古之民（猪猪）
 - 1 个 Neow 事件选项（七咒之戒 modifier）
+- 1 个无尽模式 modifier
 
 ### 环境设置
 
@@ -44,8 +46,7 @@ YuWanCard/
 │   └── mod_image.png          # 模组图标
 ├── YuWanCardCode/             # 模组源代码目录
 │   ├── Cards/                 # 卡牌定义
-│   │   ├── RainDark.cs        # 雨落狂流之暗卡牌
-│   │   ├── Pig*.cs            # 猪主题卡牌
+│   │   ├── xxx.cs             # xxxxx卡牌
 │   │   └── YuWanCardModel.cs  # 卡牌基类
 │   ├── Powers/                # 能力定义
 │   │   ├── xxx.cs             # xxxxx能力
@@ -112,7 +113,7 @@ YuWanCard/
 
 3. **本地化**：
    - 使用游戏的本地化系统
-   - 本地化文件位于 `YuWanCard/localization/zhs/`
+   - 本地化文件位于 `YuWanCard/localization/zhs/` 和 `YuWanCard/localization/eng/`
    - 卡牌本地化键格式：`{ModId}-{CardId}.title` / `.description` / `.selectionScreenPrompt`（选择界面提示）
    - 能力本地化键格式：`{ModId}-{PowerId}.title` / `.description` / `.smartDescription`
    - 遗物本地化键格式：`{ModId}-{RelicId}.title` / `.description` / `.flavor` / `.additionalRestSiteHealText`（额外文本）
