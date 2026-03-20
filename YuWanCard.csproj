@@ -61,7 +61,8 @@
         <!-- Diasble architecture mismatch warning; mods are ideally built for all platforms (MSIL)
              while your local StS2 version will be for your specific platform. -->
         <!-- CS0436: Godot generated Main conflicts with sts2.dll Main type -->
-        <NoWarn>$(NoWarn);MSB3270;CS0436</NoWarn>
+        <!-- CS9057: Analyzer assembly references newer compiler version -->
+        <NoWarn>$(NoWarn);MSB3270;CS0436;CS9057</NoWarn>
     </PropertyGroup>
 
     <ItemGroup Condition="Exists('$(Sts2DataDir)')" >

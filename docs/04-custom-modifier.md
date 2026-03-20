@@ -111,6 +111,8 @@ public class GoodModifiersPatch
 }
 ```
 
+**注意**：BaseLib 会自动处理 `SavedProperty` 的注册，无需手动注入到 `SavedPropertiesTypeCache`。
+
 ## Modifier 本地化
 
 本地化文件格式（`modifiers.json`）：

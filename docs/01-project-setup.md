@@ -20,6 +20,20 @@
 }
 ```
 
+**BaseLib 核心功能**：
+- `CustomCardModel`：自定义卡牌基类
+- `CustomCharacterModel`：自定义角色基类
+- `CustomRelicModel`：自定义遗物基类
+- `CustomPowerModel`：自定义能力基类
+- `CustomPotionModel`：自定义药水基类
+- `CustomAncientModel`：自定义先古之民基类
+- `PoolAttribute`：内容池属性标记
+- `CommonActions`：常用游戏动作工具
+- `GodotUtils`：Godot 节点和场景处理工具
+- `ShaderUtils`：着色器生成工具
+- `WeightedList`：加权随机列表
+- `SpireField`：Harmony 自定义字段
+
 ## 基本结构
 
 推荐的项目结构：
@@ -83,6 +97,28 @@ public class MyCustomRelic : CustomRelicModel
 
 **注意**：使用卡牌池类型时需要引入命名空间 `MegaCrit.Sts2.Core.Models.CardPools`。
 
+## ICustomEnergyIconPool 接口
+
+`ICustomEnergyIconPool` 接口用于为自定义卡牌池添加自定义能量图标：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyCardPool : CustomCardPoolModel, ICustomEnergyIconPool
+{
+    public string? BigEnergyIconPath => "res://MyMod/images/ui/energy_big.png";
+    public string? TextEnergyIconPath => "res://MyMod/images/ui/energy_text.png";
+    public string? EnergyColorName => "my_custom_energy";
+}
+```
+
+**属性说明**：
+| 属性 | 说明 |
+|------|------|
+| `BigEnergyIconPath` | 大能量图标路径 |
+| `TextEnergyIconPath` | 文本能量图标路径 |
+| `EnergyColorName` | 能量颜色名称 |
+
 ## ICustomModel 接口
 
 `ICustomModel` 是一个标记接口，用于确定是否需要添加模组前缀到 ID。BaseLib 会自动为所有实现此接口的模型添加模组前缀，确保不同模组的内容不会冲突。
@@ -101,6 +137,30 @@ public class MyCustomRelic : CustomRelicModel
 - `PlaceholderCharacterModel`
 
 **前缀生成规则**：前缀基于类型的命名空间生成。
+
+## ICustomPower 接口
+
+`ICustomPower` 接口用于为能力类提供自定义图标路径。如果你的能力需要继承自其他能力类（而不是直接继承 `PowerModel`），可以实现此接口：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyCustomPower : SomeOtherPower, ICustomPower
+{
+    public string? CustomPackedIconPath => "res://MyMod/images/powers/my_power.png";
+    public string? CustomBigIconPath => "res://MyMod/images/powers/my_power.png";
+    public string? CustomBigBetaIconPath => null;
+}
+```
+
+**属性说明**：
+| 属性 | 说明 |
+|------|------|
+| `CustomPackedIconPath` | 小图标路径（64x64 像素） |
+| `CustomBigIconPath` | 大图标路径（256x256 像素） |
+| `CustomBigBetaIconPath` | Beta 版大图标路径（256x256 像素） |
+
+**说明**：`CustomPowerModel` 同时继承了 `PowerModel` 和 `ICustomPower`，适合大多数情况。`ICustomPower` 接口适合需要继承其他能力类的情况。
 
 ## PlaceholderCharacterModel
 

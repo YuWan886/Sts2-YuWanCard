@@ -1,89 +1,5 @@
 # 工具类
 
-## 扩展方法
-
-BaseLib 提供了多个扩展方法类，简化常见操作：
-
-### ActModelExtensions
-
-```csharp
-using BaseLib.Extensions;
-
-// 获取章节编号（1/2/3）
-int actNumber = actModel.ActNumber();
-```
-
-### DynamicVarExtensions
-
-```csharp
-using BaseLib.Extensions;
-
-// 为变量添加提示框
-var myVar = new PersistVar(2).WithTooltip();
-
-// 计算格挡值（考虑各种加成）
-decimal block = blockVar.CalculateBlock(creature, ValueProp.None, cardPlay, card);
-```
-
-### StringExtensions
-
-```csharp
-using BaseLib.Extensions;
-
-// 移除 ID 前缀
-string id = "MYMOD-MY_CARD".RemovePrefix(); // 返回 "MY_CARD"
-```
-
-### TypePrefix
-
-```csharp
-using BaseLib.Extensions;
-
-// 获取类型的前缀（基于命名空间）
-string prefix = typeof(MyCard).GetPrefix();
-
-// 获取根命名空间
-string rootNs = typeof(MyCard).GetRootNamespace();
-```
-
-### IEnumerableExtensions
-
-```csharp
-using BaseLib.Extensions;
-
-// 格式化为可读字符串
-var items = new[] { "a", "b", "c" };
-string readable = items.AsReadable(); // "a, b, c"
-
-// 带行号的输出
-string numbered = items.NumberedLines();
-```
-
-### FloatExtensions
-
-```csharp
-using BaseLib.Extensions;
-
-// 根据快速模式调整时间
-float delay = 0.5f.OrFast(); // 快速模式下返回更小的值
-```
-
-## GodotUtils
-
-用于处理 Godot 节点和场景：
-
-```csharp
-using BaseLib.Utils;
-
-var visuals = GodotUtils.CreatureVisualsFromScene("res://scenes/creature_visuals/my_character.tscn");
-
-var node = new MyNode().TransferAllNodes("res://scenes/my_scene.tscn", "Node1", "Node2");
-```
-
-**方法说明**：
-- `CreatureVisualsFromScene(string path)`：从场景创建生物视觉节点
-- `TransferAllNodes<T>(this T obj, string sourceScene, params string[] uniqueNames)`：转移节点
-
 ## CommonActions
 
 提供一些常见的游戏动作：
@@ -125,10 +41,196 @@ var selectedCards = await CommonActions.SelectCards(card, selectionPrompt, conte
 var selectedCard = await CommonActions.SelectSingleCard(card, selectionPrompt, context, PileType.Hand);
 ```
 
-**攻击命令目标类型**：
+### CardAttack 攻击命令
+
+| 重载方法 | 说明 |
+|----------|------|
+| `CardAttack(CardModel, CardPlay, int hitCount, string? vfx, string? sfx, string? tmpSfx)` | 从 CardPlay 获取目标 |
+| `CardAttack(CardModel, Creature?, int hitCount, string? vfx, string? sfx, string? tmpSfx)` | 指定目标，自动获取伤害值 |
+| `CardAttack(CardModel, Creature?, decimal damage, int hitCount, string? vfx, string? sfx, string? tmpSfx)` | 指定目标和伤害值 |
+
+**支持的目标类型**：
 - `TargetType.AnyEnemy`：单个敌人
 - `TargetType.AllEnemies`：所有敌人
 - `TargetType.RandomEnemy`：随机敌人
+
+**不支持的目标类型**：`TargetType.Self`、`TargetType.AllAllies` 等非攻击目标类型
+
+### 其他方法
+
+| 方法 | 说明 |
+|------|------|
+| `CardBlock(CardModel, CardPlay)` | 获得格挡 |
+| `CardBlock(CardModel, BlockVar, CardPlay)` | 使用自定义格挡值 |
+| `Draw(CardModel, PlayerChoiceContext)` | 抽取 DynamicVars.Cards 指定数量的牌 |
+| `Apply<T>(Creature, CardModel?, decimal, bool silent)` | 给目标应用能力 |
+| `ApplySelf<T>(CardModel, decimal, bool silent)` | 给自己应用能力 |
+| `SelectCards(CardModel, LocString, PlayerChoiceContext, PileType, int)` | 选择指定数量的卡牌 |
+| `SelectCards(CardModel, LocString, PlayerChoiceContext, PileType, int minCount, int maxCount)` | 选择范围内的卡牌 |
+| `SelectSingleCard(CardModel, LocString, PlayerChoiceContext, PileType)` | 选择单张卡牌 |
+
+## 扩展方法
+
+BaseLib 提供了多个扩展方法类，简化常见操作：
+
+### ActModelExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 获取章节编号（1/2/3，-1 表示未知）
+int actNumber = actModel.ActNumber();
+```
+
+### DynamicVarExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 为变量添加提示框（自动生成本地化键 {PREFIX}-{VAR_NAME}）
+var myVar = new PersistVar(2).WithTooltip();
+
+// 为变量添加提示框（自定义本地化键）
+var myVar = new PersistVar(2).WithTooltip("CUSTOM_KEY", "my_table");
+
+// 计算格挡值（考虑各种加成）
+decimal block = blockVar.CalculateBlock(creature, ValueProp.None, cardPlay, card);
+```
+
+### StringExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 移除 ID 前缀（格式：PREFIX-ORIGINALID → ORIGINALID）
+string id = "MYMOD-MY_CARD".RemovePrefix(); // 返回 "MY_CARD"
+```
+
+### TypePrefix
+
+```csharp
+using BaseLib.Extensions;
+
+// 获取类型的前缀（基于命名空间，格式：NAMESPACE-）
+string prefix = typeof(MyCard).GetPrefix();
+
+// 获取根命名空间
+string rootNs = typeof(MyCard).GetRootNamespace();
+```
+
+### IEnumerableExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 格式化为可读字符串
+var items = new[] { "a", "b", "c" };
+string readable = items.AsReadable(); // "a,b,c"
+string readableWithSeparator = items.AsReadable(" | "); // "a | b | c"
+
+// 带行号的输出
+string numbered = items.NumberedLines();
+// 输出:
+// 0: a
+// 1: b
+// 2: c
+```
+
+### FloatExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 根据快速模式调整时间
+float delay = 0.5f.OrFast();
+// 普通模式: 0.5f
+// 快速模式: 0.15f
+// 瞬间模式: 0.01f
+```
+
+### HarmonyExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 补丁异步方法（异步方法需要补丁其状态机的 MoveNext）
+harmony.PatchAsyncMoveNext(
+    asyncMethod,
+    prefix: new HarmonyMethod(typeof(MyPatch), "Prefix"),
+    postfix: new HarmonyMethod(typeof(MyPatch), "Postfix")
+);
+
+// 获取异步方法的状态机类型
+harmony.PatchAsyncMoveNext(asyncMethod, out Type stateMachineType, ...);
+```
+
+### PublicPropExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 检查是否为有能量的攻击
+bool isPoweredAttack = props.IsPoweredAttack_();
+
+// 检查是否为卡牌或怪物移动
+bool isMove = props.IsCardOrMonsterMove_();
+```
+
+### MethodInfoExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 获取异步方法的状态机类型
+Type stateMachineType = asyncMethod.StateMachineType();
+```
+
+### TypeExtensions
+
+```csharp
+using BaseLib.Extensions;
+
+// 在状态机类中查找指定名称的字段
+FieldInfo field = stateMachineType.FindStateMachineField("myVariable");
+// 查找名为 "<myVariable>5__2" 或 "myVariable" 的字段
+```
+
+## GodotUtils
+
+用于处理 Godot 节点和场景：
+
+```csharp
+using BaseLib.Utils;
+
+// 从场景创建生物视觉节点
+var visuals = GodotUtils.CreatureVisualsFromScene("res://scenes/creature_visuals/my_character.tscn");
+
+// 转移节点（扩展方法）
+var node = new MyNode().TransferAllNodes("res://scenes/my_scene.tscn", "Node1", "Node2");
+```
+
+### 方法说明
+
+| 方法 | 说明 |
+|------|------|
+| `CreatureVisualsFromScene(string path)` | 从场景创建生物视觉节点 |
+| `TransferAllNodes<T>(this T, string, params string[])` | 从源场景转移指定节点到目标节点 |
+
+### TransferAllNodes 详细说明
+
+```csharp
+// 从场景转移节点到当前节点
+var customNode = new CustomNode()
+    .TransferAllNodes("res://scenes/Template.tscn", "Visuals", "Bounds", "IntentPos");
+```
+
+**功能**：
+- 设置目标节点名称
+- 转移指定的子节点
+- 设置 `UniqueNameInOwner` 属性
+- 递归设置所有子节点的 Owner
+- 记录缺失的必需节点（警告日志）
+- 释放源节点
 
 ## 常用命令 (Cmd)
 

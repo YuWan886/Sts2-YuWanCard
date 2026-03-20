@@ -7,31 +7,29 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
-using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace YuWanCard.Cards;
 
 [Pool(typeof(ColorlessCardPool))]
-public class PigSleep : YuWanCardModel
+public class PigTouchFish : YuWanCardModel
 {
     public override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
-        HoverTipFactory.Static(StaticHoverTip.Block),
-        base.EnergyHoverTip
+        HoverTipFactory.FromKeyword(CardKeyword.Retain),
+        HoverTipFactory.ForEnergy(this)
     ];
 
     public override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(10m, ValueProp.Move),
-        new HealVar(5m)
+        new PowerVar<RetainHandPower>(1m),
+        new PowerVar<EnergyNextTurnPower>(2m)
     ];
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
-    public PigSleep() : base(
-        baseCost: 3,
+    public PigTouchFish() : base(
+        baseCost: 1,
         type: CardType.Skill,
-        rarity: CardRarity.Rare,
+        rarity: CardRarity.Uncommon,
         target: TargetType.Self
     )
     {
@@ -39,15 +37,12 @@ public class PigSleep : YuWanCardModel
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CommonActions.CardBlock(this, cardPlay);
-        await CreatureCmd.Heal(Owner.Creature, DynamicVars.Heal.BaseValue);
-        PlayerCmd.EndTurn(Owner, canBackOut: false);
+        await PowerCmd.Apply<RetainHandPower>(Owner.Creature, DynamicVars["RetainHandPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<EnergyNextTurnPower>(Owner.Creature, DynamicVars["EnergyNextTurnPower"].BaseValue, Owner.Creature, this);
     }
 
     public override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
-        DynamicVars.Block.UpgradeValueBy(10m);
-        RemoveKeyword(CardKeyword.Exhaust);
     }
 }

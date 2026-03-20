@@ -2,6 +2,7 @@ using System.Reflection;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 
 namespace YuWanCard.Powers;
@@ -14,6 +15,8 @@ public class PigDoubtPower : YuWanPowerModel
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("PigDoubtPower", 1m)];
 
     public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
     {

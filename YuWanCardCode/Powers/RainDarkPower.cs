@@ -38,22 +38,25 @@ public class RainDarkPower : YuWanPowerModel
         return Task.CompletedTask;
     }
 
-    private async void OnEnergyChanged(int oldEnergy, int newEnergy)
+    private void OnEnergyChanged(int oldEnergy, int newEnergy)
     {
         if (_isProcessing) return;
 
         if (newEnergy > oldEnergy && _subscribedPlayer != null)
         {
-            _isProcessing = true;
-            try
+            _ = Task.Run(async () =>
             {
-                int gained = newEnergy - oldEnergy;
-                await PlayerCmd.GainEnergy(gained, _subscribedPlayer);
-            }
-            finally
-            {
-                _isProcessing = false;
-            }
+                _isProcessing = true;
+                try
+                {
+                    int gained = newEnergy - oldEnergy;
+                    await PlayerCmd.GainEnergy(gained, _subscribedPlayer);
+                }
+                finally
+                {
+                    _isProcessing = false;
+                }
+            });
         }
     }
 

@@ -15,6 +15,9 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class RainDark : YuWanCardModel
 {
+    private const int SetHpValue = 6;
+    private const int MaxHandSize = 10;
+
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
     public override IEnumerable<DynamicVar> CanonicalVars =>
@@ -46,11 +49,10 @@ public class RainDark : YuWanCardModel
 
         foreach (var teammate in teammates)
         {
-            await CreatureCmd.SetCurrentHp(teammate, 6m);
+            await CreatureCmd.SetCurrentHp(teammate, SetHpValue);
 
-            await PowerCmd.Apply<IntangiblePower>(teammate, DynamicVars["IntangiblePower"].BaseValue, Owner.Creature, this);
-
-            await PowerCmd.Apply<RainDarkPower>(teammate, DynamicVars["RainDarkPower"].BaseValue, Owner.Creature, this);
+            await CommonActions.Apply<IntangiblePower>(teammate, this, DynamicVars["IntangiblePower"].IntValue);
+            await CommonActions.Apply<RainDarkPower>(teammate, this, DynamicVars["RainDarkPower"].IntValue);
 
             var player = teammate.Player;
             if (player != null && player.PlayerCombatState != null)
@@ -62,7 +64,7 @@ public class RainDark : YuWanCardModel
                 }
 
                 var hand = MegaCrit.Sts2.Core.Entities.Cards.PileType.Hand.GetPile(player);
-                int cardsToDraw = 10 - hand.Cards.Count;
+                int cardsToDraw = MaxHandSize - hand.Cards.Count;
                 if (cardsToDraw > 0)
                 {
                     await CardPileCmd.Draw(choiceContext, cardsToDraw, player);

@@ -38,63 +38,79 @@ public class MyCustomCard : CustomCardModel
 }
 ```
 
-**构造函数参数说明**：
-- `baseCost`：基础费用
-- `type`：卡牌类型（Attack、Skill、Power、Status、Curse、Quest）
-- `rarity`：稀有度（Common、Uncommon、Rare、Ancient）
-- `target`：目标类型（Enemy、AllEnemies、RandomEnemy、AnyEnemy、Self、None、AllAllies、AnyAlly）
-- `showInCardLibrary`：是否在卡牌库中显示（默认 true）
-- `autoAdd`：是否自动添加到内容字典（默认 true）
+### 构造函数参数
 
-**重要属性和方法**：
-- `GainsBlock`：自动检测卡牌是否有格挡效果（通过检查 DynamicVars 中是否有 BlockVar 或 CalculatedBlockVar）
-- `CustomFrame`：自定义卡牌框贴图（可选）
-- `CustomPortraitPath`：自定义卡牌立绘路径（可选）
-- `CanonicalVars`：定义卡牌的动态变量（伤害、格挡、能量等）
-- `OnPlay`：卡牌打出时的逻辑
-- `OnUpgrade`：卡牌升级时的逻辑
-- `MultiplayerConstraint`：多人游戏限制（默认 `CardMultiplayerConstraint.None`）
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `baseCost` | int | 基础费用 |
+| `type` | CardType | 卡牌类型（Attack、Skill、Power、Status、Curse、Quest） |
+| `rarity` | CardRarity | 稀有度（Common、Uncommon、Rare、Ancient） |
+| `target` | TargetType | 目标类型 |
+| `showInCardLibrary` | bool | 是否在卡牌库中显示（默认 true） |
+| `autoAdd` | bool | 是否自动添加到内容字典（默认 true） |
 
-**CardMultiplayerConstraint 多人游戏限制**：
-```csharp
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+### TargetType 目标类型
 
-[Pool(typeof(ColorlessCardPool))]
-public class MyMultiplayerCard : CustomCardModel
-{
-    public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
+| TargetType | 说明 |
+|------------|------|
+| `TargetType.Self` | 自身 |
+| `TargetType.AllAllies` | 所有队友（包括自己） |
+| `TargetType.AnyAlly` | 任意队友（包括自己） |
+| `TargetType.AllEnemies` | 所有敌人 |
+| `TargetType.AnyEnemy` | 任意敌人 |
+| `TargetType.RandomEnemy` | 随机敌人 |
+| `TargetType.AnyPlayer` | 任意玩家（可用于选择死亡玩家） |
+| `TargetType.None` | 无目标 |
 
-    public MyMultiplayerCard() : base(
-        baseCost: 1,
-        type: CardType.Skill,
-        rarity: CardRarity.Uncommon,
-        target: TargetType.AnyAlly
-    )
-    {
-    }
-}
-```
+### 重要属性和方法
+
+| 属性/方法 | 说明 |
+|-----------|------|
+| `GainsBlock` | 自动检测卡牌是否有格挡效果 |
+| `CustomFrame` | 自定义卡牌框贴图（可选） |
+| `CustomPortraitPath` | 自定义卡牌立绘路径（可选） |
+| `CanonicalVars` | 定义卡牌的动态变量 |
+| `OnPlay` | 卡牌打出时的逻辑 |
+| `OnUpgrade` | 卡牌升级时的逻辑 |
+| `MultiplayerConstraint` | 多人游戏限制（默认 `CardMultiplayerConstraint.None`） |
+
+### CardMultiplayerConstraint 多人游戏限制
 
 | 值 | 说明 |
 |----|------|
 | `CardMultiplayerConstraint.None` | 无限制（默认值），单人/多人模式都会出现 |
 | `CardMultiplayerConstraint.MultiplayerOnly` | 仅限多人游戏，单人模式不会出现 |
 
-**DynamicVar 常用类型**：
-- `DamageVar(decimal)`：伤害变量
-- `BlockVar(decimal, ValueProp = ValueProp.None)`：格挡变量
-- `HealVar(decimal)`：治疗变量
-- `EnergyVar(decimal)`：能量变量
-- `PowerVar<TPower>(decimal)`：能力层数变量
+### DynamicVar 常用类型
 
-**CardKeyword 常用类型**：
-- `CardKeyword.Exhaust`：消耗
-- `CardKeyword.Innate`：固有
-- `CardKeyword.Ethereal`：虚无
-- 使用 `CanonicalKeywords` 属性返回卡牌关键词
-- 使用 `AddKeyword(CardKeyword)` 和 `RemoveKeyword(CardKeyword)` 方法在升级时修改关键词
+| 类型 | 说明 |
+|------|------|
+| `DamageVar(decimal)` | 伤害变量 |
+| `BlockVar(decimal, ValueProp)` | 格挡变量 |
+| `HealVar(decimal)` | 治疗变量 |
+| `EnergyVar(decimal)` | 能量变量 |
+| `PowerVar<TPower>(decimal)` | 能力层数变量 |
+| `CardsVar(decimal)` | 卡牌数量变量 |
+| `HpLossVar(decimal)` | 生命损失变量 |
+| `MaxHpVar(decimal)` | 最大生命值变量 |
+| `GoldVar(decimal)` | 金币值变量 |
+| `IntVar(string, decimal)` | 简单整数变量 |
+| `RepeatVar(decimal)` | 重复次数变量 |
+| `CalculatedDamageVar(decimal, decimal, decimal)` | 计算伤害（基础+额外*倍率） |
+| `CalculatedBlockVar(decimal, decimal, decimal)` | 计算格挡 |
 
-**ExtraHoverTips 能力提示显示**：
+### CardKeyword 常用类型
+
+| 关键词 | 说明 |
+|--------|------|
+| `CardKeyword.Exhaust` | 消耗 |
+| `CardKeyword.Innate` | 固有 |
+| `CardKeyword.Ethereal` | 虚无 |
+| `CardKeyword.Retain` | 保留 |
+
+使用 `CanonicalKeywords` 属性返回卡牌关键词，使用 `AddKeyword(CardKeyword)` 和 `RemoveKeyword(CardKeyword)` 方法在升级时修改关键词。
+
+### ExtraHoverTips 能力提示显示
 
 使用 `ExtraHoverTips` 属性可以在卡牌悬停时显示额外信息（如卡牌给予的能力介绍）：
 
@@ -105,32 +121,22 @@ using MegaCrit.Sts2.Core.Models.Powers;
 [Pool(typeof(ColorlessCardPool))]
 public class RainDark : CustomCardModel
 {
-    // 显示卡牌给予的能力介绍
     public override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromPower<IntangiblePower>(),
         HoverTipFactory.FromPower<RainDarkPower>()
     ];
-
-    public RainDark() : base(
-        baseCost: 3,
-        type: CardType.Skill,
-        rarity: CardRarity.Ancient,
-        target: TargetType.AllAllies
-    )
-    {
-    }
 }
 ```
 
 **常用 HoverTips 类型**：
 
-| 方法 | 说明 | 示例 |
-|------|------|------|
-| `HoverTipFactory.FromPower<TPower>()` | 显示能力介绍 | `HoverTipFactory.FromPower<StrengthPower>()` |
-| `HoverTipFactory.Static(StaticHoverTip.Block)` | 显示格挡图标 | `HoverTipFactory.Static(StaticHoverTip.Block)` |
-| `base.EnergyHoverTip` | 显示能量图标 | 直接继承自基类 |
-| `HoverTipFactory.FromKeyword(CardKeyword)` | 显示关键词介绍 | `HoverTipFactory.FromKeyword(CardKeyword.Exhaust)` |
+| 方法 | 说明 |
+|------|------|
+| `HoverTipFactory.FromPower<TPower>()` | 显示能力介绍 |
+| `HoverTipFactory.Static(StaticHoverTip.Block)` | 显示格挡图标 |
+| `HoverTipFactory.FromKeyword(CardKeyword)` | 显示关键词介绍 |
+| `base.EnergyHoverTip` | 显示能量图标（继承自基类） |
 
 **完整示例**：
 
@@ -237,64 +243,45 @@ public class MyCustomCharacter : CustomCharacterModel
     }
 
     public override string? CustomVisualPath => "res://scenes/creature_visuals/my_character.tscn";
-    public override string? CustomTrailPath => null;
-    public override string? CustomIconTexturePath => null;
     public override string? CustomIconPath => "res://textures/icons/my_character.png";
-    public override string? CustomEnergyCounterPath => null;
-    public override string? CustomRestSiteAnimPath => null;
-    public override string? CustomMerchantAnimPath => null;
-    public override string? CustomArmPointingTexturePath => null;
-    public override string? CustomArmRockTexturePath => null;
-    public override string? CustomArmPaperTexturePath => null;
-    public override string? CustomArmScissorsTexturePath => null;
-
-    public override string? CustomCharacterSelectBg => null;
-    public override string? CustomCharacterSelectIconPath => null;
-    public override string? CustomCharacterSelectLockedIconPath => null;
-    public override string? CustomCharacterSelectTransitionPath => null;
-    public override string? CustomMapMarkerPath => null;
-
-    public override string? CustomAttackSfx => null;
-    public override string? CustomCastSfx => null;
-    public override string? CustomDeathSfx => null;
-
-    public override NCreatureVisuals? CreateCustomVisuals()
-    {
-        if (CustomVisualPath == null) return null;
-        return GodotUtils.CreatureVisualsFromScene(CustomVisualPath);
-    }
-
-    public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller)
-    {
-        return SetupAnimationState(
-            controller,
-            idleName: "idle",
-            deadName: "dead",
-            deadLoop: false,
-            hitName: "hit",
-            hitLoop: false,
-            attackName: "attack",
-            attackLoop: false,
-            castName: "cast",
-            castLoop: false,
-            relaxedName: "relaxed",
-            relaxedLoop: true
-        );
-    }
 }
 ```
 
-**视觉场景要求**：
+### 视觉资源属性
+
+| 属性 | 说明 |
+|------|------|
+| `CustomVisualPath` | 角色视觉场景路径（默认查找 `res://scenes/creature_visuals/class_name.tscn`） |
+| `CustomTrailPath` | 卡牌轨迹路径 |
+| `CustomIconTexturePath` | 小图标（保存运行信息弹窗用） |
+| `CustomIconPath` | 左上角图标和图鉴筛选图标 |
+| `CustomEnergyCounterPath` | 能量计数器场景路径 |
+| `CustomRestSiteAnimPath` | 休息处动画路径 |
+| `CustomMerchantAnimPath` | 商人动画路径 |
+| `CustomCharacterSelectBg` | 角色选择背景场景 |
+| `CustomCharacterSelectIconPath` | 角色选择图标 |
+| `CustomCharacterSelectLockedIconPath` | 角色选择锁定图标 |
+| `CustomMapMarkerPath` | 地图标记路径 |
+| `CustomAttackSfx` | 攻击音效 |
+| `CustomCastSfx` | 施法音效 |
+| `CustomDeathSfx` | 死亡音效 |
+
+### 默认值
+
+| 属性 | 默认值 |
+|------|--------|
+| `StartingGold` | 99 |
+| `AttackAnimDelay` | 0.15f |
+| `CastAnimDelay` | 0.25f |
+
+### 视觉场景要求
+
 - 如果不重写 `CustomVisualPath`，则需要在 `res://scenes/creature_visuals/` 目录下创建名为 `class_name.tscn` 的场景文件
 - 角色选择背景场景路径：`res://scenes/screens/char_select/char_select_bg_class_name.tscn`
 - 场景必须包含以下节点：`Visuals`、`Bounds`、`IntentPos`、`CenterPos`、`OrbPos`、`TalkPos`
 
-**默认值**：
-- `StartingGold`：99
-- `AttackAnimDelay`：0.15f
-- `CastAnimDelay`：0.25f
+### 自定义能量计数器
 
-**自定义能量计数器**：
 可以使用 `CustomEnergyCounter` 结构体来自定义能量计数器的外观：
 
 ```csharp
@@ -320,7 +307,6 @@ public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controll
     return SetupAnimationState(
         controller,
         idleName: "idle",           // 待机动画名称
-        idleLoop: true,             // 待机动画是否循环
         deadName: "dead",           // 死亡动画名称
         deadLoop: false,            // 死亡动画是否循环
         hitName: "hit",             // 受击动画名称
@@ -332,6 +318,18 @@ public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controll
         relaxedName: "relaxed",     // 放松动画名称
         relaxedLoop: true           // 放松动画是否循环
     );
+}
+```
+
+### CreateCustomVisuals 方法
+
+可以重写此方法创建自定义视觉组件：
+
+```csharp
+public override NCreatureVisuals? CreateCustomVisuals()
+{
+    if (CustomVisualPath == null) return null;
+    return GodotUtils.CreatureVisualsFromScene(CustomVisualPath);
 }
 ```
 
@@ -350,12 +348,6 @@ public class MyCustomRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Common;
 
-    public MyCustomRelic() : base(autoAdd: true)
-    {
-    }
-
-    public override RelicModel? GetUpgradeReplacement() => null;
-
     public override async Task AfterObtained()
     {
         await base.AfterObtained();
@@ -363,14 +355,17 @@ public class MyCustomRelic : CustomRelicModel
 }
 ```
 
-**遗物稀有度**：
-- `RelicRarity.Common`：普通
-- `RelicRarity.Uncommon`：罕见
-- `RelicRarity.Rare`：稀有
-- `RelicRarity.Ancient`：先古之民
-- `RelicRarity.Shop`：商店
+### 遗物稀有度
 
-**常用钩子方法**：
+| 稀有度 | 说明 |
+|--------|------|
+| `RelicRarity.Common` | 普通 |
+| `RelicRarity.Uncommon` | 罕见 |
+| `RelicRarity.Rare` | 稀有 |
+| `RelicRarity.Ancient` | 先古之民 |
+| `RelicRarity.Shop` | 商店 |
+
+### 常用钩子方法
 
 | 方法 | 说明 |
 |------|------|
@@ -387,6 +382,18 @@ public class MyCustomRelic : CustomRelicModel
 | `ShouldGainGold(decimal, Player)` | 获得金币前触发 |
 | `AfterGoldGained(Player)` | 获得金币后触发 |
 | `ShouldAllowSelectingMoreCardRewards(Player)` | 是否允许选择更多卡牌奖励 |
+| `GetUpgradeReplacement()` | 返回升级替换的遗物（默认 null） |
+
+### 遗物升级替换
+
+遗物可以设置升级替换（被 Orobas 先古之民遗物升级事件升级时）：
+
+```csharp
+public override RelicModel? GetUpgradeReplacement()
+{
+    return new MyUpgradedRelic();
+}
+```
 
 **完整遗物示例**：
 
@@ -542,7 +549,6 @@ using MegaCrit.Sts2.Core.Models;
 public class MyCustomPower : CustomPowerModel
 {
     public override PowerType Type => PowerType.Buff;
-
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override string? CustomPackedIconPath => "res://MyMod/images/powers/my_power.png";
@@ -559,26 +565,39 @@ public class MyCustomPower : CustomPowerModel
 }
 ```
 
-**图标尺寸**：
-- `CustomPackedIconPath`：64x64 像素
-- `CustomBigIconPath`：256x256 像素
-- `CustomBigBetaIconPath`：256x256 像素（Beta 版本图标）
+### 图标尺寸
 
-**PowerType 类型**：
-- `PowerType.Buff`：增益效果（绿色）
-- `PowerType.Debuff`：减益效果（红色）
-- `PowerType.Neutral`：中性效果（蓝色）
+| 属性 | 尺寸 |
+|------|------|
+| `CustomPackedIconPath` | 64x64 像素 |
+| `CustomBigIconPath` | 256x256 像素 |
+| `CustomBigBetaIconPath` | 256x256 像素（Beta 版本图标） |
 
-**PowerStackType 类型**：
-- `PowerStackType.Counter`：层数叠加
-- `PowerStackType.Duration`：持续时间
-- `PowerStackType.None`：不叠加
+### PowerType 类型
 
-**常用事件方法**：
-- `AfterSideTurnStart(CombatSide side, CombatState combatState)`：回合开始时触发
-- `AfterSideTurnEnd(CombatSide side, CombatState combatState)`：回合结束时触发
-- `OnApply(Creature source, int amount)` 能力被应用时触发
-- `OnRemove()`：能力被移除时触发
+| 类型 | 说明 |
+|------|------|
+| `PowerType.Buff` | 增益效果（绿色） |
+| `PowerType.Debuff` | 减益效果（红色） |
+| `PowerType.Neutral` | 中性效果（蓝色） |
+
+### PowerStackType 类型
+
+| 类型 | 说明 |
+|------|------|
+| `PowerStackType.Counter` | 层数叠加 |
+| `PowerStackType.Duration` | 持续时间 |
+| `PowerStackType.None` | 不叠加 |
+
+### 常用事件方法
+
+| 方法 | 说明 |
+|------|------|
+| `AfterSideTurnStart(CombatSide, CombatState)` | 回合开始时触发 |
+| `AfterSideTurnEnd(CombatSide, CombatState)` | 回合结束时触发 |
+| `OnApply(Creature, int)` | 能力被应用时触发 |
+| `OnRemove()` | 能力被移除时触发 |
+| `Flash()` | 闪烁能力图标（视觉反馈） |
 
 ### ICustomPower 接口
 
@@ -596,9 +615,18 @@ public class MyCustomPower : SomeOtherPower, ICustomPower
 }
 ```
 
+**ICustomPower 接口属性**：
+
+| 属性 | 说明 |
+|------|------|
+| `CustomPackedIconPath` | 小图标路径（64x64 像素） |
+| `CustomBigIconPath` | 大图标路径（256x256 像素） |
+| `CustomBigBetaIconPath` | Beta 版本大图标路径（256x256 像素，可选） |
+
 **说明**：
 - `CustomPowerModel` 同时继承了 `PowerModel` 和 `ICustomPower`，适合大多数情况
 - `ICustomPower` 接口适合需要继承其他能力类的情况
+- 实现此接口时，必须提供至少 `CustomPackedIconPath` 和 `CustomBigIconPath`
 
 ## 自定义卡牌池 (CustomCardPoolModel)
 

@@ -29,7 +29,7 @@ public class PigHurt : YuWanCardModel
     
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<VulnerablePower>(CombatState!.HittableEnemies, 2, Owner.Creature, this);
+        await PowerCmd.Apply<VulnerablePower>(CombatState!.HittableEnemies, DynamicVars.Vulnerable.IntValue, Owner.Creature, this);
     }
 
     public override void OnUpgrade()

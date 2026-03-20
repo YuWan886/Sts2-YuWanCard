@@ -92,11 +92,13 @@ public class MyCard : CustomCardModel
 
 ### 9. SavedProperty 不保存
 
-**原因**：类型未注册到缓存
+**原因**：属性未正确标记或命名冲突
 
 **解决方案**：
-- 对于自定义 Modifier，需要通过 Harmony 补丁将其类型注入到 `SavedPropertiesTypeCache`
-- 参考 [配置系统](03-config-system.md) 中的注册代码
+- 确保属性使用了 `[SavedProperty]` 特性
+- 确保属性是公共的，且有 `get` 和 `set` 访问器
+- BaseLib 会自动处理 SavedProperty 的注册
+- 建议为属性名添加前缀以避免命名冲突
 
 ### 10. Modifier 不生效
 

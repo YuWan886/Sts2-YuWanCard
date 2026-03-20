@@ -1,5 +1,56 @@
 # 扩展功能
 
+## BaseLib 补丁系统
+
+BaseLib 通过 Harmony 补丁提供了多种功能扩展。
+
+### Content 补丁（内容注册）
+
+| 补丁类 | 功能 |
+|--------|------|
+| `ContentPatches` | 核心内容注册，管理自定义模型的添加、共享池注册 |
+| `CustomEnums` | 自动生成枚举值，支持自定义关键词和牌堆类型 |
+| `CustomPilePatches` | 自定义牌堆支持 |
+| `PrefixIdPatch` | 为自定义模型自动添加模组前缀 |
+| `StarterUpgradePatches` | 支持遗物升级替换 |
+| `AddAncientDialogues` | 为自定义角色添加先古之民对话 |
+| `CustomAnimationPatch` | 支持自定义生物使用 AnimationPlayer（非 Spine 动画） |
+
+### Features 补丁（功能特性）
+
+| 补丁类 | 功能 |
+|--------|------|
+| `ExhaustivePatch` | 实现"究极"机制（卡牌打出 N 次后消耗） |
+| `PersistPatch` | 实现"持续"机制（卡牌本回合打出后留在手牌） |
+| `RefundPatch` | 实现"退还"机制（打出后返还能量） |
+| `SelfApplyDebuffPatch` | 修复玩家对自己施加负面效果的持续回合计算 |
+| `ModInteropPatch` | 实现模组间互操作 |
+| `LogPatch` | 提供日志窗口功能，可通过配置开启 |
+
+### Hooks 补丁（钩子）
+
+| 补丁类 | 功能 |
+|--------|------|
+| `ModifyHealAmountPatches` | 实现治疗量修改钩子 |
+
+### UI 补丁
+
+| 补丁类 | 功能 |
+|--------|------|
+| `AutoKeywordText` | 自动将自定义关键词添加到卡牌描述 |
+| `CustomCompendiumPatch` | 在卡牌图书馆添加自定义角色筛选按钮 |
+| `CustomEnergyIconPatches` | 支持自定义能量图标 |
+| `ExtraTooltips` | 为卡牌添加额外的悬停提示 |
+| `ModConfigButtonPatch` | 在模组信息界面添加配置按钮 |
+| `ModelUiPatch` | 支持为卡牌、遗物、药水添加自定义 UI |
+
+### Compatibility 补丁（兼容性）
+
+| 补丁类 | 功能 |
+|--------|------|
+| `MissingLocPatch` | 防止本地化键缺失导致的崩溃 |
+| `UnknownCharacterPatches` | 处理卸载模组后的存档兼容性 |
+
 ## 模组互操作 (ModInterop)
 
 BaseLib 提供了模组间互操作系统，允许模组之间进行软依赖交互：
@@ -12,10 +63,10 @@ using BaseLib.Utils.ModInterop;
 [ModInterop("OtherModId")]
 public class OtherModInterop : InteropClassWrapper
 {
-    [InteropTarget]
+    [InteropTarget("OtherModNamespace.OtherClass")]
     public static MethodInfo? SomeMethod { get; set; }
 
-    [InteropTarget]
+    [InteropTarget(Type = "OtherModNamespace.OtherClass")]
     public static Type? SomeType { get; set; }
 
     public static void DoSomething()
@@ -28,12 +79,12 @@ public class OtherModInterop : InteropClassWrapper
 }
 ```
 
-**特性说明**：
+### 特性说明
 
 | 特性 | 用途 |
 |------|------|
 | `[ModInterop("ModId")]` | 标记互操作类，指定目标模组 ID |
-| `[InteropTarget]` | 标记互操作目标（方法、类型等） |
+| `[InteropTarget("FullTypeName")]` | 标记互操作目标（方法、类型等） |
 
 ### 使用互操作
 
@@ -56,6 +107,65 @@ if (targetType != null)
 - ModInterop 使用软依赖，目标模组不存在时不会报错
 - 互操作类会在目标模组加载时自动绑定
 - 使用前检查 `IsLoaded` 或目标是否为 null
+
+## 自定义枚举和关键词 (CustomEnums)
+
+BaseLib 支持自动生成枚举值和自定义关键词。
+
+### CustomEnumAttribute
+
+标记字段为需要自动生成枚举值的字段：
+
+```csharp
+using BaseLib.Patches.Content;
+
+public static class MyKeywords
+{
+    [CustomEnum("MY_KEYWORD")]
+    [KeywordProperties(AutoKeywordPosition.After)]
+    public static readonly CardKeyword MyKeyword;
+}
+```
+
+### KeywordPropertiesAttribute
+
+为 CardKeyword 字段添加额外属性：
+
+| 参数 | 说明 |
+|------|------|
+| `AutoKeywordPosition.None` | 不自动添加关键词文本 |
+| `AutoKeywordPosition.Before` | 在描述前添加关键词标题 |
+| `AutoKeywordPosition.After` | 在描述后添加关键词标题 |
+
+### 自定义牌堆类型
+
+```csharp
+using BaseLib.Abstracts;
+using BaseLib.Patches.Content;
+
+public class MyCustomPile : CustomPile
+{
+    [CustomEnum]
+    public static readonly PileType MyPileType;
+
+    public MyCustomPile() { } // 必须有无参构造函数
+
+    public override string PileName => "My Custom Pile";
+
+    public override bool CardShouldBeVisible(CardModel card) => true;
+
+    public override Vector2 GetTargetPosition(CardModel model, Vector2 size) => Vector2.Zero;
+}
+```
+
+### 关键词本地化
+
+```json
+{
+  "MYMOD-MY_KEYWORD.title": "关键词名称",
+  "MYMOD-MY_KEYWORD.description": "关键词描述"
+}
+```
 
 ## 自定义卡牌变量
 
@@ -433,5 +543,13 @@ public class MyCardPool : CustomCardPoolModel, ICustomEnergyIconPool
 {
     public string? BigEnergyIconPath => "res://MyMod/images/ui/energy_big.png";
     public string? TextEnergyIconPath => "res://MyMod/images/ui/energy_text.png";
+    public string? EnergyColorName => "my_custom_energy";
 }
 ```
+
+**属性说明**：
+| 属性 | 说明 |
+|------|------|
+| `BigEnergyIconPath` | 大能量图标路径 |
+| `TextEnergyIconPath` | 文本能量图标路径 |
+| `EnergyColorName` | 能量颜色名称（用于本地化等） |

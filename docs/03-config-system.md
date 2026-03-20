@@ -182,43 +182,21 @@ public class MyModifier : ModifierModel
 - 加载存档时会自动恢复属性值
 - 属性必须是公共的，且有 `get` 和 `set` 访问器
 - 适用于基本类型（int、bool、float、string 等）和可序列化的复杂类型
+- **BaseLib 会自动将包含 SavedProperty 的类型注入到 `SavedPropertiesTypeCache`**，无需手动注册
 
-**自定义 Modifier 的 SavedProperty 注册**：
+**SavedProperty 命名建议**：
 
-对于自定义 Modifier，需要通过 Harmony 补丁将其类型注入到 `SavedPropertiesTypeCache`：
+BaseLib 建议为 SavedProperty 属性添加前缀以提高兼容性：
 
 ```csharp
-using HarmonyLib;
-using MegaCrit.Sts2.Core.Saves.Runs;
-
-[HarmonyPatch(typeof(SavedPropertiesTypeCache), nameof(SavedPropertiesTypeCache.GetJsonPropertiesForType))]
-public class SavedPropertiesTypeCachePatch
+public class MyModifier : ModifierModel
 {
-    private static bool _injected = false;
-
-    [HarmonyPrefix]
-    public static void Prefix(Type t)
-    {
-        if (_injected) return;
-        
-        if (t == typeof(MyModifier) || t.Assembly == typeof(MyModifier).Assembly)
-        {
-            if (!SavedPropertiesTypeCacheContains(typeof(MyModifier)))
-            {
-                SavedPropertiesTypeCache.InjectTypeIntoCache(typeof(MyModifier));
-                MainFile.Logger.Info("MyModifier injected into SavedPropertiesTypeCache");
-            }
-            _injected = true;
-        }
-    }
-
-    private static bool SavedPropertiesTypeCacheContains(Type type)
-    {
-        var cache = AccessTools.Field(typeof(SavedPropertiesTypeCache), "_cache")?.GetValue(null) as System.Collections.IDictionary;
-        return cache?.Contains(type) == true;
-    }
+    [SavedProperty]
+    public int MyMod_LoopCount { get; set; } = 0;  // 推荐添加前缀
 }
 ```
+
+如果属性名较短且没有前缀，BaseLib 会在日志中输出警告信息。
 
 ## 配置 UI 组件
 
