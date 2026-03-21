@@ -70,14 +70,26 @@ if (-not $DllOnly) {
             "--headless",
             "--export-pack",
             "BasicExport",
-            $pckOutputPath
-        ) -NoNewWindow -PassThru -Wait
+            "`"$pckOutputPath`""
+        ) -NoNewWindow -PassThru -Wait -RedirectStandardOutput "$env:TEMP\godot_stdout.txt" -RedirectStandardError "$env:TEMP\godot_stderr.txt"
+        
+        if ($process.ExitCode -ne 0) {
+            Write-Host "  Godot exit code: $($process.ExitCode)" -ForegroundColor Yellow
+            $stderr = Get-Content "$env:TEMP\godot_stderr.txt" -ErrorAction SilentlyContinue
+            $realErrors = $stderr | Where-Object { $_ -match "ERROR:" -and $_ -notmatch "Failed to load project assembly|sts2" }
+            if ($realErrors) {
+                Write-Host "  Errors:" -ForegroundColor Red
+                $realErrors | ForEach-Object { Write-Host "    $_" -ForegroundColor Red }
+            }
+        }
     } finally {
         Pop-Location
     }
     
     Remove-Item Env:IsInnerGodotExport -ErrorAction SilentlyContinue
     Remove-Item Env:MSBUILDDISABLENODEREUSE -ErrorAction SilentlyContinue
+    Remove-Item "$env:TEMP\godot_stdout.txt" -ErrorAction SilentlyContinue
+    Remove-Item "$env:TEMP\godot_stderr.txt" -ErrorAction SilentlyContinue
     
     $pckTime = ((Get-Date) - $pckStart).TotalSeconds
     $totalTime += $pckTime
