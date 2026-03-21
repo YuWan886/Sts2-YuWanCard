@@ -168,7 +168,7 @@ public class RingOfSevenCurses : YuWanRelicModel
     {
         if (creature.Player == Owner || creature.PetOwner == Owner)
         {
-            return amount * 0.5m;
+            return amount * 0.75m;
         }
         return amount;
     }

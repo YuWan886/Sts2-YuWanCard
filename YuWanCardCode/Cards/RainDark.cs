@@ -33,7 +33,7 @@ public class RainDark : YuWanCardModel
     ];
 
     public RainDark() : base(
-        baseCost: 2,
+        baseCost: 3,
         type: CardType.Skill,
         rarity: CardRarity.Ancient,
         target: TargetType.AllAllies

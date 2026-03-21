@@ -18,7 +18,7 @@
 
 | Name | Cost | Rarity | Type | Effect |
 |------|------|--------|------|--------|
-| Pig Hurt | 1 | Uncommon | Skill | Apply 2 stacks of Vulnerable to all enemies |
+| Pig Hurt | 0 | Uncommon | Skill | Apply 2 stacks of Vulnerable to all enemies |
 | Pig Think | 1 | Uncommon | Skill | All players gain 2 energy |
 | Pig Angry | 2 | Uncommon | Skill | All players gain 4 Strength |
 | Pig Sleep | 3 | Rare | Skill | End turn, gain 10 Block, heal 5 HP |
@@ -36,7 +36,7 @@
 | Melancholy Is A Feeling | 2 | Rare | Skill | Gain Block equal to current HP |
 | Sad Army Wins | 3 | Rare | Skill | Kill an enemy when HP is below 10% |
 | Revive! | 4 | Rare | Skill | Resurrect a dead ally with 50% max HP (Multiplayer) |
-| Rain Dark | 2 | Ancient | Skill | Set all players' HP to 6, gain 3 stacks of Intangible, double current energy, double energy gained for next 3 turns, draw full hand, Exhaust |
+| Rain Dark | 3 | Ancient | Skill | Set all players' HP to 25% of max HP, gain 3 stacks of Intangible and Rain Dark (double energy gained for 3 turns), double current energy, draw full hand, heal 6 HP after combat. Exhaust |
 | Ten Thousand Swords | 1 | Uncommon | Skill | Stack all other players' Forge Points onto yourself, then clear other players' Forge Points. Exhaust (Multiplayer) |
 
 ### Powers
@@ -67,7 +67,7 @@
 | Endless | Climb the spire endlessly until death. Enemies get stronger with each loop (+20% HP/layer, +1 Strength/layer, BOSS gets extra buffs). Gain 10 max HP on selection. |
 
 ## Installation
-1. Game version: `v0.99.1`
+1. Game version: `v0.99.1+`
 2. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [Mirror](https://gh-proxy.com/) | [Backup](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
 3. Download the required dependency mod [Baselib](https://github.com/Alchyr/BaseLib-StS2)
 4. Extract to the `mods` folder in the game directory
