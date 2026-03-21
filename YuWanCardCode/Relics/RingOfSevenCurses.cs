@@ -89,6 +89,7 @@ public class RingOfSevenCurses : YuWanRelicModel
             return;
         }
         CardModel card = Owner.Creature.CombatState.CreateCard(curseCard, Owner);
+        card.AddKeyword(CardKeyword.Ethereal);
         var results = await CardPileCmd.AddGeneratedCardsToCombat([card], PileType.Hand, addedByPlayer: true);
         if (results.Count == 0 || !results[0].success)
         {
@@ -151,7 +152,7 @@ public class RingOfSevenCurses : YuWanRelicModel
             return false;
         }
 
-        if (room.RoomType == RoomType.Monster || room.RoomType == RoomType.Boss)
+        if (room.RoomType == RoomType.Monster || room.RoomType == RoomType.Boss || room.RoomType == RoomType.Elite)
         {
             rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, room.RoomType), 3, player));
         }

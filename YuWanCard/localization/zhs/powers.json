@@ -3,8 +3,8 @@
   "YUWANCARD-PIG_DOUBT_POWER.description": "每回合获得1个随机的[gold]能力[/gold]。",
   "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "每回合获得 {PigDoubtPower}个随机的[gold]能力[/gold]。",
   "YUWANCARD-RAIN_DARK_POWER.title": "雨落狂流",
-  "YUWANCARD-RAIN_DARK_POWER.description": "获得的能量翻倍。",
-  "YUWANCARD-RAIN_DARK_POWER.smartDescription": "获得的能量翻倍。",
+  "YUWANCARD-RAIN_DARK_POWER.description": "获得的能量翻倍。战斗结束后恢复6点血量。",
+  "YUWANCARD-RAIN_DARK_POWER.smartDescription": "获得的能量翻倍。战斗结束后恢复6点血量。",
   "YUWANCARD-PIG_BANKRUPTCY_POWER.title": "猪破产",
   "YUWANCARD-PIG_BANKRUPTCY_POWER.description": "本回合内所有手牌消耗为0，但是自带消耗。",
   "YUWANCARD-PIG_BANKRUPTCY_POWER.smartDescription": "本回合内所有手牌消耗为0，但是自带消耗。"

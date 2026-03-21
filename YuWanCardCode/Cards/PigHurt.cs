@@ -19,7 +19,7 @@ public class PigHurt : YuWanCardModel
     public override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<VulnerablePower>(1m)];
 
     public PigHurt() : base(
-        baseCost: 1,
+        baseCost: 0,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
         target: TargetType.AllEnemies

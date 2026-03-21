@@ -6,11 +6,13 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Rooms;
 
 namespace YuWanCard.Powers;
 
 public class RainDarkPower : YuWanPowerModel
 {
+    private const int HealAfterCombat = 6;
     private Player? _subscribedPlayer;
     private bool _isProcessing;
 
@@ -66,5 +68,10 @@ public class RainDarkPower : YuWanPowerModel
         {
             await PowerCmd.TickDownDuration(this);
         }
+    }
+
+    public override async Task AfterCombatVictory(CombatRoom room)
+    {
+        await CreatureCmd.Heal(Owner, HealAfterCombat);
     }
 }

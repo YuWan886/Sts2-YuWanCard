@@ -35,7 +35,7 @@ public class SadArmyWin : YuWanCardModel
         {
             if (IsUpgraded)
             {
-                var allEnemies = CombatState!.Enemies;
+                var allEnemies = CombatState!.Enemies.ToList();
                 foreach (var enemy in allEnemies)
                 {
                     if (enemy.IsAlive)

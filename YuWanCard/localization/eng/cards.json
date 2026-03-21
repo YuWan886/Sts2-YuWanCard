@@ -25,7 +25,7 @@
   "YUWANCARD-REVIVE_KAI.title": "Revive!",
   "YUWANCARD-REVIVE_KAI.description": "Revive a fallen ally and restore {IfUpgraded:show:100%|50%} of their max HP.",
   "YUWANCARD-RAIN_DARK.title": "Rain Dark",
-  "YUWANCARD-RAIN_DARK.description": "All players' HP becomes 6, gain {IntangiblePower:diff()} stacks of [gold]Intangible[/gold], double current Energy, gain double Energy for the next {RainDarkPower:diff()} turns, draw to max hand size.",
+  "YUWANCARD-RAIN_DARK.description": "All players' HP becomes 25% of max HP, gain {IntangiblePower:diff()} stacks of [gold]Intangible[/gold], double current Energy, gain double Energy for the next {RainDarkPower:diff()} turns, draw to max hand size. Heal 6 HP after combat.",
   "YUWANCARD-RAIN_DARK_SELECT.title": "Rain Dark",
   "YUWANCARD-RAIN_DARK_SELECT.description": "Add a [gold]Rain Dark[/gold] to your hand.",
   "YUWANCARD-TEN_THOUSAND_SWORDS.title": "Ten Thousand Swords",

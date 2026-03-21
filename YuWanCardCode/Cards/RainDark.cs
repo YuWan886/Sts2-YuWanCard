@@ -15,7 +15,7 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class RainDark : YuWanCardModel
 {
-    private const int SetHpValue = 6;
+    private const float HpPercentage = 0.25f;
     private const int MaxHandSize = 10;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
@@ -49,7 +49,8 @@ public class RainDark : YuWanCardModel
 
         foreach (var teammate in teammates)
         {
-            await CreatureCmd.SetCurrentHp(teammate, SetHpValue);
+            int targetHp = (int)(teammate.MaxHp * HpPercentage);
+            await CreatureCmd.SetCurrentHp(teammate, targetHp);
 
             await CommonActions.Apply<IntangiblePower>(teammate, this, DynamicVars["IntangiblePower"].IntValue);
             await CommonActions.Apply<RainDarkPower>(teammate, this, DynamicVars["RainDarkPower"].IntValue);
