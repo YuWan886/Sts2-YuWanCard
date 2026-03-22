@@ -42,5 +42,9 @@
   "YUWANCARD-PIG_SHIELD_BREAK.description": "去除一名敌人50%的[gold]格挡[/gold]，并造成{Damage:diff()}点伤害。",
   "YUWANCARD-PIG_KING.title": "猪猪王",
   "YUWANCARD-PIG_KING.description": "选择三张手牌，将其分别变化为{IfUpgraded:show:升级后的|}[gold]猪冲锋[/gold]、[gold]猪连射[/gold]、[gold]猪拆盾[/gold]",
-  "YUWANCARD-PIG_KING.selectionScreenPrompt": "选择3张手牌进行变化"
+  "YUWANCARD-PIG_KING.selectionScreenPrompt": "选择3张手牌进行变化",
+  "YUWANCARD-PIG_BRAIN_OVERLOAD.title": "猪脑过载",
+  "YUWANCARD-PIG_BRAIN_OVERLOAD.description": "本回合获得{Energy:diff()}{Energy:energyIcons()}，抽{Cards:diff()}张牌。每{IfUpgraded:show:3|2}回合获得1张[gold]晕眩[/gold]。",
+  "YUWANCARD-PIG_MELT.title": "猪融化",
+  "YUWANCARD-PIG_MELT.description": "获得{BufferPower:diff()}层[gold]缓冲[/gold]。结束你的回合。"
 }

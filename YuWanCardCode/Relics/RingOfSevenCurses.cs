@@ -23,7 +23,7 @@ public class RingOfSevenCurses : YuWanRelicModel
     private decimal _pendingGoldReduction;
     private bool _isApplyingReduction;
     [SavedProperty]
-    private bool PotionSlotsAdded { get; set; }
+    private bool YuWanCard_PotionSlotsAdded { get; set; }
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
@@ -36,10 +36,10 @@ public class RingOfSevenCurses : YuWanRelicModel
     public override async Task AfterObtained()
     {
         await base.AfterObtained();
-        if (!PotionSlotsAdded)
+        if (!YuWanCard_PotionSlotsAdded)
         {
             Owner?.AddToMaxPotionCount(1);
-            PotionSlotsAdded = true;
+            YuWanCard_PotionSlotsAdded = true;
         }
     }
 

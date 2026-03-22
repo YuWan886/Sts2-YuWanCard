@@ -9,6 +9,7 @@ using YuWanCard.Relics;
 namespace YuWanCard.Patches;
 
 [HarmonyPatch(typeof(Neow))]
+[HarmonyPriority(Priority.Low)]
 class NeowSevenCursesPatch
 {
     private static readonly ConcurrentDictionary<Neow, List<EventOption>> _originalOptions = new();

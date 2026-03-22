@@ -4,7 +4,6 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
-using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.TestSupport;
 using YuWanCard.Modifiers;
@@ -12,6 +11,7 @@ using YuWanCard.Modifiers;
 namespace YuWanCard.Patches;
 
 [HarmonyPatch(typeof(RunManager), nameof(RunManager.EnterNextAct))]
+[HarmonyPriority(Priority.Low)]
 public class EndlessModePatch
 {
     private static readonly MethodInfo StateGetter = AccessTools.PropertyGetter(typeof(RunManager), "State");
@@ -40,9 +40,19 @@ public class EndlessModePatch
             return true;
         }
 
-        MainFile.Logger.Info($"Endless mode: Intercepting final act transition. Current loop: {endlessModifier.EndlessLoopCount}");
+        if (ShouldSkipEndlessTransition(state))
+        {
+            return true;
+        }
+
+        MainFile.Logger.Info($"Endless mode: Intercepting final act transition. Current loop: {endlessModifier.YuWanCard_EndlessLoopCount}");
 
         __result = HandleEndlessTransition(__instance, state, endlessModifier);
+        return false;
+    }
+
+    public static bool ShouldSkipEndlessTransition(RunState state)
+    {
         return false;
     }
 
@@ -73,6 +83,6 @@ public class EndlessModePatch
 
         await (Task)FadeInMethod.Invoke(runManager, [true])!;
 
-        MainFile.Logger.Info($"Endless mode: Transitioned to loop {endlessModifier.EndlessLoopCount}");
+        MainFile.Logger.Info($"Endless mode: Transitioned to loop {endlessModifier.YuWanCard_EndlessLoopCount}");
     }
 }

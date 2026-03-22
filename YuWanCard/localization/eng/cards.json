@@ -42,5 +42,9 @@
   "YUWANCARD-PIG_SHIELD_BREAK.description": "Remove 50% of an enemy's [gold]Block[/gold] and deal {Damage:diff()} damage.",
   "YUWANCARD-PIG_KING.title": "Pig King",
   "YUWANCARD-PIG_KING.description": "Choose 3 cards from your hand, transform them into [gold]Pig Charge[/gold], [gold]Pig Barrage[/gold], and [gold]Pig Shield Break[/gold]. {IfUpgraded:show:Upgrade the created cards.|}",
-  "YUWANCARD-PIG_KING.selectionScreenPrompt": "Select 3 cards to transform"
+  "YUWANCARD-PIG_KING.selectionScreenPrompt": "Select 3 cards to transform",
+  "YUWANCARD-PIG_BRAIN_OVERLOAD.title": "Pig Brain Overload",
+  "YUWANCARD-PIG_BRAIN_OVERLOAD.description": "Gain {Energy:diff()} {Energy:energyIcons()} this turn. Draw {Cards:diff()} cards. Every {IfUpgraded:show:3|2} turns, gain 1 [gold]Dazed[/gold].",
+  "YUWANCARD-PIG_MELT.title": "Pig Melt",
+  "YUWANCARD-PIG_MELT.description": "Gain {BufferPower:diff()} stack(s) of [gold]Buffer[/gold]. End your turn."
 }

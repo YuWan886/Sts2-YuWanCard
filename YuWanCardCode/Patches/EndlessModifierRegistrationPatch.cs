@@ -19,16 +19,25 @@ public class EndlessModifierRegistrationPatch
 }
 
 [HarmonyPatch(typeof(ModelDb), nameof(ModelDb.GoodModifiers), MethodType.Getter)]
+[HarmonyPriority(Priority.Low)]
 public class GoodModifiersPatch
 {
     [HarmonyPostfix]
     public static void Postfix(ref IReadOnlyList<ModifierModel> __result)
     {
-        var list = __result.ToList();
-        if (!list.Any(m => m is EndlessModifier))
+        for (int i = 0; i < __result.Count; i++)
         {
-            list.Add(ModelDb.Modifier<EndlessModifier>());
-            __result = list;
+            if (__result[i] is EndlessModifier)
+            {
+                return;
+            }
+        }
+
+        var endlessModifier = ModelDb.Modifier<EndlessModifier>();
+        if (endlessModifier != null)
+        {
+            var list = new List<ModifierModel>(__result) { endlessModifier };
+            __result = list.AsReadOnly();
         }
     }
 }

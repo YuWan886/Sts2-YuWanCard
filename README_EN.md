@@ -38,6 +38,8 @@
 | Revive! | 4 | Rare | Skill | Resurrect a dead ally with 50% max HP (Multiplayer) |
 | Rain Dark | 3 | Ancient | Skill | Set all players' HP to 25% of max HP, gain 3 stacks of Intangible and Rain Dark (double energy gained for 3 turns), double current energy, draw full hand, heal 6 HP after combat. Exhaust |
 | Ten Thousand Swords | 1 | Uncommon | Skill | Stack all other players' Forge Points onto yourself, then clear other players' Forge Points. Exhaust (Multiplayer) |
+| Pig Brain Overload | 0 | Uncommon | Power | Gain 3 Energy this turn. Draw 2 cards. Every 2 turns, gain 1 Dazed. Exhaust |
+| Pig Melt | 0 | Uncommon | Skill | Gain 1 Buffer. End your turn. Exhaust |
 
 ### Powers
 
@@ -46,6 +48,7 @@
 | Pig Doubt | Gain random Power each turn |
 | Rain Dark | Double energy gained |
 | Pig Bankruptcy | All cards in hand cost 0 this turn, but they all have Exhaust |
+| Pig Brain Overload | Every 2 turns, gain 1 Dazed |
 
 ### Relics
 

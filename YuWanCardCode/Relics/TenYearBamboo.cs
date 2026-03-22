@@ -17,7 +17,7 @@ public class TenYearBamboo : YuWanRelicModel
     private int _blockBonus = 1;
 
     [SavedProperty]
-    public int BlockBonus
+    public int YuWanCard_BlockBonus
     {
         get => _blockBonus;
         set
@@ -31,7 +31,7 @@ public class TenYearBamboo : YuWanRelicModel
 
     public override bool ShowCounter => true;
 
-    public override int DisplayAmount => BlockBonus;
+    public override int DisplayAmount => YuWanCard_BlockBonus;
 
     public override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("BlockBonus", 1m)];
 
@@ -42,7 +42,7 @@ public class TenYearBamboo : YuWanRelicModel
             return;
         }
         Flash();
-        _ = await CreatureCmd.GainBlock(Owner.Creature, BlockBonus, default, null);
+        _ = await CreatureCmd.GainBlock(Owner.Creature, YuWanCard_BlockBonus, default, null);
     }
 
     public override Task AfterCombatVictory(CombatRoom room)
@@ -53,15 +53,15 @@ public class TenYearBamboo : YuWanRelicModel
         }
         if (room.RoomType == RoomType.Elite)
         {
-            BlockBonus += 1;
+            YuWanCard_BlockBonus += 1;
             Flash();
-            MainFile.Logger.Info($"TenYearBamboo: Elite defeated, block bonus increased to {BlockBonus}");
+            MainFile.Logger.Info($"TenYearBamboo: Elite defeated, block bonus increased to {YuWanCard_BlockBonus}");
         }
         else if (room.RoomType == RoomType.Boss)
         {
-            BlockBonus += 3;
+            YuWanCard_BlockBonus += 3;
             Flash();
-            MainFile.Logger.Info($"TenYearBamboo: Boss defeated, block bonus increased to {BlockBonus}");
+            MainFile.Logger.Info($"TenYearBamboo: Boss defeated, block bonus increased to {YuWanCard_BlockBonus}");
         }
 
         return Task.CompletedTask;

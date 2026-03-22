@@ -28,13 +28,13 @@ public class EndlessModifier : ModifierModel
     private const float HpGrowthExponent = 1.1f;
 
     [SavedProperty]
-    public int EndlessLoopCount { get; set; } = 0;
+    public int YuWanCard_EndlessLoopCount { get; set; } = 0;
 
     [SavedProperty]
-    public int TotalActsCleared { get; set; } = 0;
+    public int YuWanCard_TotalActsCleared { get; set; } = 0;
 
     [SavedProperty]
-    public bool HasStarted { get; set; } = false;
+    public bool YuWanCard_HasStarted { get; set; } = false;
 
     public override LocString Title => new("modifiers", ModifierId + ".title");
     public override LocString Description => new("modifiers", ModifierId + ".description");
@@ -43,7 +43,7 @@ public class EndlessModifier : ModifierModel
 
     public override string IconPath => "res://YuWanCard/images/modifiers/endless.png";
 
-    public int EffectiveLoopCount => Math.Max(0, EndlessLoopCount);
+    public int EffectiveLoopCount => Math.Max(0, YuWanCard_EndlessLoopCount);
 
     private float CalculateHpMultiplier(bool isBoss)
     {
@@ -75,7 +75,7 @@ public class EndlessModifier : ModifierModel
 
     public override Func<Task>? GenerateNeowOption(EventModel eventModel)
     {
-        if (HasStarted)
+        if (YuWanCard_HasStarted)
         {
             return null;
         }
@@ -86,7 +86,7 @@ public class EndlessModifier : ModifierModel
     {
         MainFile.Logger.Info("Endless mode activated!");
 
-        HasStarted = true;
+        YuWanCard_HasStarted = true;
 
         if (LocalContext.IsMe(player))
         {
@@ -160,24 +160,24 @@ public class EndlessModifier : ModifierModel
 
     public override void AfterRunCreated(RunState runState)
     {
-        MainFile.Logger.Info($"Endless modifier initialized. Loop: {EndlessLoopCount}, TotalActs: {TotalActsCleared}");
+        MainFile.Logger.Info($"Endless modifier initialized. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
     }
 
     public override void AfterRunLoaded(RunState runState)
     {
-        MainFile.Logger.Info($"Endless modifier loaded. Loop: {EndlessLoopCount}, TotalActs: {TotalActsCleared}");
+        MainFile.Logger.Info($"Endless modifier loaded. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
     }
 
     public void IncrementLoopCount()
     {
-        EndlessLoopCount++;
-        TotalActsCleared++;
-        MainFile.Logger.Info($"Endless loop incremented. Now at loop {EndlessLoopCount}, total acts: {TotalActsCleared}");
+        YuWanCard_EndlessLoopCount++;
+        YuWanCard_TotalActsCleared++;
+        MainFile.Logger.Info($"Endless loop incremented. Now at loop {YuWanCard_EndlessLoopCount}, total acts: {YuWanCard_TotalActsCleared}");
     }
 
     public void IncrementActCount()
     {
-        TotalActsCleared++;
+        YuWanCard_TotalActsCleared++;
     }
 
     public static EndlessModifier? GetEndlessModifier(RunState runState)
