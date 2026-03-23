@@ -9,6 +9,6 @@
   "YUWANCARD-PIG_BANKRUPTCY_POWER.description": "本回合内所有手牌消耗为0，但是自带消耗。",
   "YUWANCARD-PIG_BANKRUPTCY_POWER.smartDescription": "本回合内所有手牌消耗为0，但是自带消耗。",
   "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.title": "猪脑过载",
-  "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.description": "每2回合获得1张[gold]晕眩[/gold]。",
+  "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.description": "每{DazedInterval}回合获得{Amount}张[gold]晕眩[/gold]",
   "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.smartDescription": "每{DazedInterval}回合获得{Amount}张[gold]晕眩[/gold]。"
 }

@@ -1,6 +1,102 @@
 # 核心功能
 
-## 自定义卡牌 (CustomCardModel)
+## 自定义卡牌
+
+BaseLib 提供两种方式定义自定义卡牌：`CustomCardModel`（传统方式）和 `ConstructedCardModel`（链式 API 方式）。
+
+### ConstructedCardModel（推荐）
+
+`ConstructedCardModel` 是 BaseLib 新增的替代性卡牌基类，提供流畅的链式 API 来构建卡牌属性，大幅简化卡牌定义：
+
+```csharp
+using BaseLib.Abstracts;
+using BaseLib.Utils;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models.CardPools;
+
+[Pool(typeof(ColorlessCardPool))]
+public class MyCard() : ConstructedCardModel(
+    cost: 1,
+    type: CardType.Attack,
+    rarity: CardRarity.Common,
+    target: TargetType.AnyEnemy)
+{
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(5m);
+    }
+
+    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    {
+        await Damage(user, target, stacks);
+    }
+}
+```
+
+#### 链式 API 方法
+
+| 方法 | 说明 |
+|------|------|
+| `WithVars(params DynamicVar[] vars)` | 添加多个动态变量 |
+| `WithVar(string name, int baseVal)` | 添加命名变量 |
+| `WithBlock(int baseVal)` | 生成 BlockVar |
+| `WithDamage(int baseVal)` | 生成 DamageVar |
+| `WithCards(int baseVal)` | 生成 CardsVar |
+| `WithPower<T>(int baseVal)` | 生成 PowerVar<T> 并添加工具提示 |
+| `WithPower<T>(string name, int baseVal)` | 带名称的 PowerVar |
+| `WithTags(params CardTag[] tags)` | 添加卡牌标签 |
+| `WithKeywords(params CardKeyword[] keywords)` | 添加关键词 |
+| `WithCalculatedVar(...)` | 添加计算变量（伤害/格挡） |
+| `WithTip(TooltipSource tipSource)` | 添加工具提示 |
+| `WithEnergyTip()` | 添加能量提示 |
+
+#### 完整示例
+
+```csharp
+[Pool(typeof(ColorlessCardPool))]
+public class StrikeCard() : ConstructedCardModel(
+    cost: 1,
+    type: CardType.Attack,
+    rarity: CardRarity.Common,
+    target: TargetType.AnyEnemy)
+{
+    protected override IEnumerable<DynamicVar> Vars => base.Vars
+        .WithDamage(6);
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(3);
+    }
+
+    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    {
+        await Damage(user, target, stacks);
+    }
+}
+
+[Pool(typeof(ColorlessCardPool))]
+public class DefendCard() : ConstructedCardModel(
+    cost: 1,
+    type: CardType.Skill,
+    rarity: CardRarity.Common,
+    target: TargetType.Self)
+{
+    protected override IEnumerable<DynamicVar> Vars => base.Vars
+        .WithBlock(5);
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Block.UpgradeValueBy(3);
+    }
+
+    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    {
+        await Block(user, stacks);
+    }
+}
+```
+
+### CustomCardModel（传统方式）
 
 继承 `CustomCardModel` 来创建自定义卡牌：
 

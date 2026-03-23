@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3 uid="uid://cyq8t676a6cw3"]
+
+[ext_resource type="Texture2D" uid="uid://c7ct2gc1ncoyx" path="res://YuWanCard/images/monsters/killer.png" id="2_killer"]
+
+[node name="KillerVisuals" type="Node2D"]
+
+[node name="Visuals" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(2, -281)
+scale = Vector2(0.6143819, 0.62400216)
+texture = ExtResource("2_killer")
+
+[node name="Bounds" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -448.0
+offset_top = -630.0
+offset_right = 435.0
+offset_bottom = 31.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CenterPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(65, -306)
+
+[node name="IntentPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(76, -599)
+
+[node name="OrbPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(56, -218)
+
+[node name="TalkPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(-230, -511)

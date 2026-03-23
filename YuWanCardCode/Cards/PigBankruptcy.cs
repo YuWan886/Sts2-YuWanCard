@@ -20,7 +20,7 @@ public class PigBankruptcy : YuWanCardModel
     ];
 
     public PigBankruptcy() : base(
-        baseCost: 0,
+        baseCost: 3,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
         target: TargetType.Self

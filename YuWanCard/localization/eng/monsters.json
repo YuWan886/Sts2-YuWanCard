@@ -1,0 +1,12 @@
+{
+  "KILLER.name": "Killer",
+  "KILLER.moves.SLEEP.speakLine": "So many districts!!!",
+  "KILLER.moves.WAKE.speakLine": "I... awaken...",
+  "KILLER.moves.SLASH.title": "Slash",
+  "KILLER.moves.MULTI_ATTACK.title": "Multi Attack",
+  "KILLER.moves.GOOP.title": "Goop Spray",
+  "KILLER.moves.ZOOM.title": "Zoom",
+  "KILLER.moves.ENLARGE.title": "Enlarge",
+  "KILLER.onDeath.speakLine": "Argh!!!",
+  "KILLER.onPlayerDeath.speakLine": "Weakling~~"
+}

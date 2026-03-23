@@ -200,7 +200,7 @@ public class MyModifier : ModifierModel
 
 ## 配置 UI 组件
 
-BaseLib 提供了以下配置 UI 组件：
+BaseLib 提供了完整的配置 UI 组件系统，外观现代美观：
 
 | 组件 | 说明 |
 |------|------|
@@ -208,9 +208,51 @@ BaseLib 提供了以下配置 UI 组件：
 | `NConfigSlider` | 滑块选项 |
 | `NConfigDropdown` | 下拉选项 |
 | `NConfigDropdownItem` | 下拉选项项 |
-| `NConfigButton` | 配置按钮 |
+| `NConfigButton` | 配置按钮（在模组信息旁显示） |
 | `NConfigOptionRow` | 配置选项行容器 |
-| `NModConfigPopup` | 模组配置弹窗 |
+| `NModConfigSubmenu` | 模组配置子菜单 |
+
+### NConfigButton 配置按钮
+
+在模组信息按钮旁创建设置按钮，点击打开模组配置子菜单：
+
+```csharp
+// 自动创建，通过 ModConfigRegistry.Register 注册后自动显示
+// 按钮打开时图标旋转动画
+// 通过反射访问游戏内部菜单栈
+```
+
+### NModConfigSubmenu 配置子菜单
+
+模组配置的完整子菜单界面：
+
+**功能特性**：
+- 滚动容器支持自动禁用滚动
+- 自动保存（5 秒延迟）
+- 渐入动画
+- 本地化标题支持
+
+### NConfigSlider 滑块选项
+
+**功能特性**：
+- 自定义格式字符串（`{0}` 样式）
+- 负数支持（通过偏移实现）
+- 控制器优化：长按加速
+- 右对齐标签
+
+```csharp
+[SliderRange(-10, 10, 1)]
+[SliderLabelFormat("{0}")]
+[ConfigSection("数值设置")]
+public static int MyValue { get; set; } = 0;
+```
+
+### NConfigDropdown 下拉选项
+
+**功能特性**：
+- 继承 `NSettingsDropdown`
+- 下拉列表项位置跟随滚动
+- TopLevel 解决裁剪问题
 
 ### 手动创建 UI 组件
 

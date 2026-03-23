@@ -33,7 +33,7 @@
   "YUWANCARD-PIG_TOUCH_FISH.title": "猪摸鱼",
   "YUWANCARD-PIG_TOUCH_FISH.description": "保留本回合的手牌，下回合获得{EnergyNextTurnPower:diff()}点能量。",
   "YUWANCARD-PIG_BANKRUPTCY.title": "猪破产",
-  "YUWANCARD-PIG_BANKRUPTCY.description": "本回合内所有手牌耗能为0，但是自带[gold]消耗[/gold]。",
+  "YUWANCARD-PIG_BANKRUPTCY.description": "本回合内所有手牌耗能为0，并获得[gold]消耗[/gold]。",
   "YUWANCARD-PIG_CHARGE.title": "猪冲锋",
   "YUWANCARD-PIG_CHARGE.description": "造成{Damage:diff()}点伤害。本回合获得{StrengthPower:diff()}点[gold]力量[/gold]。",
   "YUWANCARD-PIG_MULTI_SHOT.title": "猪连射",
@@ -46,5 +46,9 @@
   "YUWANCARD-PIG_BRAIN_OVERLOAD.title": "猪脑过载",
   "YUWANCARD-PIG_BRAIN_OVERLOAD.description": "本回合获得{Energy:diff()}{Energy:energyIcons()}，抽{Cards:diff()}张牌。每{IfUpgraded:show:3|2}回合获得1张[gold]晕眩[/gold]。",
   "YUWANCARD-PIG_MELT.title": "猪融化",
-  "YUWANCARD-PIG_MELT.description": "获得{BufferPower:diff()}层[gold]缓冲[/gold]。结束你的回合。"
+  "YUWANCARD-PIG_MELT.description": "获得{BufferPower:diff()}层[gold]缓冲[/gold]。结束你的回合。",
+  "YUWANCARD-PIG_DRAGON_RIDE.title": "猪登龙",
+  "YUWANCARD-PIG_DRAGON_RIDE.description": "对一名敌人造成{Damage:diff()}点伤害3次。",
+  "YUWANCARD-PIG_CRASH.title": "猪坠机",
+  "YUWANCARD-PIG_CRASH.description": "扣除2点生命，对所有敌人造成{Damage:diff()}点伤害。"
 }

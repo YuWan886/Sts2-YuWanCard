@@ -2,7 +2,67 @@
 
 ## 完整的模组示例
 
-以下是一个完整的模组示例，展示了如何创建卡牌、遗物和能力：
+以下是一个完整的模组示例，展示了如何创建卡牌、遗物和能力。
+
+### 使用 ConstructedCardModel（推荐）
+
+`ConstructedCardModel` 提供更简洁的链式 API：
+
+```csharp
+using BaseLib.Abstracts;
+using BaseLib.Utils;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models.CardPools;
+
+namespace YuWanCard.Cards;
+
+[Pool(typeof(ColorlessCardPool))]
+public class PigStrike() : ConstructedCardModel(
+    cost: 1,
+    type: CardType.Attack,
+    rarity: CardRarity.Common,
+    target: TargetType.AnyEnemy)
+{
+    protected override IEnumerable<DynamicVar> Vars => base.Vars
+        .WithDamage(6);
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(3);
+    }
+
+    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    {
+        await Damage(user, target, stacks);
+    }
+}
+
+[Pool(typeof(ColorlessCardPool))]
+public class PigPower() : ConstructedCardModel(
+    cost: 1,
+    type: CardType.Skill,
+    rarity: CardRarity.Uncommon,
+    target: TargetType.Self)
+{
+    protected override IEnumerable<DynamicVar> Vars => base.Vars
+        .WithBlock(5)
+        .WithPower<StrengthPower>(1);
+
+    protected override IEnumerable<CardKeyword> Keywords => [CardKeyword.Exhaust];
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Block.UpgradeValueBy(3);
+        RemoveKeyword(CardKeyword.Exhaust);
+    }
+
+    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    {
+        await Block(user, DynamicVars.Block.BaseValue);
+        await PowerCmd.Apply<StrengthPower>(user.Creature, DynamicVars.Strength.BaseValue, user.Creature, this);
+    }
+}
+```
 
 ### 模组入口文件
 

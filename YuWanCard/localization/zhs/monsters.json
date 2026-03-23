@@ -1,0 +1,12 @@
+{
+  "KILLER.name": "杀手",
+  "KILLER.moves.SLEEP.speakLine": "好多区！！！",
+  "KILLER.moves.WAKE.speakLine": "苏醒了...[red]猎杀时刻[/red]！",
+  "KILLER.moves.SLASH.title": "斩击",
+  "KILLER.moves.MULTI_ATTACK.title": "连击",
+  "KILLER.moves.GOOP.title": "粘液喷射",
+  "KILLER.moves.ZOOM.title": "突袭",
+  "KILLER.moves.ENLARGE.title": "蓄力",
+  "KILLER.onDeath.speakLine": "饿啊！！！",
+  "KILLER.onPlayerDeath.speakLine": "杂鱼~zako~"
+}

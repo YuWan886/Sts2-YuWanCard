@@ -14,7 +14,7 @@ namespace YuWanCard.Cards;
 public class SadArmyWin : YuWanCardModel
 {
     public SadArmyWin() : base(
-        baseCost: 3,
+        baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy

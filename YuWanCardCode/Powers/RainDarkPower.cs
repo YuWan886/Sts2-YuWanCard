@@ -1,6 +1,5 @@
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -46,19 +45,16 @@ public class RainDarkPower : YuWanPowerModel
 
         if (newEnergy > oldEnergy && _subscribedPlayer != null)
         {
-            _ = Task.Run(async () =>
+            _isProcessing = true;
+            try
             {
-                _isProcessing = true;
-                try
-                {
-                    int gained = newEnergy - oldEnergy;
-                    await PlayerCmd.GainEnergy(gained, _subscribedPlayer);
-                }
-                finally
-                {
-                    _isProcessing = false;
-                }
-            });
+                int gained = newEnergy - oldEnergy;
+                _subscribedPlayer.PlayerCombatState?.GainEnergy(gained);
+            }
+            finally
+            {
+                _isProcessing = false;
+            }
         }
     }
 
