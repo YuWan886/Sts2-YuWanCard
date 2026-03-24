@@ -22,5 +22,5 @@
   "YUWANCARD-SUPREME_BONE.title": "Supreme Bone",
   "YUWANCARD-SUPREME_BONE.description": "At the start of each combat, choose 2 cards from your deck and give them [gold]Exhaust[/gold]. When your HP first drops below 30%, instantly gain 2 Energy and draw 3 cards.",
   "YUWANCARD-SUPREME_BONE.flavor": "The Supreme Bone holds supreme power.",
-  "YUWANCARD-SUPREME_BONE.selectionPrompt": "Choose 2 cards from your deck"
+  "YUWANCARD-SUPREME_BONE.selectionPrompt": "Choose 2 cards from your deck to give [gold]Exhaust[/gold]"
 }

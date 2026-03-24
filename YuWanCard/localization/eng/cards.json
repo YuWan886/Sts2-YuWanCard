@@ -46,5 +46,9 @@
   "YUWANCARD-PIG_BRAIN_OVERLOAD.title": "Pig Brain Overload",
   "YUWANCARD-PIG_BRAIN_OVERLOAD.description": "Gain {Energy:diff()} {Energy:energyIcons()} this turn. Draw {Cards:diff()} cards. Every {IfUpgraded:show:3|2} turns, gain 1 [gold]Dazed[/gold].",
   "YUWANCARD-PIG_MELT.title": "Pig Melt",
-  "YUWANCARD-PIG_MELT.description": "Gain {BufferPower:diff()} stack(s) of [gold]Buffer[/gold]. End your turn."
+  "YUWANCARD-PIG_MELT.description": "Gain {BufferPower:diff()} stack(s) of [gold]Buffer[/gold]. End your turn.",
+  "YUWANCARD-PIG_DRAGON_RIDE.title": "Pig Dragon Ride",
+  "YUWANCARD-PIG_DRAGON_RIDE.description": "Deal {Damage:diff()} damage 3 times to an enemy.",
+  "YUWANCARD-PIG_CRASH.title": "Pig Crash",
+  "YUWANCARD-PIG_CRASH.description": "Lose 2 HP. Deal {Damage:diff()} damage to all enemies."
 }
