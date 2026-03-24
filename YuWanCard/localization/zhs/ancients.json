@@ -9,11 +9,9 @@
   "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.title": "升级卡牌",
   "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.description": "选择 5 张卡牌进行升级。",
   "YUWANCARD-PIG_PIG.pages.DONE.description": "猪猪满意地离开了...",
-
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-0.ancient": "哼哼...陌生的旅人，你来到了我的领地。",
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-1.ancient": "我是猪猪，这片土地的守护者。让我看看能为你做些什么...",
-
   "YUWANCARD-PIG_PIG.talk.IRONCLAD.0-0.ancient": "哼，战士...你的剑上沾满了鲜血。",
   "YUWANCARD-PIG_PIG.talk.IRONCLAD.0-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.IRONCLAD.0-1.ancient": "但我知道，那是为了保护重要的人。让我帮你一把。",
@@ -23,7 +21,6 @@
   "YUWANCARD-PIG_PIG.talk.IRONCLAD.2-0.ancient": "战士，你的坚持让我印象深刻。",
   "YUWANCARD-PIG_PIG.talk.IRONCLAD.2-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.IRONCLAD.2-1.ancient": "让我再给你一些帮助，希望你能走得更远。",
-
   "YUWANCARD-PIG_PIG.talk.SILENT.0-0.ancient": "哼，猎人...你总是那么安静。",
   "YUWANCARD-PIG_PIG.talk.SILENT.0-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.SILENT.0-1.ancient": "但你的刀刃从不留情。让我看看能给你什么。",
@@ -33,7 +30,6 @@
   "YUWANCARD-PIG_PIG.talk.SILENT.2-0.ancient": "猎人，你的身影如同幽灵。",
   "YUWANCARD-PIG_PIG.talk.SILENT.2-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.SILENT.2-1.ancient": "让我为你提供一些有用的东西吧。",
-
   "YUWANCARD-PIG_PIG.talk.DEFECT.0-0.ancient": "哼，机器人...你的存在让我感到好奇。",
   "YUWANCARD-PIG_PIG.talk.DEFECT.0-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.DEFECT.0-1.ancient": "没有灵魂的你，为何要攀登高塔？让我给你一些东西。",
@@ -43,7 +39,6 @@
   "YUWANCARD-PIG_PIG.talk.DEFECT.2-0.ancient": "机器人，你的逻辑总是那么完美。",
   "YUWANCARD-PIG_PIG.talk.DEFECT.2-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.DEFECT.2-1.ancient": "但有时候，直觉比计算更重要。收下这个吧。",
-
   "YUWANCARD-PIG_PIG.talk.REGENT.0-0.ancient": "哼，贵族...你的气质与众不同。",
   "YUWANCARD-PIG_PIG.talk.REGENT.0-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.REGENT.0-1.ancient": "高贵的血统并不能保证安全，让我帮你一把。",
@@ -53,7 +48,6 @@
   "YUWANCARD-PIG_PIG.talk.REGENT.2-0.ancient": "贵族，你的决心让我敬佩。",
   "YUWANCARD-PIG_PIG.talk.REGENT.2-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.REGENT.2-1.ancient": "让我为你提供一些帮助，继续你的旅程吧。",
-
   "YUWANCARD-PIG_PIG.talk.NECROBINDER.0-0.ancient": "哼，死灵法师...死亡的力量在你身上流淌。",
   "YUWANCARD-PIG_PIG.talk.NECROBINDER.0-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.NECROBINDER.0-1.ancient": "但生命与死亡同样珍贵，让我给你一些东西。",
@@ -63,7 +57,6 @@
   "YUWANCARD-PIG_PIG.talk.NECROBINDER.2-0.ancient": "死灵法师，你的力量令人敬畏。",
   "YUWANCARD-PIG_PIG.talk.NECROBINDER.2-0.next": "继续",
   "YUWANCARD-PIG_PIG.talk.NECROBINDER.2-1.ancient": "让我给你一些帮助，愿你在生与死之间找到平衡。",
-
   "YUWANCARD-PIG_PIG.talk.ANY.0-0r.ancient": "哼？",
   "YUWANCARD-PIG_PIG.talk.ANY.0-0r.next": "继续",
   "YUWANCARD-PIG_PIG.talk.ANY.0-1r.ancient": "哼哼！",

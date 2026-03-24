@@ -29,25 +29,29 @@ public sealed class Killer : MonsterModel
 {
     public override string VisualsPath => "res://YuWanCard/scenes/monsters/killer/killer_visuals.tscn";
 
-    public override int MinInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 180, 150);
+    public override int MinInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 190, 180);
 
     public override int MaxInitialHp => MinInitialHp;
 
-    private int SlashDamage => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 18, 16);
+    private static int SlashDamage => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 18, 16);
 
-    private int MultiDamage => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 7, 6);
+    private static int MultiDamage => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 7, 6);
 
-    private int MultiRepeat => 3;
+    private static int MultiRepeat => 3;
 
-    private int ZoomDamage => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 14, 12);
+    private static int ZoomDamage => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 12, 10);
 
-    private int ZoomBlock => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 15, 12);
+    private static int ZoomBlock => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 12, 10);
 
-    private int StrengthGain => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 4, 3);
+    private static int StrengthGain => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 4, 3);
 
-    private int DazedCount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 2, 1);
+    private static int DazedCount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 2, 1);
 
-    private int HardenedShellAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 45, 20);
+    private static int HardenedShellAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 50, 30);
+
+    private static int PersonalHiveAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 2, 1);
+
+    private static int SkittishAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 18, 15);
 
     public override DamageSfxType TakeDamageSfxType => DamageSfxType.Armor;
 
@@ -91,20 +95,20 @@ public sealed class Killer : MonsterModel
 
     public override MonsterMoveStateMachine GenerateMoveStateMachine()
     {
-        List<MonsterState> list = new List<MonsterState>();
+        List<MonsterState> list = [];
 
-        MoveState sleepMove = new MoveState("SLEEP_MOVE", SleepMove, new SleepIntent());
-        MoveState wakeMove = new MoveState("WAKE_MOVE", WakeMove, new BuffIntent());
-        MoveState slashMove = new MoveState("SLASH_MOVE", SlashMove, new SingleAttackIntent(SlashDamage));
-        MoveState multiAttackMove = new MoveState("MULTI_ATTACK_MOVE", MultiAttackMove, new MultiAttackIntent(MultiDamage, MultiRepeat));
-        MoveState goopMove = new MoveState("GOOP_MOVE", GoopMove, new DebuffIntent());
-        MoveState zoomMove = new MoveState("ZOOM_MOVE", ZoomMove, new SingleAttackIntent(ZoomDamage), new DefendIntent());
-        MoveState enlargeMove = new MoveState("ENLARGE_MOVE", EnlargeMove, new BuffIntent(), new StatusIntent(DazedCount));
+        MoveState sleepMove = new("SLEEP_MOVE", SleepMove, new SleepIntent());
+        MoveState wakeMove = new("WAKE_MOVE", WakeMove, new BuffIntent());
+        MoveState slashMove = new("SLASH_MOVE", SlashMove, new SingleAttackIntent(SlashDamage));
+        MoveState multiAttackMove = new("MULTI_ATTACK_MOVE", MultiAttackMove, new MultiAttackIntent(MultiDamage, MultiRepeat));
+        MoveState goopMove = new("GOOP_MOVE", GoopMove, new DebuffIntent());
+        MoveState zoomMove = new("ZOOM_MOVE", ZoomMove, new SingleAttackIntent(ZoomDamage), new DefendIntent());
+        MoveState enlargeMove = new("ENLARGE_MOVE", EnlargeMove, new BuffIntent(), new StatusIntent(DazedCount));
 
         sleepMove.FollowUpState = wakeMove;
         wakeMove.FollowUpState = slashMove;
 
-        RandomBranchState randomBranch = new RandomBranchState("RAND");
+        RandomBranchState randomBranch = new("RAND");
         slashMove.FollowUpState = randomBranch;
         multiAttackMove.FollowUpState = randomBranch;
         goopMove.FollowUpState = randomBranch;
@@ -131,7 +135,7 @@ public sealed class Killer : MonsterModel
 
     private async Task SleepMove(IReadOnlyList<Creature> targets)
     {
-        LocString line = MonsterModel.L10NMonsterLookup("KILLER.moves.SLEEP.speakLine");
+        LocString line = L10NMonsterLookup("KILLER.moves.SLEEP.speakLine");
         ThinkCmd.Play(line, Creature);
         await Cmd.Wait(0.5f);
     }
@@ -143,7 +147,9 @@ public sealed class Killer : MonsterModel
             NRunMusicController.Instance?.TriggerEliteSecondPhase();
         }
         await PowerCmd.Apply<StrengthPower>(Creature, 8m, Creature, null);
-        LocString line = MonsterModel.L10NMonsterLookup("KILLER.moves.WAKE.speakLine");
+        await PowerCmd.Apply<PersonalHivePower>(Creature, PersonalHiveAmount, Creature, null);
+        await PowerCmd.Apply<SkittishPower>(Creature, SkittishAmount, Creature, null);
+        LocString line = L10NMonsterLookup("KILLER.moves.WAKE.speakLine");
         TalkCmd.Play(line, Creature);
         await Cmd.Wait(0.5f);
     }
@@ -197,17 +203,17 @@ public sealed class Killer : MonsterModel
 
     public override CreatureAnimator GenerateAnimator(MegaSprite controller)
     {
-        AnimState idleState = new AnimState("idle_loop", isLooping: true);
-        AnimState castState = new AnimState("cast");
-        AnimState attackState = new AnimState("attack");
-        AnimState hurtState = new AnimState("hurt");
-        AnimState dieState = new AnimState("die");
+        AnimState idleState = new("idle_loop", isLooping: true);
+        AnimState castState = new("cast");
+        AnimState attackState = new("attack");
+        AnimState hurtState = new("hurt");
+        AnimState dieState = new("die");
 
         castState.NextState = idleState;
         attackState.NextState = idleState;
         hurtState.NextState = idleState;
 
-        CreatureAnimator animator = new CreatureAnimator(idleState, controller);
+        CreatureAnimator animator = new(idleState, controller);
         animator.AddAnyState("Idle", idleState);
         animator.AddAnyState("Cast", castState);
         animator.AddAnyState("Attack", attackState);

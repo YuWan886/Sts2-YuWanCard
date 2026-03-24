@@ -69,6 +69,12 @@
 |------|--------|
 | Endless | Climb the spire endlessly until death. Enemies get stronger with each loop (+20% HP/layer, +1 Strength/layer, BOSS gets extra buffs). Gain 10 max HP on selection. |
 
+### Monsters
+
+| Name | Type | HP | Effect |
+|------|------|-----|--------|
+| Killer | Elite | 150/180 | Starts with Hardened Shell (15/30 stacks). On wake, gains 8 Strength, Personal Hive (adds Dazed to attacker when hit by powered attack), and Skittish (gains Block after being attacked). Moves: Slash (12/14 damage), Multi-attack (3×4/5 damage), Goop (apply Vulnerable), Zoom (8/10 damage+Block), Enlarge (gain Strength+add Dazed) |
+
 ## Installation
 1. Game version: `v0.99.1+`
 2. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [Mirror](https://gh-proxy.com/) | [Backup](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)

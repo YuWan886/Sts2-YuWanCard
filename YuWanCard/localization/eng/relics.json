@@ -11,5 +11,16 @@
   "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText": "[gold][Ring of Seven Curses][/gold] heal 15% of max HP ({ActualHeal}).",
   "YUWANCARD-TEN_YEAR_BAMBOO.title": "Ten Year Bamboo",
   "YUWANCARD-TEN_YEAR_BAMBOO.description": "Gain {BlockBonus} [gold]Block[/gold] at the start of each turn. Defeating Elite enemies increases Block by 1. Defeating Bosses increases Block by 3.",
-  "YUWANCARD-TEN_YEAR_BAMBOO.flavor": "Ten years of bamboo, tough and resilient."
+  "YUWANCARD-TEN_YEAR_BAMBOO.flavor": "Ten years of bamboo, tough and resilient.",
+  "YUWANCARD-HAOTIAN_HAMMER.title": "Haotian Hammer",
+  "YUWANCARD-HAOTIAN_HAMMER.description": "At the start of your turn, upgrade all [gold]Sovereign Blades[/gold] in all players' hands.",
+  "YUWANCARD-HAOTIAN_HAMMER.flavor": "The emperor's weapon, supreme among swords.",
+  "YUWANCARD-REINCARNATED_EYE.title": "Reincarnated Eye",
+  "YUWANCARD-REINCARNATED_EYE.description": "At the start of your first turn each combat, choose a card from your deck to copy and add to your hand.",
+  "YUWANCARD-REINCARNATED_EYE.flavor": "With double pupils, one sees infinite possibilities.",
+  "YUWANCARD-REINCARNATED_EYE.selectionPrompt": "Choose a card from your deck to copy",
+  "YUWANCARD-SUPREME_BONE.title": "Supreme Bone",
+  "YUWANCARD-SUPREME_BONE.description": "At the start of each combat, choose 2 cards from your deck and give them [gold]Exhaust[/gold]. When your HP first drops below 30%, instantly gain 2 Energy and draw 3 cards.",
+  "YUWANCARD-SUPREME_BONE.flavor": "The Supreme Bone holds supreme power.",
+  "YUWANCARD-SUPREME_BONE.selectionPrompt": "Choose 2 cards from your deck"
 }
