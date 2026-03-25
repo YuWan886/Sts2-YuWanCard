@@ -14,11 +14,11 @@
   "YUWANCARD-HAOTIAN_HAMMER.description": "在你的回合开始时，升级所有玩家手牌中的[gold]君王之剑[/gold]。",
   "YUWANCARD-HAOTIAN_HAMMER.flavor": "最强器武魂",
   "YUWANCARD-REINCARNATED_EYE.title": "重瞳",
-  "YUWANCARD-REINCARNATED_EYE.description": "在你的第一个回合开始时，选择牌库中的一张卡牌复制加入手牌。",
+  "YUWANCARD-REINCARNATED_EYE.description": "每场战斗开始时，选择牌库中的一张卡牌复制加入手牌。",
   "YUWANCARD-REINCARNATED_EYE.flavor": "重瞳本是无敌路，何须再借他人骨。",
   "YUWANCARD-REINCARNATED_EYE.selectionPrompt": "选择一张牌库中的卡牌进行复制",
   "YUWANCARD-SUPREME_BONE.title": "至尊骨",
-  "YUWANCARD-SUPREME_BONE.description": "每场战斗开始时，选择牌库中的2张卡牌施加[gold]消耗[/gold]。当你生命值首次低于30%时，获得2点{Energy:energyIcons()}，并抽3张牌。",
+  "YUWANCARD-SUPREME_BONE.description": "每场战斗开始时，选择牌库中的2张卡牌施加[gold]消耗[/gold]。当你生命值首次低于30%时，获得2点能量，并抽3张牌。",
   "YUWANCARD-SUPREME_BONE.flavor": "谁在称无敌，哪个敢言不败？",
   "YUWANCARD-SUPREME_BONE.selectionPrompt": "选择2张牌库中的卡牌施加[gold]消耗[/gold]"
 }

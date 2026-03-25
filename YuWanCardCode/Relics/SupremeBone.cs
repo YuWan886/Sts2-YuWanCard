@@ -117,11 +117,11 @@ public class SupremeBone : YuWanRelicModel
         return true;
     }
 
-    public override async Task AfterCurrentHpChanged(Creature creature, decimal delta)
+    public override Task AfterCurrentHpChanged(Creature creature, decimal delta)
     {
         if (creature.Player != Owner || HasTriggeredLowHpEffectThisCombat || ShouldTriggerDelayedEffect)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         if (Owner.Creature.CurrentHp <= Owner.Creature.MaxHp * 0.3m)
@@ -131,6 +131,8 @@ public class SupremeBone : YuWanRelicModel
             Flash();
             MainFile.Logger.Info($"SupremeBone: HP dropped below 30%, will trigger effect at next player turn start");
         }
+
+        return Task.CompletedTask;
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
