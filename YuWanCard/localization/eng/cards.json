@@ -50,5 +50,7 @@
   "YUWANCARD-PIG_DRAGON_RIDE.title": "Pig Dragon Ride",
   "YUWANCARD-PIG_DRAGON_RIDE.description": "Deal {Damage:diff()} damage 3 times to an enemy.",
   "YUWANCARD-PIG_CRASH.title": "Pig Crash",
-  "YUWANCARD-PIG_CRASH.description": "Lose 2 HP. Deal {Damage:diff()} damage to all enemies."
+  "YUWANCARD-PIG_CRASH.description": "Lose 2 HP. Deal {Damage:diff()} damage to all enemies.",
+  "YUWANCARD-YOU_ARE_PIG.title": "You Are Pig",
+  "YUWANCARD-YOU_ARE_PIG.description": "Make a teammate turn into a pig, gaining {BufferPower:diff()} stacks of [gold]Buffer[/gold] and {RegenPower:diff()} stacks of [gold]Regen[/gold], then end their turn."
 }

@@ -607,3 +607,225 @@ public class ReviveKai : YuWanCardModel
   "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText": "七咒之戒：回复 {ActualHeal} 点生命"
 }
 ```
+
+## 自定义能量球示例
+
+### 基础能量球
+
+```csharp
+using BaseLib.Abstracts;
+using Godot;
+
+namespace YuWanCard.Orbs;
+
+public class PigOrb : CustomOrbModel
+{
+    public override string? CustomIconPath => "res://YuWanCard/images/orbs/pig_orb.png";
+    public override string? CustomSpritePath => "res://YuWanCard/images/orbs/pig_orb_sprite.png";
+
+    public override bool IncludeInRandomPool => true;
+
+    public override string? CustomEvokeSfx => "res://YuWanCard/audio/orbs/pig_evoke.ogg";
+    public override string? CustomChannelSfx => "res://YuWanCard/audio/orbs/pig_channel.ogg";
+}
+```
+
+### 带自定义精灵的能量球
+
+```csharp
+using BaseLib.Abstracts;
+using Godot;
+
+namespace YuWanCard.Orbs;
+
+public class AdvancedPigOrb : CustomOrbModel
+{
+    public override string? CustomIconPath => "res://YuWanCard/images/orbs/advanced_pig_orb.png";
+
+    public override bool IncludeInRandomPool => false;
+
+    public override Node2D? CreateCustomSprite()
+    {
+        var container = new Node2D();
+
+        var mainSprite = new Sprite2D
+        {
+            Texture = GD.Load<Texture2D>("res://YuWanCard/images/orbs/advanced_pig_main.png")
+        };
+        container.AddChild(mainSprite);
+
+        var glowSprite = new Sprite2D
+        {
+            Texture = GD.Load<Texture2D>("res://YuWanCard/images/orbs/advanced_pig_glow.png"),
+            Modulate = new Color(1, 1, 1, 0.5f)
+        };
+        container.AddChild(glowSprite);
+
+        return container;
+    }
+}
+```
+
+## 配置系统示例
+
+### 完整配置类
+
+```csharp
+using BaseLib.Config;
+using Godot;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
+
+namespace YuWanCard.Config;
+
+[HoverTipsByDefault]
+internal class YuWanCardConfig : SimpleModConfig
+{
+    [ConfigSection("日志设置")]
+    public static bool OpenLogWindowOnStartup { get; set; } = false;
+
+    [SliderRange(128, 2048, 64)]
+    [SliderLabelFormat("{0:0}")]
+    [ConfigHoverTip(false)]
+    public static double LimitedLogSize { get; set; } = 256;
+
+    [ConfigSection("游戏设置")]
+    public static bool EnableSpecialEffects { get; set; } = true;
+
+    [ConfigSection("难度设置")]
+    public static DifficultyPreset Difficulty { get; set; } = DifficultyPreset.Normal;
+
+    [SliderRange(0.5, 2.0, 0.1)]
+    [SliderLabelFormat("{0:0.0}x")]
+    [ConfigSection("数值调整")]
+    public static double DamageMultiplier { get; set; } = 1.0;
+
+    [SliderRange(-50, 50, 5)]
+    [SliderLabelFormat("{0:+0;-0;0} HP")]
+    [ConfigHoverTip(false)]
+    public static double StartingHealthOffset { get; set; } = 0;
+
+    [ConfigTextInput(TextInputPreset.SafeDisplayName, MaxLength = 16)]
+    [ConfigHoverTip(false)]
+    public static string PlayerNickname { get; set; } = "Player";
+
+    [ConfigHideInUI]
+    public static int TotalRunsPlayed { get; set; } = 0;
+
+    [ConfigIgnore]
+    public static int TemporaryCounter { get; set; } = 0;
+
+    public override void SetupConfigUI(Control optionContainer)
+    {
+        GenerateOptionsForAllProperties(optionContainer);
+
+        optionContainer.AddChild(CreateDividerControl());
+
+        var resetButton = CreateButton("ResetStats", "Reset", async () =>
+        {
+            var popup = NErrorPopup.Create(
+                "重置统计",
+                $"已重置 {TotalRunsPlayed} 次游戏记录。",
+                false
+            );
+            if (popup != null && NModalContainer.Instance != null)
+            {
+                NModalContainer.Instance.Add(popup);
+            }
+            TotalRunsPlayed = 0;
+        }, addHoverTip: false);
+        optionContainer.AddChild(resetButton);
+
+        AddRestoreDefaultsButton(optionContainer);
+    }
+}
+
+public enum DifficultyPreset
+{
+    Easy,
+    Normal,
+    Hard,
+    Nightmare
+}
+```
+
+### 配置本地化 (settings_ui.json)
+
+```json
+{
+  "YUWANCARD-LOG_SETTINGS.title": "日志设置",
+  "YUWANCARD-GAME_SETTINGS.title": "游戏设置",
+  "YUWANCARD-DIFFICULTY_SETTINGS.title": "难度设置",
+  "YUWANCARD-NUMERIC_ADJUSTMENTS.title": "数值调整",
+
+  "YUWANCARD-OPEN_LOG_WINDOW_ON_STARTUP.title": "启动时打开日志窗口",
+  "YUWANCARD-OPEN_LOG_WINDOW_ON_STARTUP.hover.desc": "游戏启动时自动打开 BaseLib 日志窗口，方便调试。",
+
+  "YUWANCARD-LIMITED_LOG_SIZE.title": "日志行数限制",
+
+  "YUWANCARD-ENABLE_SPECIAL_EFFECTS.title": "启用特殊效果",
+  "YUWANCARD-ENABLE_SPECIAL_EFFECTS.hover.desc": "启用模组的特殊视觉效果。",
+
+  "YUWANCARD-DIFFICULTY.title": "难度预设",
+  "YUWANCARD-DIFFICULTY.hover.desc": "选择游戏难度，影响敌人伤害和生命值。",
+
+  "YUWANCARD-DAMAGE_MULTIPLIER.title": "伤害倍率",
+  "YUWANCARD-DAMAGE_MULTIPLIER.hover.desc": "调整所有伤害的倍率。",
+
+  "YUWANCARD-STARTING_HEALTH_OFFSET.title": "初始生命偏移",
+
+  "YUWANCARD-PLAYER_NICKNAME.title": "玩家昵称",
+  "YUWANCARD-PLAYER_NICKNAME.placeholder": "输入昵称...",
+
+  "YUWANCARD-RESET_STATS.title": "重置统计",
+  "YUWANCARD-RESET.title": "重置",
+
+  "YUWANCARD-RESTORE_DEFAULTS.title": "恢复默认值"
+}
+```
+
+### 注册配置
+
+```csharp
+// MainFile.cs
+using BaseLib.Config;
+using MegaCrit.Sts2.Core.Modding;
+
+namespace YuWanCard;
+
+[ModInitializer(nameof(Initialize))]
+public static class MainFile
+{
+    public static void Initialize()
+    {
+        ModConfigRegistry.Register("YuWanCard", new YuWanCardConfig());
+    }
+}
+```
+
+### 在代码中使用配置
+
+```csharp
+using YuWanCard.Config;
+
+public class MyCard : CustomCardModel
+{
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        decimal damage = DynamicVars.Damage.BaseValue * (decimal)YuWanCardConfig.DamageMultiplier;
+        await CommonActions.CardAttack(this, cardPlay.Target, damage, hitCount: 1);
+    }
+}
+
+public class MyRelic : CustomRelicModel
+{
+    public override async Task AfterObtained()
+    {
+        if (YuWanCardConfig.EnableSpecialEffects)
+        {
+            // 执行特殊效果
+        }
+        await base.AfterObtained();
+    }
+}
+```

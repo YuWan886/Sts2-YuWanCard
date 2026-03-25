@@ -123,6 +123,44 @@ public class MyCard : CustomCardModel
 - `Warn`：警告信息
 - `Error`：错误信息
 
+### BaseLib 日志窗口
+
+BaseLib 提供了一个内置的日志窗口，方便实时查看游戏日志。
+
+**打开日志窗口**：
+1. **控制台命令**：在游戏内按 `~` 键打开控制台，输入 `showlog` 命令
+2. **启动时自动打开**：在 BaseLib 配置中启用"启动时打开日志窗口"选项
+
+**日志窗口功能**：
+- 实时显示游戏日志
+- 自动滚动到最新日志
+- 不同日志级别使用不同颜色显示：
+  - **红色**：ERROR、FATAL、EXCEPTION
+  - **黄色**：WARN、WARNING
+  - **蓝色**：DEBUG、TRACE、VERYDEBUG
+- 可配置日志行数限制（默认 256 行，可在配置中调整）
+
+**配置日志窗口**：
+
+```csharp
+// 在你的模组配置中添加
+[ConfigSection("日志设置")]
+public static bool OpenLogWindowOnStartup { get; set; } = false;
+
+[SliderRange(128, 2048, 64)]
+[SliderLabelFormat("{0:0}")]
+public static double LimitedLogSize { get; set; } = 256;
+```
+
+**通过代码打开日志窗口**：
+
+```csharp
+using BaseLib.Patches.Features;
+
+// 在代码中打开日志窗口
+OpenLogWindow.OpenWindow();
+```
+
 ## 调试技巧
 
 1. **使用日志**：使用 `MainFile.Logger.Debug()` 输出详细调试信息

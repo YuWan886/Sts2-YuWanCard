@@ -959,6 +959,53 @@ public class MyCustomPotionPool : CustomPotionPoolModel
 - `BigEnergyIconPath`：大能量图标路径
 - `TextEnergyIconPath`：文本能量图标路径
 
+## 自定义能量球 (CustomOrbModel)
+
+继承 `CustomOrbModel` 来创建自定义能量球：
+
+```csharp
+using BaseLib.Abstracts;
+using Godot;
+
+public class MyCustomOrb : CustomOrbModel
+{
+    public override string? CustomIconPath => "res://MyMod/images/orbs/my_orb_icon.png";
+    public override string? CustomSpritePath => "res://MyMod/images/orbs/my_orb_sprite.png";
+
+    public override bool IncludeInRandomPool => true;
+
+    public override string? CustomPassiveSfx => "res://MyMod/audio/orbs/my_orb_passive.ogg";
+    public override string? CustomEvokeSfx => "res://MyMod/audio/orbs/my_orb_evoke.ogg";
+    public override string? CustomChannelSfx => "res://MyMod/audio/orbs/my_orb_channel.ogg";
+
+    public override Node2D? CreateCustomSprite()
+    {
+        var sprite = new Sprite2D();
+        sprite.Texture = GD.Load<Texture2D>(CustomSpritePath);
+        return sprite;
+    }
+}
+```
+
+**属性说明**：
+
+| 属性 | 说明 |
+|------|------|
+| `CustomIconPath` | 能量球图标路径（用于 UI 显示） |
+| `CustomSpritePath` | 能量球精灵路径（用于战斗中显示） |
+| `IncludeInRandomPool` | 是否包含在随机能量球池中（如 Chaos 卡牌） |
+| `CustomPassiveSfx` | 被动音效路径 |
+| `CustomEvokeSfx` | 激发音效路径 |
+| `CustomChannelSfx` | 充能音效路径 |
+
+**CreateCustomSprite 方法**：
+
+重写此方法创建自定义精灵节点，如果返回 `null`，则使用 `CustomSpritePath` 或默认精灵。
+
+**随机能量球池说明**：
+
+当 `IncludeInRandomPool` 为 `true` 时，能量球会被添加到随机池中。随机池包含原版的 5 种能量球（Lightning、Frost、Dark、Plasma、Glass）加上所有自定义能量球，每个能量球有相同的被选中概率。
+
 ## 自定义遗物池 (CustomRelicPoolModel)
 
 继承 `CustomRelicPoolModel` 来创建自定义遗物池：

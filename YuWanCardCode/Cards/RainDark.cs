@@ -1,11 +1,7 @@
-using System.Linq;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Powers;
@@ -18,27 +14,20 @@ public class RainDark : YuWanCardModel
     private const float HpPercentage = 0.25f;
     private const int MaxHandSize = 10;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
-    public override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new PowerVar<IntangiblePower>(3m),
-        new PowerVar<RainDarkPower>(3m)
-    ];
-
-    public override IEnumerable<IHoverTip> ExtraHoverTips =>
-    [
-        HoverTipFactory.FromPower<IntangiblePower>(),
-        HoverTipFactory.FromPower<RainDarkPower>()
-    ];
-
     public RainDark() : base(
         baseCost: 3,
         type: CardType.Skill,
         rarity: CardRarity.Ancient,
-        target: TargetType.AllAllies
-    )
+        target: TargetType.AllAllies)
     {
+        WithPower<IntangiblePower>(3);
+        WithPower<RainDarkPower>(3);
+        WithKeywords(CardKeyword.Exhaust);
+    }
+
+    public override void OnUpgrade()
+    {
+        AddKeyword(CardKeyword.Retain);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -64,7 +53,7 @@ public class RainDark : YuWanCardModel
                     await PlayerCmd.GainEnergy(currentEnergy, player);
                 }
 
-                var hand = MegaCrit.Sts2.Core.Entities.Cards.PileType.Hand.GetPile(player);
+                var hand = PileType.Hand.GetPile(player);
                 int cardsToDraw = MaxHandSize - hand.Cards.Count;
                 if (cardsToDraw > 0)
                 {
@@ -72,10 +61,5 @@ public class RainDark : YuWanCardModel
                 }
             }
         }
-    }
-
-    public override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Retain);
     }
 }

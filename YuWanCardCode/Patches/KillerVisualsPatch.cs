@@ -12,6 +12,7 @@ namespace YuWanCard.Patches;
 public class KillerVisualsPatch
 {
     [HarmonyPrefix]
+    [Obsolete]
     public static bool Prefix(MonsterModel __instance, ref NCreatureVisuals __result)
     {
         if (__instance is Killer)

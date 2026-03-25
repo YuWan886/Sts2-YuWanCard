@@ -1,11 +1,8 @@
-using System.Linq;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Cards;
 
@@ -18,29 +15,28 @@ public class TenThousandSwords : YuWanCardModel
 
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
-    public override IEnumerable<DynamicVar> CanonicalVars => [new ForgeVar(0)];
-
-    public override IEnumerable<IHoverTip> ExtraHoverTips => HoverTipFactory.FromForge();
-
     public TenThousandSwords() : base(
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.Self
-    )
+        target: TargetType.Self)
     {
+        WithKeywords(CardKeyword.Exhaust);
+        WithVar("Forge", 0);
+    }
+
+    public override void OnUpgrade()
+    {
+        RemoveKeyword(CardKeyword.Exhaust);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var owner = Owner;
         var combatState = CombatState;
         if (combatState == null) return;
 
         var teammates = combatState.Players
-            .Where(p => p.Creature.IsAlive && p != owner)
+            .Where(p => p.Creature.IsAlive && p != Owner)
             .ToList();
 
         if (teammates.Count == 0) return;
@@ -68,13 +64,8 @@ public class TenThousandSwords : YuWanCardModel
 
         if (totalForge > 0)
         {
-            await ForgeCmd.Forge(totalForge, owner, this);
+            await ForgeCmd.Forge(totalForge, Owner, this);
         }
-    }
-
-    public override void OnUpgrade()
-    {
-        RemoveKeyword(CardKeyword.Exhaust);
     }
 
     private static IEnumerable<SovereignBlade> GetSovereignBlades(Player player, bool includeExhausted)

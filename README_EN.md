@@ -40,6 +40,7 @@
 | Ten Thousand Swords | 1 | Uncommon | Skill | Stack all other players' Forge Points onto yourself, then clear other players' Forge Points. Exhaust (Multiplayer) |
 | Pig Brain Overload | 0 | Uncommon | Power | Gain 3 Energy this turn. Draw 2 cards. Every 2 turns, gain 1 Dazed. Exhaust |
 | Pig Melt | 0 | Uncommon | Skill | Gain 1 Buffer. End your turn. Exhaust |
+| You Are Pig | 1 | Uncommon | Skill | Make a teammate turn into a pig, gaining 1 Buffer and 3 Regen, then end their turn (Multiplayer) |
 
 ### Powers
 
@@ -49,6 +50,7 @@
 | Rain Dark | Double energy gained |
 | Pig Bankruptcy | All cards in hand cost 0 this turn, but they all have Exhaust |
 | Pig Brain Overload | Every 2 turns, gain 1 Dazed |
+| You Are Pig | Turn into a pig, lasts for turns |
 
 ### Relics
 
@@ -56,6 +58,9 @@
 |------|------|--------|--------|
 | Ring of Seven Curses | Ancient | Ancient | Take +50% damage, -25% damage to non-BOSS, -20% Block, -50% gold, -50% rest site heal, gain Curse card each turn, -25% max HP after killing BOSS; +1 energy, +1 draw, +1 potion slot, +1 card reward, +50% damage to BOSS, chance for normal enemies to drop relics, can ignore path selection |
 | Ten Year Bamboo | Shared | Uncommon | Gain 1 Block at start of each turn. +1 Block stack when defeating Elite, +3 Block stacks when defeating BOSS |
+| Haotian Hammer | Crown Prince | Shop | At the start of each turn, upgrade all [gold]Sovereign Blades[/gold] in all players' hands |
+| Reincarnated Eye | Shared | Rare | At the start of your first turn each combat, choose a card from your deck to copy and add to your hand |
+| Supreme Bone | Shared | Shop | At the start of each combat, choose 2 cards from your deck and give them Exhaust. When your HP first drops below 30%, instantly gain 2 Energy and draw 3 cards |
 
 ### Ancient One
 

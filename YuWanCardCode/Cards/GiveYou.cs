@@ -12,15 +12,19 @@ public class GiveYou : YuWanCardModel
 {
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
     public GiveYou() : base(
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AnyAlly
-    )
+        target: TargetType.AnyAlly)
     {
+        WithKeywords(CardKeyword.Exhaust);
+    }
+
+    public override void OnUpgrade()
+    {
+        RemoveKeyword(CardKeyword.Exhaust);
+        EnergyCost.UpgradeBy(-1);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -30,16 +34,14 @@ public class GiveYou : YuWanCardModel
         var targetPlayer = cardPlay.Target.Player;
         if (targetPlayer == null) return;
 
-        var owner = Owner;
-
-        var handCards = PileType.Hand.GetPile(owner).Cards
+        var handCards = PileType.Hand.GetPile(Owner).Cards
             .Where(c => c != this)
             .ToList();
 
         if (handCards.Count == 0) return;
 
         var prefs = new CardSelectorPrefs(SelectionScreenPrompt, 1);
-        var selectedCards = await CardSelectCmd.FromHand(choiceContext, owner, prefs, c => c != this, this);
+        var selectedCards = await CardSelectCmd.FromHand(choiceContext, Owner, prefs, c => c != this, this);
 
         var selectedCard = selectedCards.FirstOrDefault();
         if (selectedCard != null)
@@ -53,11 +55,5 @@ public class GiveYou : YuWanCardModel
             }
             await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, addedByPlayer: true);
         }
-    }
-
-    public override void OnUpgrade()
-    {
-        RemoveKeyword(CardKeyword.Exhaust);
-        EnergyCost.UpgradeBy(-1);
     }
 }

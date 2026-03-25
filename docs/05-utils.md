@@ -595,3 +595,224 @@ var node = MyPooledNode.Pool.Get();
 // ... 使用节点 ...
 MyPooledNode.Pool.Return(node);
 ```
+
+## NodeFactory
+
+`NodeFactory` 是用于创建和管理 Godot 节点实例的核心工厂类。它可以将场景和场景中的节点转换为有效类型，解决模组开发中无法直接访问 Godot 编辑器场景脚本的问题。
+
+### 基本概念
+
+`NodeFactory<T>` 是泛型工厂基类，用于生成特定类型的节点：
+
+```csharp
+using BaseLib.Utils.NodeFactories;
+
+// 从场景创建节点
+var node = MyNodeFactory.CreateFromScene("res://path/to/scene.tscn");
+
+// 从资源创建节点
+var node = MyNodeFactory.CreateFromResource(someResource);
+```
+
+### 内置工厂
+
+BaseLib 提供了两个内置工厂：
+
+| 工厂类 | 说明 |
+|--------|------|
+| `NCreatureVisualsFactory` | 创建生物视觉节点 `NCreatureVisuals` |
+| `NEnergyCounterFactory` | 创建能量计数器节点 `NEnergyCounter` |
+
+### NCreatureVisualsFactory
+
+用于创建生物视觉节点：
+
+```csharp
+using BaseLib.Utils.NodeFactories;
+
+// 从场景创建
+var visuals = NEnergyCounterFactory.CreateFromScene("res://scenes/creature.tscn");
+
+// 从图片创建（自动生成 Bounds、Visuals 等节点）
+var visuals = NCreatureVisualsFactory.CreateFromResource(texture2D);
+```
+
+**自动创建的节点**：
+- `%Visuals`：视觉节点（Sprite2D）
+- `%Bounds`：边界控件
+- `%CenterPos`：中心位置标记点
+- `%IntentPos`：意图位置标记点
+- `%OrbPos`：能量球位置标记点
+- `%TalkPos`：对话位置标记点
+
+### NEnergyCounterFactory
+
+用于创建能量计数器节点：
+
+```csharp
+using BaseLib.Utils.NodeFactories;
+
+// 从场景创建
+var counter = NEnergyCounterFactory.CreateFromScene("res://scenes/energy_counter.tscn");
+```
+
+**自动创建的节点**：
+- `Label`：能量数字标签
+- `%Layers`：图层容器
+- `%RotationLayers`：旋转图层容器
+- `%EnergyVfxBack`：背景特效容器
+- `%EnergyVfxFront`：前景特效容器
+- `%StarAnchor`：星星锚点（自定义）
+
+### 自定义 NodeFactory
+
+创建自定义工厂来生成特定类型的节点：
+
+```csharp
+using BaseLib.Utils.NodeFactories;
+using Godot;
+
+public class MyCustomNode : Control
+{
+    // 自定义节点类
+}
+
+internal class MyCustomNodeFactory : NodeFactory<MyCustomNode>
+{
+    public MyCustomNodeFactory() : base([
+        new NodeInfo<Label>("Label"),           // 必需节点
+        new NodeInfo<Button>("%SubmitButton"),  // 唯一名称节点
+        new NodeInfo<TextureRect>("Icon", makeNameUnique: false)  // 可选节点
+    ])
+    { }
+
+    protected override void GenerateNode(Node target, INodeInfo required)
+    {
+        switch (required.Path)
+        {
+            case "Label":
+                var label = new Label { Name = "Label", Text = "Default Text" };
+                target.AddChild(label);
+                break;
+            case "%SubmitButton":
+                var button = new Button { Name = "SubmitButton" };
+                target.AddUnique(button, "SubmitButton");
+                break;
+        }
+    }
+
+    protected override Node ConvertNodeType(Node node, Type targetType)
+    {
+        // 处理节点类型转换
+        return base.ConvertNodeType(node, targetType);
+    }
+}
+```
+
+### NodeInfo 配置
+
+`NodeInfo<T>` 用于定义工厂需要的节点：
+
+```csharp
+// 普通节点（通过路径查找）
+new NodeInfo<Label>("Label")
+
+// 唯一名称节点（通过 % 前缀标记）
+new NodeInfo<Button>("%SubmitButton")
+
+// 不自动设置 UniqueNameInOwner
+new NodeInfo<TextureRect>("Icon", makeNameUnique: false)
+```
+
+### 工厂初始化
+
+在模组初始化时调用 `NodeFactory.Init()`：
+
+```csharp
+[ModInitializer(nameof(Initialize))]
+public static class MainFile
+{
+    public static void Initialize()
+    {
+        NodeFactory.Init();  // 初始化所有内置工厂
+    }
+}
+```
+
+## CustomEnergyCounterFactory
+
+`CustomEnergyCounterFactory` 是用于创建自定义能量计数器的静态工具类：
+
+```csharp
+using BaseLib.Utils;
+using MegaCrit.Sts2.Core.Entities.Players;
+
+// 从场景创建
+var counter = CustomEnergyCounterFactory.FromScene("res://scenes/my_energy.tscn", player);
+
+// 从场景根节点创建
+var counter = CustomEnergyCounterFactory.FromScene(sceneRoot, player);
+
+// 从 CustomEnergyCounter 创建（传统方式）
+var counter = CustomEnergyCounterFactory.FromLegacy(customEnergyCounter, player);
+```
+
+### 场景结构要求
+
+自定义能量计数器场景应包含以下节点：
+
+```
+EnergyCounter (根节点)
+├── EnergyVfxBack      # 背景特效（可选）
+├── Layers             # 图层容器
+│   ├── Layer1         # 图层 1
+│   ├── RotationLayers # 旋转图层容器
+│   │   ├── Layer2     # 旋转图层 2
+│   │   └── Layer3     # 旋转图层 3
+│   ├── Layer4         # 图层 4
+│   └── Layer5         # 图层 5
+├── EnergyVfxFront     # 前景特效（可选）
+├── Label              # 能量数字标签
+└── StarAnchor         # 星星锚点（可选）
+```
+
+### 与 CustomCharacterModel 配合
+
+在自定义角色中使用：
+
+```csharp
+public class MyCharacter : CustomCharacterModel
+{
+    public override string? CustomEnergyCounterPath => "res://MyMod/scenes/my_energy_counter.tscn";
+
+    // 或者使用传统方式
+    public override CustomEnergyCounter? CustomEnergyCounter => new(
+        layer => $"res://MyMod/textures/energy/layer{layer}.png",
+        outlineColor: new Color(1, 0, 0),
+        burstColor: new Color(1, 0.5f, 0)
+    );
+}
+```
+
+### ICustomEnergyIconPool 接口
+
+实现此接口为卡牌池或角色提供自定义能量图标：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyCardPool : CustomCardPoolModel, ICustomEnergyIconPool
+{
+    public string? BigEnergyIconPath => "res://MyMod/images/ui/energy_big.png";
+    public string? TextEnergyIconPath => "res://MyMod/images/ui/energy_text.png";
+}
+```
+
+**能量图标格式**：
+- `BigEnergyIconPath`：大能量图标（用于卡牌描述等）
+- `TextEnergyIconPath`：文本能量图标（用于内联显示）
+
+**在本地化中使用**：
+```
+造成 {Damage} 点伤害，消耗 1 [energy|MyMod-MyCardPool] 能量。
+```

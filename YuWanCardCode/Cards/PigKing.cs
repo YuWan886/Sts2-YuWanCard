@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -14,14 +11,19 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigKing : YuWanCardModel
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
     public PigKing() : base(
         baseCost: 0,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
-        target: TargetType.Self
-    )
+        target: TargetType.Self)
+    {
+        WithKeywords(CardKeyword.Exhaust);
+        WithTip(typeof(PigCharge));
+        WithTip(typeof(PigMultiShot));
+        WithTip(typeof(PigShieldBreak));
+    }
+
+    public override void OnUpgrade()
     {
     }
 

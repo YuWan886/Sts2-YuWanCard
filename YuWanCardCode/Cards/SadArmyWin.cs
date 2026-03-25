@@ -1,10 +1,8 @@
 using BaseLib.Utils;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -17,9 +15,13 @@ public class SadArmyWin : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
-        target: TargetType.AnyEnemy
-    )
+        target: TargetType.AnyEnemy)
     {
+    }
+
+    public override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -40,7 +42,7 @@ public class SadArmyWin : YuWanCardModel
                 {
                     if (enemy.IsAlive)
                     {
-                        await KillEnemy(choiceContext, enemy);
+                        await KillEnemy(choiceContext, enemy, Owner.Creature);
                     }
                 }
             }
@@ -48,19 +50,14 @@ public class SadArmyWin : YuWanCardModel
             {
                 if (cardPlay.Target != null && cardPlay.Target.IsAlive)
                 {
-                    await KillEnemy(choiceContext, cardPlay.Target);
+                    await KillEnemy(choiceContext, cardPlay.Target, Owner.Creature);
                 }
             }
         }
     }
 
-    public override void OnUpgrade()
+    private static async Task KillEnemy(PlayerChoiceContext choiceContext, Creature enemy, Creature source)
     {
-        EnergyCost.UpgradeBy(-1);
-    }
-
-    private async Task KillEnemy(PlayerChoiceContext choiceContext, Creature enemy)
-    {
-        await CreatureCmd.Damage(choiceContext, enemy, enemy.CurrentHp, ValueProp.Unblockable | ValueProp.Unpowered, Owner.Creature);
+        await CreatureCmd.Damage(choiceContext, enemy, enemy.CurrentHp, ValueProp.Unblockable | ValueProp.Unpowered, source);
     }
 }

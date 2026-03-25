@@ -46,11 +46,17 @@ public enum DifficultyLevel
 | `[ConfigSection("名称")]` | 标记配置分区，自动生成分区标题 |
 | `[SliderRange(min, max, step)]` | 设置滑块范围和步长 |
 | `[SliderLabelFormat("格式")]` | 设置滑块标签格式 |
+| `[ConfigHoverTip]` | 为设置项添加悬停提示 |
+| `[HoverTipsByDefault]` | 为类中所有设置项默认添加悬停提示 |
+| `[ConfigHideInUI]` | 保存和加载但不生成 UI |
+| `[ConfigIgnore]` | 完全忽略此属性 |
+| `[ConfigTextInput(preset)]` | 为文本输入设置字符验证 |
 
 **重要说明**：
 - 配置属性必须是**静态属性**（`static`）
 - 配置属性必须有 `get` 和 `set` 访问器
 - 使用 `GenerateOptionsForAllProperties` 自动生成所有选项
+- 使用 `AddRestoreDefaultsButton` 添加恢复默认值按钮
 
 ## 创建配置类（手动方式）
 
@@ -290,4 +296,130 @@ var dropdownRow = config.CreateDropdownOption(property);
 
 // 创建分区标题
 var sectionLabel = config.CreateSectionHeader("Section Name");
+
+// 创建自定义按钮
+var buttonRow = config.CreateButton("RowLabel", "ButtonLabel", () => {
+    // 按钮点击回调
+});
+
+// 添加恢复默认值按钮
+config.AddRestoreDefaultsButton(optionContainer);
 ```
+
+## 悬停提示系统
+
+使用 `[ConfigHoverTip]` 和 `[HoverTipsByDefault]` 特性为配置项添加悬停提示：
+
+```csharp
+using BaseLib.Config;
+
+[HoverTipsByDefault]  // 为所有属性默认添加悬停提示
+internal class MyModConfig : SimpleModConfig
+{
+    // 会自动添加悬停提示（因为类上有 HoverTipsByDefault）
+    public static bool EnableFeature { get; set; } = true;
+
+    // 禁用此属性的悬停提示
+    [ConfigHoverTip(false)]
+    public static int SimpleValue { get; set; } = 10;
+}
+```
+
+**本地化键格式**：
+- 标题：`{MODID}-{PROPERTY_NAME}.hover.title`（可选）
+- 描述：`{MODID}-{PROPERTY_NAME}.hover.desc`（必需）
+
+**settings_ui.json 示例**：
+```json
+{
+  "MYMOD-ENABLE_FEATURE.hover.title": "启用功能",
+  "MYMOD-ENABLE_FEATURE.hover.desc": "启用此功能将激活模组的核心机制。"
+}
+```
+
+## 文本输入验证
+
+使用 `[ConfigTextInput]` 特性为字符串属性设置输入验证：
+
+```csharp
+using BaseLib.Config;
+
+internal class MyModConfig : SimpleModConfig
+{
+    // 使用预设验证规则
+    [ConfigTextInput(TextInputPreset.SafeDisplayName, MaxLength = 16)]
+    public static string PlayerName { get; set; } = "Player";
+
+    // 使用自定义正则表达式
+    [ConfigTextInput(@"[A-Za-z0-9 ]*")]
+    public static string CustomField { get; set; } = "";
+}
+```
+
+**TextInputPreset 预设值**：
+
+| 预设 | 说明 |
+|------|------|
+| `TextInputPreset.Anything` | 无验证（默认） |
+| `TextInputPreset.Alphanumeric` | 仅英文字母和数字 |
+| `TextInputPreset.AlphanumericWithSpaces` | 英文字母、数字和空格 |
+| `TextInputPreset.SafeDisplayName` | 国际字母、数字、空格、下划线和连字符 |
+
+**本地化占位符**：
+- 可选添加：`{MODID}-{PROPERTY_NAME}.placeholder`
+
+## 隐藏配置属性
+
+使用 `[ConfigHideInUI]` 和 `[ConfigIgnore]` 控制属性的可见性：
+
+```csharp
+internal class MyModConfig : SimpleModConfig
+{
+    // 正常显示的配置项
+    public static bool EnableFeature { get; set; } = true;
+
+    // 保存和加载，但不显示在 UI 中
+    [ConfigHideInUI]
+    public static int TotalRunsPlayed { get; set; } = 0;
+
+    // 完全忽略，不保存、不加载、不显示
+    [ConfigIgnore]
+    public static int TemporaryValue { get; set; } = 42;
+}
+```
+
+## 自定义按钮
+
+在配置界面中添加自定义按钮：
+
+```csharp
+internal class MyModConfig : SimpleModConfig
+{
+    public static string PlayerName { get; set; } = "Player";
+
+    public override void SetupConfigUI(Control optionContainer)
+    {
+        GenerateOptionsForAllProperties(optionContainer);
+
+        // 添加分隔线
+        optionContainer.AddChild(CreateDividerControl());
+
+        // 添加自定义按钮
+        var buttonRow = CreateButton("HelloWorld", "SayHello", () =>
+        {
+            var name = string.IsNullOrWhiteSpace(PlayerName) ? "Player" : PlayerName;
+            MainFile.Logger.Info($"Hello, {name}!");
+        }, addHoverTip: true);
+        optionContainer.AddChild(buttonRow);
+
+        // 添加恢复默认值按钮
+        AddRestoreDefaultsButton(optionContainer);
+    }
+}
+```
+
+**CreateButton 参数**：
+- `rowLabelKey`：行标签的本地化键
+- `buttonLabelKey`：按钮标签的本地化键
+- `onPressed`：按钮点击回调
+- `addHoverTip`：是否添加悬停提示

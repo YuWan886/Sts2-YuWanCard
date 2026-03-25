@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BaseLib.Utils;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
@@ -25,15 +22,18 @@ public class ReviveKai : YuWanCardModel
 {
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
     public ReviveKai() : base(
         baseCost: 4,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
-        target: TargetType.None
-    )
+        target: TargetType.None)
     {
+        WithKeywords(CardKeyword.Exhaust);
+    }
+
+    public override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -72,11 +72,11 @@ public class ReviveKai : YuWanCardModel
         var targetPlayer = targetCreature.Player;
         if (targetPlayer != null)
         {
-            await RestorePlayerDeck(targetPlayer);
+            await RestorePlayerDeck(choiceContext, targetPlayer);
         }
     }
 
-    private async Task RestorePlayerDeck(Player player)
+    private async Task RestorePlayerDeck(PlayerChoiceContext choiceContext, Player player)
     {
         if (player.PlayerCombatState == null) return;
 
@@ -90,7 +90,7 @@ public class ReviveKai : YuWanCardModel
 
         if (cardsToAdd.Count > 0)
         {
-            await CardPileCmd.Add(cardsToAdd, PileType.Draw, CardPilePosition.Bottom, this, skipVisuals: true);
+            await CardPileCmd.Add((IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>)cardsToAdd, PileType.Draw, CardPilePosition.Bottom, this, skipVisuals: true);
             player.PlayerCombatState.DrawPile.RandomizeOrderInternal(
                 player,
                 player.RunState.Rng.Shuffle,

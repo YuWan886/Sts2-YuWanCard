@@ -12,21 +12,25 @@ public class PigSacrifice : YuWanCardModel
 {
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
     public PigSacrifice() : base(
         baseCost: 3,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
-        target: TargetType.AnyAlly
-    )
+        target: TargetType.AnyAlly)
     {
+        WithKeywords(CardKeyword.Exhaust);
+    }
+
+    public override void OnUpgrade()
+    {
+        AddKeyword(CardKeyword.Innate);
+        RemoveKeyword(CardKeyword.Exhaust);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var owner = Owner.Creature;
-        var target = cardPlay.Target;
+        var targetCreature = cardPlay.Target;
 
         int hpToTransfer = IsUpgraded ? owner.CurrentHp : owner.CurrentHp / 2;
         int blockToTransfer = IsUpgraded ? owner.Block : owner.Block / 2;
@@ -34,19 +38,13 @@ public class PigSacrifice : YuWanCardModel
         if (hpToTransfer > 0)
         {
             await CreatureCmd.Damage(choiceContext, owner, hpToTransfer, ValueProp.Unblockable | ValueProp.Unpowered, Owner.Creature);
-            await CreatureCmd.Heal(target!, hpToTransfer);
+            await CreatureCmd.Heal(targetCreature!, hpToTransfer);
         }
 
         if (blockToTransfer > 0)
         {
             owner.LoseBlockInternal(blockToTransfer);
-            await CreatureCmd.GainBlock(target!, blockToTransfer, ValueProp.Move, cardPlay);
+            await CreatureCmd.GainBlock(targetCreature!, blockToTransfer, ValueProp.Move, null);
         }
-    }
-
-    public override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Innate);
-        RemoveKeyword(CardKeyword.Exhaust);
     }
 }

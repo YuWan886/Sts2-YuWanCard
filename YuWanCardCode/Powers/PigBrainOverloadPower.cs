@@ -23,26 +23,30 @@ public class PigBrainOverloadPower : YuWanPowerModel
 
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public override IEnumerable<DynamicVar> CanonicalVars => [new DazedIntervalVar()];
-
-    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Dazed>()];
-
     public int DazedInterval => YUWANCARD_UpgradedCount > 0 ? 3 : 2;
 
     public int DazedCount => Amount;
 
+    public override IEnumerable<DynamicVar> CanonicalVars => [new DazedIntervalVar(this)];
+
+    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Dazed>()];
+
     private class DazedIntervalVar : DynamicVar
     {
-        public DazedIntervalVar() : base("DazedInterval", 2m)
+        private PigBrainOverloadPower? _power;
+
+        public DazedIntervalVar(PigBrainOverloadPower? power = null) : base("DazedInterval", power?.DazedInterval ?? 2m)
         {
+            _power = power;
         }
 
         public override void SetOwner(AbstractModel owner)
         {
             base.SetOwner(owner);
-            if (owner is PigBrainOverloadPower power)
+            _power = owner as PigBrainOverloadPower;
+            if (_power != null)
             {
-                BaseValue = power.DazedInterval;
+                BaseValue = _power.DazedInterval;
             }
         }
     }

@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://caa2xxkj4wj7w"]
+
+[ext_resource type="Texture2D" uid="uid://srptda76db1q" path="res://YuWanCard/images/characters/pig.png" id="2_pig"]
+
+[node name="PigVisuals" type="Node2D"]
+
+[node name="Visuals" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(1, -72)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_pig")
+
+[node name="Bounds" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -149.0
+offset_top = -222.0
+offset_right = 151.0
+offset_bottom = 128.0
+mouse_filter = 2
+
+[node name="IntentPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(4, -194)
+
+[node name="CenterPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -150)
+
+[node name="OrbPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -100)
+
+[node name="TalkPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(101, -126)

@@ -9,6 +9,9 @@
   "YUWANCARD-PIG_BANKRUPTCY_POWER.description": "All cards in hand cost 0 this turn, but they all have Exhaust.",
   "YUWANCARD-PIG_BANKRUPTCY_POWER.smartDescription": "All cards in hand cost 0 this turn, but they all have Exhaust.",
   "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.title": "Pig Brain Overload",
-  "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.description": "Every {DazedInterval} turns, gain {Amount} [gold]Dazed[/gold].",
-  "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.smartDescription": "Every {DazedInterval} turns, gain {Amount} [gold]Dazed[/gold]."
+  "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.description": "Every 2 turns, gain 1 [gold]Dazed[/gold]. Upgraded: every 3 turns.",
+  "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.smartDescription": "Every {DazedInterval} turns, gain {Amount} [gold]Dazed[/gold].",
+  "YUWANCARD-YOU_ARE_PIG_POWER.title": "You Are Pig",
+  "YUWANCARD-YOU_ARE_PIG_POWER.description": "You have turned into a pig.",
+  "YUWANCARD-YOU_ARE_PIG_POWER.smartDescription": "You are a pig. Lasts for {Amount} turns."
 }

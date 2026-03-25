@@ -5,7 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 
 namespace YuWanCard.Cards;
 
-public abstract partial class YuWanCardModel(int baseCost, CardType type, CardRarity rarity, TargetType target, bool showInCardLibrary = true, bool autoAdd = true) : CustomCardModel(baseCost, type, rarity, target, showInCardLibrary, autoAdd)
+public abstract partial class YuWanCardModel : ConstructedCardModel
 {
     private static readonly Regex CamelCaseRegex = MyRegex();
 
@@ -29,6 +29,11 @@ public abstract partial class YuWanCardModel(int baseCost, CardType type, CardRa
             }
             return null;
         }
+    }
+
+    protected YuWanCardModel(int baseCost, CardType type, CardRarity rarity, TargetType target, bool showInCardLibrary = true, bool autoAdd = true) 
+        : base(baseCost, type, rarity, target, showInCardLibrary, autoAdd)
+    {
     }
 
     [GeneratedRegex(@"([a-z])([A-Z])", RegexOptions.Compiled)]
