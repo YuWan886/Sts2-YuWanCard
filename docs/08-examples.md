@@ -666,6 +666,491 @@ public class AdvancedPigOrb : CustomOrbModel
 }
 ```
 
+## 先古之民示例
+
+### 自定义先古之民事件
+
+```csharp
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using BaseLib.Abstracts;
+using BaseLib.Utils;
+using Godot;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Ancients;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Factories;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Acts;
+using MegaCrit.Sts2.Core.Models.CardPools;
+using MegaCrit.Sts2.Core.Rewards;
+using MegaCrit.Sts2.Core.Runs;
+
+namespace YuWanCard.Ancients;
+
+public class PigPig : CustomAncientModel
+{
+    private const string IconBasePath = "res://YuWanCard/images/ancients/pig_pig";
+
+    private static readonly Regex PigCardPattern = new(@"^YUWANCARD-PIG_", RegexOptions.Compiled);
+
+    public PigPig() : base(autoAdd: true)
+    {
+    }
+
+    public override bool IsValidForAct(ActModel act) =>
+        act.Id == ModelDb.Act<Hive>().Id || act.Id == ModelDb.Act<Glory>().Id;
+
+    public override bool ShouldForceSpawn(ActModel act, AncientEventModel? rngChosenAncient) => false;
+
+    private const string RunHistoryIconPath = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig.png";
+    private const string RunHistoryIconOutlinePathStr = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig_outline.png";
+    
+    private static Texture2D? _cachedRunHistoryIcon;
+    private static Texture2D? _cachedRunHistoryIconOutline;
+    
+    public override string? CustomScenePath => "res://YuWanCard/scenes/ancients/pig_pig.tscn";
+    public override string? CustomMapIconPath => $"{IconBasePath}.png";
+    public override string? CustomMapIconOutlinePath => $"{IconBasePath}.png";
+    
+    public override Texture2D? CustomRunHistoryIcon
+    {
+        get
+        {
+            if (_cachedRunHistoryIcon == null)
+            {
+                _cachedRunHistoryIcon = GD.Load<Texture2D>(RunHistoryIconPath);
+                if (_cachedRunHistoryIcon == null)
+                {
+                    MainFile.Logger.Warn($"Failed to load PigPig run history icon from {RunHistoryIconPath}");
+                }
+            }
+            return _cachedRunHistoryIcon;
+        }
+    }
+    
+    public override Texture2D? CustomRunHistoryIconOutline
+    {
+        get
+        {
+            if (_cachedRunHistoryIconOutline == null)
+            {
+                _cachedRunHistoryIconOutline = GD.Load<Texture2D>(RunHistoryIconOutlinePathStr);
+                if (_cachedRunHistoryIconOutline == null)
+                {
+                    MainFile.Logger.Warn($"Failed to load PigPig run history outline icon from {RunHistoryIconOutlinePathStr}");
+                }
+            }
+            return _cachedRunHistoryIconOutline;
+        }
+    }
+
+    public override IEnumerable<string> GetAssetPaths(IRunState runState)
+    {
+        foreach (var path in base.GetAssetPaths(runState))
+        {
+            yield return path;
+        }
+        
+        yield return RunHistoryIconPath;
+        yield return RunHistoryIconOutlinePathStr;
+        yield return CustomMapIconPath!;
+    }
+
+    private string FirstVisit => $"{Id.Entry}.talk.firstvisitEver.0-0.ancient";
+    
+    protected override AncientDialogueSet DefineDialogues()
+    {
+        var sfxPath = AncientDialogueUtil.SfxPath(FirstVisit);
+        var firstVisit = new AncientDialogue(sfxPath);
+
+        var characterDialogues = new Dictionary<string, IReadOnlyList<AncientDialogue>>();
+        
+        foreach (var character in ModelDb.AllCharacters)
+        {
+            var baseKey = AncientDialogueUtil.BaseLocKey(Id.Entry, character.Id.Entry);
+            characterDialogues[character.Id.Entry] = AncientDialogueUtil.GetDialoguesForKey("ancients", baseKey);
+        }
+        
+        return new AncientDialogueSet
+        {
+            FirstVisitEverDialogue = firstVisit,
+            CharacterDialogues = characterDialogues,
+            AgnosticDialogues = AncientDialogueUtil.GetDialoguesForKey("ancients", AncientDialogueUtil.BaseLocKey(Id.Entry, "ANY"))
+        };
+    }
+
+    protected override OptionPools MakeOptionPools => new(
+        MakePool(ModelDb.Relic<MegaCrit.Sts2.Core.Models.Relics.Circlet>()),
+        MakePool(ModelDb.Relic<MegaCrit.Sts2.Core.Models.Relics.Circlet>()),
+        MakePool(ModelDb.Relic<MegaCrit.Sts2.Core.Models.Relics.Circlet>())
+    );
+
+    public override IEnumerable<EventOption> AllPossibleOptions => [];
+
+    protected override IReadOnlyList<EventOption> GenerateInitialOptions()
+    {
+        return new List<EventOption>
+        {
+            new(this, ChoosePigCard, "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_CARD"),
+            new(this, ChooseRelic, "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC"),
+            new(this, UpgradeCards, "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS")
+        };
+    }
+
+    private async Task ChoosePigCard()
+    {
+        var pigCards = GetPigCards();
+        if (pigCards.Count == 0)
+        {
+            FinishEvent();
+            return;
+        }
+
+        var shuffled = pigCards.OrderBy(_ => Rng.NextInt()).ToList();
+        var cardsToOffer = shuffled.Take(Math.Min(5, shuffled.Count)).ToList();
+        var cardReward = new CardReward(cardsToOffer, CardCreationSource.Other, Owner!);
+        await RewardsCmd.OfferCustom(Owner!, [cardReward]);
+        FinishEvent();
+    }
+
+    private async Task ChooseRelic()
+    {
+        List<RelicModel> relics = [];
+        for (int i = 0; i < 3; i++)
+        {
+            var relic = RelicFactory.PullNextRelicFromFront(Owner!).ToMutable();
+            relics.Add(relic);
+        }
+        var selectedRelic = await RelicSelectCmd.FromChooseARelicScreen(Owner!, relics);
+        if (selectedRelic != null)
+        {
+            await RelicCmd.Obtain(selectedRelic, Owner!);
+        }
+        FinishEvent();
+    }
+
+    private async Task UpgradeCards()
+    {
+        var upgradeableCards = PileType.Deck.GetPile(Owner!).Cards
+            .Where(c => c.IsUpgradable)
+            .ToList();
+
+        if (upgradeableCards.Count == 0)
+        {
+            FinishEvent();
+            return;
+        }
+
+        var cardsToUpgrade = await CardSelectCmd.FromDeckForUpgrade(
+            Owner!,
+            new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, Math.Min(5, upgradeableCards.Count))
+        );
+
+        foreach (var card in cardsToUpgrade)
+        {
+            CardCmd.Upgrade(card);
+        }
+        FinishEvent();
+    }
+
+    private List<CardModel> GetPigCards()
+    {
+        var colorlessPool = ModelDb.CardPool<ColorlessCardPool>();
+        var allCards = colorlessPool.GetUnlockedCards(Owner!.UnlockState, Owner.RunState.CardMultiplayerConstraint);
+        
+        return [.. allCards
+            .Where(c => PigCardPattern.IsMatch(c.Id.Entry))
+            .Select(c => Owner.RunState.CreateCard(c, Owner))];
+    }
+
+    private void FinishEvent()
+    {
+        var doneMethod = typeof(AncientEventModel).GetMethod("Done", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        doneMethod?.Invoke(this, null);
+    }
+}
+```
+
+**关键点说明**：
+- 使用 `IsValidForAct` 指定出现的章节
+- 使用 `DefineDialogues` 定义对话系统
+- 使用 `OptionPools` 和 `AncientOption` 创建选项池
+- 使用 `AncientDialogueUtil` 处理对话本地化
+- 缓存纹理资源避免重复加载
+- 使用 `GetAssetPaths` 注册资源路径
+
+**本地化格式**：
+```json
+{
+  "YUWANCARD-PIG_PIG.title": "猪猪",
+  "YUWANCARD-PIG_PIG.epithet": "先古之民",
+  "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_CARD.title": "选择卡牌",
+  "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC.title": "选择遗物",
+  "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.title": "升级卡牌"
+}
+```
+
+## 怪物示例
+
+### 自定义怪物（精英怪）
+
+```csharp
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Animation;
+using MegaCrit.Sts2.Core.Audio;
+using MegaCrit.Sts2.Core.Bindings.MegaSpine;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Ascension;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.MonsterMoves;
+using MegaCrit.Sts2.Core.MonsterMoves.Intents;
+using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
+using MegaCrit.Sts2.Core.Nodes.Audio;
+using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
+using MegaCrit.Sts2.Core.TestSupport;
+using MegaCrit.Sts2.Core.ValueProps;
+
+namespace YuWanCard.Monsters;
+
+public sealed class Killer : MonsterModel
+{
+    public override string VisualsPath => "res://YuWanCard/scenes/monsters/killer/killer_visuals.tscn";
+
+    public override int MinInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 190, 180);
+
+    public override int MaxInitialHp => MinInitialHp;
+
+    private static int SlashDamage => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 18, 16);
+
+    private static int MultiDamage => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 7, 6);
+
+    private static int MultiRepeat => 3;
+
+    private static int ZoomDamage => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 12, 10);
+
+    private static int ZoomBlock => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 12, 10);
+
+    private static int StrengthGain => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 4, 3);
+
+    private static int DazedCount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 2, 1);
+
+    private static int HardenedShellAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 50, 30);
+
+    private static int PersonalHiveAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 2, 1);
+
+    private static int SkittishAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 18, 15);
+
+    public override DamageSfxType TakeDamageSfxType => DamageSfxType.Armor;
+
+    public override string DeathSfx => "event:/sfx/enemy/enemy_attacks/hunter_killer/hunter_killer_die";
+
+    private int _enlargeTriggers;
+
+    public float CurrentScale { get; private set; } = 1f;
+
+    public override async Task AfterAddedToRoom()
+    {
+        await base.AfterAddedToRoom();
+        await PowerCmd.Apply<HardenedShellPower>(Creature, HardenedShellAmount, Creature, null);
+        foreach (var player in CombatState.Players)
+        {
+            player.Creature.Died += OnPlayerDied;
+        }
+    }
+
+    private void OnPlayerDied(Creature creature)
+    {
+        creature.Died -= OnPlayerDied;
+        if (!CombatState.Players.All(p => p.Creature.IsDead))
+        {
+            return;
+        }
+        LocString line = MonsterModel.L10NMonsterLookup("KILLER.onPlayerDeath.speakLine");
+        TalkCmd.Play(line, Creature);
+    }
+
+    public override Task BeforeDeath(Creature creature)
+    {
+        if (creature != Creature)
+        {
+            return Task.CompletedTask;
+        }
+        LocString line = L10NMonsterLookup("KILLER.onDeath.speakLine");
+        TalkCmd.Play(line, Creature);
+        return Task.CompletedTask;
+    }
+
+    public override MonsterMoveStateMachine GenerateMoveStateMachine()
+    {
+        List<MonsterState> list = [];
+
+        MoveState sleepMove = new("SLEEP_MOVE", SleepMove, new SleepIntent());
+        MoveState wakeMove = new("WAKE_MOVE", WakeMove, new BuffIntent());
+        MoveState slashMove = new("SLASH_MOVE", SlashMove, new SingleAttackIntent(SlashDamage));
+        MoveState multiAttackMove = new("MULTI_ATTACK_MOVE", MultiAttackMove, new MultiAttackIntent(MultiDamage, MultiRepeat));
+        MoveState goopMove = new("GOOP_MOVE", GoopMove, new DebuffIntent());
+        MoveState zoomMove = new("ZOOM_MOVE", ZoomMove, new SingleAttackIntent(ZoomDamage), new DefendIntent());
+        MoveState enlargeMove = new("ENLARGE_MOVE", EnlargeMove, new BuffIntent(), new StatusIntent(DazedCount));
+
+        sleepMove.FollowUpState = wakeMove;
+        wakeMove.FollowUpState = slashMove;
+
+        RandomBranchState randomBranch = new("RAND");
+        slashMove.FollowUpState = randomBranch;
+        multiAttackMove.FollowUpState = randomBranch;
+        goopMove.FollowUpState = randomBranch;
+        zoomMove.FollowUpState = randomBranch;
+        enlargeMove.FollowUpState = randomBranch;
+
+        randomBranch.AddBranch(slashMove, MoveRepeatType.CannotRepeat);
+        randomBranch.AddBranch(multiAttackMove, 2);
+        randomBranch.AddBranch(goopMove, MoveRepeatType.CannotRepeat);
+        randomBranch.AddBranch(zoomMove, 2);
+        randomBranch.AddBranch(enlargeMove, 1);
+
+        list.Add(sleepMove);
+        list.Add(wakeMove);
+        list.Add(slashMove);
+        list.Add(multiAttackMove);
+        list.Add(goopMove);
+        list.Add(zoomMove);
+        list.Add(enlargeMove);
+        list.Add(randomBranch);
+
+        return new MonsterMoveStateMachine(list, sleepMove);
+    }
+
+    private async Task SleepMove(IReadOnlyList<Creature> targets)
+    {
+        LocString line = L10NMonsterLookup("KILLER.moves.SLEEP.speakLine");
+        ThinkCmd.Play(line, Creature);
+        await Cmd.Wait(0.5f);
+    }
+
+    private async Task WakeMove(IReadOnlyList<Creature> targets)
+    {
+        if (TestMode.IsOff)
+        {
+            NRunMusicController.Instance?.TriggerEliteSecondPhase();
+        }
+        await PowerCmd.Apply<StrengthPower>(Creature, 8m, Creature, null);
+        await PowerCmd.Apply<PersonalHivePower>(Creature, PersonalHiveAmount, Creature, null);
+        await PowerCmd.Apply<SkittishPower>(Creature, SkittishAmount, Creature, null);
+        LocString line = L10NMonsterLookup("KILLER.moves.WAKE.speakLine");
+        TalkCmd.Play(line, Creature);
+        await Cmd.Wait(0.5f);
+    }
+
+    private async Task SlashMove(IReadOnlyList<Creature> targets)
+    {
+        NCombatRoom.Instance?.RadialBlur(VfxPosition.Left);
+        await DamageCmd.Attack(SlashDamage).FromMonster(this).WithAttackerAnim("Attack", 0.15f)
+            .WithAttackerFx(null, AttackSfx)
+            .WithHitFx("vfx/vfx_attack_slash")
+            .Execute(null);
+        await Cmd.Wait(0.25f);
+    }
+
+    private async Task MultiAttackMove(IReadOnlyList<Creature> targets)
+    {
+        await DamageCmd.Attack(MultiDamage).WithHitCount(MultiRepeat).OnlyPlayAnimOnce()
+            .FromMonster(this)
+            .WithAttackerAnim("Attack", 0.3f)
+            .WithAttackerFx(null, AttackSfx)
+            .WithHitFx("vfx/vfx_attack_slash")
+            .Execute(null);
+    }
+
+    private async Task GoopMove(IReadOnlyList<Creature> targets)
+    {
+        SfxCmd.Play(CastSfx);
+        await CreatureCmd.TriggerAnim(Creature, "Cast", 0.4f);
+        await PowerCmd.Apply<TenderPower>(targets, 1m, Creature, null);
+    }
+
+    private async Task ZoomMove(IReadOnlyList<Creature> targets)
+    {
+        await DamageCmd.Attack(ZoomDamage).FromMonster(this).WithAttackerAnim("Attack", 0.15f)
+            .WithAttackerFx(null, AttackSfx)
+            .WithHitFx("vfx/vfx_attack_slash")
+            .Execute(null);
+        await CreatureCmd.GainBlock(Creature, ZoomBlock, ValueProp.Move, null);
+    }
+
+    private async Task EnlargeMove(IReadOnlyList<Creature> targets)
+    {
+        SfxCmd.Play(CastSfx);
+        await CreatureCmd.TriggerAnim(Creature, "Cast", 1.0f);
+        await PowerCmd.Apply<StrengthPower>(Creature, StrengthGain, Creature, null);
+        await CardPileCmd.AddToCombatAndPreview<Dazed>(targets, PileType.Discard, DazedCount, addedByPlayer: false);
+        _enlargeTriggers++;
+        CurrentScale = 1f + 0.08f * _enlargeTriggers;
+        NCombatRoom.Instance?.GetCreatureNode(Creature)?.SetDefaultScaleTo(CurrentScale, 0.5f);
+    }
+
+    public override CreatureAnimator GenerateAnimator(MegaSprite controller)
+    {
+        AnimState idleState = new("idle_loop", isLooping: true);
+        AnimState castState = new("cast");
+        AnimState attackState = new("attack");
+        AnimState hurtState = new("hurt");
+        AnimState dieState = new("die");
+
+        castState.NextState = idleState;
+        attackState.NextState = idleState;
+        hurtState.NextState = idleState;
+
+        CreatureAnimator animator = new(idleState, controller);
+        animator.AddAnyState("Idle", idleState);
+        animator.AddAnyState("Cast", castState);
+        animator.AddAnyState("Attack", attackState);
+        animator.AddAnyState("Dead", dieState);
+        animator.AddAnyState("Hit", hurtState);
+
+        return animator;
+    }
+}
+```
+
+**关键点说明**：
+- 继承 `MonsterModel` 创建自定义怪物
+- 使用 `AscensionHelper` 处理升阶难度
+- 使用 `MonsterMoveStateMachine` 定义行为 AI
+- 使用 `MonsterState` 定义各种行动
+- 使用 `DamageCmd.Attack()` 创建攻击命令
+- 使用 `PowerCmd.Apply()` 施加能力
+- 实现 `GenerateAnimator()` 定义动画状态机
+- 使用 `L10NMonsterLookup()` 获取本地化对话
+
+**注册怪物**：
+需要通过 Harmony 补丁将怪物注册到游戏中（参考 [KillerRegistrationPatch](file:///f:/sts2-mod/YuWanCard/YuWanCardCode/Patches/KillerRegistrationPatch.cs)）
+
+**本地化格式**：
+```json
+{
+  "KILLER.name": "杀手",
+  "KILLER.moves.SLEEP.speakLine": "杀手在睡觉...",
+  "KILLER.moves.WAKE.speakLine": "杀手醒了！",
+  "KILLER.onDeath.speakLine": "不可能...",
+  "KILLER.onPlayerDeath.speakLine": "你们都将成为我的手下败将！"
+}
+```
+
 ## 配置系统示例
 
 ### 完整配置类

@@ -14,29 +14,29 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 
 public class EndlessModifier : ModifierModel
 {
-    public const string ModifierId = "MYMOD-ENDLESS";
+    public const string ModifierId = "YUWANCARD-ENDLESS";
 
     [SavedProperty]
-    public int LoopCount { get; set; } = 0;
+    public int YuWanCard_EndlessLoopCount { get; set; } = 0;
 
     [SavedProperty]
-    public int TotalActsCleared { get; set; } = 0;
+    public int YuWanCard_TotalActsCleared { get; set; } = 0;
 
     [SavedProperty]
-    public bool HasStarted { get; set; } = false;
+    public bool YuWanCard_HasStarted { get; set; } = false;
 
     public override LocString Title => new("modifiers", ModifierId + ".title");
     public override LocString Description => new("modifiers", ModifierId + ".description");
     public override LocString NeowOptionTitle => new("modifiers", ModifierId + ".neow_title");
     public override LocString NeowOptionDescription => new("modifiers", ModifierId + ".neow_description");
 
-    public override string IconPath => "res://MyMod/images/modifiers/endless.png";
+    public override string IconPath => "res://YuWanCard/images/modifiers/endless.png";
 
-    public int EffectiveLoopCount => Math.Max(0, LoopCount);
+    public int EffectiveLoopCount => Math.Max(0, YuWanCard_EndlessLoopCount);
 
     public override Func<Task>? GenerateNeowOption(EventModel eventModel)
     {
-        if (HasStarted)
+        if (YuWanCard_HasStarted)
         {
             return null;
         }
@@ -45,21 +45,33 @@ public class EndlessModifier : ModifierModel
 
     private async Task ActivateModifier(Player player, Rng rng)
     {
-        HasStarted = true;
-        await CreatureCmd.GainMaxHp(player.Creature, 10m);
+        MainFile.Logger.Info("Endless mode activated!");
+
+        YuWanCard_HasStarted = true;
+
+        if (LocalContext.IsMe(player))
+        {
+            await CreatureCmd.GainMaxHp(player.Creature, 10m);
+        }
     }
 
     public override void AfterRunCreated(RunState runState)
     {
-        MainFile.Logger.Info($"Modifier initialized. Loop: {LoopCount}");
+        MainFile.Logger.Info($"Endless modifier initialized. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
     }
 
     public override void AfterRunLoaded(RunState runState)
     {
-        MainFile.Logger.Info($"Modifier loaded. Loop: {LoopCount}");
+        MainFile.Logger.Info($"Endless modifier loaded. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
     }
 }
 ```
+
+**重要说明**：
+- 使用 `[SavedProperty]` 标记需要持久化的属性
+- BaseLib 会自动处理 SavedProperty 的注册，无需手动注入
+- 使用 `LocalContext.IsMe(player)` 检查是否为本地玩家，避免多人游戏中重复执行
+- 属性名建议使用前缀（如 `YuWanCard_`）以避免命名冲突
 
 ## Modifier 常用钩子方法
 
@@ -128,7 +140,7 @@ public class GoodModifiersPatch
 
 ## 完整示例：无尽模式
 
-以下是一个完整的无尽模式 Modifier 实现：
+以下是一个完整的无尽模式 Modifier 实现（基于项目实际代码）：
 
 ```csharp
 using MegaCrit.Sts2.Core.Combat;
@@ -147,7 +159,7 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 
 public class EndlessModifier : ModifierModel
 {
-    public const string ModifierId = "MYMOD-ENDLESS";
+    public const string ModifierId = "YUWANCARD-ENDLESS";
 
     private const float BaseHpMultiplierPerLoop = 0.20f;
     private const float BossHpMultiplierBonus = 0.10f;
@@ -156,22 +168,22 @@ public class EndlessModifier : ModifierModel
     private const float HpGrowthExponent = 1.1f;
 
     [SavedProperty]
-    public int EndlessLoopCount { get; set; } = 0;
+    public int YuWanCard_EndlessLoopCount { get; set; } = 0;
 
     [SavedProperty]
-    public int TotalActsCleared { get; set; } = 0;
+    public int YuWanCard_TotalActsCleared { get; set; } = 0;
 
     [SavedProperty]
-    public bool HasStarted { get; set; } = false;
+    public bool YuWanCard_HasStarted { get; set; } = false;
 
     public override LocString Title => new("modifiers", ModifierId + ".title");
     public override LocString Description => new("modifiers", ModifierId + ".description");
     public override LocString NeowOptionTitle => new("modifiers", ModifierId + ".neow_title");
     public override LocString NeowOptionDescription => new("modifiers", ModifierId + ".neow_description");
 
-    public override string IconPath => "res://MyMod/images/modifiers/endless.png";
+    public override string IconPath => "res://YuWanCard/images/modifiers/endless.png";
 
-    public int EffectiveLoopCount => Math.Max(0, EndlessLoopCount);
+    public int EffectiveLoopCount => Math.Max(0, YuWanCard_EndlessLoopCount);
 
     private float CalculateHpMultiplier(bool isBoss)
     {
@@ -203,7 +215,7 @@ public class EndlessModifier : ModifierModel
 
     public override Func<Task>? GenerateNeowOption(EventModel eventModel)
     {
-        if (HasStarted)
+        if (YuWanCard_HasStarted)
         {
             return null;
         }
@@ -212,7 +224,9 @@ public class EndlessModifier : ModifierModel
 
     private async Task ActivateEndlessMode(Player player, Rng rng)
     {
-        HasStarted = true;
+        MainFile.Logger.Info("Endless mode activated!");
+
+        YuWanCard_HasStarted = true;
 
         if (LocalContext.IsMe(player))
         {
@@ -222,7 +236,12 @@ public class EndlessModifier : ModifierModel
 
     public override async Task AfterRoomEntered(AbstractRoom room)
     {
-        if (room is not CombatRoom combatRoom || EffectiveLoopCount <= 0)
+        if (room is not CombatRoom combatRoom)
+        {
+            return;
+        }
+
+        if (EffectiveLoopCount <= 0)
         {
             return;
         }
@@ -237,7 +256,12 @@ public class EndlessModifier : ModifierModel
 
     public override async Task AfterCreatureAddedToCombat(Creature creature)
     {
-        if (creature.Side != CombatSide.Enemy || EffectiveLoopCount <= 0)
+        if (creature.Side != CombatSide.Enemy)
+        {
+            return;
+        }
+
+        if (EffectiveLoopCount <= 0)
         {
             return;
         }
@@ -261,6 +285,8 @@ public class EndlessModifier : ModifierModel
         {
             await PowerCmd.Apply<StrengthPower>(creature, (decimal)strengthBonus, null, null);
         }
+
+        MainFile.Logger.Info($"Applied endless difficulty to {creature.ModelId} (Boss: {isBoss}): HP x{hpMultiplier:F2}, Strength +{strengthBonus}");
     }
 
     public override bool ShouldAllowAncient(Player player, AncientEventModel ancient)
@@ -274,23 +300,24 @@ public class EndlessModifier : ModifierModel
 
     public override void AfterRunCreated(RunState runState)
     {
-        MainFile.Logger.Info($"Endless modifier initialized. Loop: {EndlessLoopCount}");
+        MainFile.Logger.Info($"Endless modifier initialized. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
     }
 
     public override void AfterRunLoaded(RunState runState)
     {
-        MainFile.Logger.Info($"Endless modifier loaded. Loop: {EndlessLoopCount}");
+        MainFile.Logger.Info($"Endless modifier loaded. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
     }
 
     public void IncrementLoopCount()
     {
-        EndlessLoopCount++;
-        TotalActsCleared++;
+        YuWanCard_EndlessLoopCount++;
+        YuWanCard_TotalActsCleared++;
+        MainFile.Logger.Info($"Endless loop incremented. Now at loop {YuWanCard_EndlessLoopCount}, total acts: {YuWanCard_TotalActsCleared}");
     }
 
     public void IncrementActCount()
     {
-        TotalActsCleared++;
+        YuWanCard_TotalActsCleared++;
     }
 
     public static EndlessModifier? GetEndlessModifier(RunState runState)
@@ -311,3 +338,10 @@ public class EndlessModifier : ModifierModel
     }
 }
 ```
+
+**功能特性**：
+- **难度递增**：每完成一次循环，敌人生命值和力量增加
+- **BOSS 加成**：BOSS 敌人获得额外的生命值和力量加成
+- **Neow 事件限制**：第一次循环后禁止 Neow 事件
+- **持久化**：使用 SavedProperty 保存循环次数和章节进度
+- **日志记录**：详细的日志输出用于调试

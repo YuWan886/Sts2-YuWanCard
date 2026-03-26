@@ -40,40 +40,85 @@
 
 ```
 YourMod/
-├── Abstracts/         # 自定义抽象类（如果需要）
-├── Ancients/          # 先古之民事件定义
-├── Cards/             # 卡牌定义
-├── Characters/        # 角色定义
-├── Modifiers/         # 修改器定义（如无尽模式）
-├── Relics/            # 遗物定义
-├── Powers/            # 能力定义
-├── Potions/           # 药水定义
-├── Config/            # 配置相关
-├── Patches/           # Harmony 补丁
-├── Utils/             # 工具类
-├── MainFile.cs        # 模组入口
-├── YourMod.json       # 模组元数据
-└── project.godot      # Godot 项目文件
+├── .godot/                    # Godot 引擎配置目录
+├── .template.config/          # 模板配置
+├── .vscode/                   # VSCode 配置
+├── packages/                  # NuGet 包目录
+├── YourMod/                   # 模组资源目录
+│   ├── images/
+│   │   ├── card_portraits/    # 卡牌立绘
+│   │   ├── powers/            # 能力图标
+│   │   ├── relics/            # 遗物图标
+│   │   ├── ancients/          # 先古之民图标和背景
+│   │   ├── modifiers/         # 修改器图标
+│   │   └── ui/run_history/    # UI 图标
+│   ├── localization/zhs/      # 简体中文本地化
+│   │   ├── cards.json         # 卡牌本地化
+│   │   ├── powers.json        # 能力本地化
+│   │   ├── relics.json        # 遗物本地化
+│   │   ├── ancients.json      # 先古之民本地化
+│   │   └── modifiers.json     # 修改器本地化
+│   └── mod_image.png          # 模组图标
+├── YourModCode/               # 模组源代码目录
+│   ├── Cards/                 # 卡牌定义
+│   │   ├── xxx.cs             # xxxxx 卡牌
+│   │   └── YourModCardModel.cs # 卡牌基类
+│   ├── Powers/                # 能力定义
+│   │   ├── xxx.cs             # xxxxx 能力
+│   │   └── YourModPowerModel.cs # 能力基类
+│   ├── Relics/                # 遗物定义
+│   │   ├── xxx.cs             # xxxxx
+│   │   └── YourModRelicModel.cs # 遗物基类
+│   ├── Ancients/              # 先古之民定义
+│   ├── Modifiers/             # 修改器定义
+│   ├── Monsters/              # 怪物定义
+│   ├── Encounters/            # 遭遇定义
+│   ├── Patches/               # Harmony 补丁
+│   └── Utils/                 # 工具类
+├── others/                    # 参考资源目录
+├── MainFile.cs                # 模组入口文件
+├── YourMod.csproj             # 项目配置文件
+├── YourMod.json               # 模组清单文件
+└── AGENTS.md                  # AI 开发指南
+```
 
-YourMod/               # 模组资源目录
-├── images/
-│   ├── card_portraits/    # 卡牌立绘
-│   ├── powers/            # 能力图标
-│   ├── relics/            # 遗物图标
-│   ├── ancients/          # 先古之民图标和背景
-│   ├── modifiers/         # 修改器图标
-│   └── ui/run_history/    # UI 图标
-├── scenes/
-│   └── ancients/          # 先古之民场景
-├── localization/
-│   ├── zhs/               # 简体中文
-│   │   ├── cards.json
-│   │   ├── powers.json
-│   │   ├── relics.json
-│   │   ├── ancients.json
-│   │   └── modifiers.json
-│   └── eng/               # 英文
-└── mod_image.png          # 模组图标
+**YuWanCard 项目结构示例**：
+
+```
+YuWanCard/
+├── YuWanCardCode/
+│   ├── Cards/                 # 20+ 张卡牌定义
+│   │   ├── YuWanCardModel.cs  # 卡牌基类
+│   │   ├── PigHurt.cs         # 猪受伤
+│   │   ├── PigAngry.cs        # 猪愤怒
+│   │   ├── RainDark.cs        # 雨落狂流之暗
+│   │   └── ...
+│   ├── Powers/                # 6 个能力定义
+│   │   ├── YuWanPowerModel.cs # 能力基类
+│   │   ├── PigDoubtPower.cs   # 猪疑惑
+│   │   ├── RainDarkPower.cs   # 雨落狂流
+│   │   └── ...
+│   ├── Relics/                # 13 个遗物定义
+│   │   ├── YuWanRelicModel.cs # 遗物基类
+│   │   ├── RingOfSevenCurses.cs # 七咒之戒
+│   │   ├── TenYearBamboo.cs   # 10 年孤竹
+│   │   └── ...
+│   ├── Ancients/
+│   │   └── PigPig.cs          # 猪猪先古之民
+│   ├── Modifiers/
+│   │   └── EndlessModifier.cs # 无尽模式
+│   ├── Monsters/
+│   │   └── Killer.cs          # 杀手精英怪
+│   ├── Encounters/
+│   │   └── KillerElite.cs     # 杀手遭遇
+│   └── Patches/               # Harmony 补丁
+│       ├── NeowSevenCursesPatch.cs
+│       ├── KillerRegistrationPatch.cs
+│       └── ...
+└── YuWanCard/                 # 资源目录
+    ├── images/
+    ├── localization/zhs/
+    └── ...
 ```
 
 ## PoolAttribute 属性

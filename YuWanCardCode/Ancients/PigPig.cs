@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Godot;
@@ -9,11 +6,13 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Runs;
 
@@ -111,11 +110,21 @@ public class PigPig : CustomAncientModel
         };
     }
 
-    protected override OptionPools MakeOptionPools => new(
-        MakePool(ModelDb.Relic<MegaCrit.Sts2.Core.Models.Relics.Circlet>()),
-        MakePool(ModelDb.Relic<MegaCrit.Sts2.Core.Models.Relics.Circlet>()),
-        MakePool(ModelDb.Relic<MegaCrit.Sts2.Core.Models.Relics.Circlet>())
-    );
+    protected override OptionPools MakeOptionPools
+    {
+        get
+        {
+            var sharedPool = ModelDb.RelicPool<SharedRelicPool>();
+            var uncommonRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Uncommon).ToArray();
+            var rareRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Rare).ToArray();
+            
+            return new OptionPools(
+                MakePool(uncommonRelics),
+                MakePool(uncommonRelics),
+                MakePool(rareRelics)
+            );
+        }
+    }
 
     public override IEnumerable<EventOption> AllPossibleOptions => [];
 

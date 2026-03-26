@@ -491,6 +491,8 @@ public override RelicModel? GetUpgradeReplacement()
 }
 ```
 
+**注意**：升级后的遗物也需要使用 `[Pool]` 属性标记，并且应该有不同的 ID。
+
 **完整遗物示例**：
 
 ```csharp
@@ -1029,3 +1031,72 @@ public class MyCustomRelicPool : CustomRelicPoolModel
 **能量图标属性**：
 - `BigEnergyIconPath`：大能量图标路径
 - `TextEnergyIconPath`：文本能量图标路径
+
+## 自定义 Modifier (ModifierModel)
+
+继承 `ModifierModel` 来创建自定义修改器（如无尽模式）：
+
+```csharp
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Events;
+using MegaCrit.Sts2.Core.Saves.Runs;
+
+public class MyModifier : ModifierModel
+{
+    public const string ModifierId = "MYMOD-MY_MODIFIER";
+
+    [SavedProperty]
+    public int MyMod_LoopCount { get; set; } = 0;
+
+    [SavedProperty]
+    public bool MyMod_HasStarted { get; set; } = false;
+
+    public override LocString Title => new("modifiers", ModifierId + ".title");
+    public override LocString Description => new("modifiers", ModifierId + ".description");
+    public override LocString NeowOptionTitle => new("modifiers", ModifierId + ".neow_title");
+    public override LocString NeowOptionDescription => new("modifiers", ModifierId + ".neow_description");
+
+    public override string IconPath => "res://MyMod/images/modifiers/my_modifier.png";
+
+    public override Func<Task>? GenerateNeowOption(EventModel eventModel)
+    {
+        if (MyMod_HasStarted)
+        {
+            return null;
+        }
+        return () => ActivateModifier(eventModel.Owner!, eventModel.Rng);
+    }
+
+    private async Task ActivateModifier(Player player, Rng rng)
+    {
+        MyMod_HasStarted = true;
+        await CreatureCmd.GainMaxHp(player.Creature, 10m);
+    }
+
+    public override void AfterRunCreated(RunState runState)
+    {
+        MainFile.Logger.Info($"Modifier initialized");
+    }
+
+    public override void AfterRunLoaded(RunState runState)
+    {
+        MainFile.Logger.Info($"Modifier loaded");
+    }
+}
+```
+
+**重要说明**：
+- Modifier 需要通过 Harmony 补丁注册到 `ModelDb` 和 `GoodModifiers` 列表
+- 使用 `[SavedProperty]` 属性标记需要持久化的属性
+- BaseLib 会自动处理 SavedProperty 的注册，无需手动注入
+
+**常用钩子方法**：
+- `GenerateNeowOption(EventModel)`：生成 Neow 事件选项
+- `AfterRunCreated(RunState)`：Run 创建后调用
+- `AfterRunLoaded(RunState)`：Run 加载后调用
+- `AfterRoomEntered(AbstractRoom)`：进入房间后调用
+- `AfterCreatureAddedToCombat(Creature)`：生物加入战斗后调用
+- `ShouldAllowAncient(Player, AncientEventModel)`：是否允许先古之民事件
+
+**完整示例请参考 [自定义 Modifier](04-custom-modifier.md)**

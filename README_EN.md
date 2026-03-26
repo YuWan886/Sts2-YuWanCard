@@ -2,7 +2,7 @@
   <img style="width: 256px; height: 116px;" src="YuWanCard\mod_image.png" alt="logo" />
 
   <h1>YuWan Card</h1>
-  <p><em>pig card</em></p>
+  <p><em>Slay the Spire 2 mod developed with BaseLib framework</em></p>
   
   <p>
     <a href="README.md">简体中文</a> | <b>English</b>
@@ -58,9 +58,16 @@
 |------|------|--------|--------|
 | Ring of Seven Curses | Ancient | Ancient | Take +50% damage, -25% damage to non-BOSS, -20% Block, -50% gold, -50% rest site heal, gain Curse card each turn, -25% max HP after killing BOSS; +1 energy, +1 draw, +1 potion slot, +1 card reward, +50% damage to BOSS, chance for normal enemies to drop relics, can ignore path selection |
 | Ten Year Bamboo | Shared | Uncommon | Gain 1 Block at start of each turn. +1 Block stack when defeating Elite, +3 Block stacks when defeating BOSS |
-| Haotian Hammer | Crown Prince | Shop | At the start of each turn, upgrade all [gold]Sovereign Blades[/gold] in all players' hands |
-| Reincarnated Eye | Shared | Rare | At the start of your first turn each combat, choose a card from your deck to copy and add to your hand |
+| Haotian Hammer | Crown Prince | Shop | At the start of each turn, upgrade all Sovereign Blades in all players' hands |
+| Reincarnated Eye | Shared | Rare | At the start of each combat, choose a card from your deck to copy and add to your hand |
 | Supreme Bone | Shared | Shop | At the start of each combat, choose 2 cards from your deck and give them Exhaust. When your HP first drops below 30%, instantly gain 2 Energy and draw 3 cards |
+| Arrogant Pig | Shared | Rare | Take 3 additional damage when attacked. Deal 50% more damage to Vulnerable enemies. Take 25% less damage from Weak enemies |
+| Jealous Pig | Shared | Uncommon | In each combat, when an enemy first gains a Buff power, you also gain the same power. Draw 1 additional card each turn |
+| Furious Pig | Rare | Uncommon | At the start of each combat, gain 4 Strength |
+| Lazy Pig | Shared | Uncommon | At the start of each turn, gain 1 Energy. You cannot play more than 5 cards per turn |
+| Greedy Pig | Shared | Uncommon | At the start of each combat, add a Greed to your hand. Gold gained +25% |
+| Gluttonous Pig | Shared | Uncommon | You can eat your card rewards. For every 2 card rewards eaten, at the start of each combat gain 1 Plating and 1 Strength |
+| Lustful Pig | Shared | Rare | At the start of each combat, all enemies gain 2 Weak. Enemies have a 30% chance to attack other enemies |
 
 ### Ancient One
 

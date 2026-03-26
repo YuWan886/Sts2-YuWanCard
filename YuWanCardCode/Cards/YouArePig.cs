@@ -15,7 +15,7 @@ public class YouArePig : YuWanCardModel
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
 
     public YouArePig() : base(
-        baseCost: 1,
+        baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyAlly)
