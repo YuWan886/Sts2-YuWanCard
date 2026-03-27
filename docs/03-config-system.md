@@ -189,6 +189,8 @@ public class MyModifier : ModifierModel
 - 属性必须是公共的，且有 `get` 和 `set` 访问器
 - 适用于基本类型（int、bool、float、string 等）和可序列化的复杂类型
 - **BaseLib 会自动将包含 SavedProperty 的类型注入到 `SavedPropertiesTypeCache`**，无需手动注册
+- **SavedProperty 检查器会使用 `GetProperties` 而非 `GetDeclaredProperties`**，因此可以检测继承自基类的属性
+- 如果属性名没有使用前缀（如 `MyMod_`），BaseLib 会在日志中输出警告信息（但不会阻止功能）
 
 **SavedProperty 命名建议**：
 

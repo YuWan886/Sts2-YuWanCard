@@ -28,11 +28,12 @@
 - `CustomPotionModel`：自定义药水基类
 - `CustomAncientModel`：自定义先古之民基类
 - `PoolAttribute`：内容池属性标记
-- `CommonActions`：常用游戏动作工具
+- `CommonActions`：常用游戏动作工具（支持 `CalculatedDamageVar` 优先）
 - `GodotUtils`：Godot 节点和场景处理工具
 - `ShaderUtils`：着色器生成工具
 - `WeightedList`：加权随机列表
 - `SpireField`：Harmony 自定义字段
+- `SavedProperty`：自动持久化属性（使用 `GetProperties` 检查）
 
 ## 基本结构
 

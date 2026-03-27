@@ -50,9 +50,9 @@ public class LustfulPigPatch
             return true;
         }
 
-        // 30% 概率让敌人自己攻击自己
+        // 40% 概率让敌人自己攻击自己
         var rng = combatState.RunState.Rng.CombatTargets;
-        if (rng.NextFloat() <= 0.3f)
+        if (rng.NextFloat() <= 0.4f)
         {
             // 获取要攻击的玩家的名称
             string playerName = "Player";

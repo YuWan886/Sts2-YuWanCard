@@ -19,7 +19,7 @@ public class PigCrash : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AllEnemies)
     {
-        WithDamage(12);
+        WithDamage(14);
     }
 
     public override void OnUpgrade()

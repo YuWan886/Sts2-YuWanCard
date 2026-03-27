@@ -8,16 +8,17 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
-[Pool(typeof(SharedRelicPool))]
+[Pool(typeof(EventRelicPool))]
 public class JealousPig : YuWanRelicModel
 {
     [SavedProperty]
     private bool HasTriggeredThisCombat { get; set; }
 
-    public override RelicRarity Rarity => RelicRarity.Uncommon;
+    public override RelicRarity Rarity => RelicRarity.Ancient;
 
     public JealousPig() : base(true)
     {
@@ -98,16 +99,10 @@ public class JealousPig : YuWanRelicModel
             return false;
         }
 
-        try
+        // 使用 PowerSafetyUtils 进行详细的安全检查
+        if (!PowerSafetyUtils.IsSafePower(power))
         {
-            // 检查能力是否会导致战斗无法结束
-            if (power.ShouldStopCombatFromEnding())
-            {
-                return false;
-            }
-        }
-        catch (NullReferenceException)
-        {
+            MainFile.Logger.Debug($"JealousPig: Skipping unsafe power {power.Id}");
             return false;
         }
 

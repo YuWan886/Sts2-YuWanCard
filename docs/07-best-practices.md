@@ -98,6 +98,20 @@ MainFile.Logger.Debug("Detailed debug information");
 - 使用 IL 分析避免赋予怪物专属能力
 - 检查 `Owner` 是否为 null
 - 使用 `LocalContext.IsMe(player)` 检查是否为本地玩家
+
+## SavedProperty 最佳实践
+
+- 为所有 SavedProperty 属性添加前缀（如 `MyMod_`）以避免命名冲突
+- 使用 `GetProperties` 检查器会自动检测继承的属性
+- 属性必须是公共的且有 `get` 和 `set` 访问器
+- 避免在 SavedProperty 中使用复杂类型，优先使用基本类型
+
+## CommonActions 最佳实践
+
+- 使用 `CommonActions.CardAttack` 时，确保卡牌包含 `DamageVar` 或 `CalculatedDamageVar`
+- `CalculatedDamageVar` 优先于 `DamageVar`，适用于动态伤害计算
+- 正确设置 `TargetType`，避免使用不支持的目标类型
+- 使用 `hitCount` 参数处理多次攻击
 - 避免在多人游戏中执行仅限本地的操作
 
 ## 多人游戏

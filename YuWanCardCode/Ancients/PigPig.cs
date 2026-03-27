@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Godot;
@@ -6,15 +5,17 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Events;
-using MegaCrit.Sts2.Core.Factories;
+using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Relics;
 
 namespace YuWanCard.Ancients;
 
@@ -22,7 +23,7 @@ public class PigPig : CustomAncientModel
 {
     private const string IconBasePath = "res://YuWanCard/images/ancients/pig_pig";
 
-    private static readonly Regex PigCardPattern = new(@"^YUWANCARD-PIG_", RegexOptions.Compiled);
+    private static readonly RelicModel[] _validRelics;
 
     public PigPig() : base(autoAdd: true)
     {
@@ -110,32 +111,39 @@ public class PigPig : CustomAncientModel
         };
     }
 
-    protected override OptionPools MakeOptionPools
-    {
-        get
-        {
-            var sharedPool = ModelDb.RelicPool<SharedRelicPool>();
-            var uncommonRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Uncommon).ToArray();
-            var rareRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Rare).ToArray();
-            
-            return new OptionPools(
-                MakePool(uncommonRelics),
-                MakePool(uncommonRelics),
-                MakePool(rareRelics)
-            );
-        }
-    }
+    protected override OptionPools MakeOptionPools => new(
+        MakePool(Array.Empty<RelicModel>()),
+        MakePool(Array.Empty<RelicModel>()),
+        MakePool(Array.Empty<RelicModel>())
+    );
 
-    public override IEnumerable<EventOption> AllPossibleOptions => [];
+    public override IEnumerable<EventOption> AllPossibleOptions => _validRelics.Select(r => RelicOption(r.ToMutable()));
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
-        return new List<EventOption>
+        var randomSevenSinsIndex = Rng.NextInt(_validRelics.Length);
+        var selectedRelic = _validRelics[randomSevenSinsIndex].ToMutable();
+        
+        var eventOptions = new List<EventOption>
         {
-            new(this, ChoosePigCard, "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_CARD"),
-            new(this, ChooseRelic, "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC"),
-            new(this, UpgradeCards, "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS")
+            RelicOption(selectedRelic),
+            new EventOption(this, ChoosePigCard, "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_CARD"),
+            new EventOption(this, ChooseRelicOrUpgrade, "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS")
         };
+        
+        return eventOptions;
+    }
+
+    private EventOption RelicOption(RelicModel relic)
+    {
+        var optionKey = $"YUWANCARD-PIG_PIG.pages.INITIAL.options.{relic.Id.Entry.Replace("YUWANCARD-", "").ToUpperInvariant()}";
+        return EventOption.FromRelic(relic, this, () => ObtainRelic(relic), optionKey);
+    }
+
+    private async Task ObtainRelic(RelicModel relic)
+    {
+        await RelicCmd.Obtain(relic, Owner!);
+        FinishEvent();
     }
 
     private async Task ChoosePigCard()
@@ -154,15 +162,25 @@ public class PigPig : CustomAncientModel
         FinishEvent();
     }
 
-    private async Task ChooseRelic()
+    private async Task ChooseRelicOrUpgrade()
     {
-        List<RelicModel> relics = [];
-        for (int i = 0; i < 3; i++)
+        if (Rng.NextInt(2) == 0)
         {
-            var relic = RelicFactory.PullNextRelicFromFront(Owner!).ToMutable();
-            relics.Add(relic);
+            await ChooseRandomRelic();
         }
-        var selectedRelic = await RelicSelectCmd.FromChooseARelicScreen(Owner!, relics);
+        else
+        {
+            await UpgradeCards();
+        }
+    }
+
+    private async Task ChooseRandomRelic()
+    {
+        var sharedPool = ModelDb.RelicPool<SharedRelicPool>();
+        var availableRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Uncommon || r.Rarity == RelicRarity.Rare).ToList();
+        var shuffled = availableRelics.Select(r => r.ToMutable()).ToList().UnstableShuffle(Rng);
+        var relicsToOffer = shuffled.Take(3).ToList();
+        var selectedRelic = await RelicSelectCmd.FromChooseARelicScreen(Owner!, relicsToOffer);
         if (selectedRelic != null)
         {
             await RelicCmd.Obtain(selectedRelic, Owner!);
@@ -178,7 +196,7 @@ public class PigPig : CustomAncientModel
 
         if (upgradeableCards.Count == 0)
         {
-            FinishEvent();
+            await ChooseRandomRelic();
             return;
         }
 
@@ -200,8 +218,22 @@ public class PigPig : CustomAncientModel
         var allCards = colorlessPool.GetUnlockedCards(Owner!.UnlockState, Owner.RunState.CardMultiplayerConstraint);
         
         return [.. allCards
-            .Where(c => PigCardPattern.IsMatch(c.Id.Entry))
+            .Where(c => c.Id.Entry.Contains("PIG_") && !c.Id.Entry.Contains("POWER"))
             .Select(c => Owner.RunState.CreateCard(c, Owner))];
+    }
+
+    static PigPig()
+    {
+        _validRelics = new RelicModel[7]
+        {
+            ModelDb.Relic<ArrogantPig>(),
+            ModelDb.Relic<JealousPig>(),
+            ModelDb.Relic<FuriousPig>(),
+            ModelDb.Relic<LazyPig>(),
+            ModelDb.Relic<GreedyPig>(),
+            ModelDb.Relic<GluttonousPig>(),
+            ModelDb.Relic<LustfulPig>()
+        };
     }
 
     private void FinishEvent()

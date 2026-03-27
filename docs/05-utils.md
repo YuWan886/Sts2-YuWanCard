@@ -49,6 +49,11 @@ var selectedCard = await CommonActions.SelectSingleCard(card, selectionPrompt, c
 | `CardAttack(CardModel, Creature?, int hitCount, string? vfx, string? sfx, string? tmpSfx)` | 指定目标，自动获取伤害值 |
 | `CardAttack(CardModel, Creature?, decimal damage, int hitCount, string? vfx, string? sfx, string? tmpSfx)` | 指定目标和伤害值 |
 
+**伤害值获取逻辑**：
+- 优先使用 `CalculatedDamageVar`（如果卡牌的 DynamicVars 包含此变量）
+- 否则使用 `DamageVar` 的 BaseValue
+- 如果两个变量都不存在，将抛出异常
+
 **支持的目标类型**：
 - `TargetType.AnyEnemy`：单个敌人
 - `TargetType.AllEnemies`：所有敌人

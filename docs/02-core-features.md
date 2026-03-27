@@ -1092,6 +1092,8 @@ public class MyModifier : ModifierModel
 - Modifier 需要通过 Harmony 补丁注册到 `ModelDb` 和 `GoodModifiers` 列表
 - 使用 `[SavedProperty]` 属性标记需要持久化的属性
 - BaseLib 会自动处理 SavedProperty 的注册，无需手动注入
+- SavedProperty 检查器使用 `GetProperties` 方法，因此可以检测继承自基类的属性
+- 属性命名建议使用前缀（如 `MyMod_`），否则会在日志中输出警告
 
 **常用钩子方法**：
 - `GenerateNeowOption(EventModel)`：生成 Neow 事件选项

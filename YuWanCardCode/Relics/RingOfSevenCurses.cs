@@ -157,7 +157,7 @@ public class RingOfSevenCurses : YuWanRelicModel
             rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, room.RoomType), 3, player));
         }
 
-        if (room.RoomType == RoomType.Monster && Owner.RunState.Rng.Niche.NextFloat() < 0.5f)
+        if (room.RoomType == RoomType.Monster && Owner.RunState.Rng.Niche.NextFloat() <= 0.7f)
         {
             rewards.Add(new RelicReward(player));
         }

@@ -9,10 +9,10 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YuWanCard.Relics;
 
-[Pool(typeof(SharedRelicPool))]
+[Pool(typeof(EventRelicPool))]
 public class ArrogantPig : YuWanRelicModel
 {
-    public override RelicRarity Rarity => RelicRarity.Rare;
+    public override RelicRarity Rarity => RelicRarity.Ancient;
 
     public override IEnumerable<IHoverTip> ExtraHoverTips =>
     [

@@ -16,7 +16,7 @@ using MegaCrit.Sts2.Core.Rewards;
 
 namespace YuWanCard.Relics;
 
-[Pool(typeof(SharedRelicPool))]
+[Pool(typeof(EventRelicPool))]
 public class GluttonousPig : YuWanRelicModel
 {
     [SavedProperty]
@@ -25,7 +25,7 @@ public class GluttonousPig : YuWanRelicModel
     [SavedProperty]
     private bool HasAddedBuffThisCombat { get; set; }
 
-    public override RelicRarity Rarity => RelicRarity.Uncommon;
+    public override RelicRarity Rarity => RelicRarity.Ancient;
 
     public override bool ShowCounter => true;
 

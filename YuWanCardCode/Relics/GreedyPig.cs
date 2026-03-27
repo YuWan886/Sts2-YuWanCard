@@ -3,16 +3,16 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace YuWanCard.Relics;
 
-[Pool(typeof(SharedRelicPool))]
+[Pool(typeof(EventRelicPool))]
 public class GreedyPig : YuWanRelicModel
 {
     [SavedProperty]
@@ -21,7 +21,7 @@ public class GreedyPig : YuWanRelicModel
     private decimal _pendingGoldBonus;
     private bool _isApplyingBonus;
 
-    public override RelicRarity Rarity => RelicRarity.Uncommon;
+    public override RelicRarity Rarity => RelicRarity.Ancient;
 
     public GreedyPig() : base(true)
     {
@@ -91,7 +91,7 @@ public class GreedyPig : YuWanRelicModel
         {
             return true;
         }
-        _pendingGoldBonus = Math.Floor(amount * 0.5m);
+        _pendingGoldBonus = Math.Floor(amount * 1m);
         return true;
     }
 

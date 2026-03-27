@@ -123,6 +123,7 @@ YuWanCard/
 5. **卡牌设计**：
    - 使用 `DynamicVar` 系统处理卡牌数值（伤害、格挡、能量等）
    - 使用 `CommonActions` 简化常见游戏动作
+   - `CommonActions.CardAttack` 优先使用 `CalculatedDamageVar`（如果存在），否则使用 `DamageVar.BaseValue`
    - 正确使用 `TargetType` 指定目标类型：
      - `TargetType.Self`：自身
      - `TargetType.AllAllies`：所有队友

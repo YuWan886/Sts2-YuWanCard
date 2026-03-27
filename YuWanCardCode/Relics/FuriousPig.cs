@@ -8,14 +8,14 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace YuWanCard.Relics;
 
-[Pool(typeof(SharedRelicPool))]
+[Pool(typeof(EventRelicPool))]
 public class FuriousPig : YuWanRelicModel
 {
-    public override RelicRarity Rarity => RelicRarity.Rare;
+    public override RelicRarity Rarity => RelicRarity.Ancient;
 
     public override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(4m)];
 
-    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>()];
+    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>(), HoverTipFactory.FromPower<FrailPower>()];
 
     public FuriousPig() : base(true)
     {
@@ -29,5 +29,6 @@ public class FuriousPig : YuWanRelicModel
         }
         Flash();
         await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars.Strength.BaseValue, Owner.Creature, null);
+        await PowerCmd.Apply<FrailPower>(Owner.Creature, 1, Owner.Creature, null);
     }
 }

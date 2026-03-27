@@ -33,7 +33,7 @@
   "YUWANCARD-FURIOUS_PIG.description": "At the start of each combat, gain {StrengthPower} [gold]Strength[/gold].",
   "YUWANCARD-FURIOUS_PIG.flavor": "The furious pig has boundless strength.",
   "YUWANCARD-LAZY_PIG.title": "Lazy Pig",
-  "YUWANCARD-LAZY_PIG.description": "At the start of each turn, gain {Energy} Energy. You cannot play more than {Cards} cards per turn.",
+  "YUWANCARD-LAZY_PIG.description": "At the start of each turn, gain {Energy} Energy. Starting from turn {Turns}, gain 1 [gold]Ringing[/gold] each turn.",
   "YUWANCARD-LAZY_PIG.flavor": "The lazy pig prefers not to move.",
   "YUWANCARD-GREEDY_PIG.title": "Greedy Pig",
   "YUWANCARD-GREEDY_PIG.description": "At the start of each combat, add a [gold]Greed[/gold] to your hand. Gold gained +50%.",
