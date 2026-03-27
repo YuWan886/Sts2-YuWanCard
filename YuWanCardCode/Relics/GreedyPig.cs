@@ -91,7 +91,7 @@ public class GreedyPig : YuWanRelicModel
         {
             return true;
         }
-        _pendingGoldBonus = Math.Floor(amount * 0.25m);
+        _pendingGoldBonus = Math.Floor(amount * 0.5m);
         return true;
     }
 

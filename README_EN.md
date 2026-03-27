@@ -65,7 +65,7 @@
 | Jealous Pig | Shared | Uncommon | In each combat, when an enemy first gains a Buff power, you also gain the same power. Draw 1 additional card each turn |
 | Furious Pig | Rare | Uncommon | At the start of each combat, gain 4 Strength |
 | Lazy Pig | Shared | Uncommon | At the start of each turn, gain 1 Energy. You cannot play more than 5 cards per turn |
-| Greedy Pig | Shared | Uncommon | At the start of each combat, add a Greed to your hand. Gold gained +25% |
+| Greedy Pig | Shared | Uncommon | At the start of each combat, add a Greed to your hand. Gold gained +50% |
 | Gluttonous Pig | Shared | Uncommon | You can eat your card rewards. For every 2 card rewards eaten, at the start of each combat gain 1 Plating and 1 Strength |
 | Lustful Pig | Shared | Rare | At the start of each combat, all enemies gain 2 Weak. Enemies have a 30% chance to attack other enemies |
 

@@ -12,21 +12,22 @@ BaseLib 提供两种方式定义自定义卡牌：`CustomCardModel`（传统方�
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models.CardPools;
 
 [Pool(typeof(ColorlessCardPool))]
 public class MyCard() : ConstructedCardModel(
-    cost: 1,
+    baseCost: 1,
     type: CardType.Attack,
     rarity: CardRarity.Common,
     target: TargetType.AnyEnemy)
 {
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(5m);
     }
 
-    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    public override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
     {
         await Damage(user, target, stacks);
     }
@@ -55,20 +56,20 @@ public class MyCard() : ConstructedCardModel(
 ```csharp
 [Pool(typeof(ColorlessCardPool))]
 public class StrikeCard() : ConstructedCardModel(
-    cost: 1,
+    baseCost: 1,
     type: CardType.Attack,
     rarity: CardRarity.Common,
     target: TargetType.AnyEnemy)
 {
-    protected override IEnumerable<DynamicVar> Vars => base.Vars
+    public override IEnumerable<DynamicVar> Vars => base.Vars
         .WithDamage(6);
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(3);
     }
 
-    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    public override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
     {
         await Damage(user, target, stacks);
     }
@@ -76,20 +77,20 @@ public class StrikeCard() : ConstructedCardModel(
 
 [Pool(typeof(ColorlessCardPool))]
 public class DefendCard() : ConstructedCardModel(
-    cost: 1,
+    baseCost: 1,
     type: CardType.Skill,
     rarity: CardRarity.Common,
     target: TargetType.Self)
 {
-    protected override IEnumerable<DynamicVar> Vars => base.Vars
+    public override IEnumerable<DynamicVar> Vars => base.Vars
         .WithBlock(5);
 
-    protected override void OnUpgrade()
+    public override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(3);
     }
 
-    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    public override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
     {
         await Block(user, stacks);
     }
@@ -436,6 +437,7 @@ public override NCreatureVisuals? CreateCustomVisuals()
 ```csharp
 using BaseLib.Abstracts;
 using BaseLib.Utils;
+using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 

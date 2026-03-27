@@ -17,7 +17,7 @@ public class LustfulPig : YuWanRelicModel
     [SavedProperty]
     private bool HasAppliedDebuffsThisCombat { get; set; }
 
-    public override RelicRarity Rarity => RelicRarity.Uncommon;
+    public override RelicRarity Rarity => RelicRarity.Rare;
 
     public LustfulPig() : base(true)
     {

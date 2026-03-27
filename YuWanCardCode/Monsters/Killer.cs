@@ -29,7 +29,7 @@ public sealed class Killer : MonsterModel
 {
     public override string VisualsPath => "res://YuWanCard/scenes/monsters/killer/killer_visuals.tscn";
 
-    public override int MinInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 190, 180);
+    public override int MinInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 160, 150);
 
     public override int MaxInitialHp => MinInitialHp;
 
@@ -47,7 +47,7 @@ public sealed class Killer : MonsterModel
 
     private static int DazedCount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 2, 1);
 
-    private static int HardenedShellAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 50, 30);
+    private static int HardenedShellAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 60, 50);
 
     private static int PersonalHiveAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 2, 1);
 

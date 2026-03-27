@@ -18,7 +18,7 @@ public class LazyPig : YuWanRelicModel
 {
     private int _cardsPlayedThisTurn;
 
-    public override RelicRarity Rarity => RelicRarity.Rare;
+    public override RelicRarity Rarity => RelicRarity.Uncommon;
 
     public override bool ShowCounter => CombatManager.Instance.IsInProgress;
 
