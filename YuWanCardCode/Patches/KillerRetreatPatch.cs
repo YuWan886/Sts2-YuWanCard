@@ -6,15 +6,12 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
-using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.addons.mega_text;
 using YuWanCard.Monsters;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Context;
-using System.Collections.Generic;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using YuWanCard.Encounters;
 using MegaCrit.Sts2.Core.Localization;
 
@@ -191,9 +188,6 @@ public partial class NRetreatButton : Control
 
     public override void _Input(InputEvent @event)
     {
-        if (!CanTurnBeEnded) return;
-
-        // 处理鼠标悬停
         if (@event is InputEventMouseMotion)
         {
             var rect = GetRect();
@@ -210,7 +204,8 @@ public partial class NRetreatButton : Control
             }
         }
         
-        // 处理鼠标点击
+        if (!CanTurnBeEnded) return;
+        
         if (@event is InputEventMouseButton mouseButton)
         {
             var rect = GetRect();

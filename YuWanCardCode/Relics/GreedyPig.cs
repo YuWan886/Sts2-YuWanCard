@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.RelicPools;
+using MegaCrit.Sts2.Core.HoverTips;
 
 namespace YuWanCard.Relics;
 
@@ -23,6 +24,10 @@ public class GreedyPig : YuWanRelicModel
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
+    public override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        HoverTipFactory.FromCard<Greed>()
+    ];
     public GreedyPig() : base(true)
     {
     }
@@ -64,20 +69,10 @@ public class GreedyPig : YuWanRelicModel
         if (isHandFull)
         {
             await CardPileCmd.Add(card, PileType.Draw, CardPilePosition.Top);
-            MainFile.Logger.Info($"GreedyPig: Added Greed to top of draw pile (hand full)");
         }
         else
         {
-            var results = await CardPileCmd.AddGeneratedCardsToCombat([card], PileType.Hand, addedByPlayer: true);
-
-            if (results.Count > 0 && results[0].success)
-            {
-                MainFile.Logger.Info($"GreedyPig: Added Greed to hand");
-            }
-            else
-            {
-                MainFile.Logger.Warn($"GreedyPig: Failed to add Greed to hand");
-            }
+            _ = await CardPileCmd.AddGeneratedCardsToCombat([card], PileType.Hand, addedByPlayer: true);
         }
     }
 

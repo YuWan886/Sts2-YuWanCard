@@ -100,6 +100,7 @@ public class GluttonousPig : YuWanRelicModel
     public void EatCard()
     {
         CardsEatenCount++;
+        InvokeDisplayAmountChanged();
         MainFile.Logger.Info($"GluttonousPig: Ate a card, total eaten: {CardsEatenCount}");
     }
 }

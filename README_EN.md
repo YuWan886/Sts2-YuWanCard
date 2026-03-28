@@ -41,6 +41,8 @@
 | Pig Brain Overload | 0 | Uncommon | Power | Gain 3 Energy this turn. Draw 2 cards. Every 2 turns, gain 1 Dazed. Exhaust |
 | Pig Melt | 0 | Uncommon | Skill | Gain 1 Buffer. End your turn. Exhaust |
 | You Are Pig | 1 | Uncommon | Skill | Make a teammate turn into a pig, gaining 1 Buffer and 3 Regen, then end their turn (Multiplayer) |
+| Pig Dragon Ride | 2 | Uncommon | Attack | Deal 7 damage 3 times to an enemy. Exhaust |
+| Pig Crash | 2 | Rare | Skill | Lose 2 HP. Deal 14 damage to all enemies |
 
 ### Powers
 
@@ -61,10 +63,10 @@
 | Haotian Hammer | Crown Prince | Shop | At the start of each turn, upgrade all Sovereign Blades in all players' hands |
 | Reincarnated Eye | Shared | Rare | At the start of each combat, choose a card from your deck to copy and add to your hand |
 | Supreme Bone | Shared | Shop | At the start of each combat, choose 2 cards from your deck and give them Exhaust. When your HP first drops below 30%, instantly gain 2 Energy and draw 3 cards |
-| Arrogant Pig | Shared | Rare | Take 3 additional damage when attacked. Deal 50% more damage to Vulnerable enemies. Take 25% less damage from Weak enemies |
+| Arrogant Pig | Shared | Rare | Take 2 additional damage when attacked. Deal 50% more damage to Vulnerable enemies. Take 30% less damage from Weak enemies |
 | Jealous Pig | Shared | Uncommon | In each combat, when an enemy first gains a Buff power, you also gain the same power. Draw 1 additional card each turn |
 | Furious Pig | Rare | Uncommon | At the start of each combat, gain 4 Strength |
-| Lazy Pig | Shared | Uncommon | At the start of each turn, gain 1 Energy. You cannot play more than 5 cards per turn |
+| Lazy Pig | Shared | Uncommon | At the start of every 2 turns, gain 2 Dexterity. 50% less chance to draw Attack cards |
 | Greedy Pig | Shared | Uncommon | At the start of each combat, add a Greed to your hand. Gold gained +50% |
 | Gluttonous Pig | Shared | Uncommon | You can eat your card rewards. For every 2 card rewards eaten, at the start of each combat gain 1 Plating and 1 Strength |
 | Lustful Pig | Shared | Rare | At the start of each combat, all enemies gain 2 Weak. Enemies have a 30% chance to attack other enemies |

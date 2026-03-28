@@ -51,7 +51,7 @@ public sealed class Killer : MonsterModel
 
     private static int PersonalHiveAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 2, 1);
 
-    private static int SkittishAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 18, 15);
+    private static int SkittishAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 14, 10);
 
     public override DamageSfxType TakeDamageSfxType => DamageSfxType.Armor;
 

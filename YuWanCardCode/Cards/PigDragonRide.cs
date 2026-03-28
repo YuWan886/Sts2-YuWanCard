@@ -11,7 +11,7 @@ public class PigDragonRide : YuWanCardModel
     public PigDragonRide() : base(
         baseCost: 2,
         type: CardType.Attack,
-        rarity: CardRarity.Rare,
+        rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
         WithDamage(7);

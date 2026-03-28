@@ -1,11 +1,12 @@
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.RelicPools;
@@ -26,13 +27,7 @@ public class LazyPig : YuWanRelicModel
 
     public override int DisplayAmount => _turnCount;
 
-    public override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new EnergyVar(1),
-        new DynamicVar("Turns", 5m)
-    ];
-
-    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.ForEnergy(this), HoverTipFactory.FromPower<RingingPower>()];
+    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<DexterityPower>()];
 
     public LazyPig() : base(true)
     {
@@ -46,11 +41,10 @@ public class LazyPig : YuWanRelicModel
         }
         _turnCount++;
         InvokeDisplayAmountChanged();
-        Flash();
-        await PlayerCmd.GainEnergy(DynamicVars.Energy.BaseValue, player);
-        if (_turnCount >= DynamicVars["Turns"].IntValue)
+        if (_turnCount % 2 == 0)
         {
-            await PowerCmd.Apply<RingingPower>(player.Creature, 1, player.Creature, null);
+            Flash();
+            await PowerCmd.Apply<DexterityPower>(player.Creature, 2, player.Creature, null);
         }
     }
 
@@ -70,5 +64,59 @@ public class LazyPig : YuWanRelicModel
         _turnCount = 0;
         InvokeDisplayAmountChanged();
         return Task.CompletedTask;
+    }
+
+    public override void ModifyShuffleOrder(Player player, List<CardModel> cards, bool isInitialShuffle)
+    {
+        if (player != Owner)
+        {
+            return;
+        }
+
+        var attackCards = new List<CardModel>();
+        var nonAttackCards = new List<CardModel>();
+
+        foreach (var card in cards)
+        {
+            if (card.Type == CardType.Attack)
+            {
+                attackCards.Add(card);
+            }
+            else
+            {
+                nonAttackCards.Add(card);
+            }
+        }
+
+        nonAttackCards.StableShuffle(Owner.RunState.Rng.Shuffle);
+        attackCards.StableShuffle(Owner.RunState.Rng.Shuffle);
+
+        var result = new List<CardModel>();
+        int nonAttackIndex = 0;
+        int attackIndex = 0;
+
+        while (nonAttackIndex < nonAttackCards.Count || attackIndex < attackCards.Count)
+        {
+            if (nonAttackIndex < nonAttackCards.Count)
+            {
+                result.Add(nonAttackCards[nonAttackIndex]);
+                nonAttackIndex++;
+            }
+
+            if (attackIndex < attackCards.Count && Owner.RunState.Rng.Niche.NextFloat() >= 0.5f)
+            {
+                result.Add(attackCards[attackIndex]);
+                attackIndex++;
+            }
+        }
+
+        while (attackIndex < attackCards.Count)
+        {
+            result.Add(attackCards[attackIndex]);
+            attackIndex++;
+        }
+
+        cards.Clear();
+        cards.AddRange(result);
     }
 }

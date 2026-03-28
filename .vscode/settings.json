@@ -3,5 +3,6 @@
         "**/*cs.uid": true,
         "**/*.import": true
     },
-    "commentTranslate.hover.enabled": false
+    "commentTranslate.hover.enabled": false,
+    "commentTranslate.source": "Bing"
 }

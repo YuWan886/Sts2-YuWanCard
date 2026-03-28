@@ -1,4 +1,3 @@
-using BaseLib.Abstracts;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Map;

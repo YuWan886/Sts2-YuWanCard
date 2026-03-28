@@ -38,7 +38,7 @@ YuWan Card is a Slay the Spire 2 mod that adds 23 colorless cards, 5 powers, 12 
 [*]Pride Pig - Take extra damage but deal more to Vulnerable enemies[/*]
 [*]Envy Pig - Gain enemy buffs and draw extra card each turn[/*]
 [*]Wrath Pig - Gain 4 Strength at start of battle[/*]
-[*]Sloth Pig - Gain 1 energy each turn but limit to 5 cards per turn[/*]
+[*]Sloth Pig - Gain 2 Dexterity every 2 turns and 50% less chance to draw Attack cards[/*]
 [*]Greed Pig - Add Greed card to hand and gain 50% more gold[/*]
 [*]Gluttony Pig - Eat card rewards for Armor and Strength[/*]
 [*]Lust Pig - Apply Weak to enemies and make them attack each other[/*]

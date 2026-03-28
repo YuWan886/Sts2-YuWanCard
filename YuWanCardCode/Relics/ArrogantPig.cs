@@ -50,7 +50,7 @@ public class ArrogantPig : YuWanRelicModel
         // 只有当玩家受到伤害时才触发
         if (target.Player == Owner)
         {
-            return 3m;
+            return 2m;
         }
         else
         {
@@ -70,10 +70,10 @@ public class ArrogantPig : YuWanRelicModel
 
     public decimal ModifyWeakMultiplier(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        // 如果来源是敌人且敌人有虚弱，减少 25% 伤害
+        // 如果来源是敌人且敌人有虚弱，减少 30% 伤害
         if (target == Owner?.Creature && dealer != Owner?.Creature)
         {
-            return amount - 0.25m;
+            return amount - 0.30m;
         }
         return amount;
     }
