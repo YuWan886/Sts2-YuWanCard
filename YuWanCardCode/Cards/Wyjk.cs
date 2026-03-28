@@ -11,7 +11,7 @@ namespace YuWanCard.Cards;
 public class Wyjk : YuWanCardModel
 {
     public Wyjk() : base(
-        baseCost: 3,
+        baseCost: 2,
         type: CardType.Power,
         rarity: CardRarity.Uncommon,
         target: TargetType.AllAllies)
@@ -23,7 +23,7 @@ public class Wyjk : YuWanCardModel
     public override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
-        DynamicVars.Energy.UpgradeValueBy(2m);
+        DynamicVars.Energy.UpgradeValueBy(1m);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

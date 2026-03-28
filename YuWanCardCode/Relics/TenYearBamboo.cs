@@ -23,6 +23,7 @@ public class TenYearBamboo : YuWanRelicModel
         {
             _blockBonus = value;
             DynamicVars["BlockBonus"].BaseValue = value;
+            InvokeDisplayAmountChanged();
         }
     }
 

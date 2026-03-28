@@ -19,7 +19,7 @@
 | Name | Cost | Rarity | Type | Effect |
 |------|------|--------|------|--------|
 | Pig Hurt | 0 | Uncommon | Skill | Apply 2 stacks of Vulnerable to all enemies |
-| Pig Think | 1 | Uncommon | Skill | All players gain 2 energy |
+| Pig Think | 1 | Uncommon | Skill | All players gain 2 Energy |
 | Pig Angry | 2 | Uncommon | Skill | All players gain 4 Strength |
 | Pig Sleep | 3 | Rare | Skill | End turn, gain 10 Block, heal 5 HP |
 | Pig Sacrifice | 3 | Rare | Skill | Give 50% of HP and Block to target ally (Multiplayer) |
@@ -32,7 +32,7 @@
 | Pig King | 0 | Rare | Skill | Choose 3 cards from your hand, transform them into Pig Charge, Pig Barrage, and Pig Shield Break. Exhaust |
 | You Are Crying | 1 | Uncommon | Skill | Apply 1 stack of Weak to an enemy, remove 50% of its Block |
 | I Give You | 1 | Uncommon | Skill | Choose a card from hand to give to target ally (Multiplayer) |
-| I Am Crying | 3 | Uncommon | Power | All players gain 2 energy |
+| I Am Crying | 3 | Uncommon | Power | All players gain 2 Energy |
 | Melancholy Is A Feeling | 2 | Rare | Skill | Gain Block equal to current HP |
 | Sad Army Wins | 3 | Rare | Skill | Kill an enemy when HP is below 10% |
 | Revive! | 4 | Rare | Skill | Resurrect a dead ally with 50% max HP (Multiplayer) |
@@ -40,7 +40,7 @@
 | Ten Thousand Swords | 1 | Uncommon | Skill | Stack all other players' Forge Points onto yourself, then clear other players' Forge Points. Exhaust (Multiplayer) |
 | Pig Brain Overload | 0 | Uncommon | Power | Gain 3 Energy this turn. Draw 2 cards. Every 2 turns, gain 1 Dazed. Exhaust |
 | Pig Melt | 0 | Uncommon | Skill | Gain 1 Buffer. End your turn. Exhaust |
-| You Are Pig | 1 | Uncommon | Skill | Make a teammate turn into a pig, gaining 1 Buffer and 3 Regen, then end their turn (Multiplayer) |
+| You Are Pig | 2 | Uncommon | Skill | Make a teammate turn into a pig, gaining 1 Buffer and 3 Regen, then end their turn (Multiplayer) |
 | Pig Dragon Ride | 2 | Uncommon | Attack | Deal 7 damage 3 times to an enemy. Exhaust |
 | Pig Crash | 2 | Rare | Skill | Lose 2 HP. Deal 14 damage to all enemies |
 
@@ -58,18 +58,18 @@
 
 | Name | Type | Rarity | Effect |
 |------|------|--------|--------|
-| Ring of Seven Curses | Ancient | Ancient | Take +50% damage, -25% damage to non-BOSS, -20% Block, -50% gold, -50% rest site heal, gain Curse card each turn, -25% max HP after killing BOSS; +1 energy, +1 draw, +1 potion slot, +1 card reward, +50% damage to BOSS, chance for normal enemies to drop relics, can ignore path selection |
+| Ring of Seven Curses | Ancient | Ancient | Take +50% damage, -25% damage to non-BOSS, -20% Block, -50% gold, -25% rest site heal, gain Curse card each turn, -25% max HP after killing BOSS; +1 energy, +1 draw, +1 rest site card upgrade, +1 card reward, +50% damage to BOSS, chance for normal enemies to drop relics, can ignore path selection |
 | Ten Year Bamboo | Shared | Uncommon | Gain 1 Block at start of each turn. +1 Block stack when defeating Elite, +3 Block stacks when defeating BOSS |
-| Haotian Hammer | Crown Prince | Shop | At the start of each turn, upgrade all Sovereign Blades in all players' hands |
+| Haotian Hammer | Crown Prince | Shop | Whenever a Sovereign Blade is added to any player's hand, upgrade it |
 | Reincarnated Eye | Shared | Rare | At the start of each combat, choose a card from your deck to copy and add to your hand |
-| Supreme Bone | Shared | Shop | At the start of each combat, choose 2 cards from your deck and give them Exhaust. When your HP first drops below 30%, instantly gain 2 Energy and draw 3 cards |
-| Arrogant Pig | Shared | Rare | Take 2 additional damage when attacked. Deal 50% more damage to Vulnerable enemies. Take 30% less damage from Weak enemies |
-| Jealous Pig | Shared | Uncommon | In each combat, when an enemy first gains a Buff power, you also gain the same power. Draw 1 additional card each turn |
-| Furious Pig | Rare | Uncommon | At the start of each combat, gain 4 Strength |
-| Lazy Pig | Shared | Uncommon | At the start of every 2 turns, gain 2 Dexterity. 50% less chance to draw Attack cards |
-| Greedy Pig | Shared | Uncommon | At the start of each combat, add a Greed to your hand. Gold gained +50% |
-| Gluttonous Pig | Shared | Uncommon | You can eat your card rewards. For every 2 card rewards eaten, at the start of each combat gain 1 Plating and 1 Strength |
-| Lustful Pig | Shared | Rare | At the start of each combat, all enemies gain 2 Weak. Enemies have a 30% chance to attack other enemies |
+| Supreme Bone | Shared | Shop | At the start of each combat, choose 2 cards from your deck and give them Exhaust. When your HP first drops below 30%, gain 2 Energy and draw 3 cards |
+| Arrogant Pig | Event | Ancient Name | Take 2 additional damage when attacked. Deal 50% more damage to Vulnerable enemies. Take 30% less damage from Weak enemies |
+| Jealous Pig | Event | Ancient Name | In each combat, when an enemy first gains a Buff power, you also gain the same power. Draw 1 additional card each turn |
+| Furious Pig | Event | Ancient Name | At the start of each combat, gain 4 Strength and 1 Frail |
+| Lazy Pig | Event | Ancient Name | Every 2 turns, gain 2 Dexterity. 50% less chance to draw Attack cards |
+| Greedy Pig | Event | Ancient Name | At the start of each combat, add a Greed to your hand. Gold gained +100% |
+| Gluttonous Pig | Event | Ancient Name | You can eat your card rewards. For every 2 card rewards eaten, at the start of each combat gain 1 Plating and 1 Strength |
+| Lustful Pig | Event | Ancient Name | At the start of each combat, all enemies gain 2 Weak. Enemies have a 40% chance to attack themselves |
 
 ### Ancient One
 
@@ -87,7 +87,7 @@
 
 | Name | Type | HP | Effect |
 |------|------|-----|--------|
-| Killer | Elite | 150/180 | Starts with Hardened Shell (15/30 stacks). On wake, gains 8 Strength, Personal Hive (adds Dazed to attacker when hit by powered attack), and Skittish (gains Block after being attacked). Moves: Slash (12/14 damage), Multi-attack (3×4/5 damage), Goop (apply Vulnerable), Zoom (8/10 damage+Block), Enlarge (gain Strength+add Dazed) |
+| Killer | Elite | 150/160 | Starts with Hardened Shell. On wake, gains 8 Strength, Personal Hive and Skittish. Moves: Slash, Multi-attack, Goop, Zoom, Enlarge |
 
 ## Installation
 1. Game version: `v0.101.0+`

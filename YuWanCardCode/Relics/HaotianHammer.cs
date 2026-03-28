@@ -1,21 +1,17 @@
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.RelicPools;
-using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(RegentRelicPool))]
 public class HaotianHammer : YuWanRelicModel
 {
-    [SavedProperty]
-    private bool HasUpgradedBladesThisCombat { get; set; }
-
     public override RelicRarity Rarity => RelicRarity.Shop;
 
     public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<SovereignBlade>()];
@@ -26,67 +22,36 @@ public class HaotianHammer : YuWanRelicModel
 
     public override RelicModel? GetUpgradeReplacement() => null;
 
-    public override Task AfterRoomEntered(AbstractRoom room)
+    public override Task AfterCardChangedPilesLate(CardModel card, PileType oldPileType, AbstractModel? source)
     {
-        if (room is not CombatRoom)
+        if (Owner == null || card is not SovereignBlade blade || card.IsUpgraded)
         {
             return Task.CompletedTask;
         }
 
-        HasUpgradedBladesThisCombat = false;
-        return Task.CompletedTask;
-    }
-
-    public override Task BeforeCombatStart()
-    {
-        if (Owner == null || HasUpgradedBladesThisCombat)
+        var combatState = Owner.Creature?.CombatState;
+        if (combatState == null)
         {
             return Task.CompletedTask;
         }
 
-        HasUpgradedBladesThisCombat = true;
-        UpgradeSovereignBladesInAllHands();
-        return Task.CompletedTask;
-    }
-
-    private void UpgradeSovereignBladesInAllHands()
-    {
-        if (Owner?.Creature?.CombatState == null)
-        {
-            return;
-        }
-
-        var combatState = Owner.Creature.CombatState;
-        var players = combatState.Players;
-
-        foreach (var player in players)
+        foreach (var player in combatState.Players)
         {
             var hand = player.PlayerCombatState?.Hand;
-            if (hand == null)
+            if (hand == null || !hand.Cards.Contains(card))
             {
                 continue;
             }
 
-            var sovereignBlades = hand.Cards
-                .Where(c => c is SovereignBlade && !c.IsUpgraded)
-                .ToList();
-
-            foreach (var blade in sovereignBlades)
-            {
-                CardCmd.Upgrade(blade);
-            }
-
-            if (sovereignBlades.Count > 0 && player == Owner)
+            MainFile.Logger.Info($"HaotianHammer: SovereignBlade added to {player.Creature.Name}'s hand, upgrading it");
+            CardCmd.Upgrade(blade);
+            
+            if (player == Owner)
             {
                 Flash();
-                MainFile.Logger.Info($"HaotianHammer: Upgraded {sovereignBlades.Count} SovereignBlade(s) in hand");
             }
         }
-    }
 
-    public override async Task AfterCombatVictory(CombatRoom room)
-    {
-        await base.AfterCombatVictory(room);
-        HasUpgradedBladesThisCombat = false;
+        return Task.CompletedTask;
     }
 }

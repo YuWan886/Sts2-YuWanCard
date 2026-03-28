@@ -3,11 +3,14 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Entities.RestSite;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
-using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -22,26 +25,16 @@ public class RingOfSevenCurses : YuWanRelicModel
 {
     private decimal _pendingGoldReduction;
     private bool _isApplyingReduction;
-    [SavedProperty]
-    private bool YuWanCard_PotionSlotsAdded { get; set; }
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
+
+    public override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(1)];
 
     public RingOfSevenCurses() : base(true)
     {
     }
 
     public override RelicModel? GetUpgradeReplacement() => null;
-
-    public override async Task AfterObtained()
-    {
-        await base.AfterObtained();
-        if (!YuWanCard_PotionSlotsAdded)
-        {
-            Owner?.AddToMaxPotionCount(1);
-            YuWanCard_PotionSlotsAdded = true;
-        }
-    }
 
     public override bool ShouldGainGold(decimal amount, Player player)
     {
@@ -208,4 +201,18 @@ public class RingOfSevenCurses : YuWanRelicModel
         }
     }
 
+    public override bool TryModifyRestSiteOptions(Player player, ICollection<RestSiteOption> options)
+    {
+        if (player != Owner)
+        {
+            return false;
+        }
+        var smithOption = options.OfType<SmithRestSiteOption>().FirstOrDefault(opt => opt.Owner == Owner);
+        if (smithOption != null)
+        {
+            smithOption.SmithCount += 1;
+            return true;
+        }
+        return false;
+    }
 }

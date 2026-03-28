@@ -6,7 +6,9 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
@@ -29,6 +31,8 @@ public class SupremeBone : YuWanRelicModel
     private List<string> SelectedCardIds { get; set; } = new();
 
     public override RelicRarity Rarity => RelicRarity.Shop;
+
+    public override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(2)];
 
     public SupremeBone() : base(true)
     {
@@ -144,7 +148,6 @@ public class SupremeBone : YuWanRelicModel
         ShouldTriggerDelayedEffect = false;
         Flash();
 
-        MainFile.Logger.Info($"SupremeBone: Triggering delayed effect - gain 2 energy and draw 3 cards");
         await PlayerCmd.GainEnergy(2, Owner);
         await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), 3, Owner);
     }
