@@ -28,7 +28,7 @@ public class SupremeBone : YuWanRelicModel
     [SavedProperty]
     private bool ShouldTriggerDelayedEffect { get; set; }
 
-    private List<string> SelectedCardIds { get; set; } = new();
+    private List<CardModel> SelectedCards { get; set; } = new();
 
     public override RelicRarity Rarity => RelicRarity.Shop;
 
@@ -50,7 +50,7 @@ public class SupremeBone : YuWanRelicModel
         HasAddedCardThisCombat = false;
         HasTriggeredLowHpEffectThisCombat = false;
         ShouldTriggerDelayedEffect = false;
-        SelectedCardIds.Clear();
+        SelectedCards.Clear();
         return Task.CompletedTask;
     }
 
@@ -82,8 +82,8 @@ public class SupremeBone : YuWanRelicModel
             return;
         }
 
-        SelectedCardIds = selectedCards.Select(c => c.Id.Entry).ToList();
-        MainFile.Logger.Info($"SupremeBone: Selected {selectedCards.Count} cards: {string.Join(", ", SelectedCardIds)}");
+        SelectedCards = selectedCards.ToList();
+        MainFile.Logger.Info($"SupremeBone: Selected {selectedCards.Count} cards: {string.Join(", ", selectedCards.Select(c => c.Title))}");
 
         var combatState = Owner.Creature.CombatState;
         if (combatState == null)
@@ -102,10 +102,10 @@ public class SupremeBone : YuWanRelicModel
 
         foreach (var card in allCards)
         {
-            if (SelectedCardIds.Contains(card.Id.Entry))
+            if (SelectedCards.Contains(card.DeckVersion ?? card))
             {
                 CardCmd.ApplyKeyword(card, CardKeyword.Exhaust);
-                MainFile.Logger.Info($"SupremeBone: Added Exhaust to {card.Title} (Id: {card.Id.Entry}, Keywords: {string.Join(", ", card.Keywords)})");
+                MainFile.Logger.Info($"SupremeBone: Added Exhaust to {card.Title} (Keywords: {string.Join(", ", card.Keywords)})");
             }
         }
     }
