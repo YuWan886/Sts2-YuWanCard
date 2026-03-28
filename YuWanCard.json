@@ -3,7 +3,7 @@
   "name": "YuWanCard",
   "author": "一条鱼丸_",
   "description": "pig card",
-  "version": "v0.2.5",
+  "version": "v0.2.6",
   "has_pck": true,
   "has_dll": true,
   "dependencies": ["BaseLib"],
