@@ -7,11 +7,10 @@
   <p>
     <b>简体中文</b> | <a href="README_EN.md">English</a>
   </p>
+
+  <img src="https://count.getloli.com/@Sts2-YuWanCard?name=Sts2-YuWanCard&theme=moebooru&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="count" />
 </div>
 
-<img src="https://count.getloli.com/@Sts2-YuWanCard?name=Sts2-YuWanCard&theme=moebooru&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="count" />
-
-</div>
 > [!IMPORTANT]
 > 本 mod 使用 ai 进行开发，可能会存在错误。
 
