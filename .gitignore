@@ -13,3 +13,4 @@ packages/
 others/
 .trae/
 *.import
+.vscode/
