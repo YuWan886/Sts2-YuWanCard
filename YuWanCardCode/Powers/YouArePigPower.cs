@@ -1,17 +1,12 @@
-using System.Threading.Tasks;
-using BaseLib.Abstracts;
 using BaseLib.Utils.NodeFactories;
-using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
 
 namespace YuWanCard.Powers;
 
@@ -45,6 +40,11 @@ public class YouArePigPower : YuWanPowerModel
         _originalVisuals.Visible = false;
 
         _creatureNode.AddChild(_pigVisuals);
+
+        if (Owner.Side == CombatSide.Enemy)
+        {
+            _pigVisuals.Scale = new Godot.Vector2(-_pigVisuals.Scale.X, _pigVisuals.Scale.Y);
+        }
 
         Flash();
 

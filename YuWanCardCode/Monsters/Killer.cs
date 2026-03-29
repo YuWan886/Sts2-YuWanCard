@@ -74,6 +74,10 @@ public sealed class Killer : MonsterModel
     private void OnPlayerDied(Creature creature)
     {
         creature.Died -= OnPlayerDied;
+        if (Creature.IsDead)
+        {
+            return;
+        }
         if (!CombatState.Players.All(p => p.Creature.IsDead))
         {
             return;

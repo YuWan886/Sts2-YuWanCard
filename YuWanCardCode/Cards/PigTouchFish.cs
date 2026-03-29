@@ -2,6 +2,7 @@ using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
 
@@ -16,6 +17,7 @@ public class PigTouchFish : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
+        WithVars(new EnergyVar(2));
         WithPower<RetainHandPower>(1);
         WithPower<EnergyNextTurnPower>(2);
         WithTip(CardKeyword.Retain);

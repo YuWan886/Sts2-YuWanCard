@@ -6,12 +6,12 @@
   "YUWANCARD-RAIN_DARK_POWER.description": "获得的能量翻倍。战斗结束后恢复6点血量。",
   "YUWANCARD-RAIN_DARK_POWER.smartDescription": "获得的能量翻倍。战斗结束后恢复6点血量。",
   "YUWANCARD-PIG_BANKRUPTCY_POWER.title": "猪破产",
-  "YUWANCARD-PIG_BANKRUPTCY_POWER.description": "本回合内所有手牌消耗为0，但是自带消耗。",
-  "YUWANCARD-PIG_BANKRUPTCY_POWER.smartDescription": "本回合内所有手牌消耗为0，但是自带消耗。",
+  "YUWANCARD-PIG_BANKRUPTCY_POWER.description": "本回合内所有手牌耗能为0，且自带消耗。",
+  "YUWANCARD-PIG_BANKRUPTCY_POWER.smartDescription": "本回合内所有手牌耗能为0，且自带消耗。",
   "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.title": "猪脑过载",
   "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.description": "每2回合获得1张[gold]晕眩[/gold]。升级后改为每3回合。",
   "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.smartDescription": "每{DazedInterval}回合获得{Amount}张[gold]晕眩[/gold]。",
   "YUWANCARD-YOU_ARE_PIG_POWER.title": "你是猪",
   "YUWANCARD-YOU_ARE_PIG_POWER.description": "你变成了一只猪。",
-  "YUWANCARD-YOU_ARE_PIG_POWER.smartDescription": "你是一只猪。持续{Amount}回合。"
+  "YUWANCARD-YOU_ARE_PIG_POWER.smartDescription": "你是一只猪。"
 }

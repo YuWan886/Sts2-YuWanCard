@@ -209,7 +209,7 @@ public class MyCustomCard : CustomCardModel
 
 ### ExtraHoverTips 能力提示显示
 
-使用 `ExtraHoverTips` 属性可以在卡牌悬停时显示额外信息（如卡牌给予的能力介绍）：
+使用 `WithTip()` 方法在构造函数中添加能力提示：
 
 ```csharp
 using MegaCrit.Sts2.Core.HoverTips;
@@ -218,13 +218,22 @@ using MegaCrit.Sts2.Core.Models.Powers;
 [Pool(typeof(ColorlessCardPool))]
 public class RainDark : CustomCardModel
 {
-    public override IEnumerable<IHoverTip> ExtraHoverTips =>
-    [
-        HoverTipFactory.FromPower<IntangiblePower>(),
-        HoverTipFactory.FromPower<RainDarkPower>()
-    ];
+    public RainDark() : base(
+        baseCost: 3,
+        type: CardType.Skill,
+        rarity: CardRarity.Ancient,
+        target: TargetType.AllAllies
+    )
+    {
+        WithPower<IntangiblePower>(3);
+        WithPower<RainDarkPower>(3);
+        WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<IntangiblePower>()));
+        WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<RainDarkPower>()));
+    }
 }
 ```
+
+**注意**：`ExtraHoverTips` 属性在 `ConstructedCardModel` 中是密封的，无法重写。请使用 `WithTip()` 方法代替。
 
 **常用 HoverTips 类型**：
 
@@ -234,6 +243,7 @@ public class RainDark : CustomCardModel
 | `HoverTipFactory.Static(StaticHoverTip.Block)` | 显示格挡图标 |
 | `HoverTipFactory.FromKeyword(CardKeyword)` | 显示关键词介绍 |
 | `base.EnergyHoverTip` | 显示能量图标（继承自基类） |
+| `WithEnergyTip()` | 在构造函数中添加能量提示 |
 
 **完整示例**：
 
@@ -260,13 +270,6 @@ public class RainDark : CustomCardModel
         new PowerVar<RainDarkPower>(3m)
     ];
 
-    // 显示卡牌给予的能力介绍
-    public override IEnumerable<IHoverTip> ExtraHoverTips =>
-    [
-        HoverTipFactory.FromPower<IntangiblePower>(),
-        HoverTipFactory.FromPower<RainDarkPower>()
-    ];
-
     public RainDark() : base(
         baseCost: 3,
         type: CardType.Skill,
@@ -274,6 +277,8 @@ public class RainDark : CustomCardModel
         target: TargetType.AllAllies
     )
     {
+        WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<IntangiblePower>()));
+        WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<RainDarkPower>()));
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -315,10 +320,10 @@ public class RainDark : CustomCardModel
 ```
 
 **注意事项**：
-- `ExtraHoverTips` 属性会在卡牌悬停时显示在卡牌描述下方
+- 使用 `WithTip()` 方法在构造函数中添加悬浮提示
 - 对于给予能力的卡牌，强烈建议添加对应的能力 HoverTips
-- 对于包含格挡、能量等效果的卡牌，可以添加对应的静态图标提示
-- HoverTips 会按照列表顺序依次显示
+- 对于包含格挡、能量等效果的卡牌，可以使用 `WithEnergyTip()` 添加能量提示
+- HoverTips 会按照添加顺序依次显示
 
 ## 自定义角色 (CustomCharacterModel)
 
@@ -651,9 +656,6 @@ public class MyCustomPower : CustomPowerModel
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public override string? CustomPackedIconPath => "res://MyMod/images/powers/my_power.png";
-    public override string? CustomBigIconPath => "res://MyMod/images/powers/my_power.png";
-
     public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
     {
         if (side == Owner.Side)
@@ -663,6 +665,16 @@ public class MyCustomPower : CustomPowerModel
         }
     }
 }
+```
+
+**图标路径**：如果继承 `YuWanPowerModel`，图标路径会根据 PowerId 自动生成：
+- 格式：`res://YuWanCard/images/powers/{power_id}.png`
+- 例如：`PigDoubtPower` → `pig_doubt_power` → `res://YuWanCard/images/powers/pig_doubt_power.png`
+
+如果需要自定义图标路径，可以重写：
+```csharp
+public override string? CustomPackedIconPath => "res://MyMod/images/powers/my_power.png";
+public override string? CustomBigIconPath => "res://MyMod/images/powers/my_power.png";
 ```
 
 ### 图标尺寸

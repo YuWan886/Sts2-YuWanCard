@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Extensions;
@@ -127,8 +126,8 @@ public class PigPig : CustomAncientModel
         var eventOptions = new List<EventOption>
         {
             RelicOption(selectedRelic),
-            new EventOption(this, ChoosePigCard, "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_CARD"),
-            new EventOption(this, ChooseRelicOrUpgrade, "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS")
+            new(this, ChoosePigCard, "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_CARD"),
+            new(this, ChooseRelicOrUpgrade, "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS")
         };
         
         return eventOptions;
@@ -224,8 +223,8 @@ public class PigPig : CustomAncientModel
 
     static PigPig()
     {
-        _validRelics = new RelicModel[7]
-        {
+        _validRelics =
+        [
             ModelDb.Relic<ArrogantPig>(),
             ModelDb.Relic<JealousPig>(),
             ModelDb.Relic<FuriousPig>(),
@@ -233,12 +232,11 @@ public class PigPig : CustomAncientModel
             ModelDb.Relic<GreedyPig>(),
             ModelDb.Relic<GluttonousPig>(),
             ModelDb.Relic<LustfulPig>()
-        };
+        ];
     }
 
     private void FinishEvent()
     {
-        var doneMethod = typeof(AncientEventModel).GetMethod("Done", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        doneMethod?.Invoke(this, null);
+        Done();
     }
 }

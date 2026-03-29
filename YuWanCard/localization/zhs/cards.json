@@ -52,5 +52,7 @@
   "YUWANCARD-PIG_CRASH.title": "猪坠机",
   "YUWANCARD-PIG_CRASH.description": "扣除2点生命，对所有敌人造成{Damage:diff()}点伤害。",
   "YUWANCARD-YOU_ARE_PIG.title": "你是猪",
-  "YUWANCARD-YOU_ARE_PIG.description": "让一名队友变成猪，使其获得{BufferPower:diff()}层[gold]缓冲[/gold]和{RegenPower:diff()}层[gold]再生[/gold]，结束其回合。"
+  "YUWANCARD-YOU_ARE_PIG.description": "让一名队友变成猪，使其获得{BufferPower:diff()}层[gold]缓冲[/gold]和{RegenPower:diff()}层[gold]再生[/gold]，结束其回合。",
+  "YUWANCARD-PIG_BITE.title": "猪咬",
+  "YUWANCARD-PIG_BITE.description": "给予一名敌人{PoisonPower:diff()}层[gold]中毒[/gold]，{WeakPower:diff()}层[gold]虚弱[/gold]，{VulnerablePower:diff()}层[gold]易伤[/gold]。变猪一回合。"
 }
