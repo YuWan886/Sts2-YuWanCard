@@ -2,12 +2,14 @@
   <img style="width: 256px; height: 116px;" src="YuWanCard\mod_image.png" alt="logo" />
 
   <h1>YuWan Card</h1>
-  <p><em>Slay the Spire 2 mod developed with BaseLib framework</em></p>
+  <p><em>pig card</em></p>
   
   <p>
     <a href="README.md">简体中文</a> | <b>English</b>
   </p>
 </div>
+
+<img src="https://count.getloli.com/@Sts2-YuWanCard?name=Sts2-YuWanCard&theme=moebooru&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="count" />
 
 > [!IMPORTANT]
 > This mod is developed using AI, there may be errors.

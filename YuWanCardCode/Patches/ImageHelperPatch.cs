@@ -38,4 +38,14 @@ public static class ImageHelperPatch
         }
         return true;
     }
+
+    [HarmonyPatch(nameof(ImageHelper.GetImagePath))]
+    [HarmonyPostfix]
+    public static void GetImagePathPostfix(string innerPath, ref string __result)
+    {
+        if (innerPath == "events/blacksmith.png")
+        {
+            __result = "res://YuWanCard/images/events/blacksmith.png";
+        }
+    }
 }
