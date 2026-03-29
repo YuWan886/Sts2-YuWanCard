@@ -1,15 +1,15 @@
 {
   "BLACKSMITH.title": "Blacksmith",
-  "BLACKSMITH.pages.INITIAL.description": "You enter a blacksmith's shop filled with heat. The furnace roars as the blacksmith swings their hammer. They notice you and pause their work. \"What can I help you with?\"",
+  "BLACKSMITH.pages.INITIAL.description": "You enter a [gold]blacksmith's shop[/gold] filled with heat.\n[sine]The furnace roars[/sine] as the [gold]blacksmith[/gold] swings their hammer.\nThey notice you and pause their work:\n\"Huh?\"",
   "BLACKSMITH.pages.INITIAL.options.UPGRADE.title": "Upgrade Cards",
-  "BLACKSMITH.pages.INITIAL.options.UPGRADE.description": "Choose 2 cards to upgrade.",
+  "BLACKSMITH.pages.INITIAL.options.UPGRADE.description": "Choose [blue]2[/blue] cards to upgrade.",
   "BLACKSMITH.pages.INITIAL.options.FUSE.title": "Fuse Cards",
-  "BLACKSMITH.pages.INITIAL.options.FUSE.description": "Choose 2 cards to fuse into a higher rarity card.",
+  "BLACKSMITH.pages.INITIAL.options.FUSE.description": "Choose [blue]2[/blue] cards to [jitter]fuse[/jitter] into a higher rarity card.",
   "BLACKSMITH.pages.FUSE_PROMPT.title": "Select Cards to Fuse",
-  "BLACKSMITH.pages.FUSE_PROMPT.description": "Select 2 cards to fuse. Same rarity guarantees higher rarity. Different rarity has 60% chance for higher rarity.",
-  "BLACKSMITH.pages.UPGRADED.description": "The blacksmith skillfully upgrades your cards. \"Come back anytime!\" they wave goodbye.",
+  "BLACKSMITH.pages.FUSE_PROMPT.description": "Select [blue]2[/blue] cards to fuse.",
+  "BLACKSMITH.pages.UPGRADED.description": "The blacksmith skillfully upgrades your cards.\n\"HUH!\"\nThey wave goodbye.",
   "BLACKSMITH.pages.FUSED.description": "The blacksmith throws the two cards into the furnace. Sparks fly, and a brand new card emerges.",
-  "BLACKSMITH.pages.NO_CARDS.description": "The blacksmith shakes their head. \"You don't have anything I can help with.\"",
+  "BLACKSMITH.pages.NO_CARDS.description": "The blacksmith shakes their head: \"Huh\"",
   "BLACKSMITH.pages.CANCELLED.description": "You decide to leave the blacksmith's shop.",
   "BLACKSMITH.pages.FUSE_FAILED.description": "The fusion failed. The blacksmith shrugs helplessly."
 }

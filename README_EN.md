@@ -91,6 +91,12 @@
 |------|------|-----|--------|
 | Killer | Elite | 150/160 | Starts with Hardened Shell. On wake, gains 8 Strength, Personal Hive and Skittish. Moves: Slash, Multi-attack, Goop, Zoom, Enlarge |
 
+### Events
+
+| Name | Effect |
+|------|--------|
+| Blacksmith | Provides two options:<br>• **Upgrade Cards**: Choose 2 cards to upgrade<br>• **Fuse Cards**: Choose 2 cards to fuse into a higher rarity card. Same rarity guarantees higher rarity, different rarity has 60% chance for higher rarity |
+
 ## Installation
 1. Game version: `v0.101.0+`
 2. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [Mirror](https://gh-proxy.com/) | [Backup](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
