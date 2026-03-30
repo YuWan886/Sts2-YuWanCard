@@ -23,7 +23,6 @@ public class PigThink : YuWanCardModel
     public override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
-        DynamicVars.Energy.UpgradeValueBy(1m);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

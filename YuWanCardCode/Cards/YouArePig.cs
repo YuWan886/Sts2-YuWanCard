@@ -31,7 +31,6 @@ public class YouArePig : YuWanCardModel
     public override void OnUpgrade()
     {
         RemoveKeyword(CardKeyword.Ethereal);
-        AddKeyword(CardKeyword.Exhaust);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

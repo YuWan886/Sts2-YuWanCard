@@ -22,7 +22,6 @@ public class PigAngry : YuWanCardModel
     public override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
-        DynamicVars.Strength.UpgradeValueBy(2m);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

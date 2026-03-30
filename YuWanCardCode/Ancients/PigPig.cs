@@ -217,7 +217,7 @@ public class PigPig : CustomAncientModel
         var allCards = colorlessPool.GetUnlockedCards(Owner!.UnlockState, Owner.RunState.CardMultiplayerConstraint);
         
         return [.. allCards
-            .Where(c => c.Id.Entry.Contains("PIG_") && !c.Id.Entry.Contains("POWER"))
+            .Where(c => (c.Id.Entry.Contains("PIG_") || c.Id.Entry.Contains("YOU_ARE_PIG")) && !c.Id.Entry.Contains("POWER"))
             .Select(c => Owner.RunState.CreateCard(c, Owner))];
     }
 
