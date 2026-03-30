@@ -13,6 +13,13 @@ public static class PowerSafetyUtils
     public static bool IsSafePower(PowerModel power)
     {
         var powerType = power.GetType();
+        string powerId = power.Id.ToString();
+
+        // 过滤掉已知有 Bug 的能力
+        if (powerId.Contains("PERSONAL_HIVE") || powerId.Contains("SANDPIT"))
+        {
+            return false;
+        }
 
         try
         {

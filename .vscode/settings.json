@@ -1,8 +1,0 @@
-{
-    "files.exclude": {
-        "**/*cs.uid": true,
-        "**/*.import": true
-    },
-    "commentTranslate.hover.enabled": false,
-    "commentTranslate.source": "Bing"
-}

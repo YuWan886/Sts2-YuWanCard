@@ -1,0 +1,61 @@
+[gd_scene load_steps=10 format=3 uid="uid://yuwancard_rain_dark_rain"]
+
+[ext_resource type="Texture2D" uid="uid://6giey4gx2x87" path="res://images/packed/vfx/generic/blur_rain.png" id="1_blur_rain"]
+[ext_resource type="Script" uid="uid://dfafhxp2brbsf" path="res://src/Core/Nodes/Vfx/NRainVfx.cs" id="2_nrain_vfx"]
+
+[sub_resource type="Curve" id="Curve_4yggr"]
+_data = [Vector2(0, 0), 0.0, 4.78155, 0, 0, Vector2(0.509699, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -4.54331, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_glxrp"]
+curve = SubResource("Curve_4yggr")
+
+[sub_resource type="Curve" id="Curve_sr303"]
+_limits = [0.0, 0.3, 0.0, 1.0]
+_data = [Vector2(0, 0.3), 0.0, 0.0, 0, 0, Vector2(1, 0.3), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_t5yh7"]
+_limits = [0.0, 2.0, 0.0, 1.0]
+_data = [Vector2(0, 1.8), 0.0, 0.0, 0, 0, Vector2(1, 1.8), 0.0, 0.0, 0, 0]
+point_count = 2
+metadata/_snap_enabled = true
+
+[sub_resource type="Curve" id="Curve_m21lh"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveXYZTexture" id="CurveXYZTexture_st56q"]
+curve_x = SubResource("Curve_sr303")
+curve_y = SubResource("Curve_t5yh7")
+curve_z = SubResource("Curve_m21lh")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_801ds"]
+particle_flag_align_y = true
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(2000, 1, 1)
+direction = Vector3(55, 85, 0)
+spread = 5.0
+initial_velocity_min = 5000.0
+initial_velocity_max = 10000.0
+gravity = Vector3(0, 98, 0)
+scale_min = 0.5
+scale_max = 2.0
+scale_curve = SubResource("CurveXYZTexture_st56q")
+alpha_curve = SubResource("CurveTexture_glxrp")
+
+[node name="RainDarkRainVfx" type="GPUParticles2D"]
+modulate = Color(0.6, 0.65, 0.75, 0.4)
+position = Vector2(550, -300)
+amount = 80
+process_material = SubResource("ParticleProcessMaterial_801ds")
+texture = ExtResource("1_blur_rain")
+lifetime = 0.5
+preprocess = 1.0
+explosiveness = 0.1
+interpolate = false
+fract_delta = false
+visibility_rect = Rect2(-100, -100, 1920, 1080)
+script = ExtResource("2_nrain_vfx")
+emitting = true
