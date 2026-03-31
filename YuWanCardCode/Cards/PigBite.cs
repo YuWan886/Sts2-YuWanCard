@@ -31,7 +31,7 @@ public class PigBite : YuWanCardModel
     public override void OnUpgrade()
     {
         AddKeyword(CardKeyword.Retain);
-        DynamicVars["PoisonPower"].UpgradeValueBy(3m);
+        DynamicVars["PoisonPower"].UpgradeValueBy(3);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

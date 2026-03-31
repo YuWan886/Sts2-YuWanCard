@@ -15,18 +15,25 @@ using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Models.Cards;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(SharedRelicPool))]
 public class RingOfSevenCurses : YuWanRelicModel
 {
-    private decimal _pendingGoldReduction;
-    private bool _isApplyingReduction;
+    private GoldModificationGuard? _goldGuard;
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
     public override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(1)];
+
+    private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
+        () => Owner,
+        amount => Math.Floor(amount * 0.5m),
+        async amount => await PlayerCmd.LoseGold(amount, Owner!)
+    );
 
     public RingOfSevenCurses() : base(true)
     {
@@ -36,28 +43,12 @@ public class RingOfSevenCurses : YuWanRelicModel
 
     public override bool ShouldGainGold(decimal amount, Player player)
     {
-        if (_isApplyingReduction)
-        {
-            return true;
-        }
-        if (player != Owner)
-        {
-            return true;
-        }
-        _pendingGoldReduction = Math.Floor(amount * 0.5m);
-        return true;
+        return GoldGuard.ShouldGainGold(amount, player);
     }
 
     public override async Task AfterGoldGained(Player player)
     {
-        if (player == Owner && !_isApplyingReduction && _pendingGoldReduction > 0m)
-        {
-            decimal reduction = _pendingGoldReduction;
-            _pendingGoldReduction = 0m;
-            _isApplyingReduction = true;
-            await PlayerCmd.LoseGold(reduction, player);
-            _isApplyingReduction = false;
-        }
+        await GoldGuard.AfterGoldGained(player);
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
@@ -68,6 +59,7 @@ public class RingOfSevenCurses : YuWanRelicModel
         }
         var availableCurses = ModelDb.CardPool<CurseCardPool>()
             .GetUnlockedCards(Owner.UnlockState, Owner.RunState.CardMultiplayerConstraint)
+            .Where(c => c is not Normality && c is not Enthralled)
             .ToHashSet();
         if (availableCurses.Count == 0)
         {

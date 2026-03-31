@@ -430,6 +430,51 @@ MyCustomField[creature] = 20;
 
 **注意**：SpireField 是 `ConditionalWeakTable` 的封装，适用于存储引用类型键的附加数据。值类型会被装箱，效率较低。
 
+## SavedSpireField
+
+`SavedSpireField` 是 `SpireField` 的扩展，支持自动保存和加载字段值到存档中：
+
+```csharp
+using BaseLib.Utils;
+
+// 创建 SavedSpireField（需要指定名称）
+private static readonly SavedSpireField<Creature, int> MySavedField = new(() => 0, "MySavedField");
+
+// 使用方式与 SpireField 相同
+MySavedField.Set(creature, 10);
+var value = MySavedField.Get(creature);
+```
+
+**支持的类型**：
+- `int`、`bool`、`string`
+- `ModelId`
+- `int[]`、枚举数组
+- `SerializableCard`、`SerializableCard[]`、`List<SerializableCard>`
+- 任意枚举类型
+
+**注意事项**：
+- 构造函数必须提供 `name` 参数，用于存档中的唯一标识
+- 值会自动在存档保存/加载时处理，无需手动操作
+- 名称格式为 `{TargetType}_{name}`，确保跨模组唯一性
+- 不支持的类型会抛出 `NotSupportedException`
+
+**使用示例**：
+
+```csharp
+public class MyCard : CustomCardModel
+{
+    // 创建 SavedSpireField 存储卡牌的自定义状态
+    private static readonly SavedSpireField<CardModel, int> UseCountField = new(() => 0, "UseCount");
+    
+    public override async Task OnCardPlayed(CardPlay cardPlay)
+    {
+        var count = UseCountField.Get(this);
+        UseCountField.Set(this, count + 1);
+        // 值会自动保存到存档中
+    }
+}
+```
+
 ## ModelDb 工具
 
 `ModelDb` 是游戏的核心模型数据库，用于获取和注册各种游戏模型：
@@ -743,6 +788,53 @@ public static class MainFile
     }
 }
 ```
+
+### 场景自动转换
+
+BaseLib 支持半自动化的场景转换系统。注册到特定类型的场景在实例化时会自动转换为正确的节点类型：
+
+```csharp
+using BaseLib.Utils.NodeFactories;
+
+// 注册场景路径到节点类型的映射
+NodeFactory.RegisterSceneType<NCreatureVisuals>("res://MyMod/scenes/creature.tscn");
+
+// 也可以使用类型参数
+NodeFactory.RegisterSceneType("res://MyMod/scenes/merchant.tscn", typeof(NMerchantCharacter));
+
+// 检查场景是否已注册
+bool isRegistered = NodeFactory.IsRegistered("res://MyMod/scenes/creature.tscn");
+
+// 取消注册
+NodeFactory.UnregisterSceneType("res://MyMod/scenes/creature.tscn");
+```
+
+**工作原理**：
+1. 在 `ModelDb.Preload` 时，所有实现了 `ISceneConversions` 接口的模型会调用 `RegisterSceneConversions()`
+2. 当调用 `PackedScene.Instantiate()` 时，Harmony 补丁会检查场景路径是否注册
+3. 如果已注册且实例类型不匹配，会自动使用对应的 NodeFactory 进行转换
+
+**使用场景**：
+- 使用标准 Godot 场景（Node2D 根节点）创建生物视觉
+- 场景实例化时自动转换为 `NCreatureVisuals`、`NMerchantCharacter` 等游戏特定类型
+- 无需在每个调用点进行手动转换
+
+**示例**：
+
+```csharp
+public class MyCharacter : CustomCharacterModel
+{
+    public override string? CustomVisualPath => "res://MyMod/scenes/creature_visuals.tscn";
+    
+    // 在场景文件中定义节点结构
+    // 实例化时会自动转换为 NCreatureVisuals
+}
+```
+
+**注意事项**：
+- 场景转换在 `PackedScene.Instantiate()` 的 Harmony 后缀中处理
+- 转换失败时会抛出异常，避免返回损坏的节点
+- 日志只会记录每个场景路径的第一次转换，避免日志泛滥
 
 ## CustomEnergyCounterFactory
 

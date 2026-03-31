@@ -5,7 +5,7 @@ using YuWanCard.Cards;
 
 namespace YuWanCard.Powers;
 
-public class PigChargePower : TemporaryStrengthPower, ICustomPower
+public class TrainYouWellPower : TemporaryStrengthPower, ICustomPower
 {
-    public override AbstractModel OriginModel => ModelDb.Card<PigCharge>();
+    public override AbstractModel OriginModel => ModelDb.Card<TiaoJiao>();
 }

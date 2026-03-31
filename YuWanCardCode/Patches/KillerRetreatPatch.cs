@@ -144,7 +144,7 @@ public partial class NRetreatButton : Control
         _label.SetTextAutoSize(buttonText.GetFormattedText());
         _label.Size = new Vector2(160, 55);
         _label.Position = Vector2.Zero;
-        _label.AnchorsPreset = (int)Control.LayoutPreset.FullRect;
+        _label.AnchorsPreset = (int)LayoutPreset.FullRect;
         _label.OffsetLeft = 0;
         _label.OffsetTop = 0;
         _label.OffsetRight = 0;
@@ -323,7 +323,7 @@ public partial class NRetreatButton : Control
             {
                 if (_combatState.Encounter is KillerElite killerElite)
                 {
-                    KillerElite.Retreated.Set(killerElite, true);
+                    killerElite.SetRetreated(true);
                 }
                 
                 foreach (var enemy in _combatState.Enemies.ToList())
@@ -336,7 +336,7 @@ public partial class NRetreatButton : Control
                 
                 await CombatManager.Instance.CheckWinCondition();
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 MainFile.Logger.Error($"KillerRetreatPatch: Error ending combat: {e.Message}");
             }

@@ -1,7 +1,5 @@
 using System.Reflection;
 using System.Collections.Concurrent;
-using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Models;
 
 namespace YuWanCard.Utils;

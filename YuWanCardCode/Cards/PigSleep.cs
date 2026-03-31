@@ -25,9 +25,7 @@ public class PigSleep : YuWanCardModel
 
     public override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
         DynamicVars.Block.UpgradeValueBy(10m);
-        RemoveKeyword(CardKeyword.Exhaust);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

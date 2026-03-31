@@ -13,5 +13,14 @@
   "YUWANCARD-PIG_BRAIN_OVERLOAD_POWER.smartDescription": "Every {DazedInterval} turns, gain {Amount} [gold]Dazed[/gold].",
   "YUWANCARD-YOU_ARE_PIG_POWER.title": "You Are Pig",
   "YUWANCARD-YOU_ARE_PIG_POWER.description": "You have turned into a pig.",
-  "YUWANCARD-YOU_ARE_PIG_POWER.smartDescription": "You are a pig. Lasts for {Amount} turns."
+  "YUWANCARD-YOU_ARE_PIG_POWER.smartDescription": "You are a pig. Lasts for {Amount} turns.",
+  "YUWANCARD-VAKUU_TAKEOVER_POWER.title": "Vakuu Takeover",
+  "YUWANCARD-VAKUU_TAKEOVER_POWER.description": "At the start of your turn, Vakuu will automatically play cards from your hand.",
+  "YUWANCARD-VAKUU_TAKEOVER_POWER.smartDescription": "At the start of your turn, Vakuu will automatically play cards from your hand. Lasts for {Amount} turns.",
+  "YUWANCARD-TRAIN_YOU_WELL_POWER.title": "Train You Well Power",
+  "YUWANCARD-TRAIN_YOU_WELL_POWER.description": "Gain Strength this turn.",
+  "YUWANCARD-TRAIN_YOU_WELL_POWER.smartDescription": "Gain {Amount} [gold]Strength[/gold] this turn.",
+  "YUWANCARD-PIG_CHARGE_POWER.title": "Pig Charge Power",
+  "YUWANCARD-PIG_CHARGE_POWER.description": "Gain Strength this turn.",
+  "YUWANCARD-PIG_CHARGE_POWER.smartDescription": "Gain {Amount} [gold]Strength[/gold] this turn."
 }

@@ -45,6 +45,14 @@
 | You Are Pig | 2 | Uncommon | Skill | Make a teammate turn into a pig, gaining 1 Buffer and 3 Regen, then end their turn (Multiplayer) |
 | Pig Dragon Ride | 2 | Uncommon | Attack | Deal 7 damage 3 times to an enemy. Exhaust |
 | Pig Crash | 2 | Rare | Skill | Lose 2 HP. Deal 14 damage to all enemies |
+| Pig Bite | 2 | Uncommon | Skill | Apply 4 stacks of Poison, 2 stacks of Weak, 2 stacks of Vulnerable, and 1 stack of You Are Pig to an enemy. Retain when upgraded |
+| All In | 3 | Rare | Skill | Randomly play 4 cards from your discard pile. These cards gain Exhaust. Exhaust. |
+| Steal Sheep | 1 | Uncommon | Skill | Choose 1 card from target ally's draw pile and add it to your hand. (Multiplayer) |
+| Cut Your Internet | 1 | Uncommon | Skill | Make target ally be taken over by Vakoo next turn. (Multiplayer) |
+| Really Need To Train You | 0 | Uncommon | Skill | Deal 4 damage to ally, give them 3 Strength this turn. (Multiplayer) |
+| Spirit Speech · Don't Die | 1 | Uncommon | Skill | Heal ally for 10% of max HP, give them 3 stacks of Regen. Exhaust. (Multiplayer) |
+| Pressuring You | 0 | Uncommon | Skill | Make an ally lose 1 Energy, you gain 1 Energy and draw 1 card. Exhaust. (Multiplayer) |
+| Moving Stone King | 1 | Uncommon | Skill | Transform all cards in an ally's hand into Boulders. Exhaust. (Multiplayer) |
 
 ### Powers
 
@@ -89,7 +97,7 @@
 
 | Name | Type | HP | Effect |
 |------|------|-----|--------|
-| Killer | Elite | 150/160 | Starts with Hardened Shell. On wake, gains 8 Strength, Personal Hive and Skittish. Moves: Slash, Multi-attack, Goop, Zoom, Enlarge |
+| Killer | Elite | 180/190 | Starts with Hardened Shell. On wake, gains 8 Strength, Personal Hive and Skittish. Moves: Slash, Multi-attack, Goop, Zoom, Enlarge |
 
 ### Events
 

@@ -13,7 +13,7 @@ public class PigSacrifice : YuWanCardModel
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
 
     public PigSacrifice() : base(
-        baseCost: 3,
+        baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
         target: TargetType.AnyAlly)

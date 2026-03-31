@@ -23,7 +23,7 @@ public class Nyjk : YuWanCardModel
     public override void OnUpgrade()
     {
         RemoveKeyword(CardKeyword.Exhaust);
-        DynamicVars.Weak.UpgradeValueBy(1m);
+        DynamicVars.Weak.UpgradeValueBy(1);
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

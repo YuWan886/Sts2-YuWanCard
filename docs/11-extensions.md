@@ -4,6 +4,60 @@
 
 BaseLib 通过 Harmony 补丁提供了多种功能扩展。
 
+### 代码本地化提供器 (ILocalizationProvider)
+
+`ILocalizationProvider` 接口允许模型在代码中直接提供本地化内容，而无需依赖外部 JSON 文件：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyCard : CustomCardModel, ILocalizationProvider
+{
+    // 返回本地化表名称（可选）
+    public string? LocTable => "cards";
+    
+    // 提供本地化内容
+    public List<(string, string)>? Localization => new CardLoc(
+        Title: "卡牌名称",
+        Description: "卡牌描述"
+    );
+}
+```
+
+**支持的本地化类型**：
+- `CardLoc`：卡牌本地化
+- `PowerLoc`：能力本地化
+- `RelicLoc`：遗物本地化
+- `PotionLoc`：药水本地化
+- `OrbLoc`：能量球本地化
+- `CharacterLoc`：角色本地化
+- `MonsterLoc`：怪物本地化
+- `EncounterLoc`：遭遇本地化
+- `ModifierLoc`：修改器本地化
+- `ActLoc`：章节本地化
+- `CardModifierLoc`：卡牌修改器本地化
+
+**多语言支持**：
+
+```csharp
+public List<(string, string)>? Localization => LocManager.Instance.Language switch
+{
+    "zhs" => new CardLoc("简体中文标题", "简体中文描述"),
+    "eng" => new CardLoc("English Title", "English Description"),
+    _ => new CardLoc("默认标题", "默认描述")
+};
+```
+
+**使用场景**：
+- 动态生成的卡牌/遗物
+- 需要程序化本地化的内容
+- 基于条件变化的文本
+
+**注意事项**：
+- 推荐优先使用 JSON 文件进行本地化
+- 代码本地化适用于动态内容
+- 实现此接口的模型会自动将本地化添加到对应的本地化表中
+
 ### Content 补丁（内容注册）
 
 | 补丁类 | 功能 |
@@ -26,6 +80,61 @@ BaseLib 通过 Harmony 补丁提供了多种功能扩展。
 | `SelfApplyDebuffPatch` | 修复玩家对自己施加负面效果的持续回合计算 |
 | `ModInteropPatch` | 实现模组间互操作 |
 | `LogPatch` | 提供日志窗口功能，可通过配置开启 |
+
+### 日志窗口功能
+
+BaseLib 提供了增强的日志窗口，支持缩放、过滤和自定义配置：
+
+**功能特性**：
+- **缩放/字体大小调整**：Ctrl + 鼠标滚轮调整字体大小（8-48px）
+- **窗口大小和位置记忆**：自动保存上次关闭窗口时的大小和位置
+- **日志级别过滤**：可选择显示 Error、Warn、Info、Debug 等级别
+- **文本过滤**：支持普通文本搜索和正则表达式搜索
+- **反向过滤**：反转过滤结果
+- **自动跟随日志**：可选择是否自动滚动到最新日志
+- **超宽屏/HiDPI 支持**：自动适配不同的显示缩放比例
+
+**配置选项**（在模组配置中）：
+
+```csharp
+[ConfigSection("LogSection")]
+public static bool OpenLogWindowOnStartup { get; set; } = false;  // 启动时打开日志窗口
+
+[SliderRange(128, 2048, 64)]
+[SliderLabelFormat("{0:0} lines")]
+public static double LimitedLogSize { get; set; } = 256;  // 日志行数限制
+
+[SliderRange(8, 48)]
+[SliderLabelFormat("{0:0} px")]
+public static double LogFontSize { get; set; } = 14;  // 字体大小
+```
+
+**使用日志窗口**：
+
+```csharp
+using BaseLib.BaseLibScenes;
+
+// 日志会自动添加到窗口
+BaseLibMain.Logger.Info("这是一条信息");
+BaseLibMain.Logger.Warn("这是一条警告");
+BaseLibMain.Logger.Error("这是一条错误");
+
+// 手动打开日志窗口
+var logWindow = new NLogWindow();
+logWindow.Show();
+```
+
+**日志窗口 UI 组件**：
+- `LogLevelOption`：日志级别下拉选择
+- `FilterText`：过滤文本输入框
+- `RegexButton`：正则表达式模式切换
+- `InverseButton`：反向过滤切换
+- `Log`：日志内容显示区域（RichTextLabel）
+
+**注意事项**：
+- 日志窗口是独立场景，可以多个实例同时存在
+- 日志内容限制为 256 行（可配置），超出部分自动移除
+- 支持日志级别颜色区分（Error=红色，Warn=黄色，Debug=蓝色）
 
 ### Hooks 补丁（钩子）
 
@@ -50,6 +159,69 @@ BaseLib 通过 Harmony 补丁提供了多种功能扩展。
 |--------|------|
 | `MissingLocPatch` | 防止本地化键缺失导致的崩溃 |
 | `UnknownCharacterPatches` | 处理卸载模组后的存档兼容性 |
+
+## 模组配置系统改进
+
+BaseLib 的模组配置系统提供了多种 UI 组件和配置选项：
+
+### 配置 UI 组件
+
+BaseLib 提供了丰富的配置 UI 组件，用于创建模组配置界面：
+
+| 组件类 | 功能 |
+|--------|------|
+| `NConfigButton` | 按钮组件，点击触发操作 |
+| `NConfigDropdown` | 下拉选择框，支持多项选择 |
+| `NConfigDropdownItem` | 下拉选项项 |
+| `NConfigLineEdit` | 文本输入框 |
+| `NConfigOpenerButton` | 子菜单打开按钮 |
+| `NConfigOptionRow` | 配置选项行布局 |
+| `NConfigSlider` | 滑动条，支持范围设置 |
+| `NConfigTickbox` | 复选框/开关 |
+| `NModConfigSubmenu` | 配置子菜单 |
+
+### 配置特性
+
+**配置分区**：
+
+```csharp
+using BaseLib.Config;
+
+[ConfigSection("LogSection")]
+public static bool OpenLogWindowOnStartup { get; set; } = false;
+```
+
+**滑动条范围**：
+
+```csharp
+[SliderRange(8, 48)]
+[SliderLabelFormat("{0:0} px")]
+public static double LogFontSize { get; set; } = 14;
+```
+
+**隐藏配置项**：
+
+```csharp
+[ConfigHideInUI]
+public static int LastLogLevel { get; set; } = 3;  // 不在 UI 中显示
+```
+
+**配置保存**：
+
+```csharp
+// 自动保存配置
+ModConfig.SaveDebounced<BaseLibConfig>();
+```
+
+### 悬停提示支持
+
+```csharp
+[HoverTipsByDefault]
+internal class BaseLibConfig : SimpleModConfig
+{
+    // 配置项会自动显示悬停提示
+}
+```
 
 ## 模组互操作 (ModInterop)
 

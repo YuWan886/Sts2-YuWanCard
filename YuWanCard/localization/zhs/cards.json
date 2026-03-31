@@ -54,5 +54,20 @@
   "YUWANCARD-YOU_ARE_PIG.title": "你是猪",
   "YUWANCARD-YOU_ARE_PIG.description": "让一名队友变成猪，使其获得{BufferPower:diff()}层[gold]缓冲[/gold]和{RegenPower:diff()}层[gold]再生[/gold]，结束其回合。",
   "YUWANCARD-PIG_BITE.title": "猪咬",
-  "YUWANCARD-PIG_BITE.description": "给予一名敌人{PoisonPower:diff()}层[gold]中毒[/gold]，{WeakPower:diff()}层[gold]虚弱[/gold]，{VulnerablePower:diff()}层[gold]易伤[/gold]。变猪一回合。"
+  "YUWANCARD-PIG_BITE.description": "给予一名敌人{PoisonPower:diff()}层[gold]中毒[/gold]，{WeakPower:diff()}层[gold]虚弱[/gold]，{VulnerablePower:diff()}层[gold]易伤[/gold]。变猪一回合。",
+  "YUWANCARD-ALL_IN.title": "梭哈",
+  "YUWANCARD-ALL_IN.description": "随机打出[gold]弃牌堆[/gold]中{Magic:diff()}张卡牌，这些卡牌获得[gold]消耗[/gold]。",
+  "YUWANCARD-STEAL_CARD.title": "顺手牵羊",
+  "YUWANCARD-STEAL_CARD.description": "从目标队友的[gold]抽牌堆[/gold]中选择1张牌，将其加入自己的手牌。",
+  "YUWANCARD-STEAL_CARD.selectionScreenPrompt": "从队友的[gold]抽牌堆[/gold]拿1张牌",
+  "YUWANCARD-PULL_NET_CABLE.title": "拔你网线",
+  "YUWANCARD-PULL_NET_CABLE.description": "使目标队友下{IfUpgraded:show:2|1}回合被[gold]瓦库[/gold]接管。",
+  "YUWANCARD-TIAO_JIAO.title": "真得好好调教你了",
+  "YUWANCARD-TIAO_JIAO.description": "对队友造成{Damage:diff()}点伤害。本回合给予队友{TrainYouWellPower:diff()}点[gold]力量[/gold]。",
+  "YUWANCARD-DO_NOT_DIE.title": "不要死",
+  "YUWANCARD-DO_NOT_DIE.description": "回复队友10%最大生命值。给予其{RegenPower:diff()}层[gold]再生[/gold]。",
+  "YUWANCARD-PRESSURE_YOU.title": "压力着你",
+  "YUWANCARD-PRESSURE_YOU.description": "使一名队友失去1点能量。自己获得{Energy:energyIcons()}，抽1张牌。",
+  "YUWANCARD-STONE_CARRYING_KING.title": "搬石大王",
+  "YUWANCARD-STONE_CARRYING_KING.description": "将一名队友的所有手牌变化为{IfUpgraded:show:升级的|}[gold]巨石[/gold]。"
 }

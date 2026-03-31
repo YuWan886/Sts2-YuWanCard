@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.HoverTips;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -19,8 +20,7 @@ public class GreedyPig : YuWanRelicModel
     [SavedProperty]
     private bool HasAddedGreedThisCombat { get; set; }
 
-    private decimal _pendingGoldBonus;
-    private bool _isApplyingBonus;
+    private GoldModificationGuard? _goldGuard;
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
@@ -28,6 +28,17 @@ public class GreedyPig : YuWanRelicModel
     [
         HoverTipFactory.FromCard<Greed>()
     ];
+
+    private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
+        () => Owner,
+        amount => Math.Floor(amount * 1m),
+        async amount =>
+        {
+            Flash();
+            await PlayerCmd.GainGold(amount, Owner!);
+        }
+    );
+
     public GreedyPig() : base(true)
     {
     }
@@ -78,29 +89,12 @@ public class GreedyPig : YuWanRelicModel
 
     public override bool ShouldGainGold(decimal amount, Player player)
     {
-        if (_isApplyingBonus)
-        {
-            return true;
-        }
-        if (player != Owner)
-        {
-            return true;
-        }
-        _pendingGoldBonus = Math.Floor(amount * 1m);
-        return true;
+        return GoldGuard.ShouldGainGold(amount, player);
     }
 
     public override async Task AfterGoldGained(Player player)
     {
-        if (player == Owner && !_isApplyingBonus && _pendingGoldBonus > 0m)
-        {
-            decimal bonus = _pendingGoldBonus;
-            _pendingGoldBonus = 0m;
-            _isApplyingBonus = true;
-            Flash();
-            await PlayerCmd.GainGold(bonus, player);
-            _isApplyingBonus = false;
-        }
+        await GoldGuard.AfterGoldGained(player);
     }
 
     public override async Task AfterCombatVictory(CombatRoom room)

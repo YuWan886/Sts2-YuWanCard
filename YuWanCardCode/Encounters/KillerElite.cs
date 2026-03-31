@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using Godot;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Rooms;
 using YuWanCard.Monsters;
 using BaseLib.Utils;
@@ -10,13 +8,15 @@ namespace YuWanCard.Encounters;
 
 public sealed class KillerElite : EncounterModel
 {
-    public static readonly SpireField<KillerElite, bool> Retreated = new(_ => false);
+    private static readonly SavedSpireField<EncounterModel, bool> RetreatedField = new(() => false, "KillerElite_Retreated");
 
     public override RoomType RoomType => RoomType.Elite;
 
     public override IEnumerable<MonsterModel> AllPossibleMonsters => new List<MonsterModel> { ModelDb.Monster<Killer>() };
 
-    public override bool ShouldGiveRewards => !Retreated.Get(this);
+    public override bool ShouldGiveRewards => !RetreatedField.Get(this);
+
+    public void SetRetreated(bool value) => RetreatedField.Set(this, value);
 
     public override float GetCameraScaling()
     {

@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -17,10 +13,8 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 
 namespace YuWanCard.Modifiers;
 
-public class EndlessModifier : ModifierModel
+public class EndlessModifier : YuWanModifierModel
 {
-    public const string ModifierId = "YUWANCARD-ENDLESS";
-
     private const float BaseHpMultiplierPerLoop = 0.20f;
     private const float BossHpMultiplierBonus = 0.10f;
     private const int BaseStrengthPerLoop = 1;
@@ -35,13 +29,6 @@ public class EndlessModifier : ModifierModel
 
     [SavedProperty]
     public bool YuWanCard_HasStarted { get; set; } = false;
-
-    public override LocString Title => new("modifiers", ModifierId + ".title");
-    public override LocString Description => new("modifiers", ModifierId + ".description");
-    public override LocString NeowOptionTitle => new("modifiers", ModifierId + ".neow_title");
-    public override LocString NeowOptionDescription => new("modifiers", ModifierId + ".neow_description");
-
-    public override string IconPath => "res://YuWanCard/images/modifiers/endless.png";
 
     public int EffectiveLoopCount => Math.Max(0, YuWanCard_EndlessLoopCount);
 

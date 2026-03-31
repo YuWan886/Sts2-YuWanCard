@@ -43,7 +43,7 @@ public class PigPig : CustomAncientModel
     public override string? CustomMapIconPath => $"{IconBasePath}.png";
     public override string? CustomMapIconOutlinePath => $"{IconBasePath}.png";
     
-    public override Texture2D? CustomRunHistoryIcon
+    public Texture2D? CustomRunHistoryIcon
     {
         get
         {
@@ -59,7 +59,7 @@ public class PigPig : CustomAncientModel
         }
     }
     
-    public override Texture2D? CustomRunHistoryIconOutline
+    public Texture2D? CustomRunHistoryIconOutline
     {
         get
         {
