@@ -106,10 +106,10 @@
 | 铁匠铺 | 提供两个选项：<br>• **升级卡牌**：选择 2 张卡牌进行升级<br>• **融合卡牌**：选择 2 张卡牌进行融合，获得一张更高稀有度的卡牌。相同稀有度保证更高稀有度，不同稀有度有 60% 概率获得更高稀有度 |
 
 ## 安装
-1. 对应游戏版本为 `v0.101.0+`
-2. 下载最新版本 [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [加速下载](https://gh-proxy.com/) | [备用下载](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
-3. 下载前置依赖 mod[Baselib](https://github.com/Alchyr/BaseLib-StS2)
-4. 解压到游戏目录下的 `mods` 文件夹中
+
+1. 下载最新版本 [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [加速下载](https://gh-proxy.com/) | [备用下载](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
+2. 下载前置依赖 mod [Baselib](https://github.com/Alchyr/BaseLib-StS2)
+3. 解压到游戏目录下的 `mods` 文件夹中
 
 ## CREDITS
 - 可爱的猪猪 - [PigHub](https://www.pighub.top/)

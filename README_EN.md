@@ -106,10 +106,10 @@
 | Blacksmith | Provides two options:<br>• **Upgrade Cards**: Choose 2 cards to upgrade<br>• **Fuse Cards**: Choose 2 cards to fuse into a higher rarity card. Same rarity guarantees higher rarity, different rarity has 60% chance for higher rarity |
 
 ## Installation
-1. Game version: `v0.101.0+`
-2. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [Mirror](https://gh-proxy.com/) | [Backup](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
-3. Download the required dependency mod [Baselib](https://github.com/Alchyr/BaseLib-StS2)
-4. Extract to the `mods` folder in the game directory
+
+1. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [Mirror](https://gh-proxy.com/) | [Backup](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
+2. Download the required dependency mod [Baselib](https://github.com/Alchyr/BaseLib-StS2)
+3. Extract to the `mods` folder in the game directory
 
 ## CREDITS
 - Cute Piggy - [PigHub](https://www.pighub.top/)
