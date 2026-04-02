@@ -64,5 +64,5 @@ YuWan Card is a Slay the Spire 2 mod that adds 33 colorless cards, 5 powers, 12 
 
 [quote][b]Note:[/b] This mod is developed using AI, there may be errors.[/quote]
 
-[b]Requires:[/b] [url=https://github.com/Alchyr/BaseLib-StS2]BaseLib[/url]
+[b]Requires:[/b] [url=https://github.com/Alchyr/BaseLib-StS2]BaseLib[/url] (0.2.0 for 0.99.1, 0.2.1 for 0.101.0+)
 [b]GitHub repository: [url=https://github.com/YuWan886/Sts2-YuWanCard]YuWan886/Sts2-YuWanCard[/url][/b]

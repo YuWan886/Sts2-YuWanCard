@@ -201,7 +201,7 @@ public class PigPig : CustomAncientModel
 
         var cardsToUpgrade = await CardSelectCmd.FromDeckForUpgrade(
             Owner!,
-            new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, Math.Min(5, upgradeableCards.Count))
+            new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, Math.Min(3, upgradeableCards.Count))
         );
 
         foreach (var card in cardsToUpgrade)

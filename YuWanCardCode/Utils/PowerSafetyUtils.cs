@@ -8,13 +8,20 @@ public static class PowerSafetyUtils
 {
     private static readonly ConcurrentDictionary<Type, bool> SafetyCache = new();
 
+    private static readonly HashSet<string> UnsafePowerPatterns = new()
+    {
+        "PERSONAL_HIVE",
+        "SANDPIT",
+        "BURROWED"
+    };
+
     public static bool IsSafePower(PowerModel power)
     {
         var powerType = power.GetType();
         string powerId = power.Id.ToString();
+        string powerName = powerType.Name;
 
-        // 过滤掉已知有 Bug 的能力
-        if (powerId.Contains("PERSONAL_HIVE") || powerId.Contains("SANDPIT"))
+        if (UnsafePowerPatterns.Any(p => powerId.Contains(p) || powerName == p))
         {
             return false;
         }

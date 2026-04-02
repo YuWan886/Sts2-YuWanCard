@@ -1,5 +1,6 @@
 using System.Reflection;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Runs;
@@ -82,5 +83,74 @@ public class EndlessModePatch
         await (Task)FadeInMethod.Invoke(runManager, [true])!;
 
         MainFile.Logger.Info($"Endless mode: Transitioned to loop {endlessModifier.YuWanCard_EndlessLoopCount}");
+    }
+
+    [HarmonyPatch(typeof(MapPointTypeCounts))]
+    [HarmonyPatch(MethodType.Constructor, typeof(int), typeof(int))]
+    public class EndlessEliteChancePatch
+    {
+        [HarmonyPostfix]
+        public static void Postfix(MapPointTypeCounts __instance, int unknownCount, int restCount)
+        {
+            var runState = GetCurrentRunState();
+            if (runState == null)
+            {
+                return;
+            }
+
+            var endlessModifier = EndlessModifier.GetEndlessModifier(runState);
+            if (endlessModifier == null)
+            {
+                return;
+            }
+
+            int loopCount = endlessModifier.EffectiveLoopCount;
+            if (loopCount <= 0)
+            {
+                return;
+            }
+
+            int eliteBonus = CalculateEliteBonus(loopCount);
+            int newEliteCount = __instance.NumOfElites + eliteBonus;
+
+            var propertyInfo = typeof(MapPointTypeCounts).GetProperty(nameof(MapPointTypeCounts.NumOfElites));
+            if (propertyInfo != null && propertyInfo.CanWrite)
+            {
+                propertyInfo.SetValue(__instance, newEliteCount);
+                MainFile.Logger.Info($"Endless mode: Increased elite count from {__instance.NumOfElites - eliteBonus} to {newEliteCount} (Loop {loopCount}, Bonus +{eliteBonus})");
+            }
+        }
+
+        private static int CalculateEliteBonus(int loopCount)
+        {
+            if (loopCount <= 0) return 0;
+            
+            int bonus = loopCount / 2;
+            
+            if (loopCount >= 5)
+            {
+                bonus += 1;
+            }
+            
+            if (loopCount >= 10)
+            {
+                bonus += 2;
+            }
+            
+            return Math.Max(1, bonus);
+        }
+
+        private static RunState? GetCurrentRunState()
+        {
+            var runManagerType = typeof(RunManager);
+            var instanceProperty = runManagerType.GetProperty("Instance");
+            if (instanceProperty == null)
+            {
+                return null;
+            }
+
+            var runManager = instanceProperty.GetValue(null) as RunManager;
+            return runManager?.State;
+        }
     }
 }

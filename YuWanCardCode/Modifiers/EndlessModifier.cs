@@ -15,11 +15,11 @@ namespace YuWanCard.Modifiers;
 
 public class EndlessModifier : YuWanModifierModel
 {
-    private const float BaseHpMultiplierPerLoop = 0.20f;
-    private const float BossHpMultiplierBonus = 0.10f;
-    private const int BaseStrengthPerLoop = 1;
-    private const int BossExtraStrengthPerLoop = 1;
-    private const float HpGrowthExponent = 1.1f;
+    private const float BaseHpMultiplierPerLoop = 0.35f;
+    private const float BossHpMultiplierBonus = 0.20f;
+    private const int BaseStrengthPerLoop = 2;
+    private const int BossExtraStrengthPerLoop = 2;
+    private const float HpGrowthExponent = 1.15f;
 
     [SavedProperty]
     public int YuWanCard_EndlessLoopCount { get; set; } = 0;
