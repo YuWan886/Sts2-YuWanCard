@@ -7,7 +7,7 @@
   "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC.title": "Choose Relic",
   "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC.description": "Choose one relic from 3 random relics.",
   "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.title": "Upgrade Cards",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.description": "Choose 5 cards to upgrade.",
+  "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.description": "Choose up to 3 cards to upgrade.",
   "YUWANCARD-PIG_PIG.pages.DONE.description": "The pig leaves, satisfied...",
 
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-0.ancient": "Oink oink... Stranger, you have entered my domain.",

@@ -7,7 +7,7 @@
   "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC.title": "选择遗物",
   "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC.description": "从3个随机遗物中选择一个。",
   "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.title": "升级卡牌",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.description": "选择5张卡牌进行升级。",
+  "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.description": "选择最多3张卡牌进行升级。",
   "YUWANCARD-PIG_PIG.pages.DONE.description": "猪猪满意地离开了...",
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-0.ancient": "哼哼...陌生的旅人，你来到了我的领地。",
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-0.next": "继续",

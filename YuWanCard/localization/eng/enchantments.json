@@ -1,0 +1,8 @@
+{
+  "ARTHROPOD_KILLER.title": "Arthropod Killer",
+  "ARTHROPOD_KILLER.description": "Deal {Amount} true damage to Arthropods, ignoring Block.",
+  "SWEEPING_BLADE.title": "Sweeping Blade",
+  "SWEEPING_BLADE.description": "Damage splashes, dealing 50% damage to other enemies.",
+  "VENOMOUS.title": "Venomous",
+  "VENOMOUS.description": "Attacks apply 3 Poison to enemies."
+}

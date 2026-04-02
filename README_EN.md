@@ -64,6 +64,14 @@
 | Pig Brain Overload | Every 2 turns, gain 1 Dazed |
 | You Are Pig | Turn into a pig, lasts for turns |
 
+### Enchantments
+
+| Name | Effect |
+|------|--------|
+| Arthropod Killer | Deal true damage to arthropod enemies, ignoring Block |
+| Sweeping Blade | Damage splashes, dealing 50% damage to other enemies |
+| Venomous | Attacks apply 3 Poison to enemies |
+
 ### Relics
 
 | Name | Type | Rarity | Effect |
@@ -110,8 +118,9 @@
 1. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [Mirror](https://gh-proxy.com/) | [Backup](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
 2. Download the required dependency mod [Baselib](https://github.com/Alchyr/BaseLib-StS2) | Game version 0.99.1 needs Baselib 0.2.0, game version 0.101.0+ needs Baselib 0.2.1 or higher
 3. Extract to the `mods` folder in the game directory
+4. Game logs are in `%AppData%\SlayTheSpire2\logs\` folder
 
-## Communication
+#### Communication
 
 - [**QQ：752913553**](https://qm.qq.com/q/ohYkDqbe7K)
 - [**Discord**](https://discord.gg/tJT3a95Y8y)

@@ -118,16 +118,23 @@ public class PigPig : CustomAncientModel
 
     public override IEnumerable<EventOption> AllPossibleOptions => _validRelics.Select(r => RelicOption(r.ToMutable()));
 
+    private bool _isRelicReward;
+
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
         var randomSevenSinsIndex = Rng.NextInt(_validRelics.Length);
         var selectedRelic = _validRelics[randomSevenSinsIndex].ToMutable();
         
+        _isRelicReward = Rng.NextInt(2) == 0;
+        var thirdOptionKey = _isRelicReward 
+            ? "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC" 
+            : "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS";
+        
         var eventOptions = new List<EventOption>
         {
             RelicOption(selectedRelic),
             new(this, ChoosePigCard, "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_CARD"),
-            new(this, ChooseRelicOrUpgrade, "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS")
+            new(this, ChooseRelicOrUpgrade, thirdOptionKey)
         };
         
         return eventOptions;
@@ -163,7 +170,7 @@ public class PigPig : CustomAncientModel
 
     private async Task ChooseRelicOrUpgrade()
     {
-        if (Rng.NextInt(2) == 0)
+        if (_isRelicReward)
         {
             await ChooseRandomRelic();
         }

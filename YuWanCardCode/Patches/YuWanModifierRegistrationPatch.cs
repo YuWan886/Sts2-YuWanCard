@@ -41,8 +41,7 @@ public class YuWanGoodModifiersPatch
             if (!existingTypes.Contains(modifier.GetType()))
             {
                 var genericMethod = _modifierMethod?.MakeGenericMethod(modifier.GetType());
-                var dbModifier = genericMethod?.Invoke(null, null) as ModifierModel;
-                if (dbModifier != null)
+                if (genericMethod?.Invoke(null, null) is ModifierModel dbModifier)
                 {
                     newModifiers.Add(dbModifier);
                 }
