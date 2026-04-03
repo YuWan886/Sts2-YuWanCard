@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
@@ -17,11 +14,11 @@ using MegaCrit.Sts2.Core.MonsterMoves;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
 using MegaCrit.Sts2.Core.Nodes.Audio;
-using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.TestSupport;
 using MegaCrit.Sts2.Core.ValueProps;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Monsters;
 
@@ -61,6 +58,11 @@ public sealed class Killer : MonsterModel
 
     public float CurrentScale { get; private set; } = 1f;
 
+    private static void PlayTalkLine(LocString line, Creature speaker)
+    {
+        GameVersionCompat.TalkCmdPlay(line, speaker);
+    }
+
     public override async Task AfterAddedToRoom()
     {
         await base.AfterAddedToRoom();
@@ -83,7 +85,7 @@ public sealed class Killer : MonsterModel
             return;
         }
         LocString line = L10NMonsterLookup("KILLER.onPlayerDeath.speakLine");
-        TalkCmd.Play(line, Creature, VfxColor.Red);
+        PlayTalkLine(line, Creature);
     }
 
     public override Task BeforeDeath(Creature creature)
@@ -93,7 +95,7 @@ public sealed class Killer : MonsterModel
             return Task.CompletedTask;
         }
         LocString line = L10NMonsterLookup("KILLER.onDeath.speakLine");
-        TalkCmd.Play(line, Creature, VfxColor.Red);
+        PlayTalkLine(line, Creature);
         return Task.CompletedTask;
     }
 
@@ -154,7 +156,7 @@ public sealed class Killer : MonsterModel
         await PowerCmd.Apply<PersonalHivePower>(Creature, PersonalHiveAmount, Creature, null);
         await PowerCmd.Apply<SkittishPower>(Creature, SkittishAmount, Creature, null);
         LocString line = L10NMonsterLookup("KILLER.moves.WAKE.speakLine");
-        TalkCmd.Play(line, Creature, VfxColor.Red);
+        PlayTalkLine(line, Creature);
         await Cmd.Wait(0.5f);
     }
 

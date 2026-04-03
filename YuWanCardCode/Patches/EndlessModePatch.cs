@@ -3,9 +3,11 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.TestSupport;
 using YuWanCard.Modifiers;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
@@ -85,72 +87,88 @@ public class EndlessModePatch
         MainFile.Logger.Info($"Endless mode: Transitioned to loop {endlessModifier.YuWanCard_EndlessLoopCount}");
     }
 
-    [HarmonyPatch(typeof(MapPointTypeCounts))]
-    [HarmonyPatch(MethodType.Constructor, typeof(int), typeof(int))]
-    public class EndlessEliteChancePatch
+    private static int CalculateEliteBonus(int loopCount)
     {
-        [HarmonyPostfix]
-        public static void Postfix(MapPointTypeCounts __instance, int unknownCount, int restCount)
+        if (loopCount <= 0) return 0;
+        
+        int bonus = loopCount / 2;
+        
+        if (loopCount >= 5)
         {
-            var runState = GetCurrentRunState();
-            if (runState == null)
-            {
-                return;
-            }
+            bonus += 1;
+        }
+        
+        if (loopCount >= 10)
+        {
+            bonus += 2;
+        }
+        
+        return Math.Max(1, bonus);
+    }
 
-            var endlessModifier = EndlessModifier.GetEndlessModifier(runState);
-            if (endlessModifier == null)
-            {
-                return;
-            }
-
-            int loopCount = endlessModifier.EffectiveLoopCount;
-            if (loopCount <= 0)
-            {
-                return;
-            }
-
-            int eliteBonus = CalculateEliteBonus(loopCount);
-            int newEliteCount = __instance.NumOfElites + eliteBonus;
-
-            var propertyInfo = typeof(MapPointTypeCounts).GetProperty(nameof(MapPointTypeCounts.NumOfElites));
-            if (propertyInfo != null && propertyInfo.CanWrite)
-            {
-                propertyInfo.SetValue(__instance, newEliteCount);
-                MainFile.Logger.Info($"Endless mode: Increased elite count from {__instance.NumOfElites - eliteBonus} to {newEliteCount} (Loop {loopCount}, Bonus +{eliteBonus})");
-            }
+    private static RunState? GetCurrentRunState()
+    {
+        var runManagerType = typeof(RunManager);
+        var instanceProperty = runManagerType.GetProperty("Instance");
+        if (instanceProperty == null)
+        {
+            return null;
         }
 
-        private static int CalculateEliteBonus(int loopCount)
+        var runManager = instanceProperty.GetValue(null) as RunManager;
+        return runManager?.State;
+    }
+
+    private static void ProcessEliteBonus(MapPointTypeCounts __instance)
+    {
+        var runState = GetCurrentRunState();
+        if (runState == null)
         {
-            if (loopCount <= 0) return 0;
-            
-            int bonus = loopCount / 2;
-            
-            if (loopCount >= 5)
-            {
-                bonus += 1;
-            }
-            
-            if (loopCount >= 10)
-            {
-                bonus += 2;
-            }
-            
-            return Math.Max(1, bonus);
+            return;
         }
 
-        private static RunState? GetCurrentRunState()
+        var endlessModifier = EndlessModifier.GetEndlessModifier(runState);
+        if (endlessModifier == null)
         {
-            var runManagerType = typeof(RunManager);
-            var instanceProperty = runManagerType.GetProperty("Instance");
-            if (instanceProperty == null)
-            {
-                return null;
-            }
-
-            var runManager = instanceProperty.GetValue(null) as RunManager;
-            return runManager?.State;
+            return;
         }
+
+        int loopCount = endlessModifier.EffectiveLoopCount;
+        if (loopCount <= 0)
+        {
+            return;
+        }
+
+        int eliteBonus = CalculateEliteBonus(loopCount);
+        int newEliteCount = __instance.NumOfElites + eliteBonus;
+
+        GameVersionCompat.TrySetNumOfElites(__instance, newEliteCount, eliteBonus, loopCount);
+    }
+
+    public static void ApplyMapPointTypeCountsPatches(Harmony harmony)
+    {
+        if (GameVersionCompat.MapPointTypeCountsNewConstructor != null)
+        {
+            var postfixMethod = AccessTools.Method(typeof(EndlessModePatch), nameof(NewConstructorPostfix));
+            harmony.Patch(GameVersionCompat.MapPointTypeCountsNewConstructor, postfix: new HarmonyMethod(postfixMethod));
+            MainFile.Logger.Info("Endless mode: Applied patch to MapPointTypeCounts(int, int) constructor");
+        }
+
+        if (GameVersionCompat.MapPointTypeCountsOldConstructor != null)
+        {
+            var postfixMethod = AccessTools.Method(typeof(EndlessModePatch), nameof(OldConstructorPostfix));
+            harmony.Patch(GameVersionCompat.MapPointTypeCountsOldConstructor, postfix: new HarmonyMethod(postfixMethod));
+            MainFile.Logger.Info("Endless mode: Applied patch to MapPointTypeCounts(Rng) constructor");
+        }
+    }
+
+    private static void NewConstructorPostfix(MapPointTypeCounts __instance, int unknownCount, int restCount)
+    {
+        ProcessEliteBonus(__instance);
+    }
+
+    private static void OldConstructorPostfix(MapPointTypeCounts __instance, Rng rng)
+    {
+        ProcessEliteBonus(__instance);
     }
 }

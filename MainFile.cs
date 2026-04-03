@@ -1,6 +1,7 @@
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
+using YuWanCard.Patches;
 
 namespace YuWanCard;
 
@@ -15,6 +16,7 @@ public partial class MainFile : Node
     {
         Harmony harmony = new(ModId);
         harmony.PatchAll();
+        EndlessModePatch.ApplyMapPointTypeCountsPatches(harmony);
         Logger.Info("YuWanCard initialized");
     }
 }
