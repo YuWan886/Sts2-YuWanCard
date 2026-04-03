@@ -299,6 +299,35 @@ public static class MyKeywords
 }
 ```
 
+### Bitflag 枚举支持
+
+BaseLib 现在支持带有 `[Flags]` 属性的枚举类型，会自动使用位标志增量逻辑：
+
+```csharp
+using BaseLib.Patches.Content;
+using System;
+
+[Flags]
+public enum MyFlags
+{
+    None = 0,
+    Flag1 = 1,
+    Flag2 = 2,
+    Flag3 = 4
+}
+
+public static class MyCustomEnums
+{
+    // 自动生成下一个位标志值（8）
+    [CustomEnum]
+    public static readonly MyFlags MyCustomFlag;
+}
+```
+
+**位标志增量逻辑**：
+- 对于普通枚举：`value + 1`
+- 对于 `[Flags]` 枚举：`value << 1`（左移一位）
+
 ### KeywordPropertiesAttribute
 
 为 CardKeyword 字段添加额外属性：
@@ -683,26 +712,39 @@ public static MyCustomPile GetMyPile(Player player)
 实现 `IHealAmountModifier` 接口可以修改治疗量：
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Hooks;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 
 public class MyHealModifier : IHealAmountModifier
 {
     public decimal ModifyHealAdditive(Creature creature, decimal amount)
     {
-        return amount + 5; // 额外治疗 5 点
+        return 5; // 额外治疗 5 点（加法）
     }
 
     public decimal ModifyHealMultiplicative(Creature creature, decimal amount)
     {
-        return amount * 1.5m; // 治疗 150%
+        return 1.5m; // 治疗 150%（乘法）
     }
 }
 ```
 
 **执行顺序**：
-1. `IHealAmountModifier.ModifyHealAdditive()`
-2. `AbstractModel.ModifyHealAmount()`
-3. `IHealAmountModifier.ModifyHealMultiplicative()`
+1. `IHealAmountModifier.ModifyHealAdditive()` - 加法修改，返回额外治疗量
+2. `AbstractModel.ModifyHealAmount()` - 遗物/能力等的修改
+3. `IHealAmountModifier.ModifyHealMultiplicative()` - 乘法修改，返回倍率
+
+**方法说明**：
+
+| 方法 | 说明 | 默认返回值 |
+|------|------|-----------|
+| `ModifyHealAdditive(Creature, decimal)` | 加法修改，返回额外治疗量 | `0m` |
+| `ModifyHealMultiplicative(Creature, decimal)` | 乘法修改，返回倍率 | `1m` |
+
+**注意事项**：
+- `ModifyHealAdditive` 的 `amount` 参数是原始治疗量（在任何修改之前）
+- `ModifyHealMultiplicative` 的 `amount` 参数是加法修改后的治疗量
+- 最终治疗量会使用 `Math.Max(0m, result)` 确保不为负数
 
 ## 自定义能量图标池
 

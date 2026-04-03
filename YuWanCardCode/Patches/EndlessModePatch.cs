@@ -86,11 +86,11 @@ public class EndlessModePatch
     }
 
     [HarmonyPatch(typeof(MapPointTypeCounts))]
-    [HarmonyPatch(MethodType.Constructor, typeof(int), typeof(int))]
+    [HarmonyPatch(MethodType.Constructor, typeof(MegaCrit.Sts2.Core.Random.Rng))]
     public class EndlessEliteChancePatch
     {
         [HarmonyPostfix]
-        public static void Postfix(MapPointTypeCounts __instance, int unknownCount, int restCount)
+        public static void Postfix(MapPointTypeCounts __instance, MegaCrit.Sts2.Core.Random.Rng rng)
         {
             var runState = GetCurrentRunState();
             if (runState == null)
@@ -113,10 +113,10 @@ public class EndlessModePatch
             int eliteBonus = CalculateEliteBonus(loopCount);
             int newEliteCount = __instance.NumOfElites + eliteBonus;
 
-            var propertyInfo = typeof(MapPointTypeCounts).GetProperty(nameof(MapPointTypeCounts.NumOfElites));
-            if (propertyInfo != null && propertyInfo.CanWrite)
+            var fieldInfo = typeof(MapPointTypeCounts).GetField("<NumOfElites>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (fieldInfo != null)
             {
-                propertyInfo.SetValue(__instance, newEliteCount);
+                fieldInfo.SetValue(__instance, newEliteCount);
                 MainFile.Logger.Info($"Endless mode: Increased elite count from {__instance.NumOfElites - eliteBonus} to {newEliteCount} (Loop {loopCount}, Bonus +{eliteBonus})");
             }
         }

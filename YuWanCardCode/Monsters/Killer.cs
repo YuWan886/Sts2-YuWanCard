@@ -82,8 +82,8 @@ public sealed class Killer : MonsterModel
         {
             return;
         }
-        LocString line = MonsterModel.L10NMonsterLookup("KILLER.onPlayerDeath.speakLine");
-        TalkCmd.Play(line, Creature);
+        LocString line = L10NMonsterLookup("KILLER.onPlayerDeath.speakLine");
+        TalkCmd.Play(line, Creature, VfxColor.Red);
     }
 
     public override Task BeforeDeath(Creature creature)
@@ -92,8 +92,8 @@ public sealed class Killer : MonsterModel
         {
             return Task.CompletedTask;
         }
-        LocString line = MonsterModel.L10NMonsterLookup("KILLER.onDeath.speakLine");
-        TalkCmd.Play(line, Creature);
+        LocString line = L10NMonsterLookup("KILLER.onDeath.speakLine");
+        TalkCmd.Play(line, Creature, VfxColor.Red);
         return Task.CompletedTask;
     }
 
@@ -154,7 +154,7 @@ public sealed class Killer : MonsterModel
         await PowerCmd.Apply<PersonalHivePower>(Creature, PersonalHiveAmount, Creature, null);
         await PowerCmd.Apply<SkittishPower>(Creature, SkittishAmount, Creature, null);
         LocString line = L10NMonsterLookup("KILLER.moves.WAKE.speakLine");
-        TalkCmd.Play(line, Creature);
+        TalkCmd.Play(line, Creature, VfxColor.Red);
         await Cmd.Wait(0.5f);
     }
 

@@ -36,44 +36,12 @@ public class PigPig : CustomAncientModel
     private const string RunHistoryIconPath = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig.png";
     private const string RunHistoryIconOutlinePathStr = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig_outline.png";
     
-    private static Texture2D? _cachedRunHistoryIcon;
-    private static Texture2D? _cachedRunHistoryIconOutline;
-    
     public override string? CustomScenePath => "res://YuWanCard/scenes/ancients/pig_pig.tscn";
     public override string? CustomMapIconPath => $"{IconBasePath}.png";
     public override string? CustomMapIconOutlinePath => $"{IconBasePath}.png";
     
-    public Texture2D? CustomRunHistoryIcon
-    {
-        get
-        {
-            if (_cachedRunHistoryIcon == null)
-            {
-                _cachedRunHistoryIcon = GD.Load<Texture2D>(RunHistoryIconPath);
-                if (_cachedRunHistoryIcon == null)
-                {
-                    MainFile.Logger.Warn($"Failed to load PigPig run history icon from {RunHistoryIconPath}");
-                }
-            }
-            return _cachedRunHistoryIcon;
-        }
-    }
-    
-    public Texture2D? CustomRunHistoryIconOutline
-    {
-        get
-        {
-            if (_cachedRunHistoryIconOutline == null)
-            {
-                _cachedRunHistoryIconOutline = GD.Load<Texture2D>(RunHistoryIconOutlinePathStr);
-                if (_cachedRunHistoryIconOutline == null)
-                {
-                    MainFile.Logger.Warn($"Failed to load PigPig run history outline icon from {RunHistoryIconOutlinePathStr}");
-                }
-            }
-            return _cachedRunHistoryIconOutline;
-        }
-    }
+    public override string? CustomRunHistoryIconPath => RunHistoryIconPath;
+    public override string? CustomRunHistoryIconOutlinePath => RunHistoryIconOutlinePathStr;
 
     public override IEnumerable<string> GetAssetPaths(IRunState runState)
     {

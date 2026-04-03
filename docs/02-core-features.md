@@ -165,11 +165,33 @@ public class MyCustomCard : CustomCardModel
 |-----------|------|
 | `GainsBlock` | 自动检测卡牌是否有格挡效果 |
 | `CustomFrame` | 自定义卡牌框贴图（可选） |
+| `CustomFrameMaterial` | 自定义卡牌框材质（可选，延迟初始化） |
+| `CreateCustomFrameMaterial` | 创建自定义 ShaderMaterial（可选，用于每张卡牌独立的材质） |
 | `CustomPortraitPath` | 自定义卡牌立绘路径（可选） |
 | `CanonicalVars` | 定义卡牌的动态变量 |
 | `OnPlay` | 卡牌打出时的逻辑 |
 | `OnUpgrade` | 卡牌升级时的逻辑 |
 | `MultiplayerConstraint` | 多人游戏限制（默认 `CardMultiplayerConstraint.None`） |
+
+### 自定义卡牌框材质
+
+使用 `CreateCustomFrameMaterial` 属性为单张卡牌创建自定义 ShaderMaterial：
+
+```csharp
+using BaseLib.Abstracts;
+using BaseLib.Utils;
+using Godot;
+
+public class MySpecialCard : CustomCardModel
+{
+    public override Material? CreateCustomFrameMaterial => ShaderUtils.GenerateHsv(0.5f, 0.8f, 1.0f);
+}
+```
+
+**说明**：
+- `CustomFrameMaterial` 是延迟初始化的属性，会调用 `CreateCustomFrameMaterial` 并缓存结果
+- 使用 `ShaderUtils.GenerateHsv(h, s, v)` 可以快速生成 HSV 着色器材质
+- 此功能允许每张卡牌拥有独立的材质，而不是共享卡牌池的材质
 
 ### CardMultiplayerConstraint 多人游戏限制
 
@@ -791,23 +813,28 @@ using MegaCrit.Sts2.Core.Models;
 [Pool(typeof(SharedPotionPool))]
 public class MyCustomPotion : CustomPotionModel
 {
-    public MyCustomPotion()
+    public MyCustomPotion() : base(autoAdd: true)
     {
         Name = "My Potion";
         Description = "Heal 20 HP.";
     }
 
-    public override bool AutoAdd => true;
-
-    public override string? PackedImagePath => "res://textures/potions/my_potion.png";
-    public override string? PackedOutlinePath => "res://textures/potions/my_potion_outline.png";
+    public override string? CustomPackedImagePath => "res://textures/potions/my_potion.png";
+    public override string? CustomPackedOutlinePath => "res://textures/potions/my_potion_outline.png";
 }
 ```
 
 **属性说明**：
-- `AutoAdd`：是否自动添加到内容字典（默认 true）
-- `PackedImagePath`：药水贴图路径
-- `PackedOutlinePath`：药水轮廓贴图路径
+
+| 属性 | 说明 |
+|------|------|
+| `CustomPackedImagePath` | 药水贴图路径（替代旧的 `PackedImagePath`） |
+| `CustomPackedOutlinePath` | 药水轮廓贴图路径（替代旧的 `PackedOutlinePath`） |
+
+**构造函数参数**：
+- `autoAdd`：是否自动添加到内容字典（默认 true）
+
+**注意**：旧版本的 `PackedImagePath` 和 `PackedOutlinePath` 属性已弃用，请使用 `CustomPackedImagePath` 和 `CustomPackedOutlinePath`。
 
 ## 自定义先古之民 (CustomAncientModel)
 
@@ -838,8 +865,8 @@ public class MyCustomAncient : CustomAncientModel
     public override string? CustomScenePath => "res://MyMod/scenes/ancients/my_ancient.tscn";
     public override string? CustomMapIconPath => "res://MyMod/images/ancients/my_ancient.png";
     public override string? CustomMapIconOutlinePath => "res://MyMod/images/ancients/my_ancient_outline.png";
-    public override Texture2D? CustomRunHistoryIcon => GD.Load<Texture2D>("res://MyMod/images/ui/run_history/my_ancient.png");
-    public override Texture2D? CustomRunHistoryIconOutline => GD.Load<Texture2D>("res://MyMod/images/ui/run_history/my_ancient_outline.png");
+    public override string? CustomRunHistoryIconPath => "res://MyMod/images/ui/run_history/my_ancient.png";
+    public override string? CustomRunHistoryIconOutlinePath => "res://MyMod/images/ui/run_history/my_ancient_outline.png";
 }
 ```
 
@@ -848,6 +875,16 @@ public class MyCustomAncient : CustomAncientModel
 - `ShouldForceSpawn(ActModel act, AncientEventModel? rngChosenAncient)`：是否强制生成此先古之民（谨慎使用，可能导致模组冲突）
 - `MakeOptionPools`：创建选项池（抽象属性，必须实现）
 - `GenerateInitialOptions()`：生成初始选项列表（可选重写）
+
+**视觉资源属性**：
+
+| 属性 | 说明 |
+|------|------|
+| `CustomScenePath` | 自定义事件场景路径 |
+| `CustomMapIconPath` | 地图图标路径 |
+| `CustomMapIconOutlinePath` | 地图图标轮廓路径（新增） |
+| `CustomRunHistoryIconPath` | 运行历史图标路径 |
+| `CustomRunHistoryIconOutlinePath` | 运行历史图标轮廓路径（新增） |
 
 **选项池工具**：
 - `MakePool(params RelicModel[] options)`：从遗物模型创建加权列表

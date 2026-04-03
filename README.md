@@ -116,7 +116,7 @@
 ## 安装
 
 1. 下载最新版本 [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [加速下载](https://gh-proxy.com/) | [备用下载](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
-2. 下载前置依赖 mod [Baselib](https://github.com/Alchyr/BaseLib-StS2) | 游戏版本 0.99.1 需 Baselib 0.2.0，游戏版本 0.101.0+ 需 Baselib 0.2.1 或更高版本
+2. 下载前置依赖 mod [正式版本](https://github.com/YuWan886/Fk-BaseLib-StS2/releases) | [Beta 版本](https://github.com/Alchyr/BaseLib-StS2/releases)
 3. 解压到游戏目录下的 `mods` 文件夹中
 4. 游戏日志在 `%AppData%\SlayTheSpire2\logs\` 文件夹中
 
