@@ -87,8 +87,11 @@
 
     <ItemGroup>
         <Compile Remove="others\**" />
+        <Compile Remove="change_code\**" />
         <EmbeddedResource Remove="others\**" />
+        <EmbeddedResource Remove="change_code\**" />
         <None Remove="others\**" />
+        <None Remove="change_code\**" />
     </ItemGroup>
 
     <ItemGroup>
