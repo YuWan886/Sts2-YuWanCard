@@ -28,13 +28,13 @@ public class PigBite : YuWanCardModel
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<YouArePigPower>()));
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         AddKeyword(CardKeyword.Retain);
         DynamicVars["PoisonPower"].UpgradeValueBy(3);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Target == null) return;
 

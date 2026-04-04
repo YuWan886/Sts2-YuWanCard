@@ -1,5 +1,194 @@
 # 扩展功能
 
+## CustomSingletonModel
+
+`CustomSingletonModel` 是一个抽象类，表示将在运行时持续接收钩子的模型。它支持运行状态和战斗状态的钩子订阅，使得模型可以在不同的游戏状态下接收事件回调。
+
+### 基本用法
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MySingletonModel : CustomSingletonModel
+{
+    public MySingletonModel() : base(
+        receiveCombatHooks: true,  // 接收战斗状态钩子
+        receiveRunHooks: true      // 接收运行状态钩子
+    )
+    {
+    }
+
+    // 实现需要的钩子方法
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        // 在玩家回合开始时触发
+    }
+}
+```
+
+### 构造函数参数
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `receiveCombatHooks` | `bool` | 是否接收战斗状态钩子 |
+| `receiveRunHooks` | `bool` | 是否接收运行状态钩子 |
+
+### 工作原理
+
+`CustomSingletonModel` 通过反射调用 `ModHelper.SubscribeForCombatStateHooks` 和 `ModHelper.SubscribeForRunStateHooks` 方法来注册钩子：
+
+1. 在构造函数中，根据参数决定订阅哪些钩子
+2. 通过 `RunSubModels` 和 `CombatSubModels` 方法返回自身，使模型能够接收钩子调用
+3. 如果当前游戏分支不支持这些 API，会记录警告日志
+
+### 使用场景
+
+- 创建全局事件监听器
+- 实现跨战斗的状态管理
+- 监听游戏运行时事件
+
+### 注意事项
+
+- 需要游戏支持 `ModHelper.SubscribeForCombatStateHooks` 和 `ModHelper.SubscribeForRunStateHooks` API
+- 如果 API 不存在，会记录警告日志但不会崩溃
+- 继承 `ICustomModel` 接口，会自动添加模组前缀
+
+## Harmony 补丁转储 (Harmony Patch Dump)
+
+BaseLib 提供了 Harmony 补丁转储功能，可以将所有 Harmony 修补的方法记录到文件中，便于调试和分析。
+
+### 配置选项
+
+在 BaseLib 模组配置中可以设置：
+
+```csharp
+[ConfigSection("HarmonyDumpSection")]
+[ConfigTextInput(TextInputPreset.Anything, MaxLength = 1024)]
+public static string HarmonyPatchDumpOutputPath { get; set; } = "";
+
+public static bool HarmonyPatchDumpOnFirstMainMenu { get; set; }
+```
+
+| 配置项 | 说明 |
+|--------|------|
+| `HarmonyPatchDumpOutputPath` | 输出文件路径（支持 `user://`、`res://` 或绝对路径） |
+| `HarmonyPatchDumpOnFirstMainMenu` | 是否在首次进入主菜单时自动转储 |
+
+### 手动触发转储
+
+```csharp
+using BaseLib.Diagnostics;
+
+// 手动触发补丁转储
+HarmonyPatchDumpCoordinator.TryManualDumpFromSettings();
+```
+
+### 输出格式
+
+转储文件包含以下信息：
+
+```
+=======================================================
+===          Harmony Patch Dump Report             ===
+=======================================================
+Generated at: 2024-01-01T12:00:00.0000000
+User data dir: C:\Users\User\AppData\Roaming\SlayTheSpire2
+=======================================================
+
+┌─ [MegaCrit.Sts2.Core.Nodes.Screens.MainMenu.NMainMenu]
+│  Method: void _Ready()
+│
+│  ├─ Prefixes (1):
+│  │  ├─ [Priority: 0] [BaseLib] BaseLib.Patches.Utils.NMainMenuReadyOpenLogWindowPatch.Prefix
+│  ├─ Postfixes (1):
+│  │  ├─ [Priority: 0] [BaseLib] BaseLib.Patches.Utils.NMainMenuReadyOpenLogWindowPatch.Postfix
+└─────────────────────────────────────────────────────────────────
+
+=======================================================
+===                   Summary                      ===
+=======================================================
+Total Patched Methods:  42
+  - Prefix patches:     15
+  - Postfix patches:    20
+  - Transpiler patches: 5
+  - Finalizer patches:  2
+  - Total patches:      42
+=======================================================
+```
+
+### 使用场景
+
+- 调试模组冲突
+- 分析补丁优先级
+- 检查补丁是否正确应用
+- 了解其他模组的补丁行为
+
+## 日志系统增强
+
+BaseLib 提供了增强的日志系统，使用 Godot 日志来获取与普通日志文件相同的文本内容。
+
+### LogListener
+
+`LogListener` 继承自 `Godot.Logger`，重写 `_LogMessage` 方法将日志消息添加到日志窗口：
+
+```csharp
+using BaseLib.Patches.Utils;
+
+// LogListener 自动捕获 Godot 日志
+// 日志会自动添加到 NLogWindow
+```
+
+### 日志窗口配置
+
+```csharp
+using BaseLib.Config;
+
+// 启动时打开日志窗口
+BaseLibConfig.OpenLogWindowOnStartup = true;
+
+// 日志行数限制
+BaseLibConfig.LimitedLogSize = 256;
+
+// 日志字体大小
+BaseLibConfig.LogFontSize = 14;
+```
+
+### 日志窗口功能
+
+| 功能 | 说明 |
+|------|------|
+| 缩放/字体大小调整 | Ctrl + 鼠标滚轮调整字体大小（8-48px） |
+| 窗口大小和位置记忆 | 自动保存上次关闭窗口时的大小和位置 |
+| 日志级别过滤 | 可选择显示 Error、Warn、Info、Debug 等级别 |
+| 文本过滤 | 支持普通文本搜索和正则表达式搜索 |
+| 反向过滤 | 反转过滤结果 |
+| 自动跟随日志 | 可选择是否自动滚动到最新日志 |
+| 超宽屏/HiDPI 支持 | 自动适配不同的显示缩放比例 |
+
+### 使用日志
+
+```csharp
+using BaseLib.BaseLibScenes;
+
+// 日志会自动添加到窗口
+BaseLibMain.Logger.Info("这是一条信息");
+BaseLibMain.Logger.Warn("这是一条警告");
+BaseLibMain.Logger.Error("这是一条错误");
+
+// 手动打开日志窗口
+var logWindow = new NLogWindow();
+logWindow.Show();
+```
+
+### 日志级别颜色
+
+| 级别 | 颜色 |
+|------|------|
+| Error | 红色 |
+| Warn | 黄色 |
+| Info | 默认颜色 |
+| Debug | 蓝色 |
+
 ## BaseLib 补丁系统
 
 BaseLib 通过 Harmony 补丁提供了多种功能扩展。

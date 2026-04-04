@@ -14,7 +14,7 @@ public class HaotianHammer : YuWanRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Shop;
 
-    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<SovereignBlade>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<SovereignBlade>()];
 
     public HaotianHammer() : base(true)
     {

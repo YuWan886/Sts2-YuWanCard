@@ -21,12 +21,12 @@ public class PigCharge : YuWanCardModel
         WithPower<StrengthPower>(1);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         DynamicVars.Strength.UpgradeValueBy(1m);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CommonActions.CardAttack(this, cardPlay, hitCount: 1).Execute(choiceContext);
         await PowerCmd.Apply<PigChargePower>(Owner.Creature, DynamicVars.Strength.IntValue, Owner.Creature, this);

@@ -1,5 +1,6 @@
 {
-  "YUWANCARD-FORCE_DISABLE_V_SYNC.title": "Force Disable VSync",
-  "YUWANCARD-FORCE_DISABLE_V_SYNC.hover.title": "Force Disable VSync",
-  "YUWANCARD-FORCE_DISABLE_V_SYNC.hover.desc": "Forcefully disables VSync, which may increase frame rate but could cause screen tearing."
+  "YUWANCARD-显示设置.title": "Display Settings",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.title": "Show Death Overlay",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.title": "Show Death Overlay",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.desc": "Display a static image overlay on the character model when a character dies. Supports multiplayer."
 }

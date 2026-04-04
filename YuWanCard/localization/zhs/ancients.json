@@ -86,5 +86,9 @@
   "YUWANCARD-PIG_PIG.talk.ANY.8-1r.ancient": "你的勇气值得嘉奖。",
   "YUWANCARD-PIG_PIG.talk.ANY.9-0r.ancient": "哼哼哼哼...",
   "YUWANCARD-PIG_PIG.talk.ANY.9-0r.next": "继续",
-  "YUWANCARD-PIG_PIG.talk.ANY.9-1r.ancient": "我闻到了成功的气息。"
+  "YUWANCARD-PIG_PIG.talk.ANY.9-1r.ancient": "我闻到了成功的气息。",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.char": "建筑师，我来了！",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.next": "继续",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-1r.ancient": "哼哼哼...",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-attack": "猪猪攻击！"
 }

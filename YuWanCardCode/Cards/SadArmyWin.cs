@@ -19,12 +19,12 @@ public class SadArmyWin : YuWanCardModel
     {
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var maxHp = Owner.Creature.MaxHp;
         var currentHp = Owner.Creature.CurrentHp;

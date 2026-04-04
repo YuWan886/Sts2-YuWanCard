@@ -41,5 +41,11 @@
   "YUWANCARD-GLUTTONOUS_PIG.flavor": "暴食的猪，吞噬一切奖励。",
   "YUWANCARD-LUSTFUL_PIG.title": "色欲猪",
   "YUWANCARD-LUSTFUL_PIG.description": "在每场战斗开始时，所有敌人获得2层[gold]虚弱[/gold]。敌人有[blue]40%[/blue]概率攻击敌人自己。",
-  "YUWANCARD-LUSTFUL_PIG.flavor": "色欲的猪，陷入混乱的欲望。"
+  "YUWANCARD-LUSTFUL_PIG.flavor": "色欲的猪，陷入混乱的欲望。",
+  "YUWANCARD-PIG_CARROT.title": "胡萝卜",
+  "YUWANCARD-PIG_CARROT.description": "每场战斗开始时，获得{PlatingPower:diff()}层[gold]覆甲[/gold]。",
+  "YUWANCARD-PIG_CARROT.flavor": "猪最爱的食物。",
+  "YUWANCARD-PIG_GOLDEN_CARROT.title": "金胡萝卜",
+  "YUWANCARD-PIG_GOLDEN_CARROT.description": "每场战斗开始时，获得{PlatingPower:diff()}层[gold]覆甲[/gold]。",
+  "YUWANCARD-PIG_GOLDEN_CARROT.flavor": "传说中的金色胡萝卜，蕴含着神秘的力量。"
 }

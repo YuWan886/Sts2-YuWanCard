@@ -1,14 +1,68 @@
-[gd_scene load_steps=2 format=3 uid="uid://caa2xxkj4wj7w"]
+[gd_scene load_steps=4 format=3 uid="uid://caa2xxkj4wj7w"]
 
 [ext_resource type="Texture2D" uid="uid://srptda76db1q" path="res://YuWanCard/images/characters/pig.png" id="2_pig"]
+[ext_resource type="Texture2D" uid="uid://k01y4tim756o" path="res://YuWanCard/images/characters/pig_die.png" id="3_die"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pig"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_pig")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_pig")
+}],
+"loop": false,
+"name": &"cast",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_die")
+}],
+"loop": false,
+"name": &"die",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_pig")
+}],
+"loop": false,
+"name": &"hurt",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_pig")
+}],
+"loop": true,
+"name": &"idle_loop",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_pig")
+}],
+"loop": true,
+"name": &"relaxed_loop",
+"speed": 5.0
+}]
 
 [node name="PigVisuals" type="Node2D"]
 
-[node name="Visuals" type="Sprite2D" parent="."]
+[node name="Visuals" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true
 position = Vector2(1, -72)
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_pig")
+sprite_frames = SubResource("SpriteFrames_pig")
+animation = &"idle_loop"
+autoplay = "idle_loop"
 
 [node name="Bounds" type="Control" parent="."]
 unique_name_in_owner = true
@@ -22,11 +76,11 @@ mouse_filter = 2
 
 [node name="IntentPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(4, -194)
+position = Vector2(0, -168)
 
 [node name="CenterPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -150)
+position = Vector2(1, -126)
 
 [node name="OrbPos" type="Marker2D" parent="."]
 unique_name_in_owner = true

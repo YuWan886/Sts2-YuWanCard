@@ -24,7 +24,7 @@ namespace YuWanCard.Monsters;
 
 public sealed class Killer : MonsterModel
 {
-    public override string VisualsPath => "res://YuWanCard/scenes/monsters/killer/killer_visuals.tscn";
+    protected override string VisualsPath => "res://YuWanCard/scenes/monsters/killer/killer_visuals.tscn";
 
     public override int MinInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 190, 180);
 
@@ -99,7 +99,7 @@ public sealed class Killer : MonsterModel
         return Task.CompletedTask;
     }
 
-    public override MonsterMoveStateMachine GenerateMoveStateMachine()
+    protected override MonsterMoveStateMachine GenerateMoveStateMachine()
     {
         List<MonsterState> list = [];
 

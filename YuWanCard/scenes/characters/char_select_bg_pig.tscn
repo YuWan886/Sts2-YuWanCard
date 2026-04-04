@@ -1,0 +1,162 @@
+[gd_scene load_steps=7 format=3 uid="uid://cb7sj352563kd"]
+
+[ext_resource type="Texture2D" uid="uid://d07r6jhh8emw0" path="res://YuWanCard/images/ancients/pig_pig_background.png" id="1_pig"]
+
+[sub_resource type="Curve" id="Curve_scale"]
+_data = [Vector2(0, 0.2), 0.0, 0.0, 0, 0, Vector2(0.5, 0.6), 0.0, 0.0, 0, 0, Vector2(1, 0.3), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_gold"]
+offsets = PackedFloat32Array(0, 0.3, 0.7, 1)
+colors = PackedColorArray(1, 0.9, 0.4, 0, 1, 0.85, 0.3, 0.8, 0.9, 0.7, 0.2, 0.6, 0.8, 0.6, 0.1, 0)
+
+[sub_resource type="Gradient" id="Gradient_ash"]
+offsets = PackedFloat32Array(0, 0.4, 0.8, 1)
+colors = PackedColorArray(0.6, 0.5, 0.3, 0, 0.8, 0.7, 0.5, 0.5, 0.5, 0.4, 0.3, 0.8, 0.3, 0.25, 0.2, 0)
+
+[sub_resource type="Curve" id="Curve_scale_small"]
+_data = [Vector2(0, 0.1), 0.0, 0.0, 0, 0, Vector2(0.5, 0.4), 0.0, 0.0, 0, 0, Vector2(1, 0.15), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_sparkle"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.95, 0.7, 0, 1, 0.9, 0.5, 1, 1, 0.8, 0.3, 0)
+
+[node name="PigCharSelectBg" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+metadata/_edit_lock_ = true
+
+[node name="PigCharacter" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -828.0
+offset_top = -647.0
+offset_right = 1313.0
+offset_bottom = 630.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_pig")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GoldenParticles" type="CPUParticles2D" parent="."]
+position = Vector2(960, 540)
+amount = 35
+lifetime = 5.0
+preprocess = 5.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(1000, 600)
+gravity = Vector2(0, -25)
+scale_amount_min = 3.0
+scale_amount_max = 7.0
+scale_amount_curve = SubResource("Curve_scale")
+color = Color(1, 0.85, 0.4, 0.5)
+color_ramp = SubResource("Gradient_gold")
+
+[node name="FloatingAsh" type="CPUParticles2D" parent="."]
+position = Vector2(960, 540)
+amount = 45
+lifetime = 10.0
+preprocess = 10.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(1200, 700)
+gravity = Vector2(15, -10)
+orbit_velocity_min = 0.02
+orbit_velocity_max = 0.06
+scale_amount_min = 2.0
+scale_amount_max = 5.0
+color = Color(0.7, 0.6, 0.4, 0.4)
+color_ramp = SubResource("Gradient_ash")
+
+[node name="SparklesLeft" type="CPUParticles2D" parent="."]
+position = Vector2(300, 400)
+amount = 12
+lifetime = 3.0
+preprocess = 3.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(150, 200)
+gravity = Vector2(0, 0)
+scale_amount_min = 2.0
+scale_amount_max = 5.0
+scale_amount_curve = SubResource("Curve_scale_small")
+color = Color(1, 0.9, 0.5, 0.7)
+color_ramp = SubResource("Gradient_sparkle")
+
+[node name="SparklesRight" type="CPUParticles2D" parent="."]
+position = Vector2(1620, 350)
+amount = 12
+lifetime = 3.0
+preprocess = 3.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(150, 200)
+gravity = Vector2(0, 0)
+scale_amount_min = 2.0
+scale_amount_max = 5.0
+scale_amount_curve = SubResource("Curve_scale_small")
+color = Color(1, 0.85, 0.4, 0.6)
+color_ramp = SubResource("Gradient_sparkle")
+
+[node name="TopGlow" type="CPUParticles2D" parent="."]
+position = Vector2(960, 150)
+amount = 15
+lifetime = 4.0
+preprocess = 4.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(600, 80)
+gravity = Vector2(0, 15)
+scale_amount_min = 5.0
+scale_amount_max = 10.0
+scale_amount_curve = SubResource("Curve_scale")
+color = Color(1, 0.9, 0.5, 0.35)
+
+[node name="BottomGlow" type="CPUParticles2D" parent="."]
+position = Vector2(960, 900)
+amount = 15
+lifetime = 4.0
+preprocess = 4.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(600, 80)
+gravity = Vector2(0, -15)
+scale_amount_min = 5.0
+scale_amount_max = 10.0
+scale_amount_curve = SubResource("Curve_scale")
+color = Color(1, 0.85, 0.4, 0.3)
+
+[node name="RisingEmbers" type="CPUParticles2D" parent="."]
+position = Vector2(960, 800)
+amount = 25
+lifetime = 6.0
+preprocess = 6.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(800, 100)
+gravity = Vector2(0, -40)
+orbit_velocity_min = 0.01
+orbit_velocity_max = 0.03
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+scale_amount_curve = SubResource("Curve_scale_small")
+color = Color(1, 0.7, 0.3, 0.5)
+color_ramp = SubResource("Gradient_gold")

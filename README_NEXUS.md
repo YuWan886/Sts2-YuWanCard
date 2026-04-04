@@ -109,7 +109,7 @@ YuWan Card 是一个《杀戮尖塔 2》模组，添加了 33 张无色卡牌、
 
 [quote][b]Note:[/b] This mod is developed using AI, there may be errors.[/quote]
 
-[b]Requires: [url=https://github.com/YuWan886/Fk-BaseLib-StS2/releases]Modified BaseLib[/url][/b] 
+[b]Requires: [url=https://github.com/Alchyr/BaseLib-StS2/releases]BaseLib[/url][/b] 
 [b]GitHub repository: [url=https://github.com/YuWan886/Sts2-YuWanCard]YuWan886/Sts2-YuWanCard[/url][/b]
 
 ---
@@ -217,5 +217,5 @@ YuWan Card 是一个《杀戮尖塔 2》模组，添加了 33 张无色卡牌、
 
 [quote][b]注意：[/b] 本模组使用 AI 开发，可能存在错误。[/quote]
 
-[b]前置需求： [url=https://github.com/YuWan886/Fk-BaseLib-StS2/releases]修改版BaseLib[/url][/b] 
+[b]前置需求： [url=https://github.com/Alchyr/BaseLib-StS2/releases]BaseLib[/url][/b] 
 [b]GitHub 仓库：[url=https://github.com/YuWan886/Sts2-YuWanCard]YuWan886/Sts2-YuWanCard[/url][/b]

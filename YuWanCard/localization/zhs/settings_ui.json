@@ -1,5 +1,6 @@
 {
-  "YUWANCARD-FORCE_DISABLE_V_SYNC.title": "强制关闭垂直同步",
-  "YUWANCARD-FORCE_DISABLE_V_SYNC.hover.title": "强制关闭垂直同步",
-  "YUWANCARD-FORCE_DISABLE_V_SYNC.hover.desc": "强制关闭游戏的垂直同步，可能会提高帧率但可能导致画面撕裂。"
+  "YUWANCARD-显示设置.title": "显示设置",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.title": "显示死亡叠加图片",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.title": "显示死亡叠加图片",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.desc": "角色死亡后在角色模型上显示一张静态图片叠加效果，支持多人游戏。"
 }

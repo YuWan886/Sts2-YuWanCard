@@ -69,5 +69,9 @@
   "YUWANCARD-PRESSURE_YOU.title": "压力着你",
   "YUWANCARD-PRESSURE_YOU.description": "使一名队友失去1点能量。自己获得{Energy:energyIcons()}，抽1张牌。",
   "YUWANCARD-STONE_CARRYING_KING.title": "搬石大王",
-  "YUWANCARD-STONE_CARRYING_KING.description": "将一名队友的所有手牌变化为{IfUpgraded:show:升级的|}[gold]巨石[/gold]。"
+  "YUWANCARD-STONE_CARRYING_KING.description": "将一名队友的所有手牌变化为{IfUpgraded:show:升级的|}[gold]巨石[/gold]。",
+  "YUWANCARD-PIG_STRIKE.title": "猪打击",
+  "YUWANCARD-PIG_STRIKE.description": "造成{Damage:diff()}点伤害。",
+  "YUWANCARD-PIG_DEFEND.title": "猪防御",
+  "YUWANCARD-PIG_DEFEND.description": "获得{Block:diff()}点格挡。"
 }

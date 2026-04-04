@@ -27,7 +27,7 @@ public class LazyPig : YuWanRelicModel
 
     public override int DisplayAmount => _turnCount;
 
-    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<DexterityPower>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<DexterityPower>()];
 
     public LazyPig() : base(true)
     {

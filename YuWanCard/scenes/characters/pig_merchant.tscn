@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://yuwancard_pig_merchant"]
+
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/pig.png" id="1_pig"]
+
+[node name="PigMerchant" type="Node2D"]
+
+[node name="PigSprite" type="Sprite2D" parent="."]
+position = Vector2(0, 0)
+texture = ExtResource("1_pig")
+scale = Vector2(0.8, 0.8)
+
+[node name="GlowEffect" type="PointLight2D" parent="."]
+position = Vector2(0, 50)
+color = Color(1, 0.85, 0.4, 0.5)
+energy = 0.8
+shadow_enabled = true
+texture = ExtResource("1_pig")
+texture_scale = Vector2(1.2, 1.2)

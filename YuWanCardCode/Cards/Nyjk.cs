@@ -20,13 +20,13 @@ public class Nyjk : YuWanCardModel
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         RemoveKeyword(CardKeyword.Exhaust);
         DynamicVars.Weak.UpgradeValueBy(1);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Target != null)
         {

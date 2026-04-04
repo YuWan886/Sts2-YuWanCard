@@ -19,12 +19,12 @@ public class PigHurt : YuWanCardModel
         WithPower<VulnerablePower>(1);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         DynamicVars.Vulnerable.UpgradeValueBy(2);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<VulnerablePower>(CombatState!.HittableEnemies, DynamicVars.Vulnerable.IntValue, Owner.Creature, this);
     }

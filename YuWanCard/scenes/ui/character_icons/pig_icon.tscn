@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://yuwancard_pig_icon"]
+
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/character_icon_pig.png" id="1_icon"]
+
+[node name="PigIcon" type="TextureRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_icon")
+expand_mode = 1
+stretch_mode = 5

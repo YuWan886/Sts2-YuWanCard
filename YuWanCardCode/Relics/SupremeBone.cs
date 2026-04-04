@@ -31,7 +31,7 @@ public class SupremeBone : YuWanRelicModel
 
     public override RelicRarity Rarity => RelicRarity.Shop;
 
-    public override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(2)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(2)];
 
     public SupremeBone() : base(true)
     {

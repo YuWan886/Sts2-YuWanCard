@@ -23,12 +23,12 @@ public class PigSleep : YuWanCardModel
         WithEnergyTip();
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(10m);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CommonActions.CardBlock(this, cardPlay);
         await CreatureCmd.Heal(Owner.Creature, DynamicVars["Heal"].BaseValue);

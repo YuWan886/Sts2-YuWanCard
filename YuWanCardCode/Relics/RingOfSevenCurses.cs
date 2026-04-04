@@ -23,11 +23,18 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class RingOfSevenCurses : YuWanRelicModel
 {
+    private static readonly HashSet<Type> CurseBlacklist =
+    [
+        typeof(Normality),
+        typeof(Enthralled),
+        typeof(BadLuck)
+    ];
+
     private GoldModificationGuard? _goldGuard;
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
-    public override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(1)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(1)];
 
     private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
         () => Owner,
@@ -59,7 +66,7 @@ public class RingOfSevenCurses : YuWanRelicModel
         }
         var availableCurses = ModelDb.CardPool<CurseCardPool>()
             .GetUnlockedCards(Owner.UnlockState, Owner.RunState.CardMultiplayerConstraint)
-            .Where(c => c is not Normality && c is not Enthralled)
+            .Where(c => !CurseBlacklist.Contains(c.GetType()))
             .ToHashSet();
         if (availableCurses.Count == 0)
         {

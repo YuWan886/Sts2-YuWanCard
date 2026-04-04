@@ -20,12 +20,12 @@ public class PigBankruptcy : YuWanCardModel
         WithTip(CardKeyword.Exhaust);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         AddKeyword(CardKeyword.Retain);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         NPowerUpVfx.CreateNormal(Owner.Creature);
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);

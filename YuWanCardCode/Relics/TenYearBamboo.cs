@@ -33,7 +33,7 @@ public class TenYearBamboo : YuWanRelicModel
 
     public override int DisplayAmount => YuWanCard_BlockBonus;
 
-    public override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("BlockBonus", 1m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("BlockBonus", 1m)];
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {

@@ -145,12 +145,12 @@ public class EndlessModifier : YuWanModifierModel
         return true;
     }
 
-    public override void AfterRunCreated(RunState runState)
+    protected override void AfterRunCreated(RunState runState)
     {
         MainFile.Logger.Info($"Endless modifier initialized. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
     }
 
-    public override void AfterRunLoaded(RunState runState)
+    protected override void AfterRunLoaded(RunState runState)
     {
         MainFile.Logger.Info($"Endless modifier loaded. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
     }

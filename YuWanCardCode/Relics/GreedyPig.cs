@@ -24,7 +24,7 @@ public class GreedyPig : YuWanRelicModel
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
-    public override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromCard<Greed>()
     ];

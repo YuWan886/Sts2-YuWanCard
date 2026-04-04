@@ -69,5 +69,9 @@
   "YUWANCARD-PRESSURE_YOU.title": "Pressure You",
   "YUWANCARD-PRESSURE_YOU.description": "Make target ally lose 1 Energy. Gain {Energy:energyIcons()} and draw 1 card.",
   "YUWANCARD-TIAO_JIAO.title": "Tiao Jiao",
-  "YUWANCARD-TIAO_JIAO.description": "Deal {Damage:diff()} damage to ally. Give them {TrainYouWellPower:diff()} [gold]Strength[/gold] this turn."
+  "YUWANCARD-TIAO_JIAO.description": "Deal {Damage:diff()} damage to ally. Give them {TrainYouWellPower:diff()} [gold]Strength[/gold] this turn.",
+  "YUWANCARD-PIG_STRIKE.title": "Pig Strike",
+  "YUWANCARD-PIG_STRIKE.description": "Deal {Damage:diff()} damage.",
+  "YUWANCARD-PIG_DEFEND.title": "Pig Defend",
+  "YUWANCARD-PIG_DEFEND.description": "Gain {Block:diff()} Block."
 }

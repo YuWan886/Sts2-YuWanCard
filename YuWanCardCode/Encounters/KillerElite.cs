@@ -28,7 +28,7 @@ public sealed class KillerElite : EncounterModel
         return Vector2.Down * 50f;
     }
 
-    public override IReadOnlyList<(MonsterModel, string?)> GenerateMonsters()
+    protected override IReadOnlyList<(MonsterModel, string?)> GenerateMonsters()
     {
         return new List<(MonsterModel, string?)> { (ModelDb.Monster<Killer>().ToMutable(), null) };
     }

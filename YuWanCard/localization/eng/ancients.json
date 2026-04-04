@@ -93,5 +93,9 @@
   "YUWANCARD-PIG_PIG.talk.ANY.8-1r.ancient": "Your courage deserves reward.",
   "YUWANCARD-PIG_PIG.talk.ANY.9-0r.ancient": "Oink oink oink oink...",
   "YUWANCARD-PIG_PIG.talk.ANY.9-0r.next": "Continue",
-  "YUWANCARD-PIG_PIG.talk.ANY.9-1r.ancient": "I sense the scent of success."
+  "YUWANCARD-PIG_PIG.talk.ANY.9-1r.ancient": "I sense the scent of success.",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.char": "Architect, here I come!",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.next": "Continue",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-1r.ancient": "Oink oink oink...",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-attack": "Pig Attack!"
 }

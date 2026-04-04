@@ -35,6 +35,77 @@
 - `SpireField`：Harmony 自定义字段
 - `SavedProperty`：自动持久化属性（使用 `GetProperties` 检查）
 
+## 项目配置 (csproj 设置)
+
+BaseLib 提供了自动化的项目配置系统，可以自动检测游戏路径。
+
+### Sts2PathDiscovery.props
+
+BaseLib 包含 `Sts2PathDiscovery.props` 文件，可以自动检测不同操作系统上的游戏安装路径：
+
+**Windows**:
+1. 首先尝试从注册表读取 Steam 卸载位置（App ID: 2868840）
+2. 然后尝试 `%SteamPath%\steamapps`
+3. 最后回退到 `C:\Program Files (x86)\Steam\steamapps`
+
+**Linux**:
+- 默认路径：`~/.local/share/Steam/steamapps`
+
+**macOS**:
+- 默认路径：`~/Library/Application Support/Steam/steamapps`
+
+**自动设置的属性**：
+
+| 属性 | 说明 |
+|------|------|
+| `SteamLibraryPath` | Steam 库路径 |
+| `Sts2Path` | 游戏安装路径 |
+| `Sts2DataDir` | 游戏数据目录（包含托管程序集） |
+| `ModsPath` | 模组输出路径 |
+
+### local.props 本地配置
+
+创建 `local.props` 文件（已被 .gitignore 忽略）来覆盖默认路径：
+
+```xml
+<Project>
+    <PropertyGroup>
+        <!-- 游戏安装路径 -->
+        <Sts2Path>Path\To\SteamLibrary\steamapps\common\Slay the Spire 2</Sts2Path>
+        
+        <!-- 可选：覆盖托管数据文件夹 -->
+        <!-- <Sts2DataDir>$(Sts2Path)\data_sts2_windows_x86_64</Sts2DataDir> -->
+        
+        <!-- 可选：MegaDot / Godot 4.5.1 mono 可执行文件路径（用于 --export-pack） -->
+        <!-- <GodotPath>Z:\Projects\sts2\megadot\MegaDot_v4.5.1-stable_mono_win64.exe</GodotPath> -->
+    </PropertyGroup>
+</Project>
+```
+
+### 在 csproj 中导入
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <!-- 其他配置 -->
+    </PropertyGroup>
+
+    <!-- 导入 BaseLib 的路径发现配置 -->
+    <Import Project="path\to\BaseLib-StS2-master\Sts2PathDiscovery.props" />
+    
+    <!-- 可选：导入本地配置覆盖 -->
+    <Import Project="local.props" Condition="Exists('local.props')" />
+
+    <!-- 使用自动检测的路径 -->
+    <ItemGroup>
+        <Reference Include="sts2">
+            <HintPath>$(Sts2DataDir)\sts2.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+</Project>
+```
+
 ## 基本结构
 
 推荐的项目结构：

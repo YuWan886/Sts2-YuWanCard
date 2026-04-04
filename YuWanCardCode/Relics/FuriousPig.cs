@@ -13,9 +13,9 @@ public class FuriousPig : YuWanRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
-    public override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(4m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(4m)];
 
-    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>(), HoverTipFactory.FromPower<FrailPower>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>(), HoverTipFactory.FromPower<FrailPower>()];
 
     public FuriousPig() : base(true)
     {

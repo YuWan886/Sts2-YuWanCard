@@ -21,12 +21,12 @@ public class AllIn : YuWanCardModel
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         DynamicVars["Magic"].UpgradeValueBy(1);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var discardPile = PileType.Discard.GetPile(Owner);
         if (discardPile == null)

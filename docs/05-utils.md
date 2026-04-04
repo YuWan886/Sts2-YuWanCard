@@ -1,5 +1,79 @@
 # 工具类
 
+## BetaMainCompatibility（版本兼容性工具）
+
+`BetaMainCompatibility` 是 BaseLib 提供的版本兼容性工具类，用于处理 Slay the Spire 2 主分支和测试分支之间的 API 差异。
+
+### VariableReference 类
+
+`VariableReference<T>` 类可以引用多个可能名称的字段/属性/方法，自动适配不同游戏版本：
+
+```csharp
+using BaseLib.Utils;
+
+// 引用可能被重命名的 API
+public static class MyCompatibility
+{
+    // 自动适配 "LoadedMods" 字段或 "GetLoadedMods()" 方法
+    public static VariableReference<IEnumerable<Mod>> LoadedMods = new(
+        typeof(ModManager), "LoadedMods", "GetLoadedMods()"
+    );
+    
+    // 自动适配 ThemeConstants.Label 的不同属性名
+    public static VariableReference<StringName> FontSize = new(
+        typeof(ThemeConstants.Label), "FontSize", "fontSize"
+    );
+}
+```
+
+### 使用方式
+
+```csharp
+// 隐式转换
+IEnumerable<Mod> mods = BetaMainCompatibility.Renamed.LoadedMods;
+
+// 显式获取
+var loadedMods = BetaMainCompatibility.Renamed.LoadedMods.Get();
+
+// 用于获取主题常量
+var fontSize = BetaMainCompatibility.Renamed.FontSize.Get();
+```
+
+### 内置的兼容性引用
+
+BaseLib 提供了以下内置的兼容性引用：
+
+| 引用 | 可能的名称 | 说明 |
+|------|-----------|------|
+| `LoadedMods` | `LoadedMods`, `GetLoadedMods()` | 已加载的模组列表 |
+| `FontSize` | `FontSize`, `fontSize` | 标签字体大小常量 |
+| `Font` | `Font`, `font` | 标签字体系常量 |
+| `LineSpacing` | `LineSpacing`, `lineSpacing` | 行间距常量 |
+| `OutlineSize` | `OutlineSize`, `outlineSize` | 轮廓大小常量 |
+| `FontColor` | `FontColor`, `fontColor` | 字体颜色常量 |
+| `FontOutlineColor` | `FontOutlineColor`, `fontOutlineColor` | 字体轮廓颜色常量 |
+| `FontShadowColor` | `FontShadowColor`, `fontShadowColor` | 字体阴影颜色常量 |
+
+### 创建自定义兼容性引用
+
+```csharp
+// 创建自定义的兼容性引用
+public static VariableReference<SomeType> MyField = new(
+    typeof(TargetClass), "OldName", "NewName", "AnotherPossibleName"
+);
+
+// 使用类型和名称元组
+public static VariableReference<SomeType> MyProperty = new(
+    (typeof(ClassA), "PropertyA"),
+    (typeof(ClassB), "PropertyB")
+);
+```
+
+**注意事项**：
+- `VariableReference` 仅支持无参数方法
+- 如果所有可能的名称都不存在，会抛出异常
+- 优先使用第一个找到的有效引用
+
 ## CommonActions
 
 提供一些常见的游戏动作：

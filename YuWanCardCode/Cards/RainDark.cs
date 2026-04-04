@@ -25,12 +25,12 @@ public class RainDark : YuWanCardModel
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         AddKeyword(CardKeyword.Retain);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var teammates = CombatState!.GetTeammatesOf(Owner.Creature)
             .Where(c => c != null && c.IsAlive && c.IsPlayer)

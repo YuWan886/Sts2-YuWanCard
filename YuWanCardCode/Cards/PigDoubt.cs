@@ -19,12 +19,12 @@ public class PigDoubt : YuWanCardModel
         WithPower<PigDoubtPower>(1);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         DynamicVars["PigDoubtPower"].UpgradeValueBy(1m);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<PigDoubtPower>(Owner.Creature, DynamicVars["PigDoubtPower"].BaseValue, Owner.Creature, this);

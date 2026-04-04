@@ -21,13 +21,13 @@ public class PigSacrifice : YuWanCardModel
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         AddKeyword(CardKeyword.Innate);
         RemoveKeyword(CardKeyword.Exhaust);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var owner = Owner.Creature;
         var targetCreature = cardPlay.Target;

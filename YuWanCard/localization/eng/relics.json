@@ -41,5 +41,11 @@
   "YUWANCARD-GLUTTONOUS_PIG.flavor": "The gluttonous pig devours all rewards.",
   "YUWANCARD-LUSTFUL_PIG.title": "Lustful Pig",
   "YUWANCARD-LUSTFUL_PIG.description": "At the start of each combat, all enemies gain 2 [gold]Weak[/gold]. Enemies have a [blue]40%[/blue] chance to attack themselves.",
-  "YUWANCARD-LUSTFUL_PIG.flavor": "The lustful pig, lost in chaotic desire."
+  "YUWANCARD-LUSTFUL_PIG.flavor": "The lustful pig, lost in chaotic desire.",
+  "YUWANCARD-PIG_CARROT.title": "Carrot",
+  "YUWANCARD-PIG_CARROT.description": "At the start of each combat, gain {PlatingPower:diff()} [gold]Plating[/gold].",
+  "YUWANCARD-PIG_CARROT.flavor": "The pig's favorite food.",
+  "YUWANCARD-PIG_GOLDEN_CARROT.title": "Golden Carrot",
+  "YUWANCARD-PIG_GOLDEN_CARROT.description": "At the start of each combat, gain {PlatingPower:diff()} [gold]Plating[/gold].",
+  "YUWANCARD-PIG_GOLDEN_CARROT.flavor": "A legendary golden carrot with mysterious power."
 }

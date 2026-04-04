@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Potions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -1679,12 +1678,12 @@ public class VakuuTowerModifier : YuWanModifierModel
         return bestTarget ?? owner;
     }
 
-    public override void AfterRunCreated(RunState runState)
+    protected override void AfterRunCreated(RunState runState)
     {
         MainFile.Logger.Info("Vakuu Tower modifier created");
     }
 
-    public override void AfterRunLoaded(RunState runState)
+    protected override void AfterRunLoaded(RunState runState)
     {
         MainFile.Logger.Info("Vakuu Tower modifier loaded");
     }

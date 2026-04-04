@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpak3r3swjcte"]
+
+[ext_resource type="Texture2D" uid="uid://k01y4tim756o" path="res://YuWanCard/images/characters/pig_die.png" id="1_overlay"]
+
+[node name="DeathOverlay" type="Node2D"]
+z_index = 0
+
+[node name="OverlaySprite" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+z_index = 0
+position = Vector2(2, -197)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("1_overlay")

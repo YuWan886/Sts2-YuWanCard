@@ -17,7 +17,7 @@ public sealed class Blacksmith : EventModel
         return Owner!.Deck.Cards.Any(c => c.IsUpgradable) || Owner.Deck.Cards.Count(c => CanFuse(c)) >= 2;
     }
 
-    public override IReadOnlyList<EventOption> GenerateInitialOptions()
+    protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
         var options = new List<EventOption>();
 

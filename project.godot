@@ -20,6 +20,7 @@ project/assembly_name="YuWanCard"
 
 [editor]
 
+export/convert_text_resources_to_binary=false
 export/exclude_filters="others/*"
 
 [rendering]

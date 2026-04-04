@@ -116,7 +116,7 @@
 ## Installation
 
 1. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149) | [Backup](https://pan.quark.cn/s/734161e964f3)
-2. Download the required dependency mod [Modified BaseLib](https://github.com/YuWan886/Fk-BaseLib-StS2/releases)
+2. Download the required dependency mod [BaseLib](https://github.com/Alchyr/BaseLib-StS2/releases)
 3. Extract to the `mods` folder in the game directory
 4. Game logs are in `%AppData%\SlayTheSpire2\logs\` folder
 

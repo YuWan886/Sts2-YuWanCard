@@ -10,8 +10,8 @@ public abstract partial class YuWanRelicModel : CustomRelicModel
     protected virtual string RelicId => CamelCaseRegex.Replace(GetType().Name, "$1_$2").ToLowerInvariant();
     protected virtual string IconBasePath => $"res://YuWanCard/images/relics/{RelicId}";
     public override string PackedIconPath => $"{IconBasePath}.png";
-    public override string BigIconPath => $"{IconBasePath}.png";
-    public override string PackedIconOutlinePath => $"{IconBasePath}.png";
+    protected override string BigIconPath => $"{IconBasePath}.png";
+    protected override string PackedIconOutlinePath => $"{IconBasePath}.png";
 
     protected YuWanRelicModel() : base()
     {

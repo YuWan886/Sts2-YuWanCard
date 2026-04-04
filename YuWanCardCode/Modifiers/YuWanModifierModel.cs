@@ -37,7 +37,7 @@ public abstract partial class YuWanModifierModel : ModifierModel
         }
     }
 
-    public override string IconPath => IconBasePath;
+    protected override string IconPath => IconBasePath;
 
     public override LocString Title => new("modifiers", ModifierId + ".title");
     public override LocString Description => new("modifiers", ModifierId + ".description");

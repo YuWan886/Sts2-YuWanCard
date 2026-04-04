@@ -2,7 +2,7 @@
 
 ## 概述
 
-`GameVersionCompat` 是一个游戏版本兼容性工具类，用于处理 Slay the Spire 2 不同版本（main 分支和 beta 分支）之间的 API 差异。它提供统一的接口，让模组开发者无需关注版本差异即可使用统一 API。
+Slay the Spire 2 有两个主要分支：main 分支（稳定版）和 beta 分支（测试版）。这两个分支之间存在 API 差异，BaseLib 提供了多种工具来处理这些差异。
 
 ## 版本定义
 
@@ -10,6 +10,59 @@
 |------|--------|------|
 | Main | 0.99.1 | 稳定发布版本 |
 | Beta | 0.102.0 | 测试分支版本 |
+
+## BaseLib 兼容性工具
+
+### BetaMainCompatibility
+
+BaseLib 提供了 `BetaMainCompatibility` 类来处理 API 重命名和差异：
+
+```csharp
+using BaseLib.Utils;
+
+// 自动适配不同版本的 API
+var loadedMods = BetaMainCompatibility.Renamed.LoadedMods.Get();
+```
+
+### VariableReference
+
+`VariableReference<T>` 类可以引用多个可能名称的字段/属性/方法：
+
+```csharp
+// 创建兼容性引用
+public static VariableReference<SomeType> MyField = new(
+    typeof(TargetClass), "OldName", "NewName"
+);
+
+// 使用
+var value = MyField.Get();
+```
+
+**内置的兼容性引用**：
+
+| 引用 | Main 分支 | Beta 分支 |
+|------|-----------|-----------|
+| `LoadedMods` | `LoadedMods` 字段 | `GetLoadedMods()` 方法 |
+| `FontSize` | `FontSize` | `fontSize` |
+| `Font` | `Font` | `font` |
+| `LineSpacing` | `LineSpacing` | `lineSpacing` |
+
+### CustomSingletonModel 兼容性
+
+`CustomSingletonModel` 在不支持的游戏分支上会记录警告但不会崩溃：
+
+```csharp
+public class MySingletonModel : CustomSingletonModel
+{
+    public MySingletonModel() : base(
+        receiveCombatHooks: true,
+        receiveRunHooks: true
+    )
+    {
+        // 如果当前分支不支持，会记录警告
+    }
+}
+```
 
 ## API 差异对照表
 
@@ -20,154 +73,62 @@
 | `MapPointTypeCounts` 构造函数 | `(Rng rng)` | `(int unknownCount, int restCount)` |
 | `VfxDuration` 枚举 | ❌ 不存在 | ✅ 存在 |
 | `VfxColor` 枚举 | 8个值 | 11个值 (新增 Orange, Swamp, DarkGray) |
+| `ModManager.LoadedMods` | 字段 | 方法 `GetLoadedMods()` |
+| `ThemeConstants.Label` | PascalCase 属性 | camelCase 属性 |
 
-## 版本检测
+## 自定义版本兼容性处理
 
-```csharp
-using YuWanCard.Utils;
-
-// 获取当前游戏版本
-Version? version = GameVersionCompat.GameVersion;
-
-// 检测分支
-bool isMain = GameVersionCompat.IsMainBranch;  // < 0.102.0
-bool isBeta = GameVersionCompat.IsBetaBranch;  // >= 0.102.0
-string branch = GameVersionCompat.BranchName;  // "main" 或 "beta"
-
-// API 能力检测
-bool hasModifyEnergyGain = GameVersionCompat.HasModifyEnergyGainHook;
-bool hasVfxDuration = GameVersionCompat.HasVfxDurationEnum;
-```
-
-## 统一 API 接口
-
-### TalkCmdPlay - 对话气泡
+### 创建自定义兼容性引用
 
 ```csharp
-// 统一接口，自动适配不同版本
-GameVersionCompat.TalkCmdPlay(line, creature, VfxColor.Red, 3.0);
+using BaseLib.Utils;
 
-// Main 分支实现
-// TalkCmd.Play(line, speaker, 3.0, VfxColor.Red)
-
-// Beta 分支实现
-// TalkCmd.Play(line, speaker, VfxColor.Red, VfxDuration.Custom)
-```
-
-### CreateMapPointTypeCounts - 地图点类型计数
-
-```csharp
-// 统一接口，自动适配不同版本
-var counts = GameVersionCompat.CreateMapPointTypeCounts(rng, unknownCount: 12, restCount: 5);
-
-// Main 分支实现
-// new MapPointTypeCounts(rng)
-
-// Beta 分支实现
-// new MapPointTypeCounts(12, 5)
-```
-
-### TrySetNumOfElites - 设置精英数量
-
-```csharp
-// 统一接口，通过反射设置属性
-bool success = GameVersionCompat.TrySetNumOfElites(mapPointTypeCounts, newEliteCount);
-```
-
-## 能量翻倍实现示例
-
-```csharp
-public class RainDarkPower : YuWanPowerModel
+public static class MyCompatibility
 {
-    // Beta 分支：使用 ModifyEnergyGain hook
-    public override decimal ModifyEnergyGain(Player player, decimal amount)
-    {
-        if (GameVersionCompat.HasModifyEnergyGainHook && player == Owner.Player && amount > 0)
-        {
-            return amount * 2;
-        }
-        return amount;
-    }
-
-    // Main 分支：使用 AfterEnergyReset
-    public override async Task AfterEnergyReset(Player player)
-    {
-        if (GameVersionCompat.ShouldUseAfterEnergyReset && player == Owner.Player)
-        {
-            int currentEnergy = Owner.Player?.PlayerCombatState?.Energy ?? 0;
-            if (currentEnergy > 0)
-            {
-                await PlayerCmd.GainEnergy(currentEnergy, Owner.Player);
-            }
-        }
-    }
+    // 为可能重命名的 API 创建引用
+    public static VariableReference<SomeType> RenamedApi = new(
+        typeof(TargetClass), "OldName", "NewName", "AnotherPossibleName"
+    );
+    
+    // 使用类型元组创建引用
+    public static VariableReference<SomeType> MovedApi = new(
+        (typeof(OldClass), "Property"),
+        (typeof(NewClass), "Property")
+    );
 }
 ```
 
-## 初始化
-
-建议在模组入口处调用初始化方法，以便提前检测和缓存版本信息：
+### 条件性代码执行
 
 ```csharp
-public override void _Ready()
+// 检查 API 是否存在
+try
 {
-    GameVersionCompat.Initialize();
-    // 其他初始化代码...
+    var value = BetaMainCompatibility.Renamed.SomeReference.Get();
+    // 使用新 API
+}
+catch (Exception)
+{
+    // 回退到旧 API 或跳过功能
 }
 ```
+
+## 最佳实践
+
+1. **优先使用 BaseLib 提供的兼容性工具**：`BetaMainCompatibility.Renamed` 已处理常见差异
+2. **创建自定义兼容性引用**：对于 BaseLib 未覆盖的 API，使用 `VariableReference<T>`
+3. **优雅降级**：当 API 不存在时，提供合理的回退方案
+4. **记录日志**：在兼容性处理中记录日志，便于调试
 
 ## 错误处理
 
-所有统一 API 接口都包含错误处理：
+所有兼容性工具都包含错误处理：
 
-- 版本检测失败时返回合理的默认值
-- API 调用失败时记录错误日志
-- 使用 `MainFile.Logger` 记录详细日志信息
+- `VariableReference` 在找不到任何引用时抛出异常
+- `CustomSingletonModel` 在不支持时记录警告但继续运行
+- 使用 `try-catch` 处理可能的异常
 
-## 架构设计
+## 相关文档
 
-### 版本检测机制
-
-```
-GameVersionCompat
-├── 版本常量
-│   ├── MainBranchVersion (0.99.1)
-│   └── BetaBranchVersion (0.102.0)
-├── 版本属性
-│   ├── GameVersion      // 从 ReleaseInfoManager 获取
-│   ├── IsMainBranch     // < BetaBranchVersion
-│   ├── IsBetaBranch     // >= BetaBranchVersion
-│   └── BranchName       // "main" 或 "beta"
-└── API 能力检测
-    ├── HasModifyEnergyGainHook
-    ├── HasVfxDurationEnum
-    └── MapPointTypeCounts 构造函数检测
-```
-
-### API 调用路由
-
-```
-统一 API 调用
-    │
-    ├── 检测当前版本
-    │       │
-    │       ├── IsBetaBranch → 使用 Beta 分支实现
-    │       │
-    │       └── IsMainBranch → 使用 Main 分支实现
-    │
-    └── 返回统一结果
-```
-
-### 错误处理流程
-
-```
-API 调用
-    │
-    ├── 成功 → 返回结果
-    │
-    └── 失败
-            │
-            ├── 记录错误日志 (MainFile.Logger.Error)
-            │
-            └── 返回默认值或 null
-```
+- [工具类 - BetaMainCompatibility](05-utils.md#betamaincompatibility版本兼容性工具)
+- [扩展功能 - CustomSingletonModel](11-extensions.md#customsingletonmodel)

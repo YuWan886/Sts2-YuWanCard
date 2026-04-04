@@ -18,12 +18,12 @@ public class PigMultiShot : YuWanCardModel
         WithVar("Repeat", 3);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         DynamicVars["Repeat"].UpgradeValueBy(2m);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CommonActions.CardAttack(this, cardPlay, hitCount: DynamicVars["Repeat"].IntValue).Execute(choiceContext);
     }

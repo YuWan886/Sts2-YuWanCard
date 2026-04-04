@@ -27,9 +27,9 @@ public class PigBrainOverloadPower : YuWanPowerModel
 
     public int DazedCount => Amount;
 
-    public override IEnumerable<DynamicVar> CanonicalVars => [new DazedIntervalVar(this)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DazedIntervalVar(this)];
 
-    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Dazed>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Dazed>()];
 
     private class DazedIntervalVar(PigBrainOverloadPower? power = null) : DynamicVar("DazedInterval", power?.DazedInterval ?? 2m)
     {

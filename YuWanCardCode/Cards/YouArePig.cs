@@ -28,12 +28,12 @@ public class YouArePig : YuWanCardModel
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<RegenPower>()));
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         RemoveKeyword(CardKeyword.Ethereal);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Target == null) return;
 
