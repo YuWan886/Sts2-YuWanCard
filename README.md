@@ -50,7 +50,7 @@
 | 顺手牵羊 | 1 | 罕见 | 技能 | 从目标队友的抽牌堆中选择 1 张牌，将其加入自己的手牌。（多人模式） |
 | 拔你网线 | 1 | 罕见 | 技能 | 使目标队友下 1 回合被瓦库接管。（多人模式） |
 | 真得好好调教你了 | 0 | 罕见 | 技能 | 对队友造成 4 点伤害，本回合给予队友 3 点力量。（多人模式） |
-| 不要死 | 1 | 罕见 | 技能 | 回复队友 10% 最大生命值，给予其 3 层再生。消耗。（多人模式） |
+| 不要死 | 1 | 罕见 | 技能 | 回复一名玩家 10% 最大生命值，给予其 3 层再生。消耗。（多人模式） |
 | 压力着你 | 0 | 罕见 | 技能 | 使一名队友失去 1 点能量，自己获得 1 点能量，抽 1 张牌。消耗。（多人模式） |
 | 搬石大王 | 1 | 罕见 | 技能 | 将一名队友的所有手牌变化为巨石。消耗。（多人模式） |
 
@@ -115,14 +115,14 @@
 
 ## 安装
 
-1. 下载最新版本 [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [加速下载](https://gh-proxy.com/) | [备用下载](https://pan.quark.cn/s/734161e964f3) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149)
+1. 下载最新版本 [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149) | [备用下载](https://pan.quark.cn/s/734161e964f3)
 2. 下载前置依赖 mod [修改版BaseLib](https://github.com/YuWan886/Fk-BaseLib-StS2/releases)
 3. 解压到游戏目录下的 `mods` 文件夹中
 4. 游戏日志在 `%AppData%\SlayTheSpire2\logs\` 文件夹中
 
 ## 交流
 
-- [**QQ：752913553**](https://qm.qq.com/q/ohYkDqbe7K)
+- [**QQ: 752913553**](https://qm.qq.com/q/ohYkDqbe7K)
 - [**Discord**](https://discord.gg/tJT3a95Y8y)
 
 ## CREDITS

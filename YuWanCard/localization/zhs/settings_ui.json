@@ -1,0 +1,5 @@
+{
+  "YUWANCARD-FORCE_DISABLE_V_SYNC.title": "强制关闭垂直同步",
+  "YUWANCARD-FORCE_DISABLE_V_SYNC.hover.title": "强制关闭垂直同步",
+  "YUWANCARD-FORCE_DISABLE_V_SYNC.hover.desc": "强制关闭游戏的垂直同步，可能会提高帧率但可能导致画面撕裂。"
+}

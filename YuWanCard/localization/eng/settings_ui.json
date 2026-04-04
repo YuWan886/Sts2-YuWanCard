@@ -1,0 +1,5 @@
+{
+  "YUWANCARD-FORCE_DISABLE_V_SYNC.title": "Force Disable VSync",
+  "YUWANCARD-FORCE_DISABLE_V_SYNC.hover.title": "Force Disable VSync",
+  "YUWANCARD-FORCE_DISABLE_V_SYNC.hover.desc": "Forcefully disables VSync, which may increase frame rate but could cause screen tearing."
+}

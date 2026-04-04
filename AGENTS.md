@@ -173,7 +173,7 @@ YuWanCard/
 
 ### 参考资源
 
-- 游戏源代码：[others/sts2-src/](others/sts2-src/)
+- 游戏源代码：[others/sts2-beta-src/](others/sts2-beta-src/) [others/sts2-main-src/](others/sts2-main-src/) 
 - BaseLib 项目：[others/BaseLib-StS2-master](others/BaseLib-StS2-master)
 - BaseLib 使用指南：[BaseLib使用指南.md](BaseLib使用指南.md)
 - MCP 工具：context7（文档查询）、github（代码搜索）

@@ -17,7 +17,7 @@ public class DoNotDie : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AnyAlly)
+        target: TargetType.AnyPlayer)
     {
         WithPower<RegenPower>(3);
         WithKeywords(CardKeyword.Exhaust);

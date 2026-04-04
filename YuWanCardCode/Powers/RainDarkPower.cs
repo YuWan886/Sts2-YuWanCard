@@ -1,84 +1,57 @@
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
-using YuWanCard.Utils;
 
 namespace YuWanCard.Powers;
 
 public class RainDarkPower : YuWanPowerModel
 {
     private const int HealAfterCombat = 6;
-    private Player? _subscribedPlayer;
-    private readonly RecursiveCallGuard<int> _energyGuard;
+    private const int MaxHandSize = 10;
 
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public RainDarkPower()
+    public override async Task AfterEnergyReset(Player player)
     {
-        _energyGuard = new RecursiveCallGuard<int>(
-            action: ExecuteEnergyGain,
-            shouldProcess: gained => gained > 0
-        );
-    }
-
-    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
-    {
-        var player = Owner.Player;
-        if (player != null && player.PlayerCombatState != null)
+        if (player == Owner.Player && Owner.Player != null)
         {
-            _subscribedPlayer = player;
-            player.PlayerCombatState.EnergyChanged += OnEnergyChanged;
+            Flash();
+            int currentEnergy = Owner.Player.PlayerCombatState?.Energy ?? 0;
+            if (currentEnergy > 0)
+            {
+                await PlayerCmd.GainEnergy(currentEnergy, Owner.Player);
+            }
         }
-        return Task.CompletedTask;
     }
 
-    public override Task AfterRemoved(Creature owner)
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
-        if (_subscribedPlayer != null && _subscribedPlayer.PlayerCombatState != null)
+        if (player == Owner.Player && Owner.Player != null)
         {
-            _subscribedPlayer.PlayerCombatState.EnergyChanged -= OnEnergyChanged;
-        }
-        return Task.CompletedTask;
-    }
+            Flash();
 
-    private void OnEnergyChanged(int oldEnergy, int newEnergy)
-    {
-        int gained = newEnergy - oldEnergy;
+            var hand = PileType.Hand.GetPile(player);
+            int cardsToDraw = MaxHandSize - hand.Cards.Count;
+            if (cardsToDraw > 0)
+            {
+                await CardPileCmd.Draw(choiceContext, cardsToDraw, player);
+            }
 
-        if (_energyGuard.TryExecute(gained))
-        {
-            return;
-        }
-
-        _ = Task.Run(async () => await _energyGuard.ExecutePendingAsync());
-    }
-
-    private async Task ExecuteEnergyGain(int gained)
-    {
-        if (_subscribedPlayer != null && _subscribedPlayer.PlayerCombatState != null)
-        {
-            _subscribedPlayer.PlayerCombatState.GainEnergy(gained);
-        }
-        await Task.CompletedTask;
-    }
-
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
-    {
-        if (side == Owner.Side)
-        {
             await PowerCmd.TickDownDuration(this);
         }
     }
 
     public override async Task AfterCombatVictory(CombatRoom room)
     {
-        await CreatureCmd.Heal(Owner, HealAfterCombat);
+        if (!Owner.IsDead)
+        {
+            Flash();
+            await CreatureCmd.Heal(Owner, HealAfterCombat);
+        }
     }
 }

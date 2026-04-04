@@ -13,7 +13,6 @@ namespace YuWanCard.Cards;
 public class RainDark : YuWanCardModel
 {
     private const float HpPercentage = 0.25f;
-    private const int MaxHandSize = 10;
 
     public RainDark() : base(
         baseCost: 3,
@@ -52,13 +51,6 @@ public class RainDark : YuWanCardModel
                 if (currentEnergy > 0)
                 {
                     await PlayerCmd.GainEnergy(currentEnergy, player);
-                }
-
-                var hand = PileType.Hand.GetPile(player);
-                int cardsToDraw = MaxHandSize - hand.Cards.Count;
-                if (cardsToDraw > 0)
-                {
-                    await CardPileCmd.Draw(choiceContext, cardsToDraw, player);
                 }
             }
         }

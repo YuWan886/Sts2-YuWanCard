@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -13,18 +10,18 @@ namespace YuWanCard.Events;
 
 public sealed class Blacksmith : EventModel
 {
-    public override bool IsShared => true;
+    public override bool IsShared => false;
 
     public override bool IsAllowed(RunState runState)
     {
-        return runState.Players.All(p => p.Deck.Cards.Count(c => c.IsUpgradable) >= 1 || p.Deck.Cards.Count(c => CanFuse(c)) >= 2);
+        return Owner!.Deck.Cards.Any(c => c.IsUpgradable) || Owner.Deck.Cards.Count(c => CanFuse(c)) >= 2;
     }
 
     public override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
         var options = new List<EventOption>();
 
-        bool hasUpgradeableCards = Owner!.Deck.Cards.Count(c => c.IsUpgradable) >= 1;
+        bool hasUpgradeableCards = Owner!.Deck.Cards.Any(c => c.IsUpgradable);
         bool hasFusableCards = Owner.Deck.Cards.Count(c => CanFuse(c)) >= 2;
 
         if (hasUpgradeableCards)
@@ -50,17 +47,7 @@ public sealed class Blacksmith : EventModel
 
     private async Task UpgradeCards()
     {
-        var upgradeableCards = PileType.Deck.GetPile(Owner!).Cards
-            .Where(c => c.IsUpgradable)
-            .ToList();
-
-        if (upgradeableCards.Count < 1)
-        {
-            SetEventFinished(L10NLookup("BLACKSMITH.pages.NO_CARDS.description"));
-            return;
-        }
-
-        var cardsToUpgrade = await CardSelectCmd.FromDeckForRemoval(
+        var cardsToUpgrade = await CardSelectCmd.FromDeckForUpgrade(
             Owner!,
             new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, 1, 2)
         );

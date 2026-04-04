@@ -2,8 +2,10 @@ using System.Reflection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Debug;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Map;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.Random;
 
@@ -11,10 +13,18 @@ namespace YuWanCard.Utils;
 
 public static class GameVersionCompat
 {
-    private static readonly Version Version0_102_0 = new(0, 102, 0);
+    #region Version Constants
+
+    public static readonly Version MainBranchVersion = new(0, 99, 1);
+    public static readonly Version BetaBranchVersion = new(0, 102, 0);
+
+    #endregion
+
+    #region Version Detection
 
     private static Version? _cachedVersion;
     private static bool _versionCached;
+    private static bool _initialized;
 
     public static Version? GameVersion
     {
@@ -71,98 +81,87 @@ public static class GameVersionCompat
         return currentVersion < maxVersion;
     }
 
-    public static bool IsVersion099x => IsVersionBelow(Version0_102_0);
-    public static bool IsVersion102OrLater => IsVersionAtLeast(Version0_102_0);
+    public static bool IsMainBranch => !IsVersionAtLeast(BetaBranchVersion);
+    public static bool IsBetaBranch => IsVersionAtLeast(BetaBranchVersion);
 
-    #region TalkCmd.Play Compatibility
-
-    private static readonly Type? VfxDurationType = typeof(VfxColor).Assembly.GetType("MegaCrit.Sts2.Core.Nodes.Vfx.VfxDuration");
-    private static readonly object? VfxDurationCustomValue = VfxDurationType?.GetField("Custom")?.GetValue(null);
-    private static readonly MethodInfo? TalkCmdPlayMethod = FindTalkCmdPlayMethod();
-
-    private static MethodInfo? FindTalkCmdPlayMethod()
-    {
-        var methods = typeof(TalkCmd).GetMethods().Where(m => m.Name == "Play").ToList();
-        MainFile.Logger.Info($"GameVersionCompat: Found {methods.Count} TalkCmd.Play overloads");
-        foreach (var m in methods)
-        {
-            var parms = m.GetParameters();
-            MainFile.Logger.Info($"GameVersionCompat: Play method signature: {string.Join(", ", parms.Select(p => $"{p.ParameterType.Name} {p.Name}"))}");
-        }
-
-        var twoParamMethod = typeof(TalkCmd).GetMethod("Play", [typeof(LocString), typeof(Creature)]);
-        if (twoParamMethod != null)
-        {
-            MainFile.Logger.Info("GameVersionCompat: Found 2-param Play method (legacy)");
-            return twoParamMethod;
-        }
-
-        var anyMethod = methods.FirstOrDefault();
-        if (anyMethod != null)
-        {
-            MainFile.Logger.Info($"GameVersionCompat: Using first available Play method with {anyMethod.GetParameters().Length} params");
-        }
-        return anyMethod;
-    }
-
-    public static void TalkCmdPlay(LocString line, Creature speaker)
-    {
-        if (TalkCmdPlayMethod == null)
-        {
-            MainFile.Logger.Warn("GameVersionCompat: TalkCmd.Play method not available, skipping talk line");
-            return;
-        }
-
-        var parms = TalkCmdPlayMethod.GetParameters();
-        if (parms.Length == 2)
-        {
-            TalkCmdPlayMethod.Invoke(null, [line, speaker]);
-        }
-        else if (parms.Length == 3)
-        {
-            TalkCmdPlayMethod.Invoke(null, [line, speaker, VfxColor.Red]);
-        }
-        else if (parms.Length == 4)
-        {
-            var paramTypes = parms.Select(p => p.ParameterType).ToArray();
-
-            if (IsVersion099x)
-            {
-                TalkCmdPlayMethod.Invoke(null, [line, speaker, 3.0, VfxColor.Red]);
-            }
-            else if (paramTypes[2] == typeof(VfxColor) && VfxDurationCustomValue != null)
-            {
-                TalkCmdPlayMethod.Invoke(null, [line, speaker, VfxColor.Red, VfxDurationCustomValue]);
-            }
-            else if (paramTypes[2] == typeof(double) && paramTypes[3] == typeof(VfxColor))
-            {
-                TalkCmdPlayMethod.Invoke(null, [line, speaker, 3.0, VfxColor.Red]);
-            }
-            else
-            {
-                MainFile.Logger.Warn($"GameVersionCompat: Unknown 4-param signature: {string.Join(", ", paramTypes.Select(t => t.Name))}");
-            }
-        }
-        else
-        {
-            MainFile.Logger.Warn($"GameVersionCompat: Unexpected TalkCmd.Play parameter count: {parms.Length}");
-        }
-    }
+    public static string BranchName => IsBetaBranch ? "beta" : "main";
 
     #endregion
 
-    #region MapPointTypeCounts Compatibility
+    #region API Capability Detection
 
-    private static ConstructorInfo? _mapPointTypeCountsNewConstructor;
-    private static ConstructorInfo? _mapPointTypeCountsOldConstructor;
-    private static bool _mapPointTypeCountsConstructorsChecked;
+    private static bool? _hasModifyEnergyGain;
+    private static bool? _hasVfxDuration;
+    private static MethodInfo? _talkCmdPlayMethod;
+    private static ConstructorInfo? _mapPointTypeCountsNewCtor;
+    private static ConstructorInfo? _mapPointTypeCountsOldCtor;
+    private static Type? _vfxDurationType;
+
+    public static bool HasModifyEnergyGainHook
+    {
+        get
+        {
+            if (_hasModifyEnergyGain.HasValue)
+            {
+                return _hasModifyEnergyGain.Value;
+            }
+
+            var method = typeof(AbstractModel).GetMethod("ModifyEnergyGain", [typeof(Player), typeof(decimal)]);
+            _hasModifyEnergyGain = method != null && method.IsVirtual;
+            MainFile.Logger.Info($"GameVersionCompat: ModifyEnergyGain hook available: {_hasModifyEnergyGain}");
+            return _hasModifyEnergyGain.Value;
+        }
+    }
+
+    public static bool HasVfxDurationEnum
+    {
+        get
+        {
+            if (_hasVfxDuration.HasValue)
+            {
+                return _hasVfxDuration.Value;
+            }
+
+            _vfxDurationType = typeof(VfxColor).Assembly.GetType("MegaCrit.Sts2.Core.Nodes.Vfx.VfxDuration");
+            _hasVfxDuration = _vfxDurationType != null;
+            MainFile.Logger.Info($"GameVersionCompat: VfxDuration enum available: {_hasVfxDuration}");
+            return _hasVfxDuration.Value;
+        }
+    }
+
+    private static MethodInfo? TalkCmdPlayMethod
+    {
+        get
+        {
+            if (_talkCmdPlayMethod != null)
+            {
+                return _talkCmdPlayMethod;
+            }
+
+            var methods = typeof(TalkCmd).GetMethods().Where(m => m.Name == "Play").ToList();
+            _talkCmdPlayMethod = methods.FirstOrDefault();
+
+            if (_talkCmdPlayMethod != null)
+            {
+                var parms = _talkCmdPlayMethod.GetParameters();
+                MainFile.Logger.Info($"GameVersionCompat: TalkCmd.Play signature: {string.Join(", ", parms.Select(p => $"{p.ParameterType.Name} {p.Name}"))}");
+            }
+
+            return _talkCmdPlayMethod;
+        }
+    }
 
     public static ConstructorInfo? MapPointTypeCountsNewConstructor
     {
         get
         {
+            if (_mapPointTypeCountsNewCtor != null || _initialized)
+            {
+                return _mapPointTypeCountsNewCtor;
+            }
+
             EnsureMapPointTypeCountsConstructorsChecked();
-            return _mapPointTypeCountsNewConstructor;
+            return _mapPointTypeCountsNewCtor;
         }
     }
 
@@ -170,47 +169,212 @@ public static class GameVersionCompat
     {
         get
         {
+            if (_mapPointTypeCountsOldCtor != null || _initialized)
+            {
+                return _mapPointTypeCountsOldCtor;
+            }
+
             EnsureMapPointTypeCountsConstructorsChecked();
-            return _mapPointTypeCountsOldConstructor;
+            return _mapPointTypeCountsOldCtor;
         }
     }
 
     private static void EnsureMapPointTypeCountsConstructorsChecked()
     {
-        if (_mapPointTypeCountsConstructorsChecked)
+        if (_initialized)
         {
             return;
         }
 
-        _mapPointTypeCountsConstructorsChecked = true;
-        _mapPointTypeCountsNewConstructor = typeof(MapPointTypeCounts).GetConstructor([typeof(int), typeof(int)]);
-        _mapPointTypeCountsOldConstructor = typeof(MapPointTypeCounts).GetConstructor([typeof(Rng)]);
+        _mapPointTypeCountsNewCtor = typeof(MapPointTypeCounts).GetConstructor([typeof(int), typeof(int)]);
+        _mapPointTypeCountsOldCtor = typeof(MapPointTypeCounts).GetConstructor([typeof(Rng)]);
 
-        MainFile.Logger.Info($"GameVersionCompat: MapPointTypeCounts constructors - New(int, int): {_mapPointTypeCountsNewConstructor != null}, Old(Rng): {_mapPointTypeCountsOldConstructor != null}");
+        MainFile.Logger.Info($"GameVersionCompat: MapPointTypeCounts constructors - New(int, int): {_mapPointTypeCountsNewCtor != null}, Old(Rng): {_mapPointTypeCountsOldCtor != null}");
     }
 
-    public static void TrySetNumOfElites(MapPointTypeCounts instance, int newEliteCount, int eliteBonus, int loopCount)
+    #endregion
+
+    #region Initialization
+
+    public static void Initialize()
     {
+        if (_initialized)
+        {
+            return;
+        }
+
+        _initialized = true;
+
+        MainFile.Logger.Info($"GameVersionCompat: Initializing for branch: {BranchName}");
+        MainFile.Logger.Info($"GameVersionCompat: Game version: {GameVersion}");
+        MainFile.Logger.Info($"GameVersionCompat: HasModifyEnergyGainHook: {HasModifyEnergyGainHook}");
+        MainFile.Logger.Info($"GameVersionCompat: HasVfxDurationEnum: {HasVfxDurationEnum}");
+
+        EnsureMapPointTypeCountsConstructorsChecked();
+    }
+
+    #endregion
+
+    #region TalkCmd.Play Unified API
+
+    public static NSpeechBubbleVfx? TalkCmdPlay(LocString line, Creature speaker, VfxColor vfxColor = VfxColor.Red, double duration = -1.0)
+    {
+        if (speaker == null || speaker.IsDead)
+        {
+            return null;
+        }
+
+        var method = TalkCmdPlayMethod;
+        if (method == null)
+        {
+            MainFile.Logger.Warn("GameVersionCompat: TalkCmd.Play method not available");
+            return null;
+        }
+
+        try
+        {
+            var parms = method.GetParameters();
+
+            if (IsBetaBranch && HasVfxDurationEnum)
+            {
+                return TalkCmdPlayBeta(line, speaker, vfxColor, duration, method, parms);
+            }
+            else
+            {
+                return TalkCmdPlayMain(line, speaker, vfxColor, duration, method, parms);
+            }
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"GameVersionCompat: TalkCmdPlay failed: {ex.Message}");
+            return null;
+        }
+    }
+
+    private static NSpeechBubbleVfx? TalkCmdPlayBeta(LocString line, Creature speaker, VfxColor vfxColor, double duration, MethodInfo method, ParameterInfo[] parms)
+    {
+        if (parms.Length == 4)
+        {
+            var durationValue = CreateVfxDuration(duration);
+            return (NSpeechBubbleVfx?)method.Invoke(null, [line, speaker, vfxColor, durationValue]);
+        }
+        else if (parms.Length == 3 && parms[2].ParameterType == typeof(VfxColor))
+        {
+            return (NSpeechBubbleVfx?)method.Invoke(null, [line, speaker, vfxColor]);
+        }
+
+        return TalkCmdPlayMain(line, speaker, vfxColor, duration, method, parms);
+    }
+
+    private static NSpeechBubbleVfx? TalkCmdPlayMain(LocString line, Creature speaker, VfxColor vfxColor, double duration, MethodInfo method, ParameterInfo[] parms)
+    {
+        if (parms.Length == 4)
+        {
+            return (NSpeechBubbleVfx?)method.Invoke(null, [line, speaker, duration, vfxColor]);
+        }
+        else if (parms.Length == 3)
+        {
+            if (parms[2].ParameterType == typeof(VfxColor))
+            {
+                return (NSpeechBubbleVfx?)method.Invoke(null, [line, speaker, vfxColor]);
+            }
+            else if (parms[2].ParameterType == typeof(double))
+            {
+                return (NSpeechBubbleVfx?)method.Invoke(null, [line, speaker, duration]);
+            }
+        }
+        else if (parms.Length == 2)
+        {
+            return (NSpeechBubbleVfx?)method.Invoke(null, [line, speaker]);
+        }
+
+        MainFile.Logger.Warn($"GameVersionCompat: Unknown TalkCmd.Play signature with {parms.Length} parameters");
+        return null;
+    }
+
+    private static object? CreateVfxDuration(double duration)
+    {
+        if (!HasVfxDurationEnum || _vfxDurationType == null)
+        {
+            return null;
+        }
+
+        if (duration < 0)
+        {
+            var customField = _vfxDurationType.GetField("Custom");
+            return customField?.GetValue(null);
+        }
+
+        var standardField = _vfxDurationType.GetField("Standard");
+        return standardField?.GetValue(null);
+    }
+
+    #endregion
+
+    #region MapPointTypeCounts Unified API
+
+    public static MapPointTypeCounts CreateMapPointTypeCounts(Rng rng, int? unknownCount = null, int? restCount = null)
+    {
+        if (IsBetaBranch && unknownCount.HasValue && restCount.HasValue)
+        {
+            var ctor = MapPointTypeCountsNewConstructor;
+            if (ctor != null)
+            {
+                return (MapPointTypeCounts)ctor.Invoke([unknownCount.Value, restCount.Value]);
+            }
+        }
+
+        var oldCtor = MapPointTypeCountsOldConstructor;
+        if (oldCtor != null)
+        {
+            return (MapPointTypeCounts)oldCtor.Invoke([rng]);
+        }
+
+        throw new InvalidOperationException("No suitable MapPointTypeCounts constructor found");
+    }
+
+    public static bool TrySetNumOfElites(MapPointTypeCounts instance, int newEliteCount)
+    {
+        if (instance == null)
+        {
+            return false;
+        }
+
         var propertyInfo = typeof(MapPointTypeCounts).GetProperty(nameof(MapPointTypeCounts.NumOfElites));
         if (propertyInfo != null && propertyInfo.CanWrite)
         {
             propertyInfo.SetValue(instance, newEliteCount);
-            MainFile.Logger.Info($"GameVersionCompat: Increased elite count from {newEliteCount - eliteBonus} to {newEliteCount} (Loop {loopCount}, Bonus +{eliteBonus})");
+            MainFile.Logger.Info($"GameVersionCompat: Set NumOfElites to {newEliteCount}");
+            return true;
         }
-        else
+
+        var backingField = typeof(MapPointTypeCounts).GetField("<NumOfElites>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (backingField != null)
         {
-            var backingField = typeof(MapPointTypeCounts).GetField("<NumOfElites>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (backingField != null)
-            {
-                backingField.SetValue(instance, newEliteCount);
-                MainFile.Logger.Info($"GameVersionCompat: Increased elite count from {newEliteCount - eliteBonus} to {newEliteCount} (Loop {loopCount}, Bonus +{eliteBonus}) [via backing field]");
-            }
-            else
-            {
-                MainFile.Logger.Warn("GameVersionCompat: Could not modify NumOfElites - no writable property or backing field found");
-            }
+            backingField.SetValue(instance, newEliteCount);
+            MainFile.Logger.Info($"GameVersionCompat: Set NumOfElites to {newEliteCount} (via backing field)");
+            return true;
         }
+
+        MainFile.Logger.Warn("GameVersionCompat: Could not modify NumOfElites - no writable property or backing field found");
+        return false;
     }
+
+    #endregion
+
+    #region Energy Gain Unified API
+
+    public static decimal ModifyEnergyGainIfAvailable(Player player, decimal amount)
+    {
+        if (!HasModifyEnergyGainHook)
+        {
+            return amount;
+        }
+
+        return amount;
+    }
+
+    public static bool ShouldUseAfterEnergyReset => !HasModifyEnergyGainHook;
 
     #endregion
 }

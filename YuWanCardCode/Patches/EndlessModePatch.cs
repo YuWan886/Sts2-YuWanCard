@@ -142,7 +142,10 @@ public class EndlessModePatch
         int eliteBonus = CalculateEliteBonus(loopCount);
         int newEliteCount = __instance.NumOfElites + eliteBonus;
 
-        GameVersionCompat.TrySetNumOfElites(__instance, newEliteCount, eliteBonus, loopCount);
+        if (GameVersionCompat.TrySetNumOfElites(__instance, newEliteCount))
+        {
+            MainFile.Logger.Info($"Endless mode: Increased elite count by {eliteBonus} (Loop {loopCount})");
+        }
     }
 
     public static void ApplyMapPointTypeCountsPatches(Harmony harmony)
