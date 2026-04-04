@@ -80,21 +80,6 @@ public class LustfulPigPatch
             else if (playerName == "Player")
             {
             }
-            
-            // 如果玩家名称是数字，尝试获取玩家的角色名称
-            if (int.TryParse(playerName, out _) && combatState.Players.Count > 0)
-            {
-                var firstPlayer = combatState.Players[0];
-                if (firstPlayer.Character != null)
-                {
-                    // 获取角色名称
-                    var characterName = firstPlayer.Character.Title?.GetFormattedText() ?? "Player";
-                    if (!string.IsNullOrEmpty(characterName) && !int.TryParse(characterName, out _))
-                    {
-                        playerName = characterName;
-                    }
-                }
-            }
 
             // 创建本地化对话框内容
             var dialogueLocString = new LocString("monsters", "LUSTFUL_PIG_FOR.player");

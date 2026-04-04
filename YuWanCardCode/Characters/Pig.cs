@@ -47,6 +47,18 @@ public class Pig : PlaceholderCharacterModel
     public override string CustomRestSiteAnimPath 
         => "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
     
+    public override string CustomArmPointingTexturePath 
+        => "res://YuWanCard/images/characters/multiplayer_hand/pig_point.png";
+    
+    public override string CustomArmRockTexturePath 
+        => "res://YuWanCard/images/characters/multiplayer_hand/pig_rock.png";
+    
+    public override string CustomArmPaperTexturePath 
+        => "res://YuWanCard/images/characters/multiplayer_hand/pig_paper.png";
+    
+    public override string CustomArmScissorsTexturePath 
+        => "res://YuWanCard/images/characters/multiplayer_hand/pig_scissors.png";
+    
     public override IEnumerable<CardModel> StartingDeck =>
     [
         ModelDb.Card<PigStrike>(),

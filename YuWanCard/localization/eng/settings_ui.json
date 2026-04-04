@@ -1,6 +1,10 @@
 {
   "YUWANCARD-显示设置.title": "Display Settings",
-  "YUWANCARD-SHOW_DEATH_OVERLAY.title": "Show Death Overlay",
-  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.title": "Show Death Overlay",
-  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.desc": "Display a static image overlay on the character model when a character dies. Supports multiplayer."
+  "YUWANCARD-SHOW_DEATH_OVERLAY.title": "Replace Body with Pig",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.title": "Replace Body with Pig",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.desc": "Replace the body with a pig",
+  "YUWANCARD-多人游戏设置.title": "Multiplayer Settings",
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.title": "Bypass ModelDb Hash Check",
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.title": "Bypass ModelDb Hash Check",
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "Allow players with different ModelDb hashes to connect. Warning: May cause game sync issues, ensure all players have the same mod versions."
 }

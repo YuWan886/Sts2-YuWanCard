@@ -7,7 +7,7 @@
 ### 基本用法
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 
 public class MySingletonModel : CustomSingletonModel
 {
@@ -198,7 +198,7 @@ BaseLib 通过 Harmony 补丁提供了多种功能扩展。
 `ILocalizationProvider` 接口允许模型在代码中直接提供本地化内容，而无需依赖外部 JSON 文件：
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 
 public class MyCard : CustomCardModel, ILocalizationProvider
 {
@@ -530,7 +530,7 @@ public static class MyCustomEnums
 ### 自定义牌堆类型
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 using BaseLib.Patches.Content;
 
 public class MyCustomPile : CustomPile
@@ -651,7 +651,6 @@ protected override OptionPools MakeOptionPools => new OptionPools(
 创建自定义卡牌池：
 
 ```csharp
-using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Godot;
 
@@ -659,12 +658,12 @@ public class MyCustomCardPool : CustomCardPoolModel
 {
     public MyCustomCardPool()
     {
-        Name = "My Card Pool";
+        Title = "My Card Pool";
     }
 
     public override bool IsShared => false;
 
-    public override Texture2D? CustomFrame(CustomCardModel card) => null;
+    public override string? CardFrameMaterialPath => null;
 
     public override Color ShaderColor => new Color(1, 0, 0);
 
@@ -692,13 +691,13 @@ public class MyCustomCardPool : CustomCardPoolModel
 创建自定义遗物池：
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 
 public class MyCustomRelicPool : CustomRelicPoolModel
 {
     public MyCustomRelicPool()
     {
-        Name = "My Relic Pool";
+        Title = "My Relic Pool";
     }
 
     public override bool IsShared => false;
@@ -716,13 +715,13 @@ public class MyCustomRelicPool : CustomRelicPoolModel
 创建自定义药水池：
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 
 public class MyCustomPotionPool : CustomPotionPoolModel
 {
     public MyCustomPotionPool()
     {
-        Name = "My Potion Pool";
+        Title = "My Potion Pool";
     }
 
     public override bool IsShared => false;
@@ -865,7 +864,7 @@ if (matcher
 继承 `CustomPile` 创建自定义牌堆：
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 
 public class MyCustomPile : CustomPile
 {
@@ -940,7 +939,7 @@ public class MyHealModifier : IHealAmountModifier
 实现 `ICustomEnergyIconPool` 接口为卡牌池添加自定义能量图标：
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 
 public class MyCardPool : CustomCardPoolModel, ICustomEnergyIconPool
 {

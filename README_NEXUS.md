@@ -1,13 +1,14 @@
 ## Short Description
 
-YuWan Card is a Slay the Spire 2 mod that adds 33 colorless cards, 5 powers, 3 enchantments, 12 relics, 1 Ancient One, 1 monster, 1 event, and an Endless modifier. Features pig-themed cards and unique mechanics like energy doubling and multiplayer support.
+YuWan Card is a Slay the Spire 2 mod that adds a Pig character, 33 colorless cards, 5 powers, 3 enchantments, 12 relics, 1 Ancient One, 1 monster, 1 event, and an Endless modifier. Features pig-themed cards and unique mechanics like energy doubling and multiplayer support.
 ---
-YuWan Card 是一个《杀戮尖塔 2》模组，添加了 33 张无色卡牌、5 个能力、3 个附魔、12 个遗物、1 个先古之民、1 个怪物、1 个事件和 1 个无尽模式修饰符。
+YuWan Card 是一个《杀戮尖塔 2》模组，添加了猪角色、33 张无色卡牌、5 个能力、3 个附魔、12 个遗物、1 个先古之民、1 个怪物、1 个事件和 1 个无尽模式修饰符。
 
 ## Full Description
 
 [b]YuWan Card[/b] - A pig-themed mod for Slay the Spire 2!
 [list]
+[*][b]1 Character - Pig[/b] - A cute pig with 80 starting HP, exclusive card pool and relic pool. Starting deck includes Pig Strike, Pig Defend, and Pig Hurt. Starting relic: Pig Carrot (gain 6 Plating at start of each combat)[/*]
 [*][b]33 Colorless Cards[/b] - Including pig-themed cards (Pig Hurt, Pig Think, Pig Angry, Pig Sleep, Pig Sacrifice, Pig Doubt, Pig Slacking, Pig Bankruptcy, Pig Brain Overload, Pig Melt, You Are Pig, Pig King, Pig Dragon Ride, Pig Crash, Pig Bite) and unique cards like Rain Dark, Melancholy Is A Feeling, Sad Army Wins, Revive!, All In, Steal Sheep, Cut Your Internet, Really Need To Train You, Spirit Speech · Don't Die, Pressuring You, and Moving Stone King![/*]
 [*][b]5 Powers[/b] - Pig Doubt (gain random Power each turn), Rain Dark (double energy gained), Pig Bankruptcy, Pig Brain Overload, and You Are Pig[/*]
 [*][b]3 Enchantments[/b] - Arthropod Slayer (deal true damage to arthropods), Sweeping Blade (damage splashes), Poisoned (attacks apply Poison)[/*]
@@ -16,6 +17,16 @@ YuWan Card 是一个《杀戮尖塔 2》模组，添加了 33 张无色卡牌、
 [*][b]1 Monster[/b] - Killer (Elite) with hardened shell and powerful attacks[/*]
 [*][b]1 Event[/b] - Blacksmith: upgrade or fuse cards[/*]
 [*][b]1 Modifier[/b] - Endless mode: climb the spire endlessly with scaling enemy difficulty[/*]
+[/list]
+
+[b]Character - Pig:[/b]
+Can use all card.
+[list]
+[*]Starting HP: 80, Gender: Neutral[/*]
+[*]Starting Relic: Pig Carrot (gain 6 Plating at start of each combat)[/*]
+[*]Starting Deck: 5 Pig Strike, 4 Pig Defend, 1 Pig Hurt[/*]
+[*]Exclusive Cards: Pig Strike (1 cost, deal 6 damage), Pig Defend (1 cost, gain 5 Block)[/*]
+[*]Exclusive Relics: Pig Carrot (6 Plating), Golden Pig Carrot (10 Plating)[/*]
 [/list]
 
 [b]Card Highlights:[/b]
@@ -116,6 +127,7 @@ YuWan Card 是一个《杀戮尖塔 2》模组，添加了 33 张无色卡牌、
 
 [b]YuWan Card[/b] - 《杀戮尖塔 2》的猪主题模组！
 [list]
+[*][b]1 个角色 - 猪[/b] - 可爱的猪角色，起始生命值 80，拥有专属卡牌池和遗物池。起始牌组包括猪打击、猪防御、猪受伤。起始遗物：猪胡萝卜（每场战斗开始获得 6 层覆甲）[/*]
 [*][b]33 张无色卡牌[/b] - 包括猪主题卡牌（猪受伤、猪思考、猪愤怒、猪睡觉、猪献祭、猪疑惑、猪摸鱼、猪破产、猪脑过载、猪融化、你是猪、猪猪王、猪登龙、猪坠机、猪咬）和独特卡牌如雨落狂流之暗、忧郁是一种感觉、哀兵必胜、复活吧！、梭哈、顺手牵羊、拔你网线、真得好好调教你了、不要死、压力着你、搬石大王！[/*]
 [*][b]5 个能力[/b] - 猪疑惑（每回合获得随机能力）、雨落狂流（获得能量翻倍）、猪破产、猪脑过载、你是猪[/*]
 [*][b]3 个附魔[/b] - 节肢杀手（对节肢类敌人造成真实伤害）、横扫之刃（伤害溅射）、淬毒（攻击给予中毒）[/*]
@@ -124,6 +136,16 @@ YuWan Card 是一个《杀戮尖塔 2》模组，添加了 33 张无色卡牌、
 [*][b]1 个怪物[/b] - 杀手（精英）拥有硬化外壳和强力攻击[/*]
 [*][b]1 个事件[/b] - 铁匠铺：升级或融合卡牌[/*]
 [*][b]1 个修饰符[/b] - 无尽模式：无尽攀登高塔，敌人难度逐渐提升[/*]
+[/list]
+
+[b]角色 - 猪：[/b]
+可以使用所有卡牌。
+[list]
+[*]起始生命值：80，性别：中性[/*]
+[*]起始遗物：猪胡萝卜（每场战斗开始获得 6 层覆甲）[/*]
+[*]起始牌组：5 张猪打击、4 张猪防御、1 张猪受伤[/*]
+[*]专属卡牌：猪打击（1 费，造成 6 点伤害）、猪防御（1 费，获得 5 点格挡）[/*]
+[*]专属遗物：猪胡萝卜（6 层覆甲）、金色猪胡萝卜（10 层覆甲）[/*]
 [/list]
 
 [b]卡牌亮点：[/b]

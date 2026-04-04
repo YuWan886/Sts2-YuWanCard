@@ -16,6 +16,35 @@
 
 ## New Content
 
+### Character - Pig
+
+A cute pig character that can use all card.
+
+| Attribute | Value |
+|------|------|
+| Starting HP | 80 |
+| Gender | Neutral |
+| Starting Relic | Pig Carrot |
+
+**Starting Deck**
+- 5 Pig Strike
+- 4 Pig Defend
+- 1 Pig Hurt
+
+**Exclusive Cards**
+
+| Name | Cost | Rarity | Type | Effect |
+|------|------|--------|------|--------|
+| Pig Strike | 1 | Basic | Attack | Deal 6 damage |
+| Pig Defend | 1 | Basic | Skill | Gain 5 Block |
+
+**Exclusive Relics**
+
+| Name | Type | Effect |
+|------|------|--------|
+| Pig Carrot | Starter | Gain 6 Plating at the start of each combat |
+| Golden Pig Carrot | Starter | Gain 10 Plating at the start of each combat |
+
 ### Cards (Colorless)
 
 | Name | Cost | Rarity | Type | Effect |

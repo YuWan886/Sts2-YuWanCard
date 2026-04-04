@@ -1,6 +1,10 @@
 {
   "YUWANCARD-显示设置.title": "显示设置",
-  "YUWANCARD-SHOW_DEATH_OVERLAY.title": "显示死亡叠加图片",
-  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.title": "显示死亡叠加图片",
-  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.desc": "角色死亡后在角色模型上显示一张静态图片叠加效果，支持多人游戏。"
+  "YUWANCARD-SHOW_DEATH_OVERLAY.title": "将尸体替换为猪",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.title": "将尸体替换为猪",
+  "YUWANCARD-SHOW_DEATH_OVERLAY.hover.desc": "将尸体替换为猪",
+  "YUWANCARD-多人游戏设置.title": "多人游戏设置",
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.title": "跳过 ModelDb 哈希检查",
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.title": "跳过 ModelDb 哈希检查",
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "允许 ModelDb 哈希值不同的玩家联机。注意：可能导致游戏同步问题，请确保所有玩家的模组版本一致。"
 }

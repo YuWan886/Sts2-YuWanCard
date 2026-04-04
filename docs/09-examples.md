@@ -9,57 +9,69 @@
 `ConstructedCardModel` 提供更简洁的链式 API：
 
 ```csharp
-using BaseLib.Abstracts;
 using BaseLib.Utils;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
 
 namespace YuWanCard.Cards;
 
 [Pool(typeof(ColorlessCardPool))]
-public class PigStrike() : ConstructedCardModel(
-    cost: 1,
-    type: CardType.Attack,
-    rarity: CardRarity.Common,
-    target: TargetType.AnyEnemy)
+public class PigStrike : ConstructedCardModel
 {
-    protected override IEnumerable<DynamicVar> Vars => base.Vars
-        .WithDamage(6);
+    public PigStrike() : base(
+        baseCost: 1,
+        type: CardType.Attack,
+        rarity: CardRarity.Common,
+        target: TargetType.AnyEnemy)
+    {
+        WithDamage(6);
+        WithTags(CardTag.Strike);
+    }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 
-    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await Damage(user, target, stacks);
+        if (cardPlay.Target != null)
+        {
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+                .FromCard(this)
+                .Targeting(cardPlay.Target)
+                .WithHitFx("vfx/vfx_attack_slash")
+                .Execute(choiceContext);
+        }
     }
 }
 
 [Pool(typeof(ColorlessCardPool))]
-public class PigPower() : ConstructedCardModel(
-    cost: 1,
-    type: CardType.Skill,
-    rarity: CardRarity.Uncommon,
-    target: TargetType.Self)
+public class PigPower : ConstructedCardModel
 {
-    protected override IEnumerable<DynamicVar> Vars => base.Vars
-        .WithBlock(5)
-        .WithPower<StrengthPower>(1);
-
-    protected override IEnumerable<CardKeyword> Keywords => [CardKeyword.Exhaust];
+    public PigPower() : base(
+        baseCost: 1,
+        type: CardType.Skill,
+        rarity: CardRarity.Uncommon,
+        target: TargetType.Self)
+    {
+        WithBlock(5);
+        WithPower<StrengthPower>(1);
+        WithKeywords(CardKeyword.Exhaust);
+    }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3);
+        DynamicVars.Block.UpgradeValueBy(3m);
         RemoveKeyword(CardKeyword.Exhaust);
     }
 
-    protected override async Task UseCard(CardUser user, Creature? target, int stacks, CancellationToken ct)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await Block(user, DynamicVars.Block.BaseValue);
-        await PowerCmd.Apply<StrengthPower>(user.Creature, DynamicVars.Strength.BaseValue, user.Creature, this);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block.BaseValue, ValueProp.None, null);
+        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["StrengthPower"].IntValue, Owner.Creature, this);
     }
 }
 ```
@@ -95,20 +107,13 @@ public partial class MainFile : Node
 ```csharp
 // YuWanCardModel.cs
 using System.Text.RegularExpressions;
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 
 namespace YuWanCard.Cards;
 
-public abstract partial class YuWanCardModel(
-    int baseCost, 
-    CardType type, 
-    CardRarity rarity, 
-    TargetType target, 
-    bool showInCardLibrary = true, 
-    bool autoAdd = true
-) : CustomCardModel(baseCost, type, rarity, target, showInCardLibrary, autoAdd)
+public abstract class YuWanCardModel : ConstructedCardModel
 {
     private static readonly Regex CamelCaseRegex = MyRegex();
 
@@ -117,6 +122,16 @@ public abstract partial class YuWanCardModel(
     protected virtual string PortraitBasePath => $"res://YuWanCard/images/card_portraits/{CardId}";
 
     public override string? CustomPortraitPath => $"{PortraitBasePath}.png";
+
+    protected YuWanCardModel(
+        int baseCost,
+        CardType type,
+        CardRarity rarity,
+        TargetType target,
+        bool showInCardLibrary = true
+    ) : base(baseCost, type, rarity, target, showInCardLibrary)
+    {
+    }
 
     [GeneratedRegex(@"([a-z])([A-Z])", RegexOptions.Compiled)]
     private static partial Regex MyRegex();
@@ -127,13 +142,10 @@ public abstract partial class YuWanCardModel(
 
 ```csharp
 // PigHurt.cs
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -143,8 +155,6 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigHurt : YuWanCardModel
 {
-    public override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<VulnerablePower>(1m)];
-
     public PigHurt() : base(
         baseCost: 1,
         type: CardType.Skill,
@@ -152,17 +162,19 @@ public class PigHurt : YuWanCardModel
         target: TargetType.AllEnemies
     )
     {
-        WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<VulnerablePower>()));
+        WithPower<VulnerablePower>(1);
     }
-    
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<VulnerablePower>(1m)];
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<VulnerablePower>(CombatState!.HittableEnemies, 2, Owner.Creature, this);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
-        DynamicVars.Vulnerable.UpgradeValueBy(2);
+        DynamicVars["VulnerablePower"].UpgradeValueBy(2m);
     }
 }
 ```
@@ -172,7 +184,7 @@ public class PigHurt : YuWanCardModel
 ```csharp
 // YuWanPowerModel.cs
 using System.Text.RegularExpressions;
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 
 namespace YuWanCard.Powers;
 
@@ -193,19 +205,21 @@ public abstract class YuWanPowerModel : CustomPowerModel
 
 ```csharp
 // PigDoubtPower.cs
-using System.Reflection;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Powers;
 
 public class PigDoubtPower : YuWanPowerModel
 {
     public override PowerType Type => PowerType.Buff;
-
     public override PowerStackType StackType => PowerStackType.Counter;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("PigDoubtPower", 1m)];
 
     public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
     {
@@ -216,10 +230,20 @@ public class PigDoubtPower : YuWanPowerModel
 
             for (int i = 0; i < powerCount; i++)
             {
+                if (CombatManager.Instance.IsEnding)
+                {
+                    break;
+                }
+
                 var randomPower = GetRandomPower();
                 if (randomPower != null)
                 {
                     await PowerCmd.Apply(randomPower.ToMutable(), Owner, 1, Owner, null);
+                }
+
+                if (await CombatManager.Instance.CheckWinCondition())
+                {
+                    break;
                 }
             }
         }
@@ -241,12 +265,12 @@ public class PigDoubtPower : YuWanPowerModel
 
     private bool IsSafePower(PowerModel power)
     {
-        var unsafePowers = new HashSet<string>
+        if (power is YuWanPowerModel)
         {
-            "MegaCrit.Sts2.Core.Models.Powers.CurlUpPower",
-            "MegaCrit.Sts2.Core.Models.Powers.AngryPower",
-        };
-        return !unsafePowers.Contains(power.GetType().FullName ?? "");
+            return false;
+        }
+
+        return PowerSafetyUtils.IsSafePower(power);
     }
 }
 ```
@@ -256,7 +280,7 @@ public class PigDoubtPower : YuWanPowerModel
 ```csharp
 // YuWanRelicModel.cs
 using System.Text.RegularExpressions;
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -268,8 +292,8 @@ public abstract class YuWanRelicModel : CustomRelicModel
 
     protected virtual string IconBasePath => $"res://YuWanCard/images/relics/{RelicId}";
 
-    public override string? PackedImagePath => $"{IconBasePath}.png";
-    public override string? PackedOutlinePath => $"{IconBasePath}_outline.png";
+    public override string? PackedIconPath => $"{IconBasePath}.png";
+    public override string? PackedIconOutlinePath => $"{IconBasePath}_outline.png";
 }
 ```
 
@@ -293,8 +317,6 @@ public class GiveYou : YuWanCardModel
 {
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
     public GiveYou() : base(
         baseCost: 1,
         type: CardType.Skill,
@@ -302,9 +324,10 @@ public class GiveYou : YuWanCardModel
         target: TargetType.AnyAlly
     )
     {
+        WithKeywords(CardKeyword.Exhaust);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Target == null) return;
 
@@ -336,7 +359,7 @@ public class GiveYou : YuWanCardModel
         }
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         RemoveKeyword(CardKeyword.Exhaust);
         EnergyCost.UpgradeBy(-1);
@@ -353,7 +376,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -363,8 +385,6 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigAngry : YuWanCardModel
 {
-    public override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(4m)];
-
     public PigAngry() : base(
         baseCost: 2,
         type: CardType.Skill,
@@ -372,22 +392,24 @@ public class PigAngry : YuWanCardModel
         target: TargetType.AllAllies
     )
     {
-        WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<StrengthPower>()));
+        WithPower<StrengthPower>(4);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(4m)];
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         IEnumerable<Creature> teammates = from c in CombatState!.GetTeammatesOf(Owner.Creature)
                                           where c != null && c.IsAlive && c.IsPlayer
                                           select c;
 
-        await PowerCmd.Apply<StrengthPower>(teammates, DynamicVars.Strength.BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<StrengthPower>(teammates, DynamicVars["StrengthPower"].IntValue, Owner.Creature, this);
     }
 
-    public override void OnUpgrade()
+    protected override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
-        DynamicVars.Strength.UpgradeValueBy(2m);
+        DynamicVars["StrengthPower"].UpgradeValueBy(2m);
     }
 }
 ```
@@ -423,8 +445,6 @@ public class ReviveKai : YuWanCardModel
 {
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
     public ReviveKai() : base(
         baseCost: 4,
         type: CardType.Skill,
@@ -432,9 +452,10 @@ public class ReviveKai : YuWanCardModel
         target: TargetType.None
     )
     {
+        WithKeywords(CardKeyword.Exhaust);
     }
 
-    public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var deadPlayers = CombatState!.PlayerCreatures
             .Where(c => c.IsPlayer && c.IsDead)
@@ -611,7 +632,7 @@ public class ReviveKai : YuWanCardModel
 ### 基础能量球
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 using Godot;
 
 namespace YuWanCard.Orbs;
@@ -631,7 +652,7 @@ public class PigOrb : CustomOrbModel
 ### 带自定义精灵的能量球
 
 ```csharp
-using BaseLib.Abstracts;
+using BaseLib.Utils;
 using Godot;
 
 namespace YuWanCard.Orbs;
@@ -673,7 +694,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Godot;
 using MegaCrit.Sts2.Core.CardSelection;

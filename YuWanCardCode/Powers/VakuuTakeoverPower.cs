@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 
 namespace YuWanCard.Powers;
 
@@ -32,7 +33,7 @@ public class VakuuTakeoverPower : YuWanPowerModel
         {
             if (CombatManager.Instance.IsOverOrEnding) break;
 
-            var card = pile.Cards.FirstOrDefault(c => c.CanPlay());
+            var card = pile.Cards.FirstOrDefault(c => c.CanPlay() && !RequiresPlayerChoice(c));
             if (card == null) break;
 
             var target = GetTarget(card, combatState);
@@ -42,6 +43,11 @@ public class VakuuTakeoverPower : YuWanPowerModel
         }
 
         await PowerCmd.Decrement(this);
+    }
+
+    private static bool RequiresPlayerChoice(CardModel card)
+    {
+        return card is Discovery;
     }
 
     private Creature? GetTarget(CardModel card, CombatState combatState)
