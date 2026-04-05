@@ -14,7 +14,7 @@ public sealed class Blacksmith : EventModel
 
     public override bool IsAllowed(RunState runState)
     {
-        return Owner!.Deck.Cards.Any(c => c.IsUpgradable) || Owner.Deck.Cards.Count(c => CanFuse(c)) >= 2;
+        return runState.Players.Any(p => p.Deck.Cards.Any(c => c.IsUpgradable) || p.Deck.Cards.Count(c => CanFuse(c)) >= 2);
     }
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
