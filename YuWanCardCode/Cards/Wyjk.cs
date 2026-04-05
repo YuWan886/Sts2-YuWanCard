@@ -23,7 +23,7 @@ public class Wyjk : YuWanCardModel
     protected override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
-        DynamicVars.Energy.UpgradeValueBy(1m);
+        DynamicVars.Energy.UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

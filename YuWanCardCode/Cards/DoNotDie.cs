@@ -2,7 +2,6 @@ using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
 
@@ -16,12 +15,11 @@ public class DoNotDie : YuWanCardModel
     public DoNotDie() : base(
         baseCost: 1,
         type: CardType.Skill,
-        rarity: CardRarity.Uncommon,
-        target: TargetType.AnyPlayer)
+        rarity: CardRarity.Rare,
+        target: TargetType.AnyAlly)
     {
         WithPower<RegenPower>(3);
         WithKeywords(CardKeyword.Exhaust);
-        WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<RegenPower>()));
     }
 
     protected override void OnUpgrade()

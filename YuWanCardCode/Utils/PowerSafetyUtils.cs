@@ -1,12 +1,19 @@
 using System.Reflection;
 using System.Collections.Concurrent;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Exceptions;
 
 namespace YuWanCard.Utils;
 
 public static class PowerSafetyUtils
 {
     private static readonly ConcurrentDictionary<Type, bool> SafetyCache = new();
+
+    private static readonly HashSet<string> AllowedNamespaces = new()
+    {
+        "MegaCrit.Sts2",
+        "YuWanCard"
+    };
 
     private static readonly HashSet<string> UnsafePowerPatterns = new()
     {
@@ -20,6 +27,12 @@ public static class PowerSafetyUtils
         var powerType = power.GetType();
         string powerId = power.Id.ToString();
         string powerName = powerType.Name;
+        string powerNamespace = powerType.Namespace ?? "";
+
+        if (!AllowedNamespaces.Any(ns => powerNamespace.StartsWith(ns)))
+        {
+            return false;
+        }
 
         if (UnsafePowerPatterns.Any(p => powerId.Contains(p) || powerName == p))
         {
@@ -34,6 +47,10 @@ public static class PowerSafetyUtils
             }
         }
         catch (NullReferenceException)
+        {
+            return false;
+        }
+        catch (CanonicalModelException)
         {
             return false;
         }

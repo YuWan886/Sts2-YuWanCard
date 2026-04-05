@@ -39,7 +39,7 @@ public class RainDarkPower : YuWanPowerModel
             int cardsToDraw = MaxHandSize - hand.Cards.Count;
             if (cardsToDraw > 0)
             {
-                await CardPileCmd.Draw(choiceContext, cardsToDraw, player);
+                await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), cardsToDraw, player);
             }
 
             await PowerCmd.TickDownDuration(this);

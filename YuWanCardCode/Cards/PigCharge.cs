@@ -23,7 +23,7 @@ public class PigCharge : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Strength.UpgradeValueBy(1m);
+        DynamicVars.Strength.UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

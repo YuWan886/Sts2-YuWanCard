@@ -21,7 +21,7 @@ public class PigDoubt : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars["PigDoubtPower"].UpgradeValueBy(1m);
+        DynamicVars["PigDoubtPower"].UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

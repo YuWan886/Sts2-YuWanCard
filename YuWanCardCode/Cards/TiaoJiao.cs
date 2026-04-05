@@ -29,7 +29,7 @@ public class TiaoJiao : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars["TrainYouWellPower"].UpgradeValueBy(2m);
+        DynamicVars["TrainYouWellPower"].UpgradeValueBy(2);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

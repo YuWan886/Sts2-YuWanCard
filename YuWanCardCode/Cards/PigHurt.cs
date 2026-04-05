@@ -21,7 +21,7 @@ public class PigHurt : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Vulnerable.UpgradeValueBy(2);
+        DynamicVars.Vulnerable.UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

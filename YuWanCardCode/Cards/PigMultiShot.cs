@@ -20,7 +20,7 @@ public class PigMultiShot : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Repeat"].UpgradeValueBy(2m);
+        DynamicVars["Repeat"].UpgradeValueBy(2);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

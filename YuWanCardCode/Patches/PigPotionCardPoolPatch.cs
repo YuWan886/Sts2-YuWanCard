@@ -1,19 +1,14 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Potions;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Potions;
 using MegaCrit.Sts2.Core.Random;
-using MegaCrit.Sts2.Core.Runs;
-using YuWanCard;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
@@ -24,7 +19,7 @@ public static class PigPotionHelper
         var player = potion.Owner;
         if (player.Character is Pig)
         {
-            return PigAllCards.GetAllUnlockedCardsByType(player, cardType);
+            return PigCardPoolUtils.GetAllUnlockedCards(player, [cardType]);
         }
         
         return player.Character.CardPool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
@@ -42,12 +37,25 @@ public static class CardFactoryGetDistinctForCombatPatch
         
         if (player.Character is Pig)
         {
-            var allCards = new HashSet<CardModel>(cardList);
-            var unlockedCards = PigAllCards.GetAllUnlockedCards(player).Where(c => c != null);
-            allCards.UnionWith(unlockedCards);
-            cardList = allCards.ToList();
+            var originalTypes = cardList.Select(c => c.Type).Distinct().ToHashSet();
+            var isColorless = cardList.Any(c => c.Pool is ColorlessCardPool);
             
-            MainFile.Logger.Debug($"GetDistinctForCombat: Pig character detected, total cards: {cardList.Count}");
+            var allCards = new HashSet<CardModel>(cardList);
+            
+            if (originalTypes.Count > 0)
+            {
+                var unlockedCards = PigCardPoolUtils.GetAllUnlockedCards(player, originalTypes, colorlessOnly: isColorless).Where(c => c != null);
+                allCards.UnionWith(unlockedCards);
+            }
+            else
+            {
+                var unlockedCards = PigCardPoolUtils.GetAllUnlockedCards(player, colorlessOnly: isColorless).Where(c => c != null);
+                allCards.UnionWith(unlockedCards);
+            }
+            
+            cardList = [.. allCards];
+            
+            MainFile.Logger.Debug($"GetDistinctForCombat: Pig character detected, types: [{string.Join(", ", originalTypes)}], colorless: {isColorless}, total cards: {cardList.Count}");
         }
         
         if (cardList.Count == 0)
@@ -66,7 +74,7 @@ public static class CardFactoryGetDistinctForCombatPatch
             return false;
         }
 
-        filtered = CardFactory.FilterForPlayerCount(player.RunState, filtered).ToList();
+        filtered = [.. CardFactory.FilterForPlayerCount(player.RunState, filtered)];
         var selected = filtered.TakeRandom(count, rng);
         __result = selected.Select(c => player.Creature!.CombatState!.CreateCard(c, player));
         

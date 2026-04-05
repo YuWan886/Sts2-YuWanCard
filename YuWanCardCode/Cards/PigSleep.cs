@@ -25,7 +25,7 @@ public class PigSleep : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(10m);
+        DynamicVars.Block.UpgradeValueBy(10);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

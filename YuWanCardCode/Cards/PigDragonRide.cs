@@ -20,7 +20,7 @@ public class PigDragonRide : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(2);
         RemoveKeyword(CardKeyword.Exhaust);
     }
 
