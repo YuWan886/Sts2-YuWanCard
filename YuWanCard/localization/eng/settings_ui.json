@@ -6,5 +6,5 @@
   "YUWANCARD-多人游戏设置.title": "Multiplayer Settings",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.title": "Bypass ModelDb Hash Check",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.title": "Bypass ModelDb Hash Check",
-  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "Allow players with different ModelDb hashes to connect. Warning: May cause game sync issues, ensure all players have the same mod versions."
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "Allow players with different ModelDb hashes to connect. Warning: May cause game sync issues, ensure all players have the same mods."
 }

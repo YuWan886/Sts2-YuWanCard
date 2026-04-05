@@ -6,5 +6,5 @@
   "YUWANCARD-多人游戏设置.title": "多人游戏设置",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.title": "跳过 ModelDb 哈希检查",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.title": "跳过 ModelDb 哈希检查",
-  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "允许 ModelDb 哈希值不同的玩家联机。注意：可能导致游戏同步问题，请确保所有玩家的模组版本一致。"
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "允许 ModelDb 哈希值不同的玩家联机。注意：可能导致游戏同步问题，请确保所有玩家的模组一致。"
 }
