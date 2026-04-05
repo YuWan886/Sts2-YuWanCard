@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
+using BaseLib.Abstracts;
 
 namespace YuWanCard.Patches;
 
@@ -83,5 +84,20 @@ public static class ImageHelperPatch
                 }
             }
         }
+    }
+}
+
+[HarmonyPatch(typeof(CharacterModel), "IconOutlineTexturePath", MethodType.Getter)]
+public static class CharacterIconOutlineTexturePathPatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(CharacterModel __instance, ref string? __result)
+    {
+        if (__instance is CustomCharacterModel customChar && customChar.CustomIconTexturePath != null)
+        {
+            __result = customChar.CustomIconTexturePath;
+            return false;
+        }
+        return true;
     }
 }

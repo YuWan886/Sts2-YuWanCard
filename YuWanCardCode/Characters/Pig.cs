@@ -75,6 +75,17 @@ public class Pig : PlaceholderCharacterModel
     
     public override IReadOnlyList<RelicModel> StartingRelics => [ModelDb.Relic<PigCarrot>()];
     
+    public override List<string> GetArchitectAttackVfx() => 
+    [
+        "vfx/vfx_attack_slash",
+        "vfx/vfx_bite",
+        "vfx/vfx_flying_slash",
+        "vfx/vfx_scratch",
+        "vfx/vfx_dramatic_stab",
+        "vfx/vfx_thrash",
+        "vfx/vfx_starry_impact"
+    ];
+    
     public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller)
     {
         return SetupAnimationState(controller, 

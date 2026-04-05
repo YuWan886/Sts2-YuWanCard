@@ -14,6 +14,9 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Context;
 using YuWanCard.Encounters;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.GameActions;
+using YuWanCard.GameActions;
 
 namespace YuWanCard.Patches;
 
@@ -59,7 +62,6 @@ public static class CombatUiActivatePatch
 public partial class NRetreatButton : Control
 {
     private const float FlyInOutDuration = 0.5f;
-    // 位置设置为结束回合按钮正上方
     private static readonly Vector2 ShowPosRatio = new Vector2(1634f, 786f) / NGame.devResolution;
     private static readonly Vector2 HidePosRatio = ShowPosRatio + new Vector2(0f, 400f) / NGame.devResolution;
     
@@ -74,11 +76,12 @@ public partial class NRetreatButton : Control
     private Tween? _hoverTween;
     
     private bool _isEnabled;
-    private HashSet<Player> _votedPlayers = [];
+    private ulong? _localPlayerNetId;
 
     public NRetreatButton(CombatState state)
     {
         _combatState = state;
+        _localPlayerNetId = LocalContext.NetId;
         MouseFilter = MouseFilterEnum.Stop;
     }
 
@@ -91,7 +94,6 @@ public partial class NRetreatButton : Control
         MouseDefaultCursorShape = CursorShape.PointingHand;
         ZIndex = 100;
 
-        // 创建 Visuals 容器
         _visuals = new Control
         {
             Name = "Visuals",
@@ -102,7 +104,6 @@ public partial class NRetreatButton : Control
         };
         AddChild(_visuals);
 
-        // 创建背景贴图
         _image = new TextureRect
         {
             Name = "Image",
@@ -113,7 +114,6 @@ public partial class NRetreatButton : Control
             Theme = null,
             ZIndex = 102
         };
-        // 加载按钮贴图
         var buttonTexture = PreloadManager.Cache.GetCompressedTexture2D("res://images/packed/common_ui/event_button.png");
         if (buttonTexture != null)
         {
@@ -121,7 +121,6 @@ public partial class NRetreatButton : Control
         }
         _visuals.AddChild(_image);
 
-        // 创建标签
         _label = new MegaLabel
         {
             Name = "Label",
@@ -151,7 +150,6 @@ public partial class NRetreatButton : Control
         _label.OffsetBottom = 0;
         _visuals.AddChild(_label);
 
-        // 创建投票容器
         _voteContainer = new NMultiplayerVoteContainer
         {
             Name = "VoteContainer",
@@ -180,7 +178,9 @@ public partial class NRetreatButton : Control
 
     private bool HasPlayerVoted(Player player)
     {
-        return _votedPlayers.Contains(player);
+        if (_combatState?.Encounter is not KillerElite killerElite)
+            return false;
+        return killerElite.HasPlayerVoted(player.NetId);
     }
 
     private Vector2 ShowPos => ShowPosRatio * _viewport.GetVisibleRect().Size;
@@ -267,80 +267,27 @@ public partial class NRetreatButton : Control
 
     private void OnRelease()
     {
-        
         if (_combatState == null) return;
         
         var me = LocalContext.GetMe(_combatState);
-        if (me != null)
-        {
-            // 确保每个玩家只能投票一次
-            if (!_votedPlayers.Contains(me))
-            {
-                _votedPlayers.Add(me);
-                _voteContainer.RefreshPlayerVotes();
-                
-                if (AllPlayersVoted())
-                {
-                    CallDeferred(nameof(ExecuteRetreat));
-                }
-                else
-                {
-                }
-            }
-            else
-            {
-            }
-        }
+        if (me == null) return;
+        
+        if (_combatState.Encounter is not KillerElite killerElite) return;
+        
+        if (killerElite.HasPlayerVoted(me.NetId)) return;
+        
+        RequestRetreatVote(me);
     }
 
-    private bool AllPlayersVoted()
+    private void RequestRetreatVote(Player player)
     {
-        if (_combatState == null) return false;
-        
-        foreach (var player in _combatState.Players)
-        {
-            if (!_votedPlayers.Contains(player))
-            {
-                return false;
-            }
-        }
-        return true;
+        var action = new RetreatVoteAction(player);
+        RunManager.Instance.ActionQueueSynchronizer.RequestEnqueue(action);
     }
 
-    private async void ExecuteRetreat()
+    public void RefreshVotes()
     {
-        _isEnabled = false;
-        Modulate = StsColors.gray;
-        _label.Modulate = StsColors.gray;
-        
-        AnimOut();
-        
-        await Cmd.Wait(0.5f);
-
-        if (CombatManager.Instance != null && CombatManager.Instance.IsInProgress && _combatState != null)
-        {
-            try
-            {
-                if (_combatState.Encounter is KillerElite killerElite)
-                {
-                    killerElite.SetRetreated(true);
-                }
-                
-                foreach (var enemy in _combatState.Enemies.ToList())
-                {
-                    if (enemy.IsAlive)
-                    {
-                        await CreatureCmd.Escape(enemy);
-                    }
-                }
-                
-                await CombatManager.Instance.CheckWinCondition();
-            }
-            catch (Exception e)
-            {
-                MainFile.Logger.Error($"KillerRetreatPatch: Error ending combat: {e.Message}");
-            }
-        }
+        _voteContainer.RefreshPlayerVotes();
     }
 
     private void AnimIn()
