@@ -1,4 +1,5 @@
 {
+  "YUWANCARD.mod_title": "YuWanCard",
   "YUWANCARD-显示设置.title": "显示设置",
   "YUWANCARD-SHOW_DEATH_OVERLAY.title": "将尸体替换为猪",
   "YUWANCARD-SHOW_DEATH_OVERLAY.hover.title": "将尸体替换为猪",
@@ -6,5 +7,13 @@
   "YUWANCARD-多人游戏设置.title": "多人游戏设置",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.title": "跳过 ModelDb 哈希检查",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.title": "跳过 ModelDb 哈希检查",
-  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "允许 ModelDb 哈希值不同的玩家联机。注意：可能导致游戏同步问题，请确保所有玩家的模组一致。"
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "允许 ModelDb 哈希值不同的玩家联机。注意：可能导致游戏同步问题，请确保所有玩家的模组一致。",
+  "YUWANCARD-更新设置.title": "更新设置",
+  "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.title": "启用自动更新检测",
+  "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.hover.title": "启用自动更新检测",
+  "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.hover.desc": "游戏启动时自动检测模组是否有新版本可用。",
+  "YUWANCARD-UPDATE_POPUP.title": "YuWanCard 有新版本可用",
+  "YUWANCARD-UPDATE_POPUP.body": "YuWanCard 有新版本可用！\n\n当前版本：{0}\n最新版本：{1}\n\n是否前往下载新版本？",
+  "YUWANCARD-UPDATE_POPUP.download": "前往下载",
+  "YUWANCARD-UPDATE_POPUP.close": "关闭"
 }

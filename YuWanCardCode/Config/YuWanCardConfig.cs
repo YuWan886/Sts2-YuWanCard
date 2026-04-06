@@ -12,5 +12,9 @@ public class YuWanCardConfig : SimpleModConfig
     [ConfigHoverTip]
     public static bool BypassModelDbHashCheck { get; set; } = false;
 
+    [ConfigSection("更新设置")]
+    [ConfigHoverTip]
+    public static bool EnableAutoUpdateCheck { get; set; } = true;
+
     public YuWanCardConfig() : base() { }
 }

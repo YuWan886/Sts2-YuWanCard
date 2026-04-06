@@ -196,7 +196,7 @@ animations = [{
 
 [node name="Visuals" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1, -72)
+position = Vector2(2, -104)
 scale = Vector2(0.8, 0.8)
 sprite_frames = SubResource("SpriteFrames_pig")
 animation = &"hurt"
@@ -208,19 +208,19 @@ frame_progress = 1.0
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
-offset_left = -149.0
-offset_top = -222.0
-offset_right = 151.0
-offset_bottom = 128.0
+offset_left = -119.0
+offset_top = -197.0
+offset_right = 142.0
+offset_bottom = -9.0
 mouse_filter = 2
 
 [node name="IntentPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -168)
+position = Vector2(1, -202)
 
 [node name="CenterPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1, -126)
+position = Vector2(0, -138)
 
 [node name="OrbPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
@@ -228,7 +228,7 @@ position = Vector2(0, -100)
 
 [node name="TalkPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(101, -126)
+position = Vector2(121, -159)
 
 [node name="HurtSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("37_k4b4t")

@@ -1,4 +1,5 @@
 {
+  "YUWANCARD.mod_title": "YuWanCard Pig Cards",
   "YUWANCARD-显示设置.title": "Display Settings",
   "YUWANCARD-SHOW_DEATH_OVERLAY.title": "Replace Body with Pig",
   "YUWANCARD-SHOW_DEATH_OVERLAY.hover.title": "Replace Body with Pig",
@@ -6,5 +7,13 @@
   "YUWANCARD-多人游戏设置.title": "Multiplayer Settings",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.title": "Bypass ModelDb Hash Check",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.title": "Bypass ModelDb Hash Check",
-  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "Allow players with different ModelDb hashes to connect. Warning: May cause game sync issues, ensure all players have the same mods."
+  "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.desc": "Allow players with different ModelDb hashes to connect. Warning: May cause game sync issues, ensure all players have the same mods.",
+  "YUWANCARD-更新设置.title": "Update Settings",
+  "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.title": "Enable Auto Update Check",
+  "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.hover.title": "Enable Auto Update Check",
+  "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.hover.desc": "Automatically check for mod updates when the game starts.",
+  "YUWANCARD-UPDATE_POPUP.title": "YuWanCard Update Available",
+  "YUWANCARD-UPDATE_POPUP.body": "A new version of YuWanCard is available!\n\nCurrent version: {0}\nLatest version: {1}\n\nWould you like to download the update?",
+  "YUWANCARD-UPDATE_POPUP.download": "Download",
+  "YUWANCARD-UPDATE_POPUP.close": "Close"
 }

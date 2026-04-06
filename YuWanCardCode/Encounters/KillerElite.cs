@@ -2,6 +2,7 @@ using Godot;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Rooms;
 using YuWanCard.Monsters;
 
@@ -20,7 +21,7 @@ public sealed class KillerElite : CustomEncounterModel
 
     public override IEnumerable<MonsterModel> AllPossibleMonsters => [ModelDb.Monster<Killer>()];
 
-    public override bool IsValidForAct(ActModel act) => true;
+    public override bool IsValidForAct(ActModel act) => act is Hive or Glory;
 
     public override bool ShouldGiveRewards => !RetreatedField.Get(this);
 
