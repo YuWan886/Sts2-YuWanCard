@@ -70,7 +70,8 @@ public class Pig : PlaceholderCharacterModel
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigDefend>(),
-        ModelDb.Card<PigHurt>()
+        ModelDb.Card<PigFriends>(),
+        ModelDb.Card<PigShelter>()
     ];
     
     public override IReadOnlyList<RelicModel> StartingRelics => [ModelDb.Relic<PigCarrot>()];

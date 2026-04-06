@@ -1,8 +1,9 @@
 using BaseLib.Config;
-using BaseLib.Utils;
+using BaseLib.Utils.NodeFactories;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using YuWanCard.Config;
 using YuWanCard.Patches;
 
@@ -27,31 +28,9 @@ public partial class MainFile : Node
         ModConfigRegistry.Register(ModId, Config);
         Config.ConfigChanged += OnConfigChanged;
 
-        RegisterAudioReplacements();
-        
+        NodeFactory.RegisterSceneType<NCreatureVisuals>("res://YuWanCard/scenes/monsters/pig_minion.tscn");
+
         Logger.Info("YuWanCard initialized");
-    }
-
-    private static void RegisterAudioReplacements()
-    {
-        var modDir = Path.GetDirectoryName(typeof(MainFile).Assembly.Location);
-        if (modDir == null) return;
-
-        var soundsDir = Path.Combine(modDir, "sounds");
-
-#pragma warning disable CS0618
-        var wipeSound = Path.Combine(soundsDir, "wipe_yuwancard-pig.mp3");
-        if (File.Exists(wipeSound))
-        {
-            FmodAudio.RegisterFileReplacement("event:/sfx/ui/wipe_yuwancard-pig", wipeSound);
-        }
-
-        var dieSound = Path.Combine(soundsDir, "pig_die.mp3");
-        if (File.Exists(dieSound))
-        {
-            FmodAudio.RegisterFileReplacement("event:/sfx/characters/yuwancard-pig/yuwancard-pig_die", dieSound);
-        }
-#pragma warning restore CS0618
     }
 
     private static void OnConfigChanged(object? sender, EventArgs e)

@@ -9,5 +9,5 @@ z_index = 0
 unique_name_in_owner = true
 z_index = 0
 position = Vector2(2, -197)
-scale = Vector2(1.5, 1.5)
+scale = Vector2(1, 1)
 texture = ExtResource("1_overlay")

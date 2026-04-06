@@ -15,7 +15,7 @@ public class KillerVisualsPatch
     {
         if (__instance is Killer)
         {
-            __result = GodotUtils.CreatureVisualsFromScene("res://YuWanCard/scenes/monsters/killer/killer_visuals.tscn");
+            __result = GodotUtils.CreatureVisualsFromScene("res://YuWanCard/scenes/monsters/killer_visuals.tscn");
             return false;
         }
         return true;

@@ -8,5 +8,7 @@
   "KILLER.moves.ZOOM.title": "Zoom",
   "KILLER.moves.ENLARGE.title": "Enlarge",
   "KILLER.onDeath.speakLine": "Argh!!!",
-  "KILLER.onPlayerDeath.speakLine": "Weakling~~"
+  "KILLER.onPlayerDeath.speakLine": "Weakling~~",
+  "LUSTFUL_PIG_FOR.player": "For {playerName}!",
+  "PIG_MINION.name": "Pig Minion"
 }

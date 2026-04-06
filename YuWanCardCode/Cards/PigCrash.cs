@@ -20,6 +20,7 @@ public class PigCrash : YuWanCardModel
         target: TargetType.AllEnemies)
     {
         WithDamage(14);
+        WithVar("SelfDamage", 2);
     }
 
     protected override void OnUpgrade()
@@ -29,7 +30,7 @@ public class PigCrash : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CreatureCmd.Damage(choiceContext, Owner.Creature, 2m, ValueProp.Unblockable | ValueProp.Unpowered, Owner.Creature);
+        await CreatureCmd.Damage(choiceContext, Owner.Creature, DynamicVars["SelfDamage"].BaseValue, ValueProp.Unblockable | ValueProp.Unpowered, Owner.Creature);
         await CommonActions.CardAttack(this, cardPlay).Execute(choiceContext);
     }
 }

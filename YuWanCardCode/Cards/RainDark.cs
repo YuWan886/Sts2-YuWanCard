@@ -2,6 +2,7 @@ using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Patches;
@@ -12,8 +13,6 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class RainDark : YuWanCardModel
 {
-    private const float HpPercentage = 0.25f;
-
     public RainDark() : base(
         baseCost: 3,
         type: CardType.Skill,
@@ -22,8 +21,11 @@ public class RainDark : YuWanCardModel
     {
         WithPower<IntangiblePower>(3);
         WithPower<RainDarkPower>(3);
+        WithVar("HpPercentage", 25);
         WithKeywords(CardKeyword.Exhaust);
     }
+
+    public float HpPercentage => DynamicVars["HpPercentage"].IntValue / 100f;
 
     protected override void OnUpgrade()
     {

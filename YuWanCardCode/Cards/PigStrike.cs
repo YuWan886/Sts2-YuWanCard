@@ -2,8 +2,6 @@ using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.CardPools;
 using YuWanCard.Characters;
 
 namespace YuWanCard.Cards;
@@ -11,8 +9,6 @@ namespace YuWanCard.Cards;
 [Pool(typeof(PigCardPool))]
 public class PigStrike : YuWanCardModel
 {
-    public override CardPoolModel Pool => ModelDb.CardPool<IroncladCardPool>();
-
     public PigStrike() : base(
         baseCost: 1,
         type: CardType.Attack,

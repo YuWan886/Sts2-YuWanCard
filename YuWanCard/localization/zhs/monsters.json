@@ -9,5 +9,6 @@
   "KILLER.moves.ENLARGE.title": "蓄力",
   "KILLER.onDeath.speakLine": "饿啊！！！",
   "KILLER.onPlayerDeath.speakLine": "杂鱼~zako~",
-  "LUSTFUL_PIG_FOR.player": "为了{playerName}！"
+  "LUSTFUL_PIG_FOR.player": "为了{playerName}！",
+  "PIG_MINION.name": "小猪"
 }

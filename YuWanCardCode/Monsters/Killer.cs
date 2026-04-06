@@ -24,7 +24,7 @@ namespace YuWanCard.Monsters;
 
 public sealed class Killer : MonsterModel
 {
-    protected override string VisualsPath => "res://YuWanCard/scenes/monsters/killer/killer_visuals.tscn";
+    protected override string VisualsPath => "res://YuWanCard/scenes/monsters/killer_visuals.tscn";
 
     public override int MinInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 190, 180);
 

@@ -15,6 +15,7 @@ public class PigDragonRide : YuWanCardModel
         target: TargetType.AnyEnemy)
     {
         WithDamage(7);
+        WithVar("HitCount", 3);
         WithKeywords(CardKeyword.Exhaust);
     }
 
@@ -26,6 +27,6 @@ public class PigDragonRide : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CommonActions.CardAttack(this, cardPlay, hitCount: 3).Execute(choiceContext);
+        await CommonActions.CardAttack(this, cardPlay, hitCount: DynamicVars["HitCount"].IntValue).Execute(choiceContext);
     }
 }

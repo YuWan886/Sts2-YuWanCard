@@ -3,22 +3,29 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Rooms;
 
 namespace YuWanCard.Powers;
 
 public class RainDarkPower : YuWanPowerModel
 {
-    private const int HealAfterCombat = 6;
-    private const int MaxHandSize = 10;
-
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Counter;
 
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new HealVar(6m),
+        new DynamicVar("MaxHandSize", 10m)
+    ];
+
+    public int HealAfterCombat => DynamicVars["Heal"].IntValue;
+    public int MaxHandSize => DynamicVars["MaxHandSize"].IntValue;
+
     public override async Task AfterEnergyReset(Player player)
     {
-        if (player == Owner.Player && Owner.Player != null)
+        if (player == Owner.Player && Owner.Player != null && Amount > 0)
         {
             Flash();
             int currentEnergy = Owner.Player.PlayerCombatState?.Energy ?? 0;
@@ -33,25 +40,34 @@ public class RainDarkPower : YuWanPowerModel
     {
         if (player == Owner.Player && Owner.Player != null)
         {
-            Flash();
-
-            var hand = PileType.Hand.GetPile(player);
-            int cardsToDraw = MaxHandSize - hand.Cards.Count;
-            if (cardsToDraw > 0)
+            if (Amount > 0)
             {
-                await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), cardsToDraw, player);
-            }
+                Flash();
 
-            await PowerCmd.TickDownDuration(this);
+                var hand = PileType.Hand.GetPile(player);
+                int cardsToDraw = MaxHandSize - hand.Cards.Count;
+                if (cardsToDraw > 0)
+                {
+                    await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), cardsToDraw, player);
+                }
+
+                Amount--;
+            }
         }
     }
 
-    public override async Task AfterCombatVictory(CombatRoom room)
+    public override async Task AfterCombatEnd(CombatRoom room)
     {
+        if (Owner == null) return;
+        
+        var ownerName = Owner.Player?.Character?.Title?.ToString() ?? Owner.ToString() ?? "null";
+        MainFile.Logger.Debug($"RainDarkPower.AfterCombatEnd called for {ownerName}, IsDead: {Owner.IsDead}, Amount: {Amount}");
+        
         if (!Owner.IsDead)
         {
             Flash();
             await CreatureCmd.Heal(Owner, HealAfterCombat);
+            MainFile.Logger.Info($"RainDarkPower healed {ownerName} for {HealAfterCombat} HP");
         }
     }
 }

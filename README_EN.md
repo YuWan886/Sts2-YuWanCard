@@ -23,7 +23,6 @@ A cute pig character that can use all card.
 | Attribute | Value |
 |------|------|
 | Starting HP | 80 |
-| Gender | Neutral |
 | Starting Relic | Pig Carrot |
 
 **Starting Deck**
@@ -37,13 +36,23 @@ A cute pig character that can use all card.
 |------|------|--------|------|--------|
 | Pig Strike | 1 | Basic | Attack | Deal 6 damage |
 | Pig Defend | 1 | Basic | Skill | Gain 5 Block |
+| Pig Shelter | 1 | Basic | Skill | All allies gain 4 Block |
+| Pig Friends | 2 | Basic | Power | Summon a Pig Minion. Every 3 stacks, the pig is upgraded (+5 max HP, +1 Strength). Exhaust |
+| Pig Inspire | 1 | Common | Skill | All allies gain 1 Strength |
+| Pig Unity | 1 | Common | Skill | Deal 4 damage. Each alive ally gives all allies 1 Strength |
+| Pig Heavy Strike | 2 | Common | Skill | Deal 10 damage. Apply 2 Vulnerable |
+| Pig Curse | 1 | Common | Skill | All enemies gain 2 Weak and 2 Vulnerable |
+| Pig Guard | 1 | Uncommon | Skill | Target ally gains 8 Block. You gain 2 Plating. Exhaust |
+| Pig Energize | 1 | Uncommon | Skill | All allies gain 1 Energy. Draw 1 card |
+| Pig Taunt | 1 | Uncommon | Skill | Gain 6 Block. All enemies gain 1 Weak and 1 Vulnerable |
+| Pig Blessing | 2 | Rare | Skill | All allies gain 1 Strength, 1 Dexterity and 2 Regen. Exhaust |
 
 **Exclusive Relics**
 
 | Name | Type | Effect |
 |------|------|--------|
 | Pig Carrot | Starter | Gain 6 Plating at the start of each combat |
-| Golden Pig Carrot | Starter | Gain 10 Plating at the start of each combat |
+| Golden Pig Carrot | Starter | Gain 12 Plating at the start of each combat |
 
 ### Cards (Colorless)
 
@@ -64,7 +73,7 @@ A cute pig character that can use all card.
 | You Are Crying | 1 | Uncommon | Skill | Apply 1 stack of Weak to an enemy, remove 50% of its Block |
 | I Give You | 1 | Uncommon | Skill | Choose a card from hand to give to target ally (Multiplayer) |
 | I Am Crying | 3 | Uncommon | Power | All players gain 2 Energy |
-| Melancholy Is A Feeling | 2 | Rare | Skill | Gain Block equal to current HP |
+| Melancholy Is A Feeling | 3 | Rare | Skill | Gain Block equal to current HP |
 | Sad Army Wins | 3 | Rare | Skill | Kill an enemy when HP is below 10% |
 | Revive! | 4 | Rare | Skill | Resurrect a dead ally with 50% max HP (Multiplayer) |
 | Rain Dark | 3 | Ancient | Skill | Set all players' HP to 25% of max HP, gain 3 stacks of Intangible and Rain Dark (double energy gained for 3 turns), double current energy, draw full hand, heal 6 HP after combat. Exhaust |
@@ -88,10 +97,14 @@ A cute pig character that can use all card.
 | Name | Effect |
 |------|--------|
 | Pig Doubt | Gain random Power each turn |
-| Rain Dark | Double energy gained |
+| Rain Dark | Double energy gained. Heal 6 HP after combat |
 | Pig Bankruptcy | All cards in hand cost 0 this turn, but they all have Exhaust |
 | Pig Brain Overload | Every 2 turns, gain 1 Dazed |
 | You Are Pig | Turn into a pig, lasts for turns |
+| Vakuu Takeover | At the start of your turn, Vakuu will automatically play cards from your hand |
+| Train You Well | Gain Strength this turn |
+| Pig Friends | When gained, summon a Pig Minion. Every 3 stacks, the pig is upgraded |
+| Pig Minion | Absorbs all unblocked attack damage for owner. Gains Block when owner gains Block. Strength added to owner's attacks. Gains 1 Strength when owner gains Strength |
 
 ### Enchantments
 
