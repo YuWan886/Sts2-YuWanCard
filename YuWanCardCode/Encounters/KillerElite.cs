@@ -1,19 +1,26 @@
 using Godot;
+using BaseLib.Abstracts;
+using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
 using YuWanCard.Monsters;
-using BaseLib.Utils;
 
 namespace YuWanCard.Encounters;
 
-public sealed class KillerElite : EncounterModel
+public sealed class KillerElite : CustomEncounterModel
 {
     private static readonly SavedSpireField<EncounterModel, bool> RetreatedField = new(() => false, "KillerElite_Retreated");
     private static readonly SpireField<EncounterModel, HashSet<ulong>> VotedPlayersField = new(() => []);
 
-    public override RoomType RoomType => RoomType.Elite;
+    public KillerElite() : base(RoomType.Elite, autoAdd: true)
+    {
+    }
 
-    public override IEnumerable<MonsterModel> AllPossibleMonsters => new List<MonsterModel> { ModelDb.Monster<Killer>() };
+    public override string? CustomScenePath => "res://YuWanCard/scenes/encounters/killer_elite.tscn";
+
+    public override IEnumerable<MonsterModel> AllPossibleMonsters => [ModelDb.Monster<Killer>()];
+
+    public override bool IsValidForAct(ActModel act) => true;
 
     public override bool ShouldGiveRewards => !RetreatedField.Get(this);
 
@@ -54,6 +61,6 @@ public sealed class KillerElite : EncounterModel
 
     protected override IReadOnlyList<(MonsterModel, string?)> GenerateMonsters()
     {
-        return new List<(MonsterModel, string?)> { (ModelDb.Monster<Killer>().ToMutable(), null) };
+        return [(ModelDb.Monster<Killer>().ToMutable(), null)];
     }
 }

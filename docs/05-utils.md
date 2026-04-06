@@ -281,12 +281,6 @@ FieldInfo field = stateMachineType.FindStateMachineField("myVariable");
 ```csharp
 using BaseLib.Utils;
 
-// 从场景创建生物视觉节点
-var visuals = GodotUtils.CreatureVisualsFromScene("res://scenes/creature_visuals/my_character.tscn");
-
-// 从图片创建生物视觉节点（新增）
-var visuals = GodotUtils.CreatureVisualsFromImage("res://my_mod/images/my_creature.png");
-
 // 转移节点（扩展方法）
 var node = new MyNode().TransferAllNodes("res://scenes/my_scene.tscn", "Node1", "Node2");
 ```
@@ -295,31 +289,14 @@ var node = new MyNode().TransferAllNodes("res://scenes/my_scene.tscn", "Node1", 
 
 | 方法 | 说明 |
 |------|------|
-| `CreatureVisualsFromScene(string path)` | 从场景创建生物视觉节点 |
-| `CreatureVisualsFromImage(string path)` | 从图片创建生物视觉节点（新增） |
 | `TransferAllNodes<T>(this T, string, params string[])` | 从源场景转移指定节点到目标节点 |
 
-### CreatureVisualsFromImage 详细说明
+**注意**：以下方法已弃用，请使用 `NodeFactory<T>` 替代：
 
-从给定路径加载图片作为纹理，自动创建 `NCreatureVisuals`：
-
-```csharp
-public override NCreatureVisuals? CreateCustomVisuals()
-{
-    return GodotUtils.CreatureVisualsFromImage("res://MyMod/images/my_character.png");
-}
-```
-
-**自动创建的节点**：
-- `Bounds`：边界控件（放大 10%）
-- `Sprite2D`：显示图片
-- `IntentPos`：意图位置标记点
-- `CenterPos`：中心位置标记点
-
-**使用场景**：
-- 快速创建自定义角色/怪物的视觉表现
-- 无需创建完整的 Godot 场景文件
-- 适合简单的静态图片角色
+| 弃用方法 | 替代方法 |
+|----------|----------|
+| `CreatureVisualsFromScene(string path)` | `NodeFactory<NCreatureVisuals>.CreateFromScene(path)` |
+| `CreatureVisualsFromImage(string path)` | `NodeFactory<NCreatureVisuals>.CreateFromResource(texture)` |
 
 ### TransferAllNodes 详细说明
 

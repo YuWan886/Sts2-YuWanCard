@@ -28,8 +28,6 @@ public partial class MainFile : Node
         ModConfigRegistry.Register(ModId, Config);
         Config.ConfigChanged += OnConfigChanged;
 
-        NodeFactory.RegisterSceneType<NCreatureVisuals>("res://YuWanCard/scenes/monsters/pig_minion.tscn");
-
         Logger.Info("YuWanCard initialized");
     }
 

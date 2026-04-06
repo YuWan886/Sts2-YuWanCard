@@ -21,7 +21,7 @@
   "YUWANCARD-MELANCHOLY_RABBIT.title": "忧郁是一种感觉",
   "YUWANCARD-MELANCHOLY_RABBIT.description": "获得等同于当前生命值的[gold]格挡[/gold]。",
   "YUWANCARD-SAD_ARMY_WIN.title": "哀兵必胜",
-  "YUWANCARD-SAD_ARMY_WIN.description": "当你的血量低于最大生命值的10%时，击杀{IfUpgraded:show:所有|一名}敌人。",
+  "YUWANCARD-SAD_ARMY_WIN.description": "当你的血量低于最大生命值的10%时，直接获得本场战斗胜利。",
   "YUWANCARD-REVIVE_KAI.title": "复活吧！",
   "YUWANCARD-REVIVE_KAI.description": "复活一名已死亡的队友，并恢复其{IfUpgraded:show:100%|50%}最大生命值。",
   "YUWANCARD-RAIN_DARK.title": "雨落狂流之暗",

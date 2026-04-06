@@ -1,8 +1,53 @@
 # 自定义动态变量
 
-BaseLib 提供了三个自定义动态变量，用于实现特殊的卡牌效果。
+BaseLib 提供了多种自定义动态变量，用于实现特殊的卡牌效果。
 
-## DynamicVar 基类
+## DynamicVar 扩展方法
+
+BaseLib 提供了 `DynamicVarExtensions` 类，包含以下扩展方法：
+
+```csharp
+// 为动态变量添加提示框
+var myVar = new MyCustomVar(5m).WithTooltip();
+
+// 为动态变量设置升级值
+var damageVar = new DamageVar(6m).WithUpgrade(3m);  // 升级后 9 点伤害
+
+// 计算格挡值（考虑各种加成）
+decimal block = blockVar.CalculateBlock(creature, ValueProp.None, cardPlay, card);
+```
+
+### WithTooltip()
+
+`WithTooltip()` 方法会自动从 `static_hover_tips` 本地化表中读取提示文本，键名格式为 `{PREFIX}-{VAR_NAME}.title` 和 `{PREFIX}-{VAR_NAME}.description`。
+
+### WithUpgrade(decimal upgradeValue)
+
+`WithUpgrade()` 方法为动态变量设置升级增加值：
+
+```csharp
+// 创建伤害变量，基础值 6，升级增加 3
+var damageVar = new DamageVar(6m).WithUpgrade(3m);
+
+// 等价于：
+var damageVar = new DamageVar(6m);
+damageVar.UpgradeValue = 3m;
+```
+
+### CalculateBlock()
+
+计算实际格挡值，考虑各种加成：
+
+```csharp
+decimal actualBlock = blockVar.CalculateBlock(
+    creature,        // 目标生物
+    ValueProp.None,  // 值属性
+    cardPlay,        // 卡牌打出上下文
+    card             // 卡牌模型
+);
+```
+
+## PersistVarDynamicVar 基类
 
 `DynamicVar` 是所有动态变量的基类，定义在 `MegaCrit.Sts2.Core.Localization.DynamicVars` 命名空间。
 

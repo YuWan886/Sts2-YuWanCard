@@ -71,34 +71,22 @@ public static class PigCardPoolUtils
         var originalCards = options.GetPossibleCards(player).ToList();
         if (originalCards.Count == 0) return options;
 
-        var originalRarities = originalCards.Select(c => c.Rarity).Distinct().ToHashSet();
         var originalTypes = originalCards.Select(c => c.Type).Distinct().ToHashSet();
+        var originalRarities = originalCards.Select(c => c.Rarity).Distinct().ToHashSet();
         
         bool isColorless = options.CardPools.Any(p => p.IsColorless);
+        bool preserveRarity = options.Flags.HasFlag(CardCreationFlags.NoRarityModification);
         
         HashSet<CardModel> allCards;
         
-        if (isColorless)
+        if (preserveRarity)
         {
-            allCards = GetAllUnlockedCards(player, originalTypes, colorlessOnly: true);
+            var validRarities = originalRarities.Where(r => !ExcludedRarities.Contains(r)).ToHashSet();
+            allCards = GetAllCardsByTypesAndRarities(player, originalTypes, validRarities);
         }
         else
         {
-            var validRarities = originalRarities.Where(r => !ExcludedRarities.Contains(r)).ToHashSet();
-            
-            if (validRarities.Count == 0)
-            {
-                allCards = GetAllUnlockedCards(player, originalTypes);
-            }
-            else
-            {
-                allCards = GetAllCardsByTypesAndRarities(player, originalTypes, validRarities);
-                
-                if (allCards.Count == 0)
-                {
-                    allCards = GetAllUnlockedCards(player, originalTypes);
-                }
-            }
+            allCards = GetAllUnlockedCards(player, originalTypes, colorlessOnly: isColorless);
         }
 
         if (allCards.Count == 0) return options;

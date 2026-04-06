@@ -95,7 +95,7 @@ public class PigFriendsPower : YuWanPowerModel
         NCreature? ownerNode = NCombatRoom.Instance?.GetCreatureNode(Owner);
         if (pigNode == null || ownerNode == null) return;
 
-        float scale = upgradeLevel * 0.15f;
+        float scale = 0.5f + upgradeLevel * 0.15f;
         pigNode.SetDefaultScaleTo(scale, 0f);
 
         Vector2 offset = new Vector2(ownerNode.Hitbox.Size.X * 0.5f + 150f, -20f);

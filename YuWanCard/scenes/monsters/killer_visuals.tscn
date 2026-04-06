@@ -12,7 +12,7 @@ texture = ExtResource("2_killer")
 
 [node name="Bounds" type="Control" parent="."]
 unique_name_in_owner = true
-visible = false
+visible = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

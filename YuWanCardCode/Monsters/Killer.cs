@@ -22,10 +22,8 @@ using YuWanCard.Utils;
 
 namespace YuWanCard.Monsters;
 
-public sealed class Killer : MonsterModel
+public sealed class Killer : YuWanMonsterModel
 {
-    protected override string VisualsPath => "res://YuWanCard/scenes/monsters/killer_visuals.tscn";
-
     public override int MinInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 190, 180);
 
     public override int MaxInitialHp => MinInitialHp;
@@ -52,7 +50,7 @@ public sealed class Killer : MonsterModel
 
     public override DamageSfxType TakeDamageSfxType => DamageSfxType.Armor;
 
-    public override string DeathSfx => "event:/sfx/enemy/enemy_attacks/hunter_killer/hunter_killer_die";
+    public override string? CustomDeathSfx => "event:/sfx/enemy/enemy_attacks/hunter_killer/hunter_killer_die";
 
     private int _enlargeTriggers;
 
@@ -207,25 +205,17 @@ public sealed class Killer : MonsterModel
         NCombatRoom.Instance?.GetCreatureNode(Creature)?.SetDefaultScaleTo(CurrentScale, 0.5f);
     }
 
-    public override CreatureAnimator GenerateAnimator(MegaSprite controller)
+    public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller)
     {
-        AnimState idleState = new("idle_loop", isLooping: true);
-        AnimState castState = new("cast");
-        AnimState attackState = new("attack");
-        AnimState hurtState = new("hurt");
-        AnimState dieState = new("die");
-
-        castState.NextState = idleState;
-        attackState.NextState = idleState;
-        hurtState.NextState = idleState;
-
-        CreatureAnimator animator = new(idleState, controller);
-        animator.AddAnyState("Idle", idleState);
-        animator.AddAnyState("Cast", castState);
-        animator.AddAnyState("Attack", attackState);
-        animator.AddAnyState("Dead", dieState);
-        animator.AddAnyState("Hit", hurtState);
-
-        return animator;
+        return SetupAnimationState(controller,
+            idleName: "idle_loop",
+            deadName: "die",
+            deadLoop: false,
+            hitName: "hurt",
+            hitLoop: false,
+            attackName: "attack",
+            attackLoop: false,
+            castName: "cast",
+            castLoop: false);
     }
 }

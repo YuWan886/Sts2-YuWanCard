@@ -51,17 +51,43 @@ public class MyCard : ConstructedCardModel
 | 方法 | 说明 |
 |------|------|
 | `WithVars(params DynamicVar[] vars)` | 添加多个动态变量 |
-| `WithVar(string name, int baseVal)` | 添加命名变量 |
-| `WithBlock(int baseVal)` | 生成 BlockVar |
-| `WithDamage(int baseVal)` | 生成 DamageVar |
-| `WithCards(int baseVal)` | 生成 CardsVar |
-| `WithPower<T>(int baseVal)` | 生成 PowerVar<T> 并添加工具提示 |
-| `WithPower<T>(string name, int baseVal)` | 带名称的 PowerVar |
+| `WithVar(string name, int baseVal, int upgrade = 0)` | 添加命名变量 |
+| `WithBlock(int baseVal, int upgrade = 0)` | 生成 BlockVar |
+| `WithDamage(int baseVal, int upgrade = 0)` | 生成 DamageVar |
+| `WithCards(int baseVal, int upgrade = 0)` | 生成 CardsVar |
+| `WithPower<T>(int baseVal, int upgrade = 0)` | 生成 PowerVar<T> 并添加工具提示 |
+| `WithPower<T>(string name, int baseVal, int upgrade = 0)` | 带名称的 PowerVar |
 | `WithTags(params CardTag[] tags)` | 添加卡牌标签 |
 | `WithKeywords(params CardKeyword[] keywords)` | 添加关键词 |
-| `WithCalculatedVar(...)` | 添加计算变量（伤害/格挡） |
 | `WithTip(TooltipSource tipSource)` | 添加工具提示 |
 | `WithEnergyTip()` | 添加能量提示 |
+
+#### 计算变量方法
+
+用于动态计算伤害或格挡值：
+
+| 方法 | 说明 |
+|------|------|
+| `WithCalculatedVar(string name, int baseVal, Func<CardModel, Creature?, decimal> bonus, ...)` | 添加计算变量（baseVal + bonus） |
+| `WithCalculatedVar(string name, int baseVal, int multVal, Func<CardModel, Creature?, decimal> mult, ...)` | 添加计算变量（baseVal + multVal * mult） |
+| `WithCalculatedBlock(int baseVal, Func<CardModel, Creature?, decimal> bonus, ...)` | 添加计算格挡（变量名为 CalculatedBlock） |
+| `WithCalculatedBlock(int baseVal, int multVal, Func<CardModel, Creature?, decimal> mult, ...)` | 添加计算格挡（baseVal + multVal * mult） |
+| `WithCalculatedDamage(int baseVal, Func<CardModel, Creature?, decimal> bonus, ...)` | 添加计算伤害（变量名为 CalculatedDamage） |
+| `WithCalculatedDamage(int baseVal, int multVal, Func<CardModel, Creature?, decimal> mult, ...)` | 添加计算伤害（baseVal + multVal * mult） |
+
+**计算变量示例**：
+
+```csharp
+// 基础伤害 + 额外伤害（基于目标已损失生命值）
+WithCalculatedDamage(6, (card, target) => 
+    target != null ? Math.Floor((target.MaxHp - target.CurrentHp) / 10m) : 0);
+
+// 基础格挡 + 倍率计算（连击数 * 2）
+WithCalculatedBlock(5, 2, (card, target) => 
+    card.Owner.Creature.CombatState?.TurnCardsPlayed ?? 0);
+```
+
+**注意**：每张卡牌目前只支持一个计算变量。
 
 #### 完整示例
 
@@ -1138,7 +1164,7 @@ public class MyCustomRelicPool : CustomRelicPoolModel
 {
     public MyCustomRelicPool()
     {
-        Name = "My Relic Pool";
+        Title = "My Relic Pool";
     }
 
     public override bool IsShared => false;
@@ -1150,6 +1176,199 @@ public class MyCustomRelicPool : CustomRelicPoolModel
 **能量图标属性**：
 - `BigEnergyIconPath`：大能量图标路径
 - `TextEnergyIconPath`：文本能量图标路径
+
+## 自定义怪物 (CustomMonsterModel)
+
+继承 `CustomMonsterModel` 来创建自定义怪物：
+
+```csharp
+using BaseLib.Abstracts;
+using MegaCrit.Sts2.Core.Models;
+
+public class MyMonster : CustomMonsterModel
+{
+    public override string? CustomVisualPath => "res://MyMod/scenes/monsters/my_monster.tscn";
+    
+    public override int MinInitialHp => 50;
+    public override int MaxInitialHp => 60;
+    
+    public override string? CustomAttackSfx => "res://MyMod/audio/monster_attack.ogg";
+    public override string? CustomCastSfx => "res://MyMod/audio/monster_cast.ogg";
+    public override string? CustomDeathSfx => "res://MyMod/audio/monster_death.ogg";
+}
+```
+
+**视觉资源属性**：
+
+| 属性 | 说明 |
+|------|------|
+| `CustomVisualPath` | 自定义视觉场景路径（默认查找 `res://scenes/creature_visuals/modname-class_name.tscn`） |
+| `CustomAttackSfx` | 攻击音效路径 |
+| `CustomCastSfx` | 施法音效路径 |
+| `CustomDeathSfx` | 死亡音效路径 |
+
+**动画设置**：
+
+使用 `SetupAnimationState` 静态方法简化动画状态设置：
+
+```csharp
+public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller)
+{
+    return SetupAnimationState(
+        controller,
+        idleName: "idle",
+        deadName: "dead",
+        deadLoop: false,
+        hitName: "hit",
+        hitLoop: false,
+        attackName: "attack",
+        attackLoop: false,
+        castName: "cast",
+        castLoop: false
+    );
+}
+```
+
+**自定义视觉**：
+
+重写 `CreateCustomVisuals` 方法创建自定义视觉节点：
+
+```csharp
+public override NCreatureVisuals? CreateCustomVisuals()
+{
+    if (CustomVisualPath == null) return null;
+    return NodeFactory<NCreatureVisuals>.CreateFromScene(CustomVisualPath);
+}
+```
+
+## 自定义遭遇 (CustomEncounterModel)
+
+继承 `CustomEncounterModel` 来创建自定义遭遇（怪物组合）：
+
+```csharp
+using BaseLib.Abstracts;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Rooms;
+
+public class MyEncounter : CustomEncounterModel
+{
+    public MyEncounter() : base(RoomType.Monster, autoAdd: true)
+    {
+    }
+
+    public override bool IsValidForAct(ActModel act) =>
+        act.ActNumber() == 1;
+
+    public override string? CustomScenePath => "res://MyMod/scenes/encounters/my_encounter.tscn";
+
+    public override IEnumerable<MonsterModel> AllPossibleMonsters =>
+    [
+        ModelDb.Monster<MyMonster1>(),
+        ModelDb.Monster<MyMonster2>()
+    ];
+
+    public override IEnumerable<MutableMonster> GenerateMonsters()
+    {
+        if (Rng.NextFloat() < 0.5f)
+        {
+            return [ModelDb.Monster<MyMonster1>().ToMutable()];
+        }
+        return [ModelDb.Monster<MyMonster2>().ToMutable()];
+    }
+}
+```
+
+**构造函数参数**：
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `roomType` | RoomType | 房间类型（Monster、Elite、Boss） |
+| `autoAdd` | bool | 是否自动添加到遭遇池（默认 true） |
+
+**重要方法**：
+
+| 方法 | 说明 |
+|------|------|
+| `IsValidForAct(ActModel)` | 检查遭遇是否适用于指定章节 |
+| `AllPossibleMonsters` | 返回所有可能出现的怪物模型 |
+| `GenerateMonsters()` | 生成实际出现的怪物实例 |
+
+**视觉资源属性**：
+
+| 属性 | 说明 |
+|------|------|
+| `CustomScenePath` | 自定义遭遇场景路径（1920x1080 Control，包含 Marker2D 标记敌人位置） |
+| `HasScene` | 是否有场景（自动检测 CustomScenePath 或默认路径） |
+
+**自定义背景**：
+
+重写 `CustomEncounterBackground` 方法提供自定义背景：
+
+```csharp
+public override BackgroundAssets? CustomEncounterBackground(ActModel parentAct, Rng rng)
+{
+    return new CustomBackgroundAssets(
+        backgroundScenePath: "res://MyMod/scenes/backgrounds/my_bg.tscn",
+        layerPaths: ["res://MyMod/images/backgrounds/layer1.png"]
+    );
+}
+```
+
+**场景结构要求**：
+
+遭遇场景是一个 1920x1080 的 Control，包含 Marker2D 子节点标记敌人位置：
+- 初始敌人会按场景中 Marker 的顺序放置
+- 可以使用 CreatureCmd.Add 配合标记名称生成额外敌人
+
+## 自定义宠物 (CustomPetModel)
+
+继承 `CustomPetModel` 来创建自定义宠物（特殊的怪物类型）：
+
+```csharp
+using BaseLib.Abstracts;
+
+public class MyPet : CustomPetModel
+{
+    public MyPet() : base(visibleHp: false)  // 是否显示血条
+    {
+    }
+
+    public override string? CustomVisualPath => "res://MyMod/scenes/pets/my_pet.tscn";
+    
+    public override int MinInitialHp => 10;
+    public override int MaxInitialHp => 10;
+}
+```
+
+**CustomPetModel 特点**：
+
+| 特性 | 说明 |
+|------|------|
+| 继承自 | `CustomMonsterModel` |
+| 构造函数参数 | `visibleHp: bool` - 是否显示血条 |
+| 默认行为 | 使用空的移动状态机（`NOTHING_MOVE`） |
+| 视觉资源 | 与 `CustomMonsterModel` 相同 |
+
+**自定义移动状态**：
+
+宠物默认使用空的移动状态机。如果需要自定义行为，重写 `GenerateMoveStateMachine` 方法：
+
+```csharp
+protected override MonsterMoveStateMachine GenerateMoveStateMachine()
+{
+    MoveState idleState = new MoveState("IDLE", _ => Task.CompletedTask);
+    idleState.FollowUpState = idleState;
+    
+    MoveState attackState = new MoveState("ATTACK", async _ => 
+    {
+        // 攻击逻辑
+        await Task.CompletedTask;
+    });
+    attackState.FollowUpState = idleState;
+    
+    return new MonsterMoveStateMachine([idleState, attackState], idleState);
+}
+```
 
 ## 自定义 Modifier (ModifierModel)
 

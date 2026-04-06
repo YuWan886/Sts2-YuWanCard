@@ -12,9 +12,9 @@ namespace YuWanCard.Cards;
 public class SadArmyWin : YuWanCardModel
 {
     public SadArmyWin() : base(
-        baseCost: 2,
+        baseCost: 3,
         type: CardType.Skill,
-        rarity: CardRarity.Rare,
+        rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
     }
@@ -35,23 +35,13 @@ public class SadArmyWin : YuWanCardModel
         
         if (healthPercent <= 0.1f)
         {
-            if (IsUpgraded)
+            var primaryEnemies = CombatState!.Enemies
+                .Where(e => e.IsAlive && e.IsPrimaryEnemy)
+                .ToList();
+
+            foreach (var enemy in primaryEnemies)
             {
-                var allEnemies = CombatState!.Enemies.ToList();
-                foreach (var enemy in allEnemies)
-                {
-                    if (enemy.IsAlive)
-                    {
-                        await KillEnemy(choiceContext, enemy, Owner.Creature);
-                    }
-                }
-            }
-            else
-            {
-                if (cardPlay.Target != null && cardPlay.Target.IsAlive)
-                {
-                    await KillEnemy(choiceContext, cardPlay.Target, Owner.Creature);
-                }
+                await KillEnemy(choiceContext, enemy, Owner.Creature);
             }
         }
     }

@@ -1,5 +1,5 @@
 {
-  "KILLER.name": "杀手",
+  "YUWANCARD-KILLER.name": "杀手",
   "KILLER.moves.SLEEP.speakLine": "好多区！！！",
   "KILLER.moves.WAKE.speakLine": "苏醒了...[red]猎杀时刻[/red]！",
   "KILLER.moves.SLASH.title": "斩击",
@@ -10,5 +10,5 @@
   "KILLER.onDeath.speakLine": "饿啊！！！",
   "KILLER.onPlayerDeath.speakLine": "杂鱼~zako~",
   "LUSTFUL_PIG_FOR.player": "为了{playerName}！",
-  "PIG_MINION.name": "小猪"
+  "YUWANCARD-PIG_MINION.name": "小猪"
 }

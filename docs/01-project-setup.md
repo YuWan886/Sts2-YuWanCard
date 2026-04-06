@@ -22,14 +22,25 @@
 
 **BaseLib 核心功能**：
 - `CustomCardModel`：自定义卡牌基类
+- `ConstructedCardModel`：链式 API 卡牌基类（推荐）
 - `CustomCharacterModel`：自定义角色基类
 - `CustomRelicModel`：自定义遗物基类
 - `CustomPowerModel`：自定义能力基类
 - `CustomPotionModel`：自定义药水基类
 - `CustomAncientModel`：自定义先古之民基类
+- `CustomMonsterModel`：自定义怪物基类
+- `CustomEncounterModel`：自定义遭遇基类
+- `CustomPetModel`：自定义宠物基类
+- `CustomCardPoolModel`：自定义卡牌池基类
+- `CustomRelicPoolModel`：自定义遗物池基类
+- `CustomPotionPoolModel`：自定义药水池基类
+- `CustomSingletonModel`：持续接收钩子的单例模型基类
+- `CustomOrbModel`：自定义球体基类
+- `CustomPile`：自定义牌堆基类
 - `PoolAttribute`：内容池属性标记
 - `CommonActions`：常用游戏动作工具（支持 `CalculatedDamageVar` 优先）
-- `GodotUtils`：Godot 节点和场景处理工具
+- `NodeFactory<T>`：节点工厂（推荐，替代 GodotUtils）
+- `GodotUtils`：Godot 节点和场景处理工具（部分已弃用）
 - `ShaderUtils`：着色器生成工具
 - `WeightedList`：加权随机列表
 - `SpireField`：Harmony 自定义字段

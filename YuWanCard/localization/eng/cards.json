@@ -21,7 +21,7 @@
   "YUWANCARD-MELANCHOLY_RABBIT.title": "Melancholy Is A Feeling",
   "YUWANCARD-MELANCHOLY_RABBIT.description": "Gain [gold]Block[/gold] equal to your current HP.",
   "YUWANCARD-SAD_ARMY_WIN.title": "Sad Army Win",
-  "YUWANCARD-SAD_ARMY_WIN.description": "When your HP is below 10% of max HP, kill {IfUpgraded:show:all|one} enemy(s).",
+  "YUWANCARD-SAD_ARMY_WIN.description": "When your HP is below 10% of max HP, instantly win this combat.",
   "YUWANCARD-REVIVE_KAI.title": "Revive!",
   "YUWANCARD-REVIVE_KAI.description": "Revive a dead ally and restore them to {IfUpgraded:show:100%|50%} max HP.",
   "YUWANCARD-RAIN_DARK.title": "Rain Dark",

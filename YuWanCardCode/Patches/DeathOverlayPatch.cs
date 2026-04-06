@@ -1,5 +1,6 @@
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YuWanCard.Config;
 
@@ -32,6 +33,11 @@ public class DeathOverlayPatch
             return;
         }
 
+        if (__instance.Entity.Side != CombatSide.Player)
+        {
+            return;
+        }
+
         var existingOverlay = __instance.Visuals.GetNodeOrNull<Node2D>(DeathOverlayConstants.OverlayNodeName);
         if (existingOverlay != null)
         {
@@ -59,6 +65,9 @@ public class DeathOverlayPatch
         }
 
         overlayNode.Name = DeathOverlayConstants.OverlayNodeName;
+
+        // 隐藏攻击意图
+        __instance.AnimHideIntent();
 
         var body = __instance.Visuals.GetNodeOrNull<Node2D>("%Visuals");
         if (body != null)

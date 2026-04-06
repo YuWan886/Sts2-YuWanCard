@@ -26,13 +26,33 @@ public class PigMinionPower : YuWanPowerModel
 
     public int BonusBlock => DynamicVars["BonusBlock"].IntValue;
 
+    private decimal _storedBlockToUse = 0m;
+
     public override Creature ModifyUnblockedDamageTarget(Creature target, decimal _, ValueProp props, Creature? __)
     {
         if (target != Owner.PetOwner?.Creature) return target;
         if (Owner.IsDead) return target;
         if (!props.IsPoweredAttack()) return target;
 
+        _storedBlockToUse = Owner.Block;
         return Owner;
+    }
+
+    public override decimal ModifyHpLostAfterOsty(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        if (target != Owner) return amount;
+        if (_storedBlockToUse <= 0) return amount;
+
+        decimal blockedAmount = Math.Min(_storedBlockToUse, amount);
+        decimal remainingDamage = amount - blockedAmount;
+
+        if (blockedAmount > 0)
+        {
+            Owner.LoseBlockInternal(blockedAmount);
+            _storedBlockToUse = Math.Max(0, _storedBlockToUse - blockedAmount);
+        }
+
+        return remainingDamage;
     }
 
     public override bool ShouldAllowHitting(Creature creature)
