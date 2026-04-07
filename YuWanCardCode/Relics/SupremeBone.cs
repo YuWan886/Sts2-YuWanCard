@@ -148,7 +148,7 @@ public class SupremeBone : YuWanRelicModel
         Flash();
 
         await PlayerCmd.GainEnergy(2, Owner);
-        await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), 3, Owner);
+        await CardPileCmd.Draw(choiceContext, 3, Owner);
     }
 
     public override async Task AfterCombatVictory(CombatRoom room)

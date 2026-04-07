@@ -37,7 +37,7 @@ public class GoldModificationGuard
             return true;
         }
 
-        return true;
+        return false;
     }
 
     public async Task AfterGoldGained(Player player)
