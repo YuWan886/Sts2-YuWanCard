@@ -24,7 +24,7 @@ public class PigDoubtPower : YuWanPowerModel
 
             for (int i = 0; i < powerCount; i++)
             {
-                if (CombatManager.Instance.IsEnding)
+                if (CombatManager.Instance?.IsEnding != false)
                 {
                     break;
                 }
@@ -35,7 +35,7 @@ public class PigDoubtPower : YuWanPowerModel
                     await PowerCmd.Apply(randomPower.ToMutable(), Owner, 1, Owner, null);
                 }
 
-                if (await CombatManager.Instance.CheckWinCondition())
+                if (CombatManager.Instance != null && await CombatManager.Instance.CheckWinCondition())
                 {
                     break;
                 }

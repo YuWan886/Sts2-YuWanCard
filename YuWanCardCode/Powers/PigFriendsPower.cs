@@ -26,6 +26,7 @@ public class PigFriendsPower : YuWanPowerModel
 
     private Creature? _summonedPig;
     private int _lastUpgradeLevel;
+    internal bool _isBeingRemoved = false;
 
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
@@ -68,8 +69,16 @@ public class PigFriendsPower : YuWanPowerModel
 
     public override async Task AfterRemoved(Creature oldOwner)
     {
+        if (_isBeingRemoved) return;
+        _isBeingRemoved = true;
+
         if (_summonedPig != null && !_summonedPig.IsDead)
         {
+            var pigMinionPower = _summonedPig.GetPower<PigMinionPower>();
+            if (pigMinionPower != null)
+            {
+                pigMinionPower._isBeingRemoved = true;
+            }
             await CreatureCmd.Kill(_summonedPig, false);
         }
         _summonedPig = null;
@@ -81,7 +90,7 @@ public class PigFriendsPower : YuWanPowerModel
 
         foreach (var pet in Owner.Pets)
         {
-            if (pet.Monster is PigMinion)
+            if (pet.Monster is PigMinion && pet.IsAlive)
             {
                 return pet;
             }
@@ -98,7 +107,7 @@ public class PigFriendsPower : YuWanPowerModel
         float scale = 0.5f + upgradeLevel * 0.15f;
         pigNode.SetDefaultScaleTo(scale, 0f);
 
-        Vector2 offset = new Vector2(ownerNode.Hitbox.Size.X * 0.5f + 170f, 30f);
+        Vector2 offset = new Vector2(ownerNode.Hitbox.Size.X * 0.5f + 200f, -20f);
         pigNode.Position = ownerNode.Position + offset;
 
         pigNode.ToggleIsInteractable(true);

@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=3 uid="uid://bbgxq224mo613"]
+
+[ext_resource type="Texture2D" uid="uid://d2u834j5req2w" path="res://YuWanCard/images/characters/animations/pig_die_1.png" id="1_abc123"]
+[ext_resource type="Texture2D" uid="uid://co156vplfw8si" path="res://YuWanCard/images/characters/animations/pig_die_2.png" id="2_def456"]
+[ext_resource type="Texture2D" uid="uid://cgdiabn48kg1q" path="res://YuWanCard/images/characters/animations/pig_die_3.png" id="3_ghi789"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_abc123"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_abc123")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_def456")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_ghi789")
+}],
+"loop": true,
+"name": &"death",
+"speed": 12.0
+}]
+
+[node name="PigDeathEffect" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(1.0, 1.0)
+sprite_frames = SubResource("SpriteFrames_abc123")
+animation = &"death"
+autoplay = "death"

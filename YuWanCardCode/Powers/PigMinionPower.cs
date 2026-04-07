@@ -29,6 +29,7 @@ public class PigMinionPower : YuWanPowerModel
     public int BonusBlock => DynamicVars["BonusBlock"].IntValue;
 
     private decimal _storedBlockToUse = 0m;
+    internal bool _isBeingRemoved = false;
 
     public override Creature ModifyUnblockedDamageTarget(Creature target, decimal _, ValueProp props, Creature? __)
     {
@@ -87,15 +88,25 @@ public class PigMinionPower : YuWanPowerModel
     public override async Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
     {
         if (creature != Owner) return;
+        if (_isBeingRemoved) return;
 
-        var ownerCreature = Owner.PetOwner?.Creature;
-        if (ownerCreature != null)
+        _isBeingRemoved = true;
+        try
         {
-            var pigFriendsPower = ownerCreature.GetPower<PigFriendsPower>();
-            if (pigFriendsPower != null)
+            var ownerCreature = Owner.PetOwner?.Creature;
+            if (ownerCreature != null)
             {
-                await PowerCmd.Remove(pigFriendsPower);
+                var pigFriendsPower = ownerCreature.GetPower<PigFriendsPower>();
+                if (pigFriendsPower != null && !pigFriendsPower._isBeingRemoved)
+                {
+                    pigFriendsPower._isBeingRemoved = true;
+                    await PowerCmd.Remove(pigFriendsPower);
+                }
             }
+        }
+        finally
+        {
+            _isBeingRemoved = false;
         }
     }
 
@@ -122,19 +133,29 @@ public class PigMinionPower : YuWanPowerModel
 
     public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
     {
-        if (side == Owner.Side)
-        {
-            Flash();
-            await ApplyRandomBuffToAllPlayers();
-        }
+        if (side != Owner.Side) return;
+        if (Owner.IsDead) return;
+        if (CombatManager.Instance?.IsEnding != false) return;
+
+        Flash();
+        await ApplyRandomBuffToAllPlayers();
     }
 
     private async Task ApplyRandomBuffToAllPlayers()
     {
-        var rng = CombatState.RunState.Rng.Shuffle;
+        if (CombatState == null) return;
 
-        foreach (var player in CombatState.Players)
+        var rng = CombatState.RunState?.Rng?.Shuffle;
+        if (rng == null) return;
+
+        var players = CombatState.Players;
+        if (players == null || players.Count == 0) return;
+
+        foreach (var player in players.ToList())
         {
+            if (player == null || player.Creature == null || player.Creature.IsDead) continue;
+            if (CombatManager.Instance?.IsEnding != false) return;
+
             int buffType = rng.NextInt(5);
             var creature = player.Creature;
             switch (buffType)

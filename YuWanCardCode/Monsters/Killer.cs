@@ -199,7 +199,14 @@ public sealed class Killer : YuWanMonsterModel
         SfxCmd.Play(CastSfx);
         await CreatureCmd.TriggerAnim(Creature, "Cast", 1.0f);
         await PowerCmd.Apply<StrengthPower>(Creature, StrengthGain, Creature, null);
-        await CardPileCmd.AddToCombatAndPreview<Dazed>(targets, PileType.Discard, DazedCount, addedByPlayer: false);
+
+        // 只给存活的目标添加 Dazed 牌
+        var aliveTargets = targets.Where(t => t != null && t.IsAlive).ToList();
+        if (aliveTargets.Count > 0)
+        {
+            await CardPileCmd.AddToCombatAndPreview<Dazed>(aliveTargets, PileType.Discard, DazedCount, addedByPlayer: false);
+        }
+
         _enlargeTriggers++;
         CurrentScale = 1f + 0.08f * _enlargeTriggers;
         NCombatRoom.Instance?.GetCreatureNode(Creature)?.SetDefaultScaleTo(CurrentScale, 0.5f);

@@ -4,7 +4,8 @@ namespace YuWanCard.Utils;
 
 public class GoldModificationGuard
 {
-    private readonly RecursiveCallGuard<decimal> _guard;
+    private decimal _pendingModification;
+    private bool _isApplyingModification;
     private readonly Func<Player?> _getOwner;
     private readonly Func<decimal, decimal> _calculateModification;
     private readonly Func<decimal, Task> _modifyGoldAction;
@@ -17,11 +18,6 @@ public class GoldModificationGuard
         _getOwner = getOwner ?? throw new ArgumentNullException(nameof(getOwner));
         _calculateModification = calculateModification ?? throw new ArgumentNullException(nameof(calculateModification));
         _modifyGoldAction = modifyGoldAction ?? throw new ArgumentNullException(nameof(modifyGoldAction));
-
-        _guard = new RecursiveCallGuard<decimal>(
-            action: ExecuteModification,
-            shouldProcess: value => value > 0m
-        );
     }
 
     public bool ShouldGainGold(decimal amount, Player player)
@@ -32,30 +28,49 @@ public class GoldModificationGuard
             return true;
         }
 
-        if (_guard.TryExecute(_calculateModification(amount)))
+        if (_isApplyingModification)
         {
             return true;
         }
 
-        return false;
+        _pendingModification = _calculateModification(amount);
+        return true;
     }
 
     public async Task AfterGoldGained(Player player)
     {
         var owner = _getOwner();
-        if (owner != null && player == owner)
+        if (owner == null || player != owner)
         {
-            await _guard.ExecutePendingAsync();
+            return;
         }
-    }
 
-    private async Task ExecuteModification(decimal amount)
-    {
-        await _modifyGoldAction(amount);
+        if (_isApplyingModification)
+        {
+            return;
+        }
+
+        if (_pendingModification <= 0m)
+        {
+            return;
+        }
+
+        var modification = _pendingModification;
+        _pendingModification = 0m;
+        _isApplyingModification = true;
+        try
+        {
+            await _modifyGoldAction(modification);
+        }
+        finally
+        {
+            _isApplyingModification = false;
+        }
     }
 
     public void Reset()
     {
-        _guard.Reset();
+        _pendingModification = 0m;
+        _isApplyingModification = false;
     }
 }
