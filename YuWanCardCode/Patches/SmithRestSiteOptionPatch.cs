@@ -12,6 +12,10 @@ namespace YuWanCard.Patches;
 [HarmonyPatch(typeof(SmithRestSiteOption))]
 public static class SmithRestSiteOptionPatch
 {
+    private static readonly System.Reflection.FieldInfo? SelectionField = 
+        typeof(SmithRestSiteOption).GetField("_selection", 
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
     [HarmonyPatch("OnSelect")]
     [HarmonyPrefix]
     public static bool Prefix(SmithRestSiteOption __instance, ref Task<bool> __result)
@@ -51,6 +55,9 @@ public static class SmithRestSiteOptionPatch
         };
 
         var selection = await CardSelectCmd.FromDeckForUpgrade(owner, prefs);
+        
+        SelectionField?.SetValue(instance, selection);
+        
         if (!selection.Any())
         {
             return false;

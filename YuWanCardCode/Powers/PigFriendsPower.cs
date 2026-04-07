@@ -107,7 +107,7 @@ public class PigFriendsPower : YuWanPowerModel
         float scale = 0.5f + upgradeLevel * 0.15f;
         pigNode.SetDefaultScaleTo(scale, 0f);
 
-        Vector2 offset = new Vector2(ownerNode.Hitbox.Size.X * 0.5f + 200f, -20f);
+        Vector2 offset = new Vector2(ownerNode.Hitbox.Size.X * 0.5f + 210f, -20f);
         pigNode.Position = ownerNode.Position + offset;
 
         pigNode.ToggleIsInteractable(true);
