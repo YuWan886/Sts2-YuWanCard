@@ -1,9 +1,8 @@
 using Godot;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Nodes.Combat;
-using MegaCrit.Sts2.Core.Nodes.Rooms;
+using YuWanCard.Config;
 
 namespace YuWanCard.Patches;
 
@@ -29,12 +28,13 @@ public static class DeathEffectPatch
             if (__instance == null)
                 return;
 
-            // 获取生物
+            if (!YuWanCardConfig.EnableDeathEffect)
+                return;
+
             Creature? creature = __instance.Entity;
             if (creature == null)
                 return;
 
-            // 播放死亡特效
             PlayDeathEffect(__instance, creature);
         }
     }
@@ -64,24 +64,31 @@ public static class DeathEffectPatch
                 return;
             }
 
-            // 设置特效位置
-            effectNode.GlobalPosition = effectPosition;
-
-            // 获取 AnimatedSprite2D 节点并设置缩放为固定的 0.6 倍
+            // 获取 AnimatedSprite2D 节点并设置缩放
             var animatedSprite = effectNode.GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-            if (animatedSprite != null)
+            if (animatedSprite == null)
             {
-                animatedSprite.Scale = new Vector2(0.5f, 0.5f);
+                MainFile.Logger.Error("无法找到 AnimatedSprite2D 节点");
+                return;
             }
+            
+            animatedSprite.Scale = new Vector2(0.5f, 0.5f);
 
             // 创建自动销毁控制器
             var autoDestroy = new DeathEffectAutoDestroy();
             effectNode.AddChild(autoDestroy);
 
-            // 将特效添加到场景树
-            nCreature.GetTree().Root.AddChild(effectNode);
+            // 将特效添加到生物的父节点，放在生物之后的位置
+            var parent = nCreature.GetParent();
+            var creatureIndex = nCreature.GetIndex();
+            parent.AddChild(effectNode);
+            parent.MoveChild(effectNode, creatureIndex + 1);
 
-            MainFile.Logger.Info($"播放死亡特效 - 生物: {creature.Name}, 位置: {effectPosition}");
+            // 添加到场景树后再设置全局位置
+            effectNode.GlobalPosition = new Vector2(effectPosition.X, effectPosition.Y - 30f);
+            
+            // 手动播放动画（autoplay 在实例化时可能不生效）
+            animatedSprite.Play();
         }
         catch (Exception ex)
         {

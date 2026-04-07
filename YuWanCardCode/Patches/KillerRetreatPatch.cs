@@ -45,8 +45,7 @@ public static class CombatUiActivatePatch
 
     private static bool HasKillerEnemy(CombatState state)
     {
-        var hasKiller = state.Enemies.Any(e => e.Monster is Killer);
-        return hasKiller;
+        return state.Enemies.Any(e => e.Monster is Killer && e.IsAlive);
     }
 
     private static NRetreatButton CreateRetreatButton(CombatState state)

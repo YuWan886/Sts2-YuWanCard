@@ -1,5 +1,9 @@
 {
-  "YUWANCARD.mod_title": "YuWanCard Pig Cards",
+  "YUWANCARD.mod_title": "YuWanCard",
+  "YUWANCARD-显示设置.title": "Display Settings",
+  "YUWANCARD-ENABLE_DEATH_EFFECT.title": "Enable Death Effect",
+  "YUWANCARD-ENABLE_DEATH_EFFECT.hover.title": "Enable Death Effect",
+  "YUWANCARD-ENABLE_DEATH_EFFECT.hover.desc": "Play death effect when creatures are killed.",
   "YUWANCARD-多人游戏设置.title": "Multiplayer Settings",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.title": "Bypass ModelDb Hash Check",
   "YUWANCARD-BYPASS_MODEL_DB_HASH_CHECK.hover.title": "Bypass ModelDb Hash Check",
