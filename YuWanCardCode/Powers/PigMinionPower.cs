@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -7,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Saves.Runs;
 
 namespace YuWanCard.Powers;
 
@@ -116,5 +118,43 @@ public class PigMinionPower : YuWanPowerModel
 
         Flash();
         await CreatureCmd.GainBlock(Owner, BonusBlock, ValueProp.Unpowered, null);
+    }
+
+    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    {
+        if (side == Owner.Side)
+        {
+            Flash();
+            await ApplyRandomBuffToAllPlayers();
+        }
+    }
+
+    private async Task ApplyRandomBuffToAllPlayers()
+    {
+        var rng = CombatState.RunState.Rng.Shuffle;
+
+        foreach (var player in CombatState.Players)
+        {
+            int buffType = rng.NextInt(5);
+            var creature = player.Creature;
+            switch (buffType)
+            {
+                case 0:
+                    await CardPileCmd.Draw(new BlockingPlayerChoiceContext(), 1, player);
+                    break;
+                case 1:
+                    await PlayerCmd.GainEnergy(1, player);
+                    break;
+                case 2:
+                    await PowerCmd.Apply<StrengthPower>(creature, 1, Owner, null);
+                    break;
+                case 3:
+                    await PowerCmd.Apply<DexterityPower>(creature, 1, Owner, null);
+                    break;
+                case 4:
+                    await CreatureCmd.Heal(creature, 1);
+                    break;
+            }
+        }
     }
 }

@@ -1,18 +1,40 @@
-[gd_scene load_steps=2 format=3 uid="uid://yuwancard_pig_merchant"]
+[gd_scene load_steps=3 format=3 uid="uid://bbjjco06isjev"]
 
-[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/pig.png" id="1_pig"]
+[ext_resource type="Texture2D" uid="uid://srptda76db1q" path="res://YuWanCard/images/characters/pig.png" id="1_pig"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pig"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_pig")
+}],
+"loop": true,
+"name": &"relaxed_loop",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_pig")
+}],
+"loop": false,
+"name": &"idle_loop",
+"speed": 5.0
+}]
 
 [node name="PigMerchant" type="Node2D"]
 
-[node name="PigSprite" type="Sprite2D" parent="."]
-position = Vector2(0, 0)
-texture = ExtResource("1_pig")
+[node name="Visuals" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -71.6)
 scale = Vector2(0.8, 0.8)
+sprite_frames = SubResource("SpriteFrames_pig")
+animation = &"relaxed_loop"
+autoplay = "relaxed_loop"
 
 [node name="GlowEffect" type="PointLight2D" parent="."]
-position = Vector2(0, 50)
+position = Vector2(1.4000034, -63.599987)
+scale = Vector2(61718.746, 47851.813)
 color = Color(1, 0.85, 0.4, 0.5)
 energy = 0.8
 shadow_enabled = true
 texture = ExtResource("1_pig")
-texture_scale = Vector2(1.2, 1.2)
+texture_scale = 1e-05

@@ -46,6 +46,8 @@ A cute pig character that can use all card.
 | Pig Energize | 1 | Uncommon | Skill | All allies gain 1 Energy. Draw 1 card |
 | Pig Taunt | 1 | Uncommon | Skill | Gain 6 Block. All enemies gain 1 Weak and 1 Vulnerable |
 | Pig Blessing | 2 | Rare | Skill | All allies gain 1 Strength, 1 Dexterity and 2 Regen. Exhaust |
+| Pig Rice Meal | 1 | Common | Skill | Gain 6 Block. Transform all Status cards in your hand into Pig Feed |
+| Pig Touch | 1 | Common | Skill | Heal Pig for 5 HP |
 
 **Exclusive Relics**
 
@@ -70,6 +72,7 @@ A cute pig character that can use all card.
 | Pig Barrage | 1 | Token | Attack | Deal 3 damage 3 times to an enemy |
 | Pig Shield Break | 1 | Token | Attack | Remove 50% of an enemy's Block and deal 5 damage |
 | Pig King | 0 | Rare | Skill | Choose 3 cards from your hand, transform them into Pig Charge, Pig Barrage, and Pig Shield Break. Exhaust |
+| Pig Feed | 0 | Token | Skill | Gain 1 Energy. Draw 1 card. Pig recovers 1 HP. Exhaust |
 | You Are Crying | 1 | Uncommon | Skill | Apply 1 stack of Weak to an enemy, remove 50% of its Block |
 | I Give You | 1 | Uncommon | Skill | Choose a card from hand to give to target ally (Multiplayer) |
 | I Am Crying | 3 | Uncommon | Power | All players gain 2 Energy |
@@ -103,7 +106,7 @@ A cute pig character that can use all card.
 | You Are Pig | Turn into a pig, lasts for turns |
 | Vakuu Takeover | At the start of your turn, Vakuu will automatically play cards from your hand |
 | Train You Well | Gain Strength this turn |
-| Pig Friends | When gained, summon a Pig Minion. Every 3 stacks, the pig is upgraded |
+| Pig Friends | When gained, summon a Pig Minion. Every 3 stacks, the pig is upgraded (+5 max HP, +1 Strength) |
 | Pig Minion | Absorbs all unblocked attack damage for owner. Gains Block when owner gains Block. Strength added to owner's attacks. Gains 1 Strength when owner gains Strength |
 
 ### Enchantments

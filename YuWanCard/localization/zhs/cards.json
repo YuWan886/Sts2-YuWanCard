@@ -93,5 +93,11 @@
   "YUWANCARD-PIG_SMASH.title": "猪重击",
   "YUWANCARD-PIG_SMASH.description": "造成{Damage:diff()}点伤害。给予{VulnerablePower:diff()}层[gold]易伤[/gold]。",
   "YUWANCARD-PIG_TAUNT.title": "猪嘲讽",
-  "YUWANCARD-PIG_TAUNT.description": "获得{Block:diff()}点[gold]格挡[/gold]。所有敌人获得{WeakPower:diff()}层[gold]虚弱[/gold]和{VulnerablePower:diff()}层[gold]易伤[/gold]。"
+  "YUWANCARD-PIG_TAUNT.description": "获得{Block:diff()}点[gold]格挡[/gold]。所有敌人获得{WeakPower:diff()}层[gold]虚弱[/gold]和{VulnerablePower:diff()}层[gold]易伤[/gold]。",
+  "YUWANCARD-PIG_RICE_MEAL.title": "猪干饭",
+  "YUWANCARD-PIG_RICE_MEAL.description": "获得{Block:diff()}点[gold]格挡[/gold]。将你手牌中的全部状态牌变化为{IfUpgraded:show:猪饲料+|猪饲料}。",
+  "YUWANCARD-PIG_FEED.title": "猪饲料",
+  "YUWANCARD-PIG_FEED.description": "获得{Energy:energyIcons()}。抽{Cards:diff()}张牌。小猪恢复{Heal:diff()}点血量。",
+  "YUWANCARD-PIG_TOUCH.title": "摸摸猪",
+  "YUWANCARD-PIG_TOUCH.description": "恢复小猪{Heal:diff()}点血量。"
 }

@@ -20,6 +20,13 @@ public static class SmithRestSiteOptionPatch
         return false;
     }
 
+    [HarmonyPatch("DoLocalPostSelectVfx")]
+    [HarmonyPrefix]
+    public static bool DoLocalPostSelectVfxPrefix(SmithRestSiteOption __instance, CancellationToken ct)
+    {
+        return __instance.Owner != null;
+    }
+
     private static async Task<bool> OnSelectWithFlexibleCount(SmithRestSiteOption instance)
     {
         var owner = (Player)typeof(RestSiteOption)

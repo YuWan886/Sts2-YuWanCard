@@ -1,11 +1,8 @@
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Factories;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Potions;
@@ -17,7 +14,7 @@ namespace YuWanCard.Patches;
 
 public static class PigPotionHelper
 {
-    private static readonly System.Threading.AsyncLocal<CardType?> CurrentPotionCardType = new();
+    private static readonly AsyncLocal<CardType?> CurrentPotionCardType = new();
     
     public static CardType? GetAndClearPotionCardType()
     {

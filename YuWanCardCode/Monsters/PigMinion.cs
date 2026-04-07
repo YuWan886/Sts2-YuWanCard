@@ -2,7 +2,8 @@ using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.MonsterMoves;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
 
@@ -19,6 +20,8 @@ public sealed class PigMinion : YuWanMonsterModel
 
     public override string? CustomAttackSfx => AttackSfx;
     public override string? CustomDeathSfx => "event:/sfx/characters/osty/osty_die";
+
+    public override float HpBarSizeReduction => 50f;
 
     private static int AttackDamage => 4;
 
@@ -46,6 +49,15 @@ public sealed class PigMinion : YuWanMonsterModel
 
     public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller)
     {
-        return null;
+        return SetupAnimationState(controller,
+            idleName: "idle_loop",
+            deadName: "die",
+            deadLoop: false,
+            hitName: "hurt",
+            hitLoop: false,
+            attackName: "attack",
+            attackLoop: false,
+            castName: "cast",
+            castLoop: false);
     }
 }

@@ -19,7 +19,7 @@ public class PigFriendsPower : YuWanPowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DynamicVar("PigFriendsPower", 1),
-        new DynamicVar("UpgradeThreshold", 3)
+        new DynamicVar("UpgradeThreshold", 2)
     ];
 
     public int UpgradeThreshold => DynamicVars["UpgradeThreshold"].IntValue;
@@ -98,7 +98,7 @@ public class PigFriendsPower : YuWanPowerModel
         float scale = 0.5f + upgradeLevel * 0.15f;
         pigNode.SetDefaultScaleTo(scale, 0f);
 
-        Vector2 offset = new Vector2(ownerNode.Hitbox.Size.X * 0.5f + 150f, -20f);
+        Vector2 offset = new Vector2(ownerNode.Hitbox.Size.X * 0.5f + 170f, 30f);
         pigNode.Position = ownerNode.Position + offset;
 
         pigNode.ToggleIsInteractable(true);

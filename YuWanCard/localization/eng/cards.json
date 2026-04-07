@@ -93,5 +93,11 @@
   "YUWANCARD-PIG_SMASH.title": "Pig Smash",
   "YUWANCARD-PIG_SMASH.description": "Deal {Damage:diff()} damage. Apply {VulnerablePower:diff()} [gold]Vulnerable[/gold].",
   "YUWANCARD-PIG_TAUNT.title": "Pig Taunt",
-  "YUWANCARD-PIG_TAUNT.description": "Gain {Block:diff()} [gold]Block[/gold]. All enemies gain {WeakPower:diff()} [gold]Weak[/gold] and {VulnerablePower:diff()} [gold]Vulnerable[/gold]."
+  "YUWANCARD-PIG_TAUNT.description": "Gain {Block:diff()} [gold]Block[/gold]. All enemies gain {WeakPower:diff()} [gold]Weak[/gold] and {VulnerablePower:diff()} [gold]Vulnerable[/gold].",
+  "YUWANCARD-PIG_RICE_MEAL.title": "Pig Rice Meal",
+  "YUWANCARD-PIG_RICE_MEAL.description": "Gain {Block:diff()} [gold]Block[/gold]. Transform all Status cards in your hand into {IfUpgraded:show:Upgraded |}[gold]Pig Feed[/gold].",
+  "YUWANCARD-PIG_FEED.title": "Pig Feed",
+  "YUWANCARD-PIG_FEED.description": "Gain {Energy:energyIcons()}. Draw {Cards:diff()} card(s). Pig recovers {Heal:diff()} HP.",
+  "YUWANCARD-PIG_TOUCH.title": "Pig Touch",
+  "YUWANCARD-PIG_TOUCH.description": "Heal Pig {Heal:diff()} HP."
 }

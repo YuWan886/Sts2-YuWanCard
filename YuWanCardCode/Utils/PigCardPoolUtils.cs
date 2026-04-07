@@ -76,10 +76,11 @@ public static class PigCardPoolUtils
         
         bool isColorless = options.CardPools.Any(p => p.IsColorless);
         bool preserveRarity = options.Flags.HasFlag(CardCreationFlags.NoRarityModification);
+        bool hasRarityFilter = originalRarities.Count == 1 && !ExcludedRarities.Contains(originalRarities.First());
         
         HashSet<CardModel> allCards;
         
-        if (preserveRarity)
+        if (preserveRarity || hasRarityFilter)
         {
             var validRarities = originalRarities.Where(r => !ExcludedRarities.Contains(r)).ToHashSet();
             allCards = GetAllCardsByTypesAndRarities(player, originalTypes, validRarities);
