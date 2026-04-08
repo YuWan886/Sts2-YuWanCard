@@ -13,7 +13,7 @@ public class PigChop : YuWanCardModel
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
 
     public PigChop() : base(
-        baseCost: 0,
+        baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Token,
         target: TargetType.Self)

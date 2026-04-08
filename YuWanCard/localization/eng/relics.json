@@ -47,5 +47,8 @@
   "YUWANCARD-PIG_CARROT.flavor": "The pig's favorite food.",
   "YUWANCARD-PIG_GOLDEN_CARROT.title": "Golden Carrot",
   "YUWANCARD-PIG_GOLDEN_CARROT.description": "At the start of each combat, gain {PlatingPower:diff()} [gold]Plating[/gold].",
-  "YUWANCARD-PIG_GOLDEN_CARROT.flavor": "A legendary golden carrot with mysterious power."
+  "YUWANCARD-PIG_GOLDEN_CARROT.flavor": "A legendary golden carrot with mysterious power.",
+  "YUWANCARD-PIG_ROAST_PORK.title": "Roast Pork",
+  "YUWANCARD-PIG_ROAST_PORK.description": "Can choose the Roast Pork option at [gold]Rest Sites[/gold].",
+  "YUWANCARD-PIG_ROAST_PORK.flavor": "Sacrifice yourself for your teammates."
 }

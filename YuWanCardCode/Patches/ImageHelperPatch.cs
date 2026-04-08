@@ -1,10 +1,8 @@
-using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
-using BaseLib.Abstracts;
 
 namespace YuWanCard.Patches;
 
@@ -28,38 +26,20 @@ public static class ImageHelperPatch
         }
     }
 
-    [HarmonyPatch(nameof(ImageHelper.GetRoomIconPath))]
     [HarmonyPrefix]
+    [HarmonyPatch(nameof(ImageHelper.GetRoomIconPath))]
     public static bool GetRoomIconPathPrefix(MapPointType mapPointType, RoomType roomType, ModelId? modelId, ref string? __result)
     {
-        if (mapPointType == MapPointType.Ancient && modelId != null)
+        if (modelId != null && modelId.Entry == "YUWANCARD-PIG_PIG")
         {
-            if (modelId.Entry == "YUWANCARD-PIG_PIG")
-            {
-                __result = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig.png";
-                return false;
-            }
+            __result = "res://YuWanCard/images/ancients/pig_pig_outline.png";
+            return false;
         }
         return true;
     }
 
-    [HarmonyPatch(nameof(ImageHelper.GetRoomIconOutlinePath))]
-    [HarmonyPrefix]
-    public static bool GetRoomIconOutlinePathPrefix(MapPointType mapPointType, RoomType roomType, ModelId? modelId, ref string? __result)
-    {
-        if (mapPointType == MapPointType.Ancient && modelId != null)
-        {
-            if (modelId.Entry == "YUWANCARD-PIG_PIG")
-            {
-                __result = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig_outline.png";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    [HarmonyPatch(nameof(ImageHelper.GetImagePath))]
     [HarmonyPostfix]
+    [HarmonyPatch(nameof(ImageHelper.GetImagePath))]
     public static void GetImagePathPostfix(string innerPath, ref string __result)
     {
         if (innerPath == "events/blacksmith.png")
@@ -73,31 +53,26 @@ public static class ImageHelperPatch
             var fileName = innerPath["enchantments/".Length..];
             if (fileName.EndsWith(".png"))
             {
-                var enchantmentId = fileName[..^4];
-                if (ModEnchantmentIds.Contains(enchantmentId))
-                {
-                    var newPath = $"res://YuWanCard/images/{innerPath}";
-                    if (ResourceLoader.Exists(newPath))
-                    {
-                        __result = newPath;
-                    }
-                }
+                fileName = fileName[..^4];
+            }
+
+            if (ModEnchantmentIds.Contains(fileName))
+            {
+                __result = $"res://YuWanCard/images/enchantments/{fileName}.png";
+                return;
             }
         }
-    }
-}
 
-[HarmonyPatch(typeof(CharacterModel), "IconOutlineTexturePath", MethodType.Getter)]
-public static class CharacterIconOutlineTexturePathPatch
-{
-    [HarmonyPrefix]
-    public static bool Prefix(CharacterModel __instance, ref string? __result)
-    {
-        if (__instance is CustomCharacterModel customChar && customChar.CustomIconTexturePath != null)
+        if (innerPath == "ui/rest_site/option_roast_pork.png")
         {
-            __result = customChar.CustomIconTexturePath;
-            return false;
+            __result = "res://YuWanCard/images/ui/rest_site/option_roast_pork.png";
+            return;
         }
-        return true;
+
+        if (innerPath == "ui/top_panel/character_icon_yuwancard-pig_outline.png")
+        {
+            __result = "res://YuWanCard/images/characters/character_icon_pig.png";
+            return;
+        }
     }
 }

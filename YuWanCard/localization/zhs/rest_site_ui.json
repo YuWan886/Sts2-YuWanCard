@@ -1,0 +1,4 @@
+{
+  "OPTION_ROAST_PORK.name": "烤猪肉",
+  "OPTION_ROAST_PORK.description": "失去[red]{HpLoss}[/red]点生命，添加{CardCount}张[gold]猪排[/gold]到其他所有玩家的牌组中。"
+}

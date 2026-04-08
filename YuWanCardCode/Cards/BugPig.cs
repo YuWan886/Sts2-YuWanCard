@@ -17,10 +17,18 @@ public class BugPig : YuWanCardModel
     private const int ErrorDamageBonus = 3;
     private const int ErrorDamageBonusUpgraded = 5;
 
+    private static int _cachedErrorCount = -1;
+
+    public static void ResetErrorCount()
+    {
+        _cachedErrorCount = -1;
+        MainFile.Logger.Debug("BugPig: Error count cache reset");
+    }
+
     public BugPig() : base(
         baseCost: 1,
         type: CardType.Attack,
-        rarity: CardRarity.Common,
+        rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
         WithVars(new BugPigDamageVar(BaseDamage, ErrorDamageBonus, ErrorDamageBonusUpgraded));
@@ -50,12 +58,19 @@ public class BugPig : YuWanCardModel
 
     public static int CountErrorsInLog()
     {
+        if (_cachedErrorCount >= 0)
+        {
+            MainFile.Logger.Debug($"BugPig: Using cached error count = {_cachedErrorCount}");
+            return _cachedErrorCount;
+        }
+
         try
         {
             string logPath = Path.Combine(OS.GetUserDataDir(), "logs", "godot.log");
             if (!File.Exists(logPath))
             {
                 MainFile.Logger.Warn($"BugPig: Log file not found at {logPath}");
+                _cachedErrorCount = 0;
                 return 0;
             }
 
@@ -64,7 +79,7 @@ public class BugPig : YuWanCardModel
             using (var fileStream = new FileStream(logPath, FileMode.Open, System.IO.FileAccess.Read, FileShare.ReadWrite))
             using (var streamReader = new StreamReader(fileStream))
             {
-                string line;
+                string? line;
                 while ((line = streamReader.ReadLine()) != null)
                 {
                     if (line.Contains("[YuWanCard] BugPig:"))
@@ -81,12 +96,14 @@ public class BugPig : YuWanCardModel
                 }
             }
 
-            MainFile.Logger.Info($"BugPig: Total errors found in log: {errorCount}");
+            _cachedErrorCount = errorCount;
+            MainFile.Logger.Info($"BugPig: Total errors found in log: {errorCount} (cached for this combat)");
             return errorCount;
         }
         catch (Exception ex)
         {
             MainFile.Logger.Error($"BugPig: Error reading log file: {ex.Message}");
+            _cachedErrorCount = 0;
             return 0;
         }
     }

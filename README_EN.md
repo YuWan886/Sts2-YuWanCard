@@ -48,6 +48,8 @@ A cute pig character that can use all card.
 | Pig Blessing | 2 | Rare | Skill | All allies gain 1 Strength, 1 Dexterity and 2 Regen. Exhaust |
 | Pig Rice Meal | 1 | Common | Skill | Gain 6 Block. Transform all Status cards in your hand into Pig Feed |
 | Pig Touch | 1 | Common | Skill | Heal Pig for 5 HP |
+| Bug Pig | 1 | Uncommon | Attack | Deal 7 damage. Each ERROR in the log increases damage by 3. |
+| Pig Chop | 1 | Token | Skill | Gain 3 Regen. Exhaust |
 
 **Exclusive Relics**
 
@@ -55,6 +57,7 @@ A cute pig character that can use all card.
 |------|------|--------|
 | Pig Carrot | Starter | Gain 6 Plating at the start of each combat |
 | Golden Pig Carrot | Starter | Gain 12 Plating at the start of each combat |
+| Roast Pork | Starter | Rest site option: Lose 3 HP, add 1 Pig Chop card to all other players' decks (Multiplayer) |
 
 ### Cards (Colorless)
 

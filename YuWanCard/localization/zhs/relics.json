@@ -47,5 +47,8 @@
   "YUWANCARD-PIG_CARROT.flavor": "猪最爱的食物。",
   "YUWANCARD-PIG_GOLDEN_CARROT.title": "金胡萝卜",
   "YUWANCARD-PIG_GOLDEN_CARROT.description": "每场战斗开始时，获得{PlatingPower:diff()}层[gold]覆甲[/gold]。",
-  "YUWANCARD-PIG_GOLDEN_CARROT.flavor": "传说中的金胡萝卜，蕴含着神秘的力量。"
+  "YUWANCARD-PIG_GOLDEN_CARROT.flavor": "传说中的金胡萝卜，蕴含着神秘的力量。",
+  "YUWANCARD-PIG_ROAST_PORK.title": "烤猪肉",
+  "YUWANCARD-PIG_ROAST_PORK.description": "在[gold]休息处[/gold]可以选择烤猪肉选项。",
+  "YUWANCARD-PIG_ROAST_PORK.flavor": "为了队友，牺牲自己。"
 }

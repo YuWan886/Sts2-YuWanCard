@@ -1,0 +1,4 @@
+{
+  "OPTION_ROAST_PORK.name": "Roast Pork",
+  "OPTION_ROAST_PORK.description": "Lose [red]{HpLoss}[/red] HP, add {CardCount} [gold]Pig Chop[/gold] card to all other players' decks."
+}

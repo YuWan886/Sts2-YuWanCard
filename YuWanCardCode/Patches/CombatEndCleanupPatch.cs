@@ -1,6 +1,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Rooms;
+using YuWanCard.Cards;
 
 namespace YuWanCard.Patches;
 
@@ -17,8 +18,8 @@ public class CombatEndCleanupPatch
     [HarmonyPatch(nameof(CombatManager.EndCombatInternal))]
     public static void EndCombatInternalPostfix()
     {
-        // 清理下雨特效
         RainDarkEffectPatch.CleanupAfterCombat();
+        BugPig.ResetErrorCount();
     }
 
     /// <summary>

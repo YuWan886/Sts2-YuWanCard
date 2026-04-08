@@ -65,7 +65,11 @@ public class PigMinionPower : YuWanPowerModel
 
     public override bool ShouldCreatureBeRemovedFromCombatAfterDeath(Creature creature)
     {
-        return creature == Owner;
+        if (creature != Owner)
+        {
+            return true;
+        }
+        return false;
     }
 
     public override bool ShouldPowerBeRemovedAfterOwnerDeath()
