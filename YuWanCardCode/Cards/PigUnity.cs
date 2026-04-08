@@ -11,9 +11,9 @@ namespace YuWanCard.Cards;
 public class PigUnity : YuWanCardModel
 {
     public PigUnity() : base(
-        baseCost: 1,
+        baseCost: 2,
         type: CardType.Skill,
-        rarity: CardRarity.Common,
+        rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
         WithDamage(4);

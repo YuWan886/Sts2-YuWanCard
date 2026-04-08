@@ -21,7 +21,16 @@ public class PigPig : CustomAncientModel
 {
     private const string IconBasePath = "res://YuWanCard/images/ancients/pig_pig";
 
-    private static readonly RelicModel[] _validRelics;
+    private static readonly Lazy<RelicModel[]> _validRelics = new(() =>
+    [
+        ModelDb.Relic<ArrogantPig>(),
+        ModelDb.Relic<JealousPig>(),
+        ModelDb.Relic<FuriousPig>(),
+        ModelDb.Relic<LazyPig>(),
+        ModelDb.Relic<GreedyPig>(),
+        ModelDb.Relic<GluttonousPig>(),
+        ModelDb.Relic<LustfulPig>()
+    ]);
 
     public PigPig() : base(autoAdd: true)
     {
@@ -83,14 +92,14 @@ public class PigPig : CustomAncientModel
         MakePool(Array.Empty<RelicModel>())
     );
 
-    public override IEnumerable<EventOption> AllPossibleOptions => _validRelics.Select(r => RelicOption(r.ToMutable()));
+    public override IEnumerable<EventOption> AllPossibleOptions => _validRelics.Value.Select(r => RelicOption(r.ToMutable()));
 
     private bool _isRelicReward;
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
-        var randomSevenSinsIndex = Rng.NextInt(_validRelics.Length);
-        var selectedRelic = _validRelics[randomSevenSinsIndex].ToMutable();
+        var randomSevenSinsIndex = Rng.NextInt(_validRelics.Value.Length);
+        var selectedRelic = _validRelics.Value[randomSevenSinsIndex].ToMutable();
         
         _isRelicReward = Rng.NextInt(2) == 0;
         var thirdOptionKey = _isRelicReward 
@@ -195,19 +204,7 @@ public class PigPig : CustomAncientModel
             .Select(c => Owner.RunState.CreateCard(c, Owner))];
     }
 
-    static PigPig()
-    {
-        _validRelics =
-        [
-            ModelDb.Relic<ArrogantPig>(),
-            ModelDb.Relic<JealousPig>(),
-            ModelDb.Relic<FuriousPig>(),
-            ModelDb.Relic<LazyPig>(),
-            ModelDb.Relic<GreedyPig>(),
-            ModelDb.Relic<GluttonousPig>(),
-            ModelDb.Relic<LustfulPig>()
-        ];
-    }
+
 
     private void FinishEvent()
     {

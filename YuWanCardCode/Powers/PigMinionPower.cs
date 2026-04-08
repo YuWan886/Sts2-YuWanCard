@@ -17,10 +17,6 @@ public class PigMinionPower : YuWanPowerModel
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    private new const string IconPath = "res://YuWanCard/images/powers/pig_strength_power.png";
-    public override string? CustomPackedIconPath => IconPath;
-    public override string? CustomBigIconPath => IconPath;
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DynamicVar("BonusBlock", 1m)

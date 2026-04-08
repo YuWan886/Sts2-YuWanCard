@@ -11,7 +11,7 @@ namespace YuWanCard.Cards;
 public class PigInspire : YuWanCardModel
 {
     public PigInspire() : base(
-        baseCost: 1,
+        baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Common,
         target: TargetType.AllAllies)
@@ -21,7 +21,7 @@ public class PigInspire : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Strength.UpgradeValueBy(1);
+        EnergyCost.UpgradeBy(-1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

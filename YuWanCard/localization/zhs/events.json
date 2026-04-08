@@ -11,5 +11,20 @@
   "BLACKSMITH.pages.FUSED.description": "铁匠将两张卡牌投入熔炉，火花四溅后，一张崭新的卡牌呈现在你面前。",
   "BLACKSMITH.pages.NO_CARDS.description": "铁匠摇了摇头：\"huh\"",
   "BLACKSMITH.pages.CANCELLED.description": "你决定离开铁匠铺。",
-  "BLACKSMITH.pages.FUSE_FAILED.description": "融合失败了，铁匠无奈地耸了耸肩。"
+  "BLACKSMITH.pages.FUSE_FAILED.description": "融合失败了，铁匠无奈地耸了耸肩。",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.ARTHROPOD_KILLER.title": "阅读节肢杀手篇章",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.ARTHROPOD_KILLER.description": "选择一张攻击牌附魔[purple]节肢杀手[/purple]。",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.ARTHROPOD_KILLER_LOCKED.title": "锁定",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.ARTHROPOD_KILLER_LOCKED.description": "你翻遍了口袋，却找不到一张适合对付虫子的卡牌。\n\n书上写着：[green]\"没有剑，踩虫子只会弄脏你的鞋子。\"[/green]",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SWEEPING_BLADE.title": "阅读横扫之刃篇章",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SWEEPING_BLADE.description": "选择一张攻击牌附魔[purple]横扫之刃[/purple]。",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SWEEPING_BLADE_LOCKED.title": "锁定",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SWEEPING_BLADE_LOCKED.description": "你翻遍了口袋，却找不到一张适合横扫的卡牌。\n\n书上写着：[blue]\"没有剑，横扫只会让你自己转晕。\"[/blue]",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS.title": "阅读淬毒篇章",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS.description": "选择一张攻击牌附魔[purple]淬毒[/purple]。",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS_LOCKED.title": "锁定",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS_LOCKED.description": "你翻遍了口袋，却找不到一张值得涂毒的卡牌。\n\n书上写着：[red]\"没有武器，毒药也只是浪费。\"[/red]",
+  "YUWANCARD-SELF_HELP_BOOK.pages.ARTHROPODKILLER.description": "你翻到节肢杀手篇章：\n[green]\"虫子虽多，但它们都有同一个弱点——被踩死！\"[/green]\n\n你学到了对付虫子的诀窍，卡牌上浮现出甲壳碎裂的幻象。",
+  "YUWANCARD-SELF_HELP_BOOK.pages.SWEEPINGBLADE.description": "你翻到横扫之刃篇章：\n[blue]\"一剑扫千军！虽然你可能只需要扫两三个。\"[/blue]\n\n书页上画着一个挥剑的小人，你的卡牌似乎也学会了这种气势。",
+  "YUWANCARD-SELF_HELP_BOOK.pages.VENOMOUS.description": "你翻到淬毒篇章：\n[purple]\"毒药是最好的调味品——给敌人的最后一餐加点料！\"[/purple]\n\n你小心翼翼地将毒液涂抹在卡牌上，它开始散发出诡异的紫色光芒。"
 }

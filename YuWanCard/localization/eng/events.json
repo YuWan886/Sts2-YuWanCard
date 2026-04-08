@@ -11,5 +11,20 @@
   "BLACKSMITH.pages.FUSED.description": "The blacksmith throws the two cards into the furnace. Sparks fly, and a brand new card emerges.",
   "BLACKSMITH.pages.NO_CARDS.description": "The blacksmith shakes their head: \"Huh\"",
   "BLACKSMITH.pages.CANCELLED.description": "You decide to leave the blacksmith's shop.",
-  "BLACKSMITH.pages.FUSE_FAILED.description": "The fusion failed. The blacksmith shrugs helplessly."
+  "BLACKSMITH.pages.FUSE_FAILED.description": "The fusion failed. The blacksmith shrugs helplessly.",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.ARTHROPOD_KILLER.title": "Read the Arthropod Killer Passage",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.ARTHROPOD_KILLER.description": "Choose an Attack card to enchant with [blue]Arthropod Killer[/blue].",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.ARTHROPOD_KILLER_LOCKED.title": "Read the Arthropod Killer Passage",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.ARTHROPOD_KILLER_LOCKED.description": "You search your pockets but find no card suitable for fighting bugs.\n\nThe book reads: [green]\"Without a sword, stepping on bugs just gets your shoes dirty.\"[/green]",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SWEEPING_BLADE.title": "Read the Sweeping Blade Passage",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SWEEPING_BLADE.description": "Choose an Attack card to enchant with [blue]Sweeping Blade[/blue].",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SWEEPING_BLADE_LOCKED.title": "Read the Sweeping Blade Passage",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SWEEPING_BLADE_LOCKED.description": "You search your pockets but find no card suitable for sweeping.\n\nThe book reads: [blue]\"Without a sword, sweeping just makes you dizzy.\"[/blue]",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS.title": "Read the Venomous Passage",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS.description": "Choose an Attack card to enchant with [blue]Venomous[/blue].",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS_LOCKED.title": "Read the Venomous Passage",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS_LOCKED.description": "You search your pockets but find no card worth poisoning.\n\nThe book reads: [red]\"Without a weapon, poison is just a waste.\"[/red]",
+  "YUWANCARD-SELF_HELP_BOOK.pages.ARTHROPODKILLER.description": "You turn to the Arthropod Killer passage:\n[green]\"Bugs are many, but they all share one weakness—getting squashed!\"[/green]\n\nYou learn the tricks for dealing with bugs. An illusion of shattering shells appears on your card.",
+  "YUWANCARD-SELF_HELP_BOOK.pages.SWEEPINGBLADE.description": "You turn to the Sweeping Blade passage:\n[blue]\"One sword sweeps a thousand enemies! Though you might only need to sweep two or three.\"[/blue]\n\nA tiny figure swinging a sword is drawn on the page. Your card seems to have learned this momentum.",
+  "YUWANCARD-SELF_HELP_BOOK.pages.VENOMOUS.description": "You turn to the Venomous passage:\n[purple]\"Poison is the best seasoning—add some spice to your enemy's last meal!\"[/purple]\n\nYou carefully apply the poison to your card. It begins to glow with an eerie purple light."
 }
