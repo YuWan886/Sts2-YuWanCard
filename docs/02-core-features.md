@@ -856,6 +856,119 @@ public class MyCustomPower : SomeOtherPower, ICustomPower
 - `ICustomPower` 接口适合需要继承其他能力类的情况
 - 实现此接口时，必须提供至少 `CustomPackedIconPath` 和 `CustomBigIconPath`
 
+### Health Bar Forecast（生命条预测）
+
+BaseLib v0.2.8 新增了生命条预测系统，允许能力在生物的生命条上显示预测效果（如毒素伤害、毁灭效果等）。
+
+`CustomPowerModel` 默认实现了 `IHealthBarForecastSource` 接口，只需重写 `GetHealthBarForecastSegments` 方法即可：
+
+```csharp
+using BaseLib.Hooks;
+using Godot;
+
+public class MyPoisonPower : CustomPowerModel
+{
+    public override PowerType Type => PowerType.Debuff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegments(HealthBarForecastContext context)
+    {
+        if (context.Creature == Owner && Amount > 0)
+        {
+            yield return new HealthBarForecastSegment(
+                Amount,
+                new Color(0.5f, 0.2f, 0.8f),
+                HealthBarForecastDirection.FromRight,
+                Order: 0
+            );
+        }
+    }
+}
+```
+
+#### HealthBarForecastSegment 结构
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `Amount` | `int` | 预测的 HP 变化量 |
+| `Color` | `Color` | 预测条颜色，也用于致死时的 HP 标签颜色 |
+| `Direction` | `HealthBarForecastDirection` | 预测条生长方向 |
+| `Order` | `int` | 渲染顺序，较小的值先渲染 |
+| `OverlayMaterial` | `Material?` | 可选的覆盖材质（如毁灭条着色器） |
+| `OverlaySelfModulate` | `Color?` | 可选的覆盖层自调制颜色 |
+
+#### HealthBarForecastDirection 方向
+
+| 值 | 说明 |
+|----|------|
+| `FromRight` | 从当前 HP 边缘向内生长（如毒素效果） |
+| `FromLeft` | 从空白侧向外生长（如毁灭效果） |
+
+#### HealthBarForecastOrder 辅助方法
+
+用于计算回合相关的渲染顺序：
+
+```csharp
+// 回合开始时效果
+int order = HealthBarForecastOrder.ForSideTurnStart(creature, triggerSide);
+
+// 回合结束时效果
+int order = HealthBarForecastOrder.ForSideTurnEnd(creature, triggerSide);
+```
+
+#### 使用 Shader 材质
+
+结合 `ShaderUtils.CreateDoomBarShaderMaterial` 创建类似毁灭效果的预测条：
+
+```csharp
+public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegments(HealthBarForecastContext context)
+{
+    if (Amount > 0)
+    {
+        var material = ShaderUtils.CreateDoomBarShaderMaterial(
+            ShaderUtils.CreateVanillaDoomBarGradientTexture()
+        );
+        
+        yield return new HealthBarForecastSegment(
+            Amount,
+            new Color(0.8f, 0.3f, 0.5f),
+            HealthBarForecastDirection.FromLeft,
+            Order: 0,
+            OverlayMaterial: material
+        );
+    }
+}
+```
+
+#### HealthBarForecastRegistry 注册外部来源
+
+除了能力外，还可以注册外部的预测来源：
+
+```csharp
+using BaseLib.Hooks;
+
+// 注册类型化来源
+HealthBarForecastRegistry.Register<MyForecastSource>("MyMod", "MySource");
+
+// 注册实例
+HealthBarForecastRegistry.Register("MyMod", "MySource", mySourceInstance);
+
+// 注册鸭子类型来源（跨程序集）
+HealthBarForecastRegistry.RegisterForeign("MyMod", "MySource", creature => 
+{
+    return GetForeignSegments(creature);
+});
+
+// 取消注册
+HealthBarForecastRegistry.Unregister("MyMod", "MySource");
+```
+
+**鸭子类型来源要求**：
+- 必须有公共实例属性 `Amount`（`int` 类型）
+- 必须有公共实例属性 `Color`（`Godot.Color` 类型）
+- 必须有公共实例属性 `Direction`（枚举或字符串，包含 "FromLeft" 或 "FromRight"）
+- 可选属性：`Order`（`int`）、`OverlayMaterial`（`Material`）、`OverlaySelfModulate`（`Color?`）
+
 ## 自定义卡牌池 (CustomCardPoolModel)
 
 继承 `CustomCardPoolModel` 来创建自定义卡牌池：

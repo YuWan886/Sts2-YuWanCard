@@ -69,56 +69,69 @@ public sealed class Blacksmith : EventModel
 
     private async Task FuseCards()
     {
-        var fusableCards = PileType.Deck.GetPile(Owner!).Cards
-            .Where(c => CanFuse(c))
-            .ToList();
-
-        if (fusableCards.Count < 2)
+        try
         {
-            SetEventFinished(L10NLookup("BLACKSMITH.pages.NO_CARDS.description"));
-            return;
-        }
-
-        var cardsToFuse = await CardSelectCmd.FromDeckGeneric(
-            Owner!,
-            new CardSelectorPrefs(new LocString("events", "BLACKSMITH.pages.FUSE_PROMPT"), 2, 2),
-            c => CanFuse(c)
-        );
-
-        var cardList = cardsToFuse.ToList();
-        if (cardList.Count < 2)
-        {
-            SetEventFinished(L10NLookup("BLACKSMITH.pages.CANCELLED.description"));
-            return;
-        }
-
-        await CardPileCmd.RemoveFromDeck(cardList);
-
-        var resultRarity = CalculateFusionRarity(cardList[0].Rarity, cardList[1].Rarity);
-
-        var cardPool = Owner!.Character.CardPool;
-        var availableCards = cardPool.GetUnlockedCards(Owner.UnlockState, Owner.RunState.CardMultiplayerConstraint)
-            .Where(c => c.Rarity == resultRarity && c.Rarity != CardRarity.Ancient)
-            .ToList();
-
-        if (availableCards.Count == 0)
-        {
-            availableCards = cardPool.GetUnlockedCards(Owner.UnlockState, Owner.RunState.CardMultiplayerConstraint)
-                .Where(c => c.Rarity == CardRarity.Rare)
+            var fusableCards = PileType.Deck.GetPile(Owner!).Cards
+                .Where(c => CanFuse(c))
                 .ToList();
-        }
 
-        if (availableCards.Count == 0)
+            if (fusableCards.Count < 2)
+            {
+                SetEventFinished(L10NLookup("BLACKSMITH.pages.NO_CARDS.description"));
+                return;
+            }
+
+            var cardsToFuse = await CardSelectCmd.FromDeckGeneric(
+                Owner!,
+                new CardSelectorPrefs(new LocString("events", "BLACKSMITH.pages.FUSE_PROMPT"), 2, 2),
+                c => CanFuse(c)
+            );
+
+            var cardList = cardsToFuse.ToList();
+            if (cardList.Count < 2)
+            {
+                SetEventFinished(L10NLookup("BLACKSMITH.pages.CANCELLED.description"));
+                return;
+            }
+
+            await CardPileCmd.RemoveFromDeck(cardList);
+
+            var resultRarity = CalculateFusionRarity(cardList[0].Rarity, cardList[1].Rarity);
+
+            var cardPool = Owner!.Character.CardPool;
+            var availableCards = cardPool.GetUnlockedCards(Owner.UnlockState, Owner.RunState.CardMultiplayerConstraint)
+                .Where(c => c.Rarity == resultRarity && c.Rarity != CardRarity.Ancient)
+                .ToList();
+
+            if (availableCards.Count == 0)
+            {
+                availableCards = cardPool.GetUnlockedCards(Owner.UnlockState, Owner.RunState.CardMultiplayerConstraint)
+                    .Where(c => c.Rarity == CardRarity.Rare)
+                    .ToList();
+            }
+
+            if (availableCards.Count == 0)
+            {
+                SetEventFinished(L10NLookup("BLACKSMITH.pages.FUSE_FAILED.description"));
+                return;
+            }
+
+            var selectedCardModel = availableCards[Rng.NextInt(availableCards.Count)];
+            var newCard = Owner.RunState.CreateCard(selectedCardModel, Owner);
+            var addResult = await CardPileCmd.Add(newCard, PileType.Deck);
+            
+            if (addResult.success)
+            {
+                CardCmd.PreviewCardPileAdd(addResult, 2f);
+            }
+
+            SetEventFinished(L10NLookup("BLACKSMITH.pages.FUSED.description"));
+        }
+        catch (Exception ex)
         {
+            MainFile.Logger.Error($"[Blacksmith] FuseCards error: {ex.Message}");
             SetEventFinished(L10NLookup("BLACKSMITH.pages.FUSE_FAILED.description"));
-            return;
         }
-
-        var selectedCardModel = availableCards[Rng.NextInt(availableCards.Count)];
-        var newCard = Owner.RunState.CreateCard(selectedCardModel, Owner);
-        await CardPileCmd.Add(newCard, PileType.Deck);
-
-        SetEventFinished(L10NLookup("BLACKSMITH.pages.FUSED.description"));
     }
 
     private CardRarity CalculateFusionRarity(CardRarity rarity1, CardRarity rarity2)

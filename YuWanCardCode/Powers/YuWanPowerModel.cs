@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using BaseLib.Abstracts;
+using BaseLib.Hooks;
 
 namespace YuWanCard.Powers;
 
@@ -14,18 +15,17 @@ public abstract partial class YuWanPowerModel : CustomPowerModel
     public override string? CustomPackedIconPath => IconBasePath;
     public override string? CustomBigIconPath => IconBasePath;
 
-    /// <summary>
-    /// 根据类型名称自动生成能力 ID（格式：camel_case_name）
-    /// </summary>
+    public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegments(HealthBarForecastContext context)
+    {
+        return [];
+    }
+
     public static string GeneratePowerId<T>() where T : class
     {
         var typeName = typeof(T).Name;
         return CamelCaseRegex.Replace(typeName, "$1_$2").ToLowerInvariant();
     }
 
-    /// <summary>
-    /// 根据类型名称自动生成图标路径
-    /// </summary>
     public static string GenerateIconPath<T>() where T : class
     {
         return $"res://YuWanCard/images/powers/{GeneratePowerId<T>()}.png";

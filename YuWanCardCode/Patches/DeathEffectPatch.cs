@@ -1,24 +1,22 @@
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using YuWanCard.Characters;
 using YuWanCard.Config;
 
 namespace YuWanCard.Patches;
 
 /// <summary>
-/// 死亡特效系统 - 当生物被击杀时播放猪死亡动画
+/// 死亡特效系统 - 当猪角色击杀生物时播放猪死亡动画
 /// </summary>
 [HarmonyPatch]
 public static class DeathEffectPatch
 {
-    // Godot 场景路径
     private const string EffectScenePath = "res://YuWanCard/scenes/vfx/pig_death_effect.tscn";
 
-    /// <summary>
-    /// 在 NCreature.StartDeathAnim 方法后插入死亡特效播放
-    /// 这样可以确保在节点被移除之前播放特效
-    /// </summary>
     [HarmonyPatch(typeof(NCreature), "StartDeathAnim")]
     public static class NCreatureStartDeathAnimPatch
     {
@@ -35,7 +33,40 @@ public static class DeathEffectPatch
             if (creature == null)
                 return;
 
+            if (!WasKilledByPig(creature))
+                return;
+
             PlayDeathEffect(__instance, creature);
+        }
+    }
+
+    private static bool WasKilledByPig(Creature creature)
+    {
+        try
+        {
+            var history = CombatManager.Instance?.History;
+            if (history == null)
+                return false;
+
+            var lastDamageEntry = history.Entries
+                .OfType<DamageReceivedEntry>()
+                .Where(e => e.Receiver == creature && e.Dealer != null)
+                .OrderByDescending(e => e.RoundNumber)
+                .FirstOrDefault();
+
+            if (lastDamageEntry?.Dealer == null)
+                return false;
+
+            var dealer = lastDamageEntry.Dealer;
+            if (!dealer.IsPlayer)
+                return false;
+
+            return dealer.Player?.Character is Pig;
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"检查击杀者时出错: {ex.Message}");
+            return false;
         }
     }
 
@@ -72,7 +103,7 @@ public static class DeathEffectPatch
                 return;
             }
             
-            animatedSprite.Scale = new Vector2(0.5f, 0.5f);
+            animatedSprite.Scale = new Vector2(0.4f, 0.4f);
 
             // 创建自动销毁控制器
             var autoDestroy = new DeathEffectAutoDestroy();
@@ -85,7 +116,7 @@ public static class DeathEffectPatch
             parent.MoveChild(effectNode, creatureIndex + 1);
 
             // 添加到场景树后再设置全局位置
-            effectNode.GlobalPosition = new Vector2(effectPosition.X, effectPosition.Y - 30f);
+            effectNode.GlobalPosition = new Vector2(effectPosition.X, effectPosition.Y - 50f);
             
             // 手动播放动画（autoplay 在实例化时可能不生效）
             animatedSprite.Play();
@@ -103,7 +134,7 @@ public static class DeathEffectPatch
 public partial class DeathEffectAutoDestroy : Node
 {
     private double _elapsedTime = 0;
-    private const double Duration = 2.0;
+    private const double Duration = 1.5;
 
     public override void _Process(double delta)
     {

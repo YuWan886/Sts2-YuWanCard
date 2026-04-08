@@ -1,5 +1,76 @@
 # 扩展功能
 
+## Health Bar Forecast（生命条预测）
+
+BaseLib v0.2.8 新增了完整的生命条预测系统，允许模组在生物的生命条上显示预测效果。
+
+### 核心接口和类
+
+| 类型 | 说明 |
+|------|------|
+| `IHealthBarForecastSource` | 预测来源接口，提供预测片段 |
+| `HealthBarForecastSegment` | 预测片段结构，定义预测条的属性 |
+| `HealthBarForecastContext` | 预测上下文，包含生物和战斗状态信息 |
+| `HealthBarForecastDirection` | 预测方向枚举（FromLeft/FromRight） |
+| `HealthBarForecastRegistry` | 预测来源注册表 |
+| `HealthBarForecastOrder` | 渲染顺序辅助方法 |
+
+### 在能力中实现预测
+
+`CustomPowerModel` 默认实现了 `IHealthBarForecastSource`：
+
+```csharp
+using BaseLib.Hooks;
+using Godot;
+
+public class MyPoisonPower : CustomPowerModel
+{
+    public override PowerType Type => PowerType.Debuff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegments(HealthBarForecastContext context)
+    {
+        if (context.Creature == Owner && Amount > 0)
+        {
+            yield return new HealthBarForecastSegment(
+                Amount,
+                new Color(0.5f, 0.2f, 0.8f),
+                HealthBarForecastDirection.FromRight,
+                Order: HealthBarForecastOrder.ForSideTurnStart(context.Creature, Owner.Side)
+            );
+        }
+    }
+}
+```
+
+### 注册外部预测来源
+
+```csharp
+using BaseLib.Hooks;
+
+// 注册类型化来源
+HealthBarForecastRegistry.Register<MyForecastSource>("MyMod", "MySource");
+
+// 取消注册
+HealthBarForecastRegistry.Unregister("MyMod", "MySource");
+```
+
+### 使用毁灭条着色器
+
+```csharp
+var material = ShaderUtils.CreateDoomBarShaderMaterial(
+    ShaderUtils.CreateVanillaDoomBarGradientTexture()
+);
+
+yield return new HealthBarForecastSegment(
+    Amount,
+    new Color(0.8f, 0.3f, 0.5f),
+    HealthBarForecastDirection.FromLeft,
+    Order: 0,
+    OverlayMaterial: material
+);
+```
+
 ## CustomSingletonModel
 
 `CustomSingletonModel` 是一个抽象类，表示将在运行时持续接收钩子的模型。它支持运行状态和战斗状态的钩子订阅，使得模型可以在不同的游戏状态下接收事件回调。
@@ -526,6 +597,24 @@ public static class MyCustomEnums
 | `AutoKeywordPosition.None` | 不自动添加关键词文本 |
 | `AutoKeywordPosition.Before` | 在描述前添加关键词标题 |
 | `AutoKeywordPosition.After` | 在描述后添加关键词标题 |
+| `richKeyword` (v0.2.8 新增) | 是否启用富文本关键词（支持能量图标等） |
+
+**RichKeyword 参数**（v0.2.8 新增）：
+
+```csharp
+// 启用富文本关键词（默认 true）- 支持能量图标、? 等格式
+[KeywordProperties(AutoKeywordPosition.After, richKeyword: true)]
+public static readonly CardKeyword MyKeyword;
+
+// 禁用富文本关键词
+[KeywordProperties(AutoKeywordPosition.After, richKeyword: false)]
+public static readonly CardKeyword MySimpleKeyword;
+```
+
+**富文本关键词支持**：
+- 能量图标：`[energy]` 或 `[energy|PoolId]`
+- 问号占位符：`?` 和 `?`
+- 其他 BBCode 格式
 
 ### 自定义牌堆类型
 

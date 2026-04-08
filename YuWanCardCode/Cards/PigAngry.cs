@@ -17,6 +17,7 @@ public class PigAngry : YuWanCardModel
         target: TargetType.AllAllies)
     {
         WithPower<StrengthPower>(4);
+        WithKeywords(CardKeyword.Exhaust);
     }
 
     protected override void OnUpgrade()
