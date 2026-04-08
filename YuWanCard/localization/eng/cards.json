@@ -99,5 +99,9 @@
   "YUWANCARD-PIG_FEED.title": "Pig Feed",
   "YUWANCARD-PIG_FEED.description": "Gain {Energy:energyIcons()}. Draw {Cards:diff()} card(s). Pig recovers {Heal:diff()} HP.",
   "YUWANCARD-PIG_TOUCH.title": "Pig Touch",
-  "YUWANCARD-PIG_TOUCH.description": "Heal Pig {Heal:diff()} HP."
+  "YUWANCARD-PIG_TOUCH.description": "Heal Pig {Heal:diff()} HP.",
+  "YUWANCARD-BUG_PIG.title": "Bug Pig",
+  "YUWANCARD-BUG_PIG.description": "Deal {BugPigDamage:diff()} damage to an enemy. Damage increases by {IfUpgraded:show:5|3} for each line starting with [red]ERROR[/red] or [red]ERROR[/red] in the log.",
+  "YUWANCARD-PIG_CHOP.title": "Pig Chop",
+  "YUWANCARD-PIG_CHOP.description": "Gain {RegenPower:diff()} [gold]Regen[/gold]. "
 }

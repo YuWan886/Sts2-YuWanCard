@@ -37,7 +37,7 @@
   "YUWANCARD-PIG_CHARGE.title": "猪冲锋",
   "YUWANCARD-PIG_CHARGE.description": "造成{Damage:diff()}点伤害。本回合获得{StrengthPower:diff()}点[gold]力量[/gold]。",
   "YUWANCARD-PIG_MULTI_SHOT.title": "猪连射",
-  "YUWANCARD-PIG_MULTI_SHOT.description": "对一名敌人造成{Repeat:diff()}次{Damage:diff()}点伤害。",
+  "YUWANCARD-PIG_MULTI_SHOT.description": "造成{Repeat:diff()}次{Damage:diff()}点伤害。",
   "YUWANCARD-PIG_SHIELD_BREAK.title": "猪拆盾",
   "YUWANCARD-PIG_SHIELD_BREAK.description": "去除一名敌人50%的[gold]格挡[/gold]，并造成{Damage:diff()}点伤害。",
   "YUWANCARD-PIG_KING.title": "猪猪王",
@@ -48,7 +48,7 @@
   "YUWANCARD-PIG_MELT.title": "猪融化",
   "YUWANCARD-PIG_MELT.description": "获得{BufferPower:diff()}层[gold]缓冲[/gold]。结束你的回合。",
   "YUWANCARD-PIG_DRAGON_RIDE.title": "猪登龙",
-  "YUWANCARD-PIG_DRAGON_RIDE.description": "对一名敌人造成{HitCount}次{Damage:diff()}点伤害。",
+  "YUWANCARD-PIG_DRAGON_RIDE.description": "造成{HitCount}次{Damage:diff()}点伤害。",
   "YUWANCARD-PIG_CRASH.title": "猪坠机",
   "YUWANCARD-PIG_CRASH.description": "扣除{SelfDamage}点生命，对所有敌人造成{Damage:diff()}点伤害。",
   "YUWANCARD-YOU_ARE_PIG.title": "你是猪",
@@ -99,5 +99,9 @@
   "YUWANCARD-PIG_FEED.title": "猪饲料",
   "YUWANCARD-PIG_FEED.description": "获得{Energy:energyIcons()}。抽{Cards:diff()}张牌。小猪恢复{Heal:diff()}点血量。",
   "YUWANCARD-PIG_TOUCH.title": "摸摸猪",
-  "YUWANCARD-PIG_TOUCH.description": "恢复小猪{Heal:diff()}点血量。"
+  "YUWANCARD-PIG_TOUCH.description": "恢复小猪{Heal:diff()}点血量。",
+  "YUWANCARD-BUG_PIG.title": "Bug猪",
+  "YUWANCARD-BUG_PIG.description": "造成{BugPigDamage:diff()}点伤害。日志中每出现一个[red]ERROR[/red]，造成的伤害额外增加{IfUpgraded:show:5|3}点。",
+  "YUWANCARD-PIG_CHOP.title": "猪排",
+  "YUWANCARD-PIG_CHOP.description": "获得{RegenPower:diff()}层[gold]再生[/gold]。"
 }
