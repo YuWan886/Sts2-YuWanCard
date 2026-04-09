@@ -7,8 +7,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
-using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.TestSupport;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Saves.Runs;
 
@@ -60,6 +61,11 @@ public class BugPig : YuWanCardModel
                 .Targeting(cardPlay.Target)
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);
+        }
+
+        if (!TestMode.IsOn)
+        {
+            VfxUtils.PlayCentered("res://YuWanCard/scenes/vfx/vfx_glitch.tscn");
         }
     }
 

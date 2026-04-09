@@ -1,0 +1,47 @@
+[gd_scene load_steps=4 format=3 uid="uid://yuwancard/vfx/glass_shatter"]
+
+[ext_resource type="Shader" path="res://YuWanCard/shaders/vfx/vfx_glass_shatter.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_glass_shatter"]
+shader = ExtResource("1_shader")
+shader_parameter/fall_progress = 0.0
+shader_parameter/pieces_x = 5
+shader_parameter/pieces_y = 3
+shader_parameter/gravity = 2.2
+shader_parameter/scatter = 0.22
+shader_parameter/rotation_amount = 1.0
+shader_parameter/point_jitter = 0.34
+shader_parameter/delay_variation = 0.28
+shader_parameter/edge_thickness = 0.01
+shader_parameter/edge_brightness = 0.35
+shader_parameter/alpha_fade = 0.0
+
+[sub_resource type="Animation" id="Animation_glass_shatter"]
+resource_name = "shatter"
+length = 1.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:material:shader_parameter/fall_progress")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[node name="VfxGlassShatter" type="ColorRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+material = SubResource("ShaderMaterial_glass_shatter")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "shatter"
+anims/shatter = SubResource("Animation_glass_shatter")
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="queue_free"]

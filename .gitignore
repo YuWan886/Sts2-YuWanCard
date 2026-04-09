@@ -8,7 +8,7 @@ publish/
 Properties/
 packages/
 .editorconfig
-*cs.uid
+*.uid
 *.user
 others/
 .trae/

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YuWanCard.Characters;
 using YuWanCard.Config;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
@@ -77,49 +78,22 @@ public static class DeathEffectPatch
     {
         try
         {
-            // 获取生物的全局位置
-            Vector2 effectPosition = nCreature.GlobalPosition;
-
-            // 加载并实例化特效场景
-            var scene = GD.Load<PackedScene>(EffectScenePath);
-            if (scene == null)
-            {
-                MainFile.Logger.Error($"无法加载死亡特效场景: {EffectScenePath}");
-                return;
-            }
-
-            var effectNode = scene.Instantiate<Node2D>();
-            if (effectNode == null)
-            {
-                MainFile.Logger.Error("无法实例化死亡特效节点");
-                return;
-            }
-
-            // 获取 AnimatedSprite2D 节点并设置缩放
-            var animatedSprite = effectNode.GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-            if (animatedSprite == null)
-            {
-                MainFile.Logger.Error("无法找到 AnimatedSprite2D 节点");
-                return;
-            }
-            
-            animatedSprite.Scale = new Vector2(0.4f, 0.4f);
-
-            // 创建自动销毁控制器
-            var autoDestroy = new DeathEffectAutoDestroy();
-            effectNode.AddChild(autoDestroy);
-
-            // 将特效添加到生物的父节点，放在生物之后的位置
             var parent = nCreature.GetParent();
             var creatureIndex = nCreature.GetIndex();
-            parent.AddChild(effectNode);
-            parent.MoveChild(effectNode, creatureIndex + 1);
+            var effectPosition = nCreature.GlobalPosition with { Y = nCreature.GlobalPosition.Y - 50f };
 
-            // 添加到场景树后再设置全局位置
-            effectNode.GlobalPosition = new Vector2(effectPosition.X, effectPosition.Y - 50f);
-            
-            // 手动播放动画（autoplay 在实例化时可能不生效）
-            animatedSprite.Play();
+            var effectNode = VfxUtils.PlayAtParent(EffectScenePath, parent, effectPosition, creatureIndex + 1);
+            if (effectNode == null)
+                return;
+
+            var animatedSprite = effectNode.GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+            if (animatedSprite != null)
+            {
+                animatedSprite.Scale = new Vector2(0.4f, 0.4f);
+                animatedSprite.Play();
+            }
+
+            effectNode.AddChild(new DeathEffectAutoDestroy());
         }
         catch (Exception ex)
         {

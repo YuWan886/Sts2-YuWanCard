@@ -197,12 +197,10 @@ animations = [{
 [node name="Visuals" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true
 position = Vector2(2, -104)
-scale = Vector2(0.8, 0.8)
+scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_pig")
-animation = &"hurt"
+animation = &"attack"
 autoplay = "idle_loop"
-frame = 32
-frame_progress = 1.0
 
 [node name="Bounds" type="Control" parent="."]
 unique_name_in_owner = true

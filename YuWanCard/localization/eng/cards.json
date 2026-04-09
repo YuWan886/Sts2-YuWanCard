@@ -103,5 +103,9 @@
   "YUWANCARD-BUG_PIG.title": "Bug Pig",
   "YUWANCARD-BUG_PIG.description": "Deal {BugPigDamage:diff()} damage to an enemy. Damage increases by {IfUpgraded:show:5|3} for each line starting with [red]ERROR[/red] or [red]ERROR[/red] in the log.",
   "YUWANCARD-PIG_CHOP.title": "Pig Chop",
-  "YUWANCARD-PIG_CHOP.description": "Gain {RegenPower:diff()} [gold]Regen[/gold]. "
+  "YUWANCARD-PIG_CHOP.description": "Gain {RegenPower:diff()} [gold]Regen[/gold]. ",
+  "YUWANCARD-DIMENSION_SLASH.title": "Dimension Slash",
+  "YUWANCARD-DIMENSION_SLASH.description": "Deal {Damage:diff()} damage. Copy all [gold]Debuffs[/gold] from target enemy to other enemies.",
+  "YUWANCARD-PERFECT_THING.title": "Perfect Thing",
+  "YUWANCARD-PERFECT_THING.description": "Gain 1 [gold]Energy[/gold] every {IfUpgraded:show:1|2} cards you play."
 }

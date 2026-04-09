@@ -103,5 +103,9 @@
   "YUWANCARD-BUG_PIG.title": "Bug猪",
   "YUWANCARD-BUG_PIG.description": "造成{BugPigDamage:diff()}点伤害。日志中每出现一个[red]ERROR[/red]，造成的伤害额外增加{IfUpgraded:show:5|3}点。",
   "YUWANCARD-PIG_CHOP.title": "猪排",
-  "YUWANCARD-PIG_CHOP.description": "获得{RegenPower:diff()}层[gold]再生[/gold]。"
+  "YUWANCARD-PIG_CHOP.description": "获得{RegenPower:diff()}层[gold]再生[/gold]。",
+  "YUWANCARD-DIMENSION_SLASH.title": "次元斩",
+  "YUWANCARD-DIMENSION_SLASH.description": "造成{Damage:diff()}点伤害。将目标敌人的所有[gold]减益效果[/gold]复制到其他敌人身上。",
+  "YUWANCARD-PERFECT_THING.title": "完美之物",
+  "YUWANCARD-PERFECT_THING.description": "你每打出{IfUpgraded:show:2|3}张牌，获得1点能量。"
 }

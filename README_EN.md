@@ -50,6 +50,8 @@ A cute pig character that can use all card.
 | Pig Touch | 1 | Common | Skill | Heal Pig for 5 HP |
 | Bug Pig | 1 | Uncommon | Attack | Deal 7 damage. Each ERROR in the log increases damage by 3. |
 | Pig Chop | 1 | Token | Skill | Gain 3 Regen. Exhaust |
+| Dimension Slash | 0 | Ancient | Attack | Deal 15 damage. Copy all debuffs from target enemy to other enemies |
+| Perfect Thing | 3 | Ancient | Power | Gain 1 Energy every 2 cards you play. Upgraded: every 1 card |
 
 **Exclusive Relics**
 
@@ -111,6 +113,7 @@ A cute pig character that can use all card.
 | Train You Well | Gain Strength this turn |
 | Pig Friends | When gained, summon a Pig Minion. Every 3 stacks, the pig is upgraded (+5 max HP, +1 Strength) |
 | Pig Minion | Absorbs all unblocked attack damage for owner. Gains Block when owner gains Block. Strength added to owner's attacks. Gains 1 Strength when owner gains Strength |
+| Perfect Thing | Gain 1 Energy after playing a certain number of cards (upgraded: fewer cards) |
 
 ### Enchantments
 

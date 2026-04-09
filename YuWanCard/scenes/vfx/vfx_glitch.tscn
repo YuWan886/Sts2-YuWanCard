@@ -1,0 +1,48 @@
+[gd_scene load_steps=4 format=3 uid="uid://yuwancard/vfx/glitch"]
+
+[ext_resource type="Shader" path="res://YuWanCard/shaders/vfx/vfx_glitch.gdshader" id="1_shader"]
+[ext_resource type="Script" path="res://YuWanCard/scripts/vfx/vfx_glitch_controller.gd" id="2_script"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_glitch"]
+shader = ExtResource("1_shader")
+shader_parameter/glitch_intensity = 0.0
+shader_parameter/time = 0.0
+shader_parameter/rgb_shift_amount = 0.015
+shader_parameter/scanline_intensity = 0.15
+shader_parameter/noise_intensity = 0.08
+shader_parameter/block_glitch_intensity = 0.3
+shader_parameter/distortion_amount = 0.02
+
+[sub_resource type="Animation" id="Animation_glitch"]
+resource_name = "glitch"
+length = 1.5
+loop_mode = 0
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:material:shader_parameter/glitch_intensity")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 1.0, 0.7, 0.9, 0.5, 0.8, 0.3, 0.1, 0.0]
+}
+
+[node name="VfxGlitch" type="ColorRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_glitch")
+script = ExtResource("2_script")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "glitch"
+anims/glitch = SubResource("Animation_glitch")
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="queue_free"]

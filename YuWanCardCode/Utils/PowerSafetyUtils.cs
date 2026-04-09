@@ -20,7 +20,7 @@ public static class PowerSafetyUtils
         "PERSONAL_HIVE",
         "SANDPIT",
         "BURROWED",
-        "BattlewornDummyTimeLimit"
+        "BATTLEWORN_DUMMY_TIME_LIMIT"
     };
 
     public static bool IsSafePower(PowerModel power)
