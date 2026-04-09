@@ -67,14 +67,7 @@ public class ReincarnatedEye : YuWanRelicModel
             return;
         }
 
-        var availableCards = deck.Cards
-            .Where(c => !c.Keywords.Contains(CardKeyword.Exhaust) || c.CurrentUpgradeLevel > 0)
-            .ToList();
-
-        if (availableCards.Count == 0)
-        {
-            availableCards = [.. deck.Cards];
-        }
+        var availableCards = deck.Cards.ToList();
 
         if (availableCards.Count == 0)
         {
@@ -137,10 +130,6 @@ public class ReincarnatedEye : YuWanRelicModel
 
     private bool FilterCard(CardModel c)
     {
-        if (c.Keywords.Contains(CardKeyword.Exhaust) && c.CurrentUpgradeLevel <= 0)
-        {
-            return false;
-        }
         return true;
     }
 

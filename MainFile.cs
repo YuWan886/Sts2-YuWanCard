@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Config;
 using YuWanCard.Patches;
+using YuWanCard.Utils;
 
 namespace YuWanCard;
 
@@ -36,6 +37,16 @@ public partial class MainFile : Node
 
         NodeFactory.Init();
         RegisterSceneConversions();
+        
+        VfxUtils.PreloadScenes(
+            "res://YuWanCard/scenes/vfx/vfx_blood_wheel_eye.tscn",
+            "res://YuWanCard/scenes/vfx/vfx_black_hole.tscn",
+            "res://YuWanCard/scenes/vfx/vfx_glitch.tscn",
+            "res://YuWanCard/scenes/vfx/vfx_glass_shatter.tscn",
+            "res://YuWanCard/scenes/vfx/vfx_matrix_rain.tscn"
+        );
+
+        VfxUtils.PreloadFrames("res://YuWanCard/images/vfx/blood_wheel_eye/blood_wheel_eye", 48);
 
         Logger.Info("YuWanCard initialized");
     }

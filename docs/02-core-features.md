@@ -1433,6 +1433,141 @@ public override BackgroundAssets? CustomEncounterBackground(ActModel parentAct, 
 - 初始敌人会按场景中 Marker 的顺序放置
 - 可以使用 CreatureCmd.Add 配合标记名称生成额外敌人
 
+## 自定义事件 (CustomEventModel)
+
+BaseLib v0.3.0 新增了 `CustomEventModel`，用于创建自定义事件。事件分为两种类型：
+
+- **共享事件**：可以在任何章节出现
+- **章节专属事件**：只在特定章节出现
+
+### 基本用法
+
+继承 `CustomEventModel` 来创建自定义事件：
+
+```csharp
+using BaseLib.Abstracts;
+using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Models.Acts;
+
+public class MyCustomEvent : CustomEventModel
+{
+    public MyCustomEvent() : base(autoAdd: true)
+    {
+    }
+
+    // 指定事件适用的章节（空数组表示共享事件）
+    public override ActModel[] Acts => [];
+
+    protected override IReadOnlyList<EventOption> GenerateInitialOptions()
+    {
+        return
+        [
+            new EventOption(this, AcceptOption, "MYMOD-MY_EVENT.pages.INITIAL.options.ACCEPT"),
+            new EventOption(this, LeaveOption, "MYMOD-MY_EVENT.pages.INITIAL.options.LEAVE"),
+        ];
+    }
+
+    private async Task AcceptOption()
+    {
+        await CreatureCmd.Heal(Owner!.Creature, 10);
+        SetEventFinished(new LocString("events", "MYMOD-MY_EVENT.pages.ACCEPT.description"));
+    }
+
+    private async Task LeaveOption()
+    {
+        SetEventFinished(new LocString("events", "MYMOD-MY_EVENT.pages.LEAVE.description"));
+    }
+}
+```
+
+### 章节专属事件
+
+通过重写 `Acts` 属性指定事件适用的章节：
+
+```csharp
+using BaseLib.Abstracts;
+using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Models.Acts;
+
+public class MyActEvent : CustomEventModel
+{
+    public override ActModel[] Acts => 
+    [
+        ModelDb.Act<Hive>(),
+        ModelDb.Act<Glory>()
+    ];
+
+    protected override IReadOnlyList<EventOption> GenerateInitialOptions()
+    {
+        // ...
+    }
+}
+```
+
+### 事件注册机制
+
+BaseLib 会自动将 `CustomEventModel` 注册到正确的事件池：
+
+- `Acts` 为空数组：注册到 `CustomContentDictionary.SharedCustomEvents`
+- `Acts` 有值：注册到 `CustomContentDictionary.ActCustomEvents`
+
+### 本地化键格式
+
+| 内容 | 本地化键格式 |
+|------|-------------|
+| 标题 | `{ModId}-{EventId}.title` |
+| 初始页面描述 | `{ModId}-{EventId}.pages.INITIAL.description` |
+| 选项标题 | `{ModId}-{EventId}.pages.INITIAL.options.{OptionId}.title` |
+| 选项描述 | `{ModId}-{EventId}.pages.INITIAL.options.{OptionId}.description` |
+| 后续页面描述 | `{ModId}-{EventId}.pages.{PageName}.description` |
+
+### 本地化示例
+
+```json
+{
+  "MYMOD-MY_EVENT.title": "神秘的泉水",
+  "MYMOD-MY_EVENT.pages.INITIAL.description": "你在路边发现了一口发光的泉眼。",
+  "MYMOD-MY_EVENT.pages.INITIAL.options.ACCEPT.title": "饮下泉水",
+  "MYMOD-MY_EVENT.pages.INITIAL.options.ACCEPT.description": "也许会有好事发生。",
+  "MYMOD-MY_EVENT.pages.INITIAL.options.LEAVE.title": "离开",
+  "MYMOD-MY_EVENT.pages.INITIAL.options.LEAVE.description": "你决定不冒险。",
+  "MYMOD-MY_EVENT.pages.ACCEPT.description": "你感觉精神好了很多。",
+  "MYMOD-MY_EVENT.pages.LEAVE.description": "你转身离开。"
+}
+```
+
+### IsAllowed 过滤
+
+重写 `IsAllowed` 方法控制事件是否可以在当前跑局出现：
+
+```csharp
+public override bool IsAllowed(RunState runState)
+{
+    // 事件只在玩家拥有特定遗物时出现
+    return runState.Player?.HasRelic<MyRelic>() ?? false;
+}
+```
+
+### 自定义事件布局
+
+重写 `LayoutType` 属性指定事件布局类型：
+
+```csharp
+public override EventLayoutType LayoutType => EventLayoutType.C;
+```
+
+### 结束事件
+
+使用 `SetEventFinished` 方法结束事件：
+
+```csharp
+// 结束事件并显示描述
+SetEventFinished(new LocString("events", "MYMOD-MY_EVENT.pages.END.description"));
+
+// 结束事件不显示描述
+SetEventFinished();
+```
+
 ## 自定义宠物 (CustomPetModel)
 
 继承 `CustomPetModel` 来创建自定义宠物（特殊的怪物类型）：
@@ -1480,6 +1615,102 @@ protected override MonsterMoveStateMachine GenerateMoveStateMachine()
     attackState.FollowUpState = idleState;
     
     return new MonsterMoveStateMachine([idleState, attackState], idleState);
+}
+```
+
+## 自定义附魔 (CustomEnchantmentModel)
+
+BaseLib v0.3.0 新增了 `CustomEnchantmentModel`，用于创建自定义附魔。附魔是一种可以附加到卡牌上的修改器。
+
+### 基本用法
+
+继承 `CustomEnchantmentModel` 来创建自定义附魔：
+
+```csharp
+using BaseLib.Abstracts;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models;
+
+public class MyCustomEnchantment : CustomEnchantmentModel
+{
+    public MyCustomEnchantment() : base(autoAdd: true)
+    {
+    }
+
+    public override string Title => "My Enchantment";
+    public override string Description => "A custom enchantment";
+
+    // 附魔应用到卡牌时触发
+    public override void OnApply(CardModel card)
+    {
+        base.OnApply(card);
+        // 修改卡牌属性
+    }
+
+    // 附魔从卡牌移除时触发
+    public override void OnRemove(CardModel card)
+    {
+        base.OnRemove(card);
+        // 恢复卡牌属性
+    }
+}
+```
+
+### 构造函数参数
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `autoAdd` | bool | 是否自动添加到附魔池（默认 true） |
+
+### 常用方法
+
+| 方法 | 说明 |
+|------|------|
+| `OnApply(CardModel)` | 附魔应用到卡牌时触发 |
+| `OnRemove(CardModel)` | 附魔从卡牌移除时触发 |
+
+### 附魔效果示例
+
+```csharp
+using BaseLib.Abstracts;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models;
+
+public class StrengthEnchantment : CustomEnchantmentModel
+{
+    private const int BonusDamage = 3;
+
+    public override string Title => "Strength Enchantment";
+    public override string Description => $"Increases damage by {BonusDamage}";
+
+    public override void OnApply(CardModel card)
+    {
+        base.OnApply(card);
+        if (card.DynamicVars.ContainsKey("Damage"))
+        {
+            card.DynamicVars.Damage.BaseValue += BonusDamage;
+        }
+    }
+
+    public override void OnRemove(CardModel card)
+    {
+        base.OnRemove(card);
+        if (card.DynamicVars.ContainsKey("Damage"))
+        {
+            card.DynamicVars.Damage.BaseValue -= BonusDamage;
+        }
+    }
+}
+```
+
+### 本地化
+
+附魔使用标准的本地化键格式：
+
+```json
+{
+  "MYMOD-MY_ENCHANTMENT.title": "力量附魔",
+  "MYMOD-MY_ENCHANTMENT.description": "增加 3 点伤害"
 }
 ```
 

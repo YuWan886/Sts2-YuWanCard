@@ -31,5 +31,11 @@
   "YUWANCARD-PIG_MINION_POWER.smartDescription": "Absorbs all unblocked attack damage for owner. Gains {BonusBlock} Block when owner gains Block. Strength added to owner's attacks. Gains 1 Strength when owner gains Strength.",
   "YUWANCARD-PERFECT_THING_POWER.title": "Perfect Thing",
   "YUWANCARD-PERFECT_THING_POWER.description": "Gain 1 [gold]Energy[/gold] every certain number of cards you play. Upgraded: fewer cards.",
-  "YUWANCARD-PERFECT_THING_POWER.smartDescription": "Gain 1 [gold]Energy[/gold] every {CardsPerEnergy} cards you play."
+  "YUWANCARD-PERFECT_THING_POWER.smartDescription": "Gain 1 [gold]Energy[/gold] every {CardsPerEnergy} cards you play.",
+  "YUWANCARD-HACKER_PIG_POWER.title": "Hacker Pig",
+  "YUWANCARD-HACKER_PIG_POWER.description": "Automatically play marked cards at the start of your turn.",
+  "YUWANCARD-HACKER_PIG_POWER.smartDescription": "Automatically play marked cards at the start of your turn.",
+  "YUWANCARD-BLOOD_WHEEL_EYE_POWER.title": "Blood Wheel Eye",
+  "YUWANCARD-BLOOD_WHEEL_EYE_POWER.description": "All cards gain Replay 1 this combat.",
+  "YUWANCARD-BLOOD_WHEEL_EYE_POWER.smartDescription": "All cards gain Replay {ReplayCount} this combat."
 }

@@ -33,7 +33,8 @@ public class PigFriendsPower : YuWanPowerModel
         if (Owner.Player == null) return;
 
         var existingPig = FindExistingPig();
-        if (existingPig != null)
+        
+        if (existingPig != null && existingPig.IsAlive)
         {
             _summonedPig = existingPig;
             return;
@@ -42,13 +43,39 @@ public class PigFriendsPower : YuWanPowerModel
         Flash();
         SfxCmd.Play("event:/sfx/characters/necrobinder/necrobinder_summon");
 
-        _summonedPig = await PlayerCmd.AddPet<PigMinion>(Owner.Player);
+        bool isReviving = existingPig != null && existingPig.IsDead;
+
+        if (isReviving && existingPig != null)
+        {
+            _summonedPig = existingPig;
+            Owner.Player?.PlayerCombatState?.AddPetInternal(existingPig);
+        }
+        else
+        {
+            _summonedPig = await PlayerCmd.AddPet<PigMinion>(Owner.Player);
+        }
 
         int upgradeLevel = Amount / UpgradeThreshold;
         _lastUpgradeLevel = upgradeLevel;
 
-        PositionPig(_summonedPig, upgradeLevel);
-        await SetupPig(_summonedPig, upgradeLevel);
+        if (_summonedPig != null)
+        {
+            PositionPig(_summonedPig, upgradeLevel);
+            await SetupPig(_summonedPig, upgradeLevel, isReviving);
+        }
+
+        if (isReviving && _summonedPig != null)
+        {
+            NCreature? pigNode = NCombatRoom.Instance?.GetCreatureNode(_summonedPig);
+            if (pigNode != null)
+            {
+                pigNode.SetAnimationTrigger("Idle");
+                pigNode.AnimEnableUi();
+                pigNode.Modulate = Colors.Transparent;
+                Tween tween = pigNode.CreateTween();
+                tween.TweenProperty(pigNode, "modulate", Colors.White, 0.35f).SetDelay(0.1f);
+            }
+        }
     }
 
     public override async Task AfterPowerAmountChanged(PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
@@ -90,7 +117,7 @@ public class PigFriendsPower : YuWanPowerModel
 
         foreach (var pet in Owner.Pets)
         {
-            if (pet.Monster is PigMinion && pet.IsAlive)
+            if (pet.Monster is PigMinion)
             {
                 return pet;
             }
@@ -107,22 +134,28 @@ public class PigFriendsPower : YuWanPowerModel
         float scale = 0.5f + upgradeLevel * 0.15f;
         pigNode.SetDefaultScaleTo(scale, 0f);
 
-        Vector2 offset = new Vector2(ownerNode.Hitbox.Size.X * 0.5f + 210f, -20f);
+        Vector2 offset = new Vector2(ownerNode.Hitbox.Size.X * 0.5f + 190f, 30f);
         pigNode.Position = ownerNode.Position + offset;
 
         pigNode.ToggleIsInteractable(true);
     }
 
-    private async Task SetupPig(Creature pig, int upgradeLevel)
+    private async Task SetupPig(Creature pig, int upgradeLevel, bool isReviving = false)
     {
         int ownerMaxHp = Owner.MaxHp;
         int pigHp = ownerMaxHp / 5;
         if (pigHp < 1) pigHp = 1;
 
-        await CreatureCmd.SetMaxHp(pig, pigHp);
-        await CreatureCmd.Heal(pig, pigHp);
-
-        await PowerCmd.Apply<PigMinionPower>(pig, 1, null, null);
+        if (isReviving)
+        {
+            await CreatureCmd.Heal(pig, pigHp, true);
+        }
+        else
+        {
+            await CreatureCmd.SetMaxHp(pig, pigHp);
+            await CreatureCmd.Heal(pig, pigHp);
+            await PowerCmd.Apply<PigMinionPower>(pig, 1, null, null);
+        }
 
         if (upgradeLevel > 0)
         {

@@ -38,6 +38,10 @@
         <AdditionalFiles Include="YuWanCard/localization/**/*.json" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <NoWarn>$(NoWarn);NU1608</NoWarn>
+    </PropertyGroup>
+
     <ItemGroup>
         <Compile Remove="others\**" />
         <Compile Remove="change_code\**" />
@@ -75,6 +79,21 @@
         <Message Text="Copying .dll and manifest to mods folder." Importance="high" />
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="YuWanCard.json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
+        <Copy SourceFiles="README.md" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
+    </Target>
+
+    <Target Name="CopyBaseLibToModsFolder" AfterTargets="PostBuildEvent" Condition="'$(CopyBaseLib)' != 'false'">
+        <ItemGroup>
+            <BaseLibContentFiles Include="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\Content\*" Exclude="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\Content\*.props" />
+            <BaseLibDllFiles Include="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\lib\**\*.dll" />
+        </ItemGroup>
+        <PropertyGroup>
+            <_ContentCount>@(BaseLibContentFiles->Count())</_ContentCount>
+            <_DllCount>@(BaseLibDllFiles->Count())</_DllCount>
+        </PropertyGroup>
+        <Message Text="Copying BaseLib: $(_ContentCount) content files, $(_DllCount) dll files" Importance="high" Condition="'$(_ContentCount)' != '0'" />
+        <Copy SourceFiles="@(BaseLibContentFiles)" DestinationFolder="$(ModsPath)BaseLib/" Condition="'$(_ContentCount)' != '0'" />
+        <Copy SourceFiles="@(BaseLibDllFiles)" DestinationFolder="$(ModsPath)BaseLib/" Condition="'$(_DllCount)' != '0'" />
     </Target>
 
     <Target Name="CopyQuickPck" AfterTargets="PackPck" Condition="Exists('$(PckPackerOutputPath)') And '$(PckPackerSkipped)' != 'true'">

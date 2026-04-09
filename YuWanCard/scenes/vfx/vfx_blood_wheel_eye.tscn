@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://yuwancard/vfx/blood_wheel_eye"]
+
+[ext_resource type="Script" path="res://YuWanCardCode/Vfx/VfxBloodWheelEye.cs" id="1_script"]
+
+[node name="VfxBloodWheelEye" type="ColorRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")

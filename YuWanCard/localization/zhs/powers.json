@@ -31,5 +31,8 @@
   "YUWANCARD-PIG_MINION_POWER.smartDescription": "吸收主人受到的所有未被格挡的攻击伤害。获得格挡时获得{BonusBlock}点格挡。主人获得力量时获得1点力量。力量加成给主人。。",
   "YUWANCARD-PERFECT_THING_POWER.title": "完美之物",
   "YUWANCARD-PERFECT_THING_POWER.description": "你每打出一定数量的牌，获得1点能量。",
-  "YUWANCARD-PERFECT_THING_POWER.smartDescription": "你每打出{CardsPerEnergy}张牌，获得1点能量。"
+  "YUWANCARD-PERFECT_THING_POWER.smartDescription": "你每打出{CardsPerEnergy}张牌，获得1点能量。",
+  "YUWANCARD-HACKER_PIG_POWER.title": "骇客猪",
+  "YUWANCARD-HACKER_PIG_POWER.description": "回合开始时自动打出被标记的卡牌。",
+  "YUWANCARD-HACKER_PIG_POWER.smartDescription": "回合开始时自动打出被标记的卡牌。"
 }

@@ -76,6 +76,8 @@ public class EndlessModePatch
             MainFile.Logger.Debug($"Endless mode: Act {act.Id.Entry} - Ancient: {act.Ancient?.Id.Entry}, Boss: {act.BossEncounter?.Id.Entry}");
         }
 
+        ClearNMapScreenReferences();
+
         await runManager.SetActInternal(0);
 
         NMapScreen.Instance?.InitMarker(state.Map.StartingMapPoint.coord);
@@ -85,6 +87,26 @@ public class EndlessModePatch
         await (Task)FadeInMethod.Invoke(runManager, [true])!;
 
         MainFile.Logger.Info($"Endless mode: Transitioned to loop {endlessModifier.YuWanCard_EndlessLoopCount}");
+    }
+
+    private static void ClearNMapScreenReferences()
+    {
+        if (NMapScreen.Instance == null)
+        {
+            return;
+        }
+
+        var mapScreenType = typeof(NMapScreen);
+        
+        var bossPointNodeField = mapScreenType.GetField("_bossPointNode", BindingFlags.NonPublic | BindingFlags.Instance);
+        var secondBossPointNodeField = mapScreenType.GetField("_secondBossPointNode", BindingFlags.NonPublic | BindingFlags.Instance);
+        var startingPointNodeField = mapScreenType.GetField("_startingPointNode", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        bossPointNodeField?.SetValue(NMapScreen.Instance, null);
+        secondBossPointNodeField?.SetValue(NMapScreen.Instance, null);
+        startingPointNodeField?.SetValue(NMapScreen.Instance, null);
+
+        MainFile.Logger.Debug("Endless mode: Cleared NMapScreen map point references to prevent double-free");
     }
 
     private static int CalculateEliteBonus(int loopCount)

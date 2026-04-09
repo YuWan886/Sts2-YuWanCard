@@ -23,6 +23,7 @@ public class BugPig : YuWanCardModel
     private const int ErrorDamageBonusUpgraded = 5;
 
     private static int _cachedErrorCount = -1;
+    private static int _initialErrorCount = -1;
 
     [SavedProperty]
     private int YuWanCard_CalculatedDamageBonus { get; set; } = -1;
@@ -30,7 +31,16 @@ public class BugPig : YuWanCardModel
     public static void ResetErrorCount()
     {
         _cachedErrorCount = -1;
-        MainFile.Logger.Debug("BugPig: Error count cache reset");
+        _initialErrorCount = -1;
+    }
+
+    public static void CaptureInitialErrorCount()
+    {
+        if (_initialErrorCount < 0)
+        {
+            _initialErrorCount = CountTotalErrorsInLog();
+            _cachedErrorCount = 0;
+        }
     }
 
     public BugPig() : base(
@@ -54,8 +64,6 @@ public class BugPig : YuWanCardModel
             int damageBonus = GetDamageBonus();
             int totalDamage = BaseDamage + damageBonus;
 
-            MainFile.Logger.Info($"BugPig: Damage bonus = {damageBonus}, Total damage = {totalDamage}, IsUpgraded = {IsUpgraded}");
-
             await DamageCmd.Attack(totalDamage)
                 .FromCard(this)
                 .Targeting(cardPlay.Target)
@@ -73,22 +81,20 @@ public class BugPig : YuWanCardModel
     {
         if (YuWanCard_CalculatedDamageBonus >= 0)
         {
-            MainFile.Logger.Debug($"BugPig: Using synchronized damage bonus = {YuWanCard_CalculatedDamageBonus}");
             return YuWanCard_CalculatedDamageBonus;
         }
 
         int damageBonus;
-        
+
         if (IsMultiplayerMode())
         {
             damageBonus = CalculateDeterministicDamageBonus();
-            MainFile.Logger.Info($"BugPig: Multiplayer mode - using deterministic damage bonus = {damageBonus}");
         }
         else
         {
-            int errorCount = CountErrorsInLog();
-            damageBonus = IsUpgraded ? errorCount * ErrorDamageBonusUpgraded : errorCount * ErrorDamageBonus;
-            MainFile.Logger.Info($"BugPig: Singleplayer mode - error count = {errorCount}, damage bonus = {damageBonus}");
+            CaptureInitialErrorCount();
+            int newErrors = CountNewErrorsInLog();
+            damageBonus = IsUpgraded ? newErrors * ErrorDamageBonusUpgraded : newErrors * ErrorDamageBonus;
         }
 
         YuWanCard_CalculatedDamageBonus = damageBonus;
@@ -114,11 +120,11 @@ public class BugPig : YuWanCardModel
         }
 
         int deterministicValue = 0;
-        
+
         deterministicValue += CombatState.RoundNumber;
-        
+
         deterministicValue += CombatState.Creatures.Count(c => !c.IsPlayer);
-        
+
         if (Owner?.Creature != null)
         {
             var hand = PileType.Hand.GetPile(Owner);
@@ -127,32 +133,24 @@ public class BugPig : YuWanCardModel
                 deterministicValue += hand.Cards.Count;
             }
         }
-        
+
         deterministicValue %= 10;
-        
+
         return IsUpgraded ? deterministicValue * ErrorDamageBonusUpgraded : deterministicValue * ErrorDamageBonus;
     }
 
-    public static int CountErrorsInLog()
+    public static int CountTotalErrorsInLog()
     {
-        if (_cachedErrorCount >= 0)
-        {
-            MainFile.Logger.Debug($"BugPig: Using cached error count = {_cachedErrorCount}");
-            return _cachedErrorCount;
-        }
-
         try
         {
             string logPath = Path.Combine(OS.GetUserDataDir(), "logs", "godot.log");
             if (!File.Exists(logPath))
             {
-                MainFile.Logger.Warn($"BugPig: Log file not found at {logPath}");
-                _cachedErrorCount = 0;
                 return 0;
             }
 
             int errorCount = 0;
-            
+
             using (var fileStream = new FileStream(logPath, FileMode.Open, System.IO.FileAccess.Read, FileShare.ReadWrite))
             using (var streamReader = new StreamReader(fileStream))
             {
@@ -163,26 +161,36 @@ public class BugPig : YuWanCardModel
                     {
                         continue;
                     }
-                    
+
                     if (line.StartsWith("[ERROR]", StringComparison.Ordinal) ||
                         line.StartsWith("ERROR:", StringComparison.Ordinal))
                     {
                         errorCount++;
-                        MainFile.Logger.Debug($"BugPig: Found error line: {line}");
                     }
                 }
             }
 
-            _cachedErrorCount = errorCount;
-            MainFile.Logger.Info($"BugPig: Total errors found in log: {errorCount} (cached for this combat)");
             return errorCount;
         }
         catch (Exception ex)
         {
             MainFile.Logger.Error($"BugPig: Error reading log file: {ex.Message}");
-            _cachedErrorCount = 0;
             return 0;
         }
+    }
+
+    public static int CountNewErrorsInLog()
+    {
+        if (_cachedErrorCount >= 0)
+        {
+            return _cachedErrorCount;
+        }
+
+        int totalErrors = CountTotalErrorsInLog();
+        int newErrors = Math.Max(0, totalErrors - _initialErrorCount);
+        _cachedErrorCount = newErrors;
+
+        return newErrors;
     }
 
     public int GetSynchronizedDamageBonus()
@@ -214,29 +222,38 @@ public class BugPigDamageVar(int baseDamage, int errorBonus, int errorBonusUpgra
             {
                 var netService = RunManager.Instance?.NetService;
                 bool isMultiplayer = netService != null && netService.Type != NetGameType.Singleplayer;
-                
+
                 if (isMultiplayer)
                 {
                     damageBonus = 0;
                 }
                 else
                 {
-                    int errorCount = BugPig.CountErrorsInLog();
+                    BugPig.CaptureInitialErrorCount();
+                    int errorCount = BugPig.CountNewErrorsInLog();
                     bool isUpgraded = card.IsUpgraded;
                     damageBonus = isUpgraded ? errorCount * errorBonusUpgraded : errorCount * errorBonus;
                 }
             }
-            
+
             decimal totalDamage = _baseDamage + damageBonus;
             BaseValue = totalDamage;
             PreviewValue = totalDamage;
-            MainFile.Logger.Debug($"BugPigDamageVar: BaseValue = {BaseValue}, PreviewValue = {PreviewValue}");
         }
         else
         {
-            int errorCount = BugPig.CountErrorsInLog();
-            bool isUpgraded = card.IsUpgraded;
-            int damageBonus = isUpgraded ? errorCount * errorBonusUpgraded : errorCount * errorBonus;
+            var netService = RunManager.Instance?.NetService;
+            bool isMultiplayer = netService != null && netService.Type != NetGameType.Singleplayer;
+
+            int damageBonus = 0;
+            if (!isMultiplayer)
+            {
+                BugPig.CaptureInitialErrorCount();
+                int errorCount = BugPig.CountNewErrorsInLog();
+                bool isUpgraded = card.IsUpgraded;
+                damageBonus = isUpgraded ? errorCount * errorBonusUpgraded : errorCount * errorBonus;
+            }
+
             decimal totalDamage = _baseDamage + damageBonus;
             BaseValue = totalDamage;
             PreviewValue = totalDamage;

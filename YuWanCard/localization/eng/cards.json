@@ -107,5 +107,13 @@
   "YUWANCARD-DIMENSION_SLASH.title": "Dimension Slash",
   "YUWANCARD-DIMENSION_SLASH.description": "Deal {Damage:diff()} damage. Copy all [gold]Debuffs[/gold] from target enemy to other enemies.",
   "YUWANCARD-PERFECT_THING.title": "Perfect Thing",
-  "YUWANCARD-PERFECT_THING.description": "Gain 1 [gold]Energy[/gold] every {IfUpgraded:show:1|2} cards you play."
+  "YUWANCARD-PERFECT_THING.description": "Gain 1 [gold]Energy[/gold] every {IfUpgraded:show:1|2} cards you play.",
+  "YUWANCARD-BLACK_HOLE.title": "Black Hole",
+  "YUWANCARD-BLACK_HOLE.description": "Exhaust any number of cards. Deal {Magic:diff()} damage for each card Exhausted. Exhaust.",
+  "YUWANCARD-BLACK_HOLE.selectionScreenPrompt": "Select cards to Exhaust",
+  "YUWANCARD-HACKER_PIG.title": "Hacker Pig",
+  "YUWANCARD-HACKER_PIG.description": "Choose 1 card from your hand. It will be automatically played at the start of your turn. [gold]Exhaust[/gold].",
+  "YUWANCARD-HACKER_PIG.selectionScreenPrompt": "Choose 1 card to play at turn start",
+  "YUWANCARD-BLOOD_WHEEL_EYE.title": "Blood Wheel Eye",
+  "YUWANCARD-BLOOD_WHEEL_EYE.description": "All cards gain Replay 1 this combat. Exhaust."
 }

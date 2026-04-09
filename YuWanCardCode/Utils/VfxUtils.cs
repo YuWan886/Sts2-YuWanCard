@@ -11,6 +11,16 @@ namespace YuWanCard.Utils;
 public static class VfxUtils
 {
     private static readonly ConcurrentDictionary<string, PackedScene> SceneCache = new();
+    private static readonly ConcurrentDictionary<string, Texture2D[]> FrameCache = new();
+
+    public static IReadOnlyList<Texture2D>? GetCachedFrames(string framePathPrefix)
+    {
+        if (FrameCache.TryGetValue(framePathPrefix, out var frames))
+        {
+            return frames;
+        }
+        return null;
+    }
 
     private static PackedScene? GetOrLoadScene(string scenePath)
     {
@@ -183,6 +193,7 @@ public static class VfxUtils
     public static void ClearCache()
     {
         SceneCache.Clear();
+        FrameCache.Clear();
         MainFile.Logger.Info("VfxUtils: Scene cache cleared");
     }
 
@@ -193,5 +204,32 @@ public static class VfxUtils
             GetOrLoadScene(path);
         }
         MainFile.Logger.Info($"VfxUtils: Preloaded {scenePaths.Length} scenes");
+    }
+
+    public static void PreloadFrames(string framePathPrefix, int totalFrames)
+    {
+        var frames = new Texture2D[totalFrames];
+        int loadedCount = 0;
+
+        for (int i = 1; i <= totalFrames; i++)
+        {
+            var framePath = $"{framePathPrefix}_{i}.png";
+            var texture = ResourceLoader.Load<Texture2D>(framePath);
+            if (texture != null)
+            {
+                frames[i - 1] = texture;
+                loadedCount++;
+            }
+            else
+            {
+                MainFile.Logger.Warn($"VfxUtils: Failed to load frame: {framePath}");
+            }
+        }
+
+        if (loadedCount > 0)
+        {
+            FrameCache[framePathPrefix] = frames;
+            MainFile.Logger.Info($"VfxUtils: Preloaded {loadedCount}/{totalFrames} frames for {framePathPrefix}");
+        }
     }
 }

@@ -1,0 +1,110 @@
+[gd_scene load_steps=4 format=3 uid="uid://yuwancard/vfx/black_hole"]
+
+[ext_resource type="Shader" path="res://YuWanCard/shaders/vfx/vfx_black_hole.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_black_hole"]
+shader = ExtResource("1_shader")
+
+[sub_resource type="Animation" id="Animation_black_hole"]
+resource_name = "black_hole"
+length = 2.0
+loop_mode = 0
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:material:shader_parameter/time")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.0),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 2.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:material:shader_parameter/black_hole_radius")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.27, 0.53, 0.8, 1.07, 1.33, 1.53, 1.73, 1.87, 2.0),
+"transitions": PackedFloat32Array(1, 1.5, 1.2, 1, 0.8, 1, 1, 1.5, 2, 2.5, 3),
+"update": 0,
+"values": [0.0, 0.025, 0.075, 0.14, 0.19, 0.225, 0.25, 0.24, 0.175, 0.075, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:material:shader_parameter/explosion_intensity")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1.2, 1.3, 1.4, 1.6, 1.8, 2.0),
+"transitions": PackedFloat32Array(1, 1, 0.5, 1, 1.5, 2, 3),
+"update": 0,
+"values": [0.0, 0.0, 4.0, 2.5, 1.5, 0.5, 0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:material:shader_parameter/distortion_strength")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.27, 0.53, 0.8, 1.07, 1.33, 1.53, 1.73, 2.0),
+"transitions": PackedFloat32Array(1, 1.5, 1.2, 1, 0.8, 1, 1, 1.5, 2, 3),
+"update": 0,
+"values": [0.0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.0, 1.2, 0.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:material:shader_parameter/rotation_speed")
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.27, 0.67, 1.07, 1.33, 1.53, 2.0),
+"transitions": PackedFloat32Array(1, 1, 0.8, 0.6, 0.5, 1, 2),
+"update": 0,
+"values": [2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 2.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath(".:material:shader_parameter/blur_strength")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.27, 0.53, 0.8, 1.07, 1.33, 1.53, 1.73, 2.0),
+"transitions": PackedFloat32Array(1, 1.5, 1.2, 1, 0.8, 1, 1, 1.5, 2, 3),
+"update": 0,
+"values": [0.0, 0.2, 0.4, 0.7, 1.0, 1.2, 1.0, 0.8, 0.4, 0.0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath(".:material:shader_parameter/suck_strength")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.27, 0.53, 0.8, 1.07, 1.33, 1.53, 1.73, 1.87, 2.0),
+"transitions": PackedFloat32Array(1, 1.5, 1.2, 1, 0.8, 1, 1, 1.5, 2, 2.5, 3),
+"update": 0,
+"values": [0.0, 0.4, 0.8, 1.5, 2.2, 2.8, 3.2, 2.8, 1.8, 0.8, 0.0]
+}
+
+[node name="VfxBlackHole" type="ColorRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_black_hole")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "black_hole"
+anims/black_hole = SubResource("Animation_black_hole")
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="queue_free"]
