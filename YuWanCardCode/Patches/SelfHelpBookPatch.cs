@@ -157,7 +157,7 @@ public class SelfHelpBookPatch
     private static IEnumerable<IHoverTip>? CreateHoverTip(Type enchantmentType)
     {
         var method = typeof(HoverTipFactory).GetMethod("FromEnchantment")?.MakeGenericMethod(enchantmentType);
-        return method?.Invoke(null, new object[] { _enchantAmount }) as IEnumerable<IHoverTip>;
+        return method?.Invoke(null, [_enchantAmount]) as IEnumerable<IHoverTip>;
     }
 
     private static bool PlayerHasCardsForType<T>(Player player, CardType cardType) where T : EnchantmentModel
@@ -199,7 +199,7 @@ public class SelfHelpBookPatch
             owner,
             enchantment,
             _enchantAmount,
-            c => c.Pile?.Type == PileType.Deck && enchantment.CanEnchant(c) && optionDef.CardFilter(c),
+            c => c is not null && c.Pile is not null && c.Pile.Type == PileType.Deck && enchantment!.CanEnchant(c) && optionDef!.CardFilter(c),
             prefs
         )).FirstOrDefault();
 
@@ -236,6 +236,6 @@ public class SelfHelpBookPatch
     {
         var method = typeof(EventModel).GetMethod("SetEventFinished",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        method?.Invoke(eventModel, new object[] { description });
+        method?.Invoke(eventModel, [description]);
     }
 }
