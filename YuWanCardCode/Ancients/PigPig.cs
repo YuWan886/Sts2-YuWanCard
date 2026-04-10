@@ -159,9 +159,16 @@ public class PigPig : CustomAncientModel
     private async Task ChooseRandomRelic()
     {
         var sharedPool = ModelDb.RelicPool<SharedRelicPool>();
-        var availableRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Uncommon || r.Rarity == RelicRarity.Rare).ToList();
-        var shuffled = availableRelics.Select(r => r.ToMutable()).ToList().UnstableShuffle(Rng);
-        var relicsToOffer = shuffled.Take(3).ToList();
+        var uncommonRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Uncommon).ToList();
+        var rareRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Rare).ToList();
+        
+        var shuffledUncommon = uncommonRelics.Select(r => r.ToMutable()).ToList().UnstableShuffle(Rng);
+        var shuffledRare = rareRelics.Select(r => r.ToMutable()).ToList().UnstableShuffle(Rng);
+        
+        var relicsToOffer = new List<RelicModel>();
+        relicsToOffer.AddRange(shuffledUncommon.Take(1));
+        relicsToOffer.AddRange(shuffledRare.Take(2));
+        
         var selectedRelic = await RelicSelectCmd.FromChooseARelicScreen(Owner!, relicsToOffer);
         if (selectedRelic != null)
         {

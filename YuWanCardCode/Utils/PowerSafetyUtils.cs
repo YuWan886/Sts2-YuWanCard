@@ -20,7 +20,10 @@ public static class PowerSafetyUtils
         "PERSONAL_HIVE",
         "SANDPIT",
         "BURROWED",
-        "BATTLEWORN_DUMMY_TIME_LIMIT"
+        "BATTLEWORN_DUMMY_TIME_LIMIT",
+        "YUWANCARD-PIG_DEFECTION",
+        "YUWANCARD-PIG_FRIENDS",
+        "YUWANCARD-HACKER_PIG_POWER"
     };
 
     public static bool IsSafePower(PowerModel power)

@@ -124,5 +124,7 @@
   "YUWANCARD-MANY_PIGS.title": "好多猪",
   "YUWANCARD-MANY_PIGS.description": "获得{IfUpgraded:show:X+1|X}层[gold]猪朋猪友[/gold]。",
   "YUWANCARD-PIG_RECHARGE.title": "猪充电",
-  "YUWANCARD-PIG_RECHARGE.description": "生成1个[gold]闪电充能球[/gold]。"
+  "YUWANCARD-PIG_RECHARGE.description": "生成1个[gold]闪电充能球[/gold]。",
+  "YUWANCARD-PIG_DEFECTION.title": "猪反转",
+  "YUWANCARD-PIG_DEFECTION.description": "有概率策反一名随机敌人，使其加入你的队伍。"
 }

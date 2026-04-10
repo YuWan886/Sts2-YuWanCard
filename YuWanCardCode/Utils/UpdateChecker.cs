@@ -37,50 +37,14 @@ public static class UpdateChecker
             return _cachedVersion;
         }
 
+        string? version = null;
+
         try
         {
-            var modManagerType = Type.GetType("MegaCrit.Sts2.Core.Modding.ModManager, sts2");
-            if (modManagerType != null)
+            version = GetVersionFromModManager();
+            if (!string.IsNullOrEmpty(version))
             {
-                var modsProperty = modManagerType.GetProperty("Mods");
-                if (modsProperty != null)
-                {
-                    var mods = modsProperty.GetValue(null) as System.Collections.IEnumerable;
-                    if (mods != null)
-                    {
-                        foreach (var mod in mods)
-                        {
-                            var manifestField = mod.GetType().GetField("manifest");
-                            if (manifestField != null)
-                            {
-                                var manifest = manifestField.GetValue(mod);
-                                if (manifest != null)
-                                {
-                                    var idField = manifest.GetType().GetField("id");
-                                    var versionField = manifest.GetType().GetField("version");
-                                    
-                                    if (idField != null && versionField != null)
-                                    {
-                                        var id = idField.GetValue(manifest) as string;
-                                        if (id == ModId)
-                                        {
-                                            var version = versionField.GetValue(manifest) as string;
-                                            if (!string.IsNullOrEmpty(version))
-                                            {
-                                                if (!version.StartsWith("v", StringComparison.OrdinalIgnoreCase))
-                                                {
-                                                    version = "v" + version;
-                                                }
-                                                _cachedVersion = version;
-                                                return version;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                MainFile.Logger.Debug($"Got version from ModManager: {version}");
             }
         }
         catch (Exception ex)
@@ -88,47 +52,254 @@ public static class UpdateChecker
             MainFile.Logger.Debug($"Failed to get version from ModManager: {ex.Message}");
         }
 
+        if (string.IsNullOrEmpty(version))
+        {
+            try
+            {
+                version = GetVersionFromManifest();
+                if (!string.IsNullOrEmpty(version))
+                {
+                    MainFile.Logger.Debug($"Got version from manifest: {version}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MainFile.Logger.Debug($"Failed to read version from manifest: {ex.Message}");
+            }
+        }
+
+        if (string.IsNullOrEmpty(version))
+        {
+            MainFile.Logger.Warn("Failed to get version from all sources, using default v0.0.0");
+            return "v0.0.0";
+        }
+
+        if (!version.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+        {
+            version = "v" + version;
+        }
+
+        _cachedVersion = version;
+        return version;
+    }
+
+    private static string? GetVersionFromModManager()
+    {
+        var modManagerType = Type.GetType("MegaCrit.Sts2.Core.Modding.ModManager, sts2");
+        if (modManagerType == null)
+        {
+            MainFile.Logger.Debug("ModManager type not found");
+            return null;
+        }
+
+        var modsProperty = modManagerType.GetProperty("Mods");
+        if (modsProperty == null)
+        {
+            MainFile.Logger.Debug("Mods property not found on ModManager");
+            return null;
+        }
+
+        var mods = modsProperty.GetValue(null) as System.Collections.IEnumerable;
+        if (mods == null)
+        {
+            MainFile.Logger.Debug("Mods property returned null");
+            return null;
+        }
+
+        foreach (var mod in mods)
+        {
+            var manifestField = mod.GetType().GetField("manifest");
+            if (manifestField == null) continue;
+
+            var manifest = manifestField.GetValue(mod);
+            if (manifest == null) continue;
+
+            var idField = manifest.GetType().GetField("id");
+            var versionField = manifest.GetType().GetField("version");
+
+            if (idField == null || versionField == null) continue;
+
+            var id = idField.GetValue(manifest) as string;
+            if (id != ModId) continue;
+
+            var version = versionField.GetValue(manifest) as string;
+            if (!string.IsNullOrEmpty(version))
+            {
+                return version;
+            }
+        }
+
+        MainFile.Logger.Debug($"Mod with id '{ModId}' not found in ModManager");
+        return null;
+    }
+
+    private static string? GetVersionFromManifest()
+    {
+        string? manifestPath = FindManifestPath();
+        if (string.IsNullOrEmpty(manifestPath))
+        {
+            MainFile.Logger.Debug("Could not find manifest file path");
+            return null;
+        }
+
+        MainFile.Logger.Debug($"Looking for manifest at: {manifestPath}");
+
+        if (!File.Exists(manifestPath))
+        {
+            MainFile.Logger.Debug($"Manifest file not found at: {manifestPath}");
+            return null;
+        }
+
+        var jsonContent = File.ReadAllText(manifestPath);
+        var manifest = JsonSerializer.Deserialize<ModManifestData>(jsonContent);
+        if (manifest == null || string.IsNullOrEmpty(manifest.Version))
+        {
+            MainFile.Logger.Debug("Manifest file does not contain version");
+            return null;
+        }
+
+        return manifest.Version;
+    }
+
+    private static string? FindManifestPath()
+    {
+        string? path = TryGetManifestPathFromModManager();
+        if (!string.IsNullOrEmpty(path) && File.Exists(path))
+        {
+            return path;
+        }
+
+        path = TryGetManifestPathFromExecutable();
+        if (!string.IsNullOrEmpty(path) && File.Exists(path))
+        {
+            return path;
+        }
+
+        path = TryGetManifestPathFromAssembly();
+        if (!string.IsNullOrEmpty(path) && File.Exists(path))
+        {
+            return path;
+        }
+
+        return null;
+    }
+
+    private static string? TryGetManifestPathFromModManager()
+    {
         try
         {
-            string manifestPath = Path.Combine(GetModDirectory(), "YuWanCard.json");
-            if (File.Exists(manifestPath))
+            var modManagerType = Type.GetType("MegaCrit.Sts2.Core.Modding.ModManager, sts2");
+            if (modManagerType == null) return null;
+
+            var modsProperty = modManagerType.GetProperty("Mods");
+            if (modsProperty == null) return null;
+
+            var mods = modsProperty.GetValue(null) as System.Collections.IEnumerable;
+            if (mods == null) return null;
+
+            foreach (var mod in mods)
             {
-                var jsonContent = File.ReadAllText(manifestPath);
-                var manifest = JsonSerializer.Deserialize<ModManifestData>(jsonContent);
-                if (manifest != null && !string.IsNullOrEmpty(manifest.Version))
+                var manifestField = mod.GetType().GetField("manifest");
+                if (manifestField == null) continue;
+
+                var manifest = manifestField.GetValue(mod);
+                if (manifest == null) continue;
+
+                var idField = manifest.GetType().GetField("id");
+                if (idField == null) continue;
+
+                var id = idField.GetValue(manifest) as string;
+                if (id != ModId) continue;
+
+                var pathField = manifest.GetType().GetField("path");
+                if (pathField != null)
                 {
-                    string version = manifest.Version;
-                    if (!version.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+                    var modPath = pathField.GetValue(manifest) as string;
+                    if (!string.IsNullOrEmpty(modPath))
                     {
-                        version = "v" + version;
+                        return Path.Combine(modPath, $"{ModId}.json");
                     }
-                    _cachedVersion = version;
-                    return version;
+                }
+
+                var directoryField = manifest.GetType().GetField("directory");
+                if (directoryField != null)
+                {
+                    var directory = directoryField.GetValue(manifest) as string;
+                    if (!string.IsNullOrEmpty(directory))
+                    {
+                        return Path.Combine(directory, $"{ModId}.json");
+                    }
                 }
             }
         }
-        catch (Exception ex)
-        {
-            MainFile.Logger.Debug($"Failed to read version from manifest: {ex.Message}");
-        }
+        catch { }
 
-        return "v0.0.0";
+        return null;
     }
 
-    private static string GetModDirectory()
+    private static string? TryGetManifestPathFromExecutable()
     {
         try
         {
             string executablePath = Godot.OS.GetExecutablePath();
-            string? directoryName = Path.GetDirectoryName(executablePath);
-            if (!string.IsNullOrEmpty(directoryName))
+            string? gameDirectory = Path.GetDirectoryName(executablePath);
+            if (string.IsNullOrEmpty(gameDirectory)) return null;
+
+            string modsDirectory = Path.Combine(gameDirectory, "mods");
+            if (!Directory.Exists(modsDirectory)) return null;
+
+            string directPath = Path.Combine(modsDirectory, ModId, $"{ModId}.json");
+            if (File.Exists(directPath))
             {
-                return Path.Combine(directoryName, "mods", ModId);
+                return directPath;
+            }
+
+            foreach (var subDir in Directory.GetDirectories(modsDirectory))
+            {
+                string manifestPath = Path.Combine(subDir, $"{ModId}.json");
+                if (File.Exists(manifestPath))
+                {
+                    return manifestPath;
+                }
             }
         }
         catch { }
-        
-        return string.Empty;
+
+        return null;
+    }
+
+    private static string? TryGetManifestPathFromAssembly()
+    {
+        try
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            string? location = assembly.Location;
+            if (!string.IsNullOrEmpty(location))
+            {
+                string? directory = Path.GetDirectoryName(location);
+                if (!string.IsNullOrEmpty(directory))
+                {
+                    string manifestPath = Path.Combine(directory, $"{ModId}.json");
+                    if (File.Exists(manifestPath))
+                    {
+                        return manifestPath;
+                    }
+
+                    DirectoryInfo? parentDir = Directory.GetParent(directory);
+                    if (parentDir != null)
+                    {
+                        manifestPath = Path.Combine(parentDir.FullName, $"{ModId}.json");
+                        if (File.Exists(manifestPath))
+                        {
+                            return manifestPath;
+                        }
+                    }
+                }
+            }
+        }
+        catch { }
+
+        return null;
     }
 
     public static async Task<UpdateCheckResult> CheckForUpdateAsync()

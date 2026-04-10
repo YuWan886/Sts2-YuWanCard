@@ -15,7 +15,7 @@ public class BlackHole : YuWanCardModel
     public BlackHole() : base(
         baseCost: 2,
         type: CardType.Skill,
-        rarity: CardRarity.Rare,
+        rarity: CardRarity.Uncommon,
         target: TargetType.AllEnemies)
     {
         WithVar("Magic", 5);

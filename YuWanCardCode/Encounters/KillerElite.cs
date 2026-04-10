@@ -21,7 +21,7 @@ public sealed class KillerElite : CustomEncounterModel
 
     public override IEnumerable<MonsterModel> AllPossibleMonsters => [ModelDb.Monster<Killer>()];
 
-    public override bool IsValidForAct(ActModel act) => act is Hive or Glory;
+    public override bool IsValidForAct(ActModel act) => act is  Glory;
 
     public override bool ShouldGiveRewards => !RetreatedField.Get(this);
 

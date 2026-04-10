@@ -124,5 +124,7 @@
   "YUWANCARD-MANY_PIGS.title": "Many Pigs",
   "YUWANCARD-MANY_PIGS.description": "Gain {IfUpgraded:show:X+1|X} [gold]Pig Friends[/gold].",
   "YUWANCARD-PIG_RECHARGE.title": "Pig Recharge",
-  "YUWANCARD-PIG_RECHARGE.description": "Generate 1 [gold]Lightning Orb[/gold] for target player."
+  "YUWANCARD-PIG_RECHARGE.description": "Generate 1 [gold]Lightning Orb[/gold] for target player.",
+  "YUWANCARD-PIG_DEFECTION.title": "Pig Defection",
+  "YUWANCARD-PIG_DEFECTION.description": "50% chance to defect a random enemy to your side. [gold]Exhaust[/gold]."
 }

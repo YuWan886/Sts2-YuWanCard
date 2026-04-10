@@ -34,5 +34,8 @@
   "YUWANCARD-PERFECT_THING_POWER.smartDescription": "你每打出{CardsPerEnergy}张牌，获得1点能量。",
   "YUWANCARD-HACKER_PIG_POWER.title": "骇客猪",
   "YUWANCARD-HACKER_PIG_POWER.description": "回合开始时自动打出被标记的卡牌。",
-  "YUWANCARD-HACKER_PIG_POWER.smartDescription": "回合开始时自动打出被标记的卡牌。"
+  "YUWANCARD-HACKER_PIG_POWER.smartDescription": "回合开始时自动打出被标记的卡牌。",
+  "YUWANCARD-PIG_DEFECTION_POWER.title": "猪反转",
+  "YUWANCARD-PIG_DEFECTION_POWER.description": "被策反的单位。",
+  "YUWANCARD-PIG_DEFECTION_POWER.smartDescription": "被策反的单位。。"
 }
