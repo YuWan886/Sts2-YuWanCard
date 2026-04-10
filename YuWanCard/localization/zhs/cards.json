@@ -115,5 +115,14 @@
   "YUWANCARD-HACKER_PIG.description": "选择1张手牌，使其能在回合开始时自动打出。",
   "YUWANCARD-HACKER_PIG.selectionScreenPrompt": "选择1张牌在回合开始时打出",
   "YUWANCARD-BLOOD_WHEEL_EYE.title": "血轮眼",
-  "YUWANCARD-BLOOD_WHEEL_EYE.description": "本场战斗所有卡牌获得重放1。"
+  "YUWANCARD-BLOOD_WHEEL_EYE.description": "本场战斗所有卡牌获得重放1。",
+  "YUWANCARD-PIG_REPLAY.title": "猪复读",
+  "YUWANCARD-PIG_REPLAY.description": "选择[gold]手牌[/gold]中的1张卡牌，使其获得{IfUpgraded:show:2|1}层重放。",
+  "YUWANCARD-PIG_REPLAY.selectionScreenPrompt": "选择1张卡牌获得重放",
+  "YUWANCARD-PIG_STAY_UP_LATE.title": "猪熬夜",
+  "YUWANCARD-PIG_STAY_UP_LATE.description": "造成{Damage:diff()}点伤害。当系统时间处于23:00-02:00时，伤害翻倍，获得[gold]虚弱[/gold]。",
+  "YUWANCARD-MANY_PIGS.title": "好多猪",
+  "YUWANCARD-MANY_PIGS.description": "获得{IfUpgraded:show:X+1|X}层[gold]猪朋猪友[/gold]。",
+  "YUWANCARD-PIG_RECHARGE.title": "猪充电",
+  "YUWANCARD-PIG_RECHARGE.description": "生成1个[gold]闪电充能球[/gold]。"
 }

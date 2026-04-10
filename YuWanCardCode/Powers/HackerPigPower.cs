@@ -13,33 +13,31 @@ namespace YuWanCard.Powers;
 
 public class HackerPigPower : YuWanPowerModel
 {
-    private static readonly SpireField<CardModel, bool> HackerPigMarkedCards = new(_ => false);
+    private static readonly SpireField<HackerPigPower, List<CardModel>> MarkedCardsField = new(_ => new List<CardModel>());
+
+    private List<CardModel> MarkedCards => MarkedCardsField[this] ?? new List<CardModel>();
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("HackerPigPower", 1m)];
 
-    public static void MarkCard(CardModel card)
+    public static void MarkCard(CardModel card, HackerPigPower power)
     {
-        HackerPigMarkedCards[card] = true;
+        power.MarkedCards.Add(card);
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (player.Creature != Owner) return;
-
-        var allCards = PileType.Draw.GetPile(player).Cards
-            .Concat(PileType.Hand.GetPile(player).Cards)
-            .Concat(PileType.Discard.GetPile(player).Cards)
-            .ToList();
-
-        var markedCards = allCards.Where(c => HackerPigMarkedCards[c]).ToList();
-        if (markedCards.Count == 0) return;
+        if (MarkedCards.Count == 0) return;
 
         Flash();
 
-        foreach (var card in markedCards)
+        var cardsToPlay = MarkedCards.Where(c => c.Pile != null).ToList();
+        MarkedCards.Clear();
+
+        foreach (var card in cardsToPlay)
         {
             if (CombatManager.Instance.IsOverOrEnding) break;
 
@@ -51,7 +49,6 @@ public class HackerPigPower : YuWanPowerModel
 
             Creature? target = GetTargetForCard(card, player.Creature.CombatState);
             await CardCmd.AutoPlay(choiceContext, card, target, AutoPlayType.Default, skipXCapture: true);
-            HackerPigMarkedCards[card] = false;
         }
 
         await PowerCmd.Decrement(this);

@@ -71,15 +71,13 @@ public class BlackHole : YuWanCardModel
 
         if (totalDamage > 0 && CombatState != null)
         {
-            foreach (var enemy in CombatState.Enemies)
+            var enemies = CombatState.Enemies.Where(e => e.IsAlive).ToList();
+            foreach (var enemy in enemies)
             {
-                if (enemy.IsAlive)
-                {
-                    await DamageCmd.Attack(totalDamage)
-                        .FromCard(this)
-                        .Targeting(enemy)
-                        .Execute(choiceContext);
-                }
+                await DamageCmd.Attack(totalDamage)
+                    .FromCard(this)
+                    .Targeting(enemy)
+                    .Execute(choiceContext);
             }
         }
     }

@@ -57,7 +57,8 @@ public class DimensionSlash : YuWanCardModel
         {
             foreach (var (power, amount) in debuffsToApply)
             {
-                await PowerCmd.Apply(power.ToMutable(), enemy, amount, Owner.Creature, this);
+                var canonicalPower = ModelDb.GetById<PowerModel>(power.Id);
+                await PowerCmd.Apply(canonicalPower.ToMutable(amount), enemy, amount, Owner.Creature, this);
             }
         }
 

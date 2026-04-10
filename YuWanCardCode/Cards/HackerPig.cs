@@ -47,9 +47,12 @@ public class HackerPig : YuWanCardModel
             PlayMatrixRainVfx();
             
             await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-            await PowerCmd.Apply<HackerPigPower>(Owner.Creature, 1, Owner.Creature, this);
+            var power = await PowerCmd.Apply<HackerPigPower>(Owner.Creature, 1, Owner.Creature, this);
             CardCmd.ApplyKeyword(selectedCard, CardKeyword.Retain);
-            HackerPigPower.MarkCard(selectedCard);
+            if (power != null)
+            {
+                HackerPigPower.MarkCard(selectedCard, power);
+            }
         }
     }
 

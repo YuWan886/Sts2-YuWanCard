@@ -16,7 +16,7 @@ public static class GameVersionCompat
     #region Version Constants
 
     public static readonly Version MainBranchVersion = new(0, 99, 1);
-    public static readonly Version BetaBranchVersion = new(0, 102, 0);
+    public static readonly Version BetaBranchVersion = new(0, 103, 0);
 
     #endregion
 

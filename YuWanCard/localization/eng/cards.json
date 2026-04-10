@@ -115,5 +115,14 @@
   "YUWANCARD-HACKER_PIG.description": "Choose 1 card from your hand. It will be automatically played at the start of your turn. [gold]Exhaust[/gold].",
   "YUWANCARD-HACKER_PIG.selectionScreenPrompt": "Choose 1 card to play at turn start",
   "YUWANCARD-BLOOD_WHEEL_EYE.title": "Blood Wheel Eye",
-  "YUWANCARD-BLOOD_WHEEL_EYE.description": "All cards gain Replay 1 this combat. Exhaust."
+  "YUWANCARD-BLOOD_WHEEL_EYE.description": "All cards gain Replay 1 this combat. Exhaust.",
+  "YUWANCARD-PIG_REPLAY.title": "Pig Replay",
+  "YUWANCARD-PIG_REPLAY.description": "Choose 1 card from your hand. It gains {IfUpgraded:show:2|1} Replay. Exhaust.",
+  "YUWANCARD-PIG_REPLAY.selectionScreenPrompt": "Select 1 card to gain Replay",
+  "YUWANCARD-PIG_STAY_UP_LATE.title": "Pig Stay Up Late",
+  "YUWANCARD-PIG_STAY_UP_LATE.description": "Deal {Damage:diff()} damage. Damage is doubled and gain [gold]Weak[/gold] when system time is 23:00-02:00.",
+  "YUWANCARD-MANY_PIGS.title": "Many Pigs",
+  "YUWANCARD-MANY_PIGS.description": "Gain {IfUpgraded:show:X+1|X} [gold]Pig Friends[/gold].",
+  "YUWANCARD-PIG_RECHARGE.title": "Pig Recharge",
+  "YUWANCARD-PIG_RECHARGE.description": "Generate 1 [gold]Lightning Orb[/gold] for target player."
 }

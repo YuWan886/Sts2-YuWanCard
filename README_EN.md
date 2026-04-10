@@ -52,6 +52,10 @@ A cute pig character that can use all card.
 | Pig Chop | 1 | Token | Skill | Gain 3 Regen. Exhaust |
 | Dimension Slash | 0 | Ancient | Attack | Deal 15 damage. Copy all debuffs from target enemy to other enemies |
 | Perfect Thing | 3 | Ancient | Power | Gain 1 Energy every 2 cards you play. Upgraded: every 1 card |
+| Pig Replay | 2 | Uncommon | Skill | Choose 1 card from your hand, give it 1/2 Replay. Exhaust |
+| Many Pigs | X | Rare | Power | Gain X/X+1 stacks of Pig Friends. Exhaust |
+| Pig Recharge | 1 | Uncommon | Skill | Channel 1 Lightning orb. Upgraded: Cost becomes 0 |
+| Pig Stay Up Late | 1 | Uncommon | Attack | Deal 9 damage. When system time is between 23:00-02:00, damage is doubled and you gain Weak. |
 
 **Exclusive Relics**
 
