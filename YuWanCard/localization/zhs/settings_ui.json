@@ -15,5 +15,19 @@
   "YUWANCARD-UPDATE_POPUP.title": "YuWanCard 有新版本可用",
   "YUWANCARD-UPDATE_POPUP.body": "YuWanCard 有新版本可用！\n\n当前版本：{0}\n最新版本：{1}\n\n是否前往下载新版本？",
   "YUWANCARD-UPDATE_POPUP.download": "前往下载",
-  "YUWANCARD-UPDATE_POPUP.close": "关闭"
+  "YUWANCARD-UPDATE_POPUP.close": "关闭",
+  "YUWANCARD-SHOPPING_CART.title": "购物车",
+  "YUWANCARD-SHOPPING_CART.button": "购物车",
+  "YUWANCARD-SHOPPING_CART.empty": "购物车是空的",
+  "YUWANCARD-SHOPPING_CART.close": "关闭",
+  "YUWANCARD-SHOPPING_CART.total": "总计: {0}G",
+  "YUWANCARD-SHOPPING_CART.buy": "购买",
+  "YUWANCARD-SHOPPING_CART.remove": "移除",
+  "YUWANCARD-SHOPPING_CART.add_to_cart": "加入购物车",
+  "YUWANCARD-SHOPPING_CART.type_card": "卡牌",
+  "YUWANCARD-SHOPPING_CART.type_relic": "遗物",
+  "YUWANCARD-SHOPPING_CART.type_potion": "药水",
+  "YUWANCARD-SHOPPING_CART.cart_full": "购物车已满",
+  "YUWANCARD-SHOPPING_CART.not_enough_gold": "金币不足",
+  "YUWANCARD-SHOPPING_CART.buy_all": "一键购买"
 }

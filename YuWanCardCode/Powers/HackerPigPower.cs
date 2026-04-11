@@ -50,8 +50,6 @@ public class HackerPigPower : YuWanPowerModel
             Creature? target = GetTargetForCard(card, player.Creature.CombatState);
             await CardCmd.AutoPlay(choiceContext, card, target, AutoPlayType.Default, skipXCapture: true);
         }
-
-        await PowerCmd.Decrement(this);
     }
 
     private Creature? GetTargetForCard(CardModel card, CombatState? combatState)

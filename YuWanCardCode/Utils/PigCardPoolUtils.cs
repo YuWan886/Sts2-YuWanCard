@@ -100,48 +100,4 @@ public static class PigCardPoolUtils
 
         return options.WithCustomPool(allCards);
     }
-
-    public static IEnumerable<CardModel> ModifyMerchantCardPool(Player player, IEnumerable<CardModel> options)
-    {
-        var originalCards = options.ToList();
-        if (originalCards.Count == 0) return options;
-
-        var originalRarities = originalCards.Select(c => c.Rarity).Distinct().ToHashSet();
-        
-        var validRarities = originalRarities.Where(r => !ExcludedRarities.Contains(r)).ToHashSet();
-        
-        HashSet<CardModel> allCards;
-        
-        if (validRarities.Count == 0)
-        {
-            allCards = GetAllUnlockedCards(player);
-        }
-        else
-        {
-            var filteredOriginal = originalCards.Where(c => !ExcludedRarities.Contains(c.Rarity)).ToList();
-            allCards = new HashSet<CardModel>(filteredOriginal);
-            
-            foreach (var pool in ModelDb.AllCardPools)
-            {
-                if (pool == null) continue;
-                
-                foreach (var card in pool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint))
-                {
-                    if (card == null) continue;
-                    if (ExcludedRarities.Contains(card.Rarity)) continue;
-                    if (validRarities.Contains(card.Rarity))
-                    {
-                        allCards.Add(card);
-                    }
-                }
-            }
-            
-            if (allCards.Count == 0)
-            {
-                allCards = GetAllUnlockedCards(player);
-            }
-        }
-
-        return allCards.Count > 0 ? allCards : options;
-    }
 }

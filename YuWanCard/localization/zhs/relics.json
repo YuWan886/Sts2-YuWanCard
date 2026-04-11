@@ -50,5 +50,11 @@
   "YUWANCARD-PIG_GOLDEN_CARROT.flavor": "传说中的金胡萝卜，蕴含着神秘的力量。",
   "YUWANCARD-PIG_ROAST_PORK.title": "烤猪肉",
   "YUWANCARD-PIG_ROAST_PORK.description": "在[gold]休息处[/gold]可以选择烤猪肉选项。",
-  "YUWANCARD-PIG_ROAST_PORK.flavor": "为了队友，牺牲自己。"
+  "YUWANCARD-PIG_ROAST_PORK.flavor": "为了队友，牺牲自己。",
+  "YUWANCARD-TEAMMATE_PAY.title": "队友帮付",
+  "YUWANCARD-TEAMMATE_PAY.description": "在商店界面中，可以让队友为你购买商品。队友同意后，从其金币中扣除商品价格，商品归你所有。[blue]队伍中只要有1人拥有此遗物，所有队员都能使用帮付功能。[/blue]",
+  "YUWANCARD-TEAMMATE_PAY.flavor": "有福同享，有难同当。",
+  "YUWANCARD-SHOPPING_CART.title": "购物车",
+  "YUWANCARD-SHOPPING_CART.description": "可以在商店中将物品加入购物车，稍后购买。购物车最多容纳{Capacity}个物品。",
+  "YUWANCARD-SHOPPING_CART.flavor": "购物车，让购物更轻松。"
 }

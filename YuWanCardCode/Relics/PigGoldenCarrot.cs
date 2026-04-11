@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
@@ -43,15 +42,5 @@ public class PigGoldenCarrot : YuWanRelicModel
         }
 
         return PigCardPoolUtils.ModifyCardRewardOptions(player, options);
-    }
-
-    public override IEnumerable<CardModel> ModifyMerchantCardPool(Player player, IEnumerable<CardModel> options)
-    {
-        if (player.Character is not Pig)
-        {
-            return options;
-        }
-
-        return PigCardPoolUtils.ModifyMerchantCardPool(player, options);
     }
 }

@@ -26,32 +26,6 @@ public partial class MainFile : Node
     private const string PigVisualsPath = "res://YuWanCard/scenes/characters/pig.tscn";
     private const string PigMerchantPath = "res://YuWanCard/scenes/characters/pig_merchant.tscn";
 
-    static MainFile()
-    {
-        AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
-    }
-
-    private static Assembly? OnAssemblyResolve(object? sender, ResolveEventArgs args)
-    {
-        var name = new AssemblyName(args.Name);
-        if (name.Name == "BaseLib")
-        {
-            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var baseLibAssembly = loadedAssemblies.FirstOrDefault(a =>
-            {
-                var assemblyName = a.GetName();
-                return assemblyName.Name == "BaseLib";
-            });
-
-            if (baseLibAssembly != null)
-            {
-                Logger.Info($"BaseLib version redirect: requested {args.Name}, using loaded {baseLibAssembly.FullName}");
-                return baseLibAssembly;
-            }
-        }
-        return null;
-    }
-
     public static void Initialize()
     {
         Harmony harmony = new(ModId);

@@ -19,10 +19,4 @@ public class PigAllCards : YuWanModifierModel
         if (player.Character is not Pig) return options;
         return PigCardPoolUtils.ModifyCardRewardOptions(player, options);
     }
-
-    public override IEnumerable<CardModel> ModifyMerchantCardPool(Player player, IEnumerable<CardModel> options)
-    {
-        if (player.Character is not Pig) return options;
-        return PigCardPoolUtils.ModifyMerchantCardPool(player, options);
-    }
 }

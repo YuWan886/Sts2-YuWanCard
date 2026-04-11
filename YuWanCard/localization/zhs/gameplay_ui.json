@@ -1,0 +1,19 @@
+{
+  "YUWANCARD-TEAMMATE_PAY.button": "帮付",
+  "YUWANCARD-TEAMMATE_PAY.button_tooltip": "请求队友帮你购买此商品",
+  "YUWANCARD-TEAMMATE_PAY.select_teammate": "选择队友帮付",
+  "YUWANCARD-TEAMMATE_PAY.cancel": "取消",
+  "YUWANCARD-TEAMMATE_PAY.card_removal": "移除卡牌",
+  "YUWANCARD-TEAMMATE_PAY.pay_request_title": "帮付请求",
+  "YUWANCARD-TEAMMATE_PAY.pay_request_from": "{0} 请求你帮忙付款",
+  "YUWANCARD-TEAMMATE_PAY.pay_request_item": "商品: {0}",
+  "YUWANCARD-TEAMMATE_PAY.pay_request_cost": "价格: {0} 金币",
+  "YUWANCARD-TEAMMATE_PAY.accept": "同意帮付",
+  "YUWANCARD-TEAMMATE_PAY.reject": "拒绝",
+  "YUWANCARD-TEAMMATE_PAY.no_teammates": "没有可用的队友",
+  "YUWANCARD-TEAMMATE_PAY.request_sent": "已向 {0} 发送帮付请求",
+  "YUWANCARD-TEAMMATE_PAY.payment_success": "帮付成功！{0} 金币已支付",
+  "YUWANCARD-TEAMMATE_PAY.payment_failed": "帮付失败",
+  "YUWANCARD-TEAMMATE_PAY.payment_rejected": "对方拒绝了帮付请求",
+  "YUWANCARD-TEAMMATE_PAY.not_enough_gold": "金币不足"
+}

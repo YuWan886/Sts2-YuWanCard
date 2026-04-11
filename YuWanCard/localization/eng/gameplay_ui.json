@@ -1,0 +1,19 @@
+{
+  "YUWANCARD-TEAMMATE_PAY.button": "Pay for Me",
+  "YUWANCARD-TEAMMATE_PAY.button_tooltip": "Request a teammate to pay for this item",
+  "YUWANCARD-TEAMMATE_PAY.select_teammate": "Select Teammate to Pay",
+  "YUWANCARD-TEAMMATE_PAY.cancel": "Cancel",
+  "YUWANCARD-TEAMMATE_PAY.card_removal": "Card Removal",
+  "YUWANCARD-TEAMMATE_PAY.pay_request_title": "Pay Request",
+  "YUWANCARD-TEAMMATE_PAY.pay_request_from": "{0} requests you to pay for them",
+  "YUWANCARD-TEAMMATE_PAY.pay_request_item": "Item: {0}",
+  "YUWANCARD-TEAMMATE_PAY.pay_request_cost": "Cost: {0} Gold",
+  "YUWANCARD-TEAMMATE_PAY.accept": "Accept",
+  "YUWANCARD-TEAMMATE_PAY.reject": "Reject",
+  "YUWANCARD-TEAMMATE_PAY.no_teammates": "No available teammates",
+  "YUWANCARD-TEAMMATE_PAY.request_sent": "Request sent to {0}",
+  "YUWANCARD-TEAMMATE_PAY.payment_success": "Payment successful! {0} gold paid",
+  "YUWANCARD-TEAMMATE_PAY.payment_failed": "Payment failed",
+  "YUWANCARD-TEAMMATE_PAY.payment_rejected": "Payment request was rejected",
+  "YUWANCARD-TEAMMATE_PAY.not_enough_gold": "Not enough gold"
+}

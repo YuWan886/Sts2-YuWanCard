@@ -15,5 +15,19 @@
   "YUWANCARD-UPDATE_POPUP.title": "YuWanCard Update Available",
   "YUWANCARD-UPDATE_POPUP.body": "A new version of YuWanCard is available!\n\nCurrent version: {0}\nLatest version: {1}\n\nWould you like to download the update?",
   "YUWANCARD-UPDATE_POPUP.download": "Download",
-  "YUWANCARD-UPDATE_POPUP.close": "Close"
+  "YUWANCARD-UPDATE_POPUP.close": "Close",
+  "YUWANCARD-SHOPPING_CART.title": "Shopping Cart",
+  "YUWANCARD-SHOPPING_CART.button": "Cart",
+  "YUWANCARD-SHOPPING_CART.empty": "Your cart is empty",
+  "YUWANCARD-SHOPPING_CART.close": "Close",
+  "YUWANCARD-SHOPPING_CART.total": "Total: {0}G",
+  "YUWANCARD-SHOPPING_CART.buy": "Buy",
+  "YUWANCARD-SHOPPING_CART.remove": "Remove",
+  "YUWANCARD-SHOPPING_CART.add_to_cart": "Add to Cart",
+  "YUWANCARD-SHOPPING_CART.type_card": "Card",
+  "YUWANCARD-SHOPPING_CART.type_relic": "Relic",
+  "YUWANCARD-SHOPPING_CART.type_potion": "Potion",
+  "YUWANCARD-SHOPPING_CART.cart_full": "Cart is full",
+  "YUWANCARD-SHOPPING_CART.not_enough_gold": "Not enough gold",
+  "YUWANCARD-SHOPPING_CART.buy_all": "Buy All"
 }

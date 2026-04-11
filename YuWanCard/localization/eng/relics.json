@@ -50,5 +50,11 @@
   "YUWANCARD-PIG_GOLDEN_CARROT.flavor": "A legendary golden carrot with mysterious power.",
   "YUWANCARD-PIG_ROAST_PORK.title": "Roast Pork",
   "YUWANCARD-PIG_ROAST_PORK.description": "Can choose the Roast Pork option at [gold]Rest Sites[/gold].",
-  "YUWANCARD-PIG_ROAST_PORK.flavor": "Sacrifice yourself for your teammates."
+  "YUWANCARD-PIG_ROAST_PORK.flavor": "Sacrifice yourself for your teammates.",
+  "YUWANCARD-TEAMMATE_PAY.title": "Teammate Pay",
+  "YUWANCARD-TEAMMATE_PAY.description": "In the shop, you can ask teammates to buy items for you. After they agree, the gold is deducted from their account and the item belongs to you. [blue]As long as one team member has this relic, all teammates can use the pay feature.[/blue]",
+  "YUWANCARD-TEAMMATE_PAY.flavor": "Share the fortune, share the burden.",
+  "YUWANCARD-SHOPPING_CART.title": "Shopping Cart",
+  "YUWANCARD-SHOPPING_CART.description": "Add items to your cart in the shop and buy them later. The cart can hold up to {Capacity} items.",
+  "YUWANCARD-SHOPPING_CART.flavor": "Shopping made easier."
 }

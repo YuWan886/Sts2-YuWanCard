@@ -25,8 +25,6 @@ public class PigRecharge : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (cardPlay.Target == null) return;
-        if (cardPlay.Target.Player == null) return;
-        await OrbCmd.Channel<LightningOrb>(choiceContext, cardPlay.Target.Player);
+        await OrbCmd.Channel<LightningOrb>(choiceContext, Owner);
     }
 }
