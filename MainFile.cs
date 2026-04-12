@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using BaseLib.Config;
 using BaseLib.Extensions;
 using BaseLib.Utils.NodeFactories;
@@ -25,6 +26,14 @@ public partial class MainFile : Node
 
     private const string PigVisualsPath = "res://YuWanCard/scenes/characters/pig.tscn";
     private const string PigMerchantPath = "res://YuWanCard/scenes/characters/pig_merchant.tscn";
+
+#pragma warning disable CA2255
+    [ModuleInitializer]
+    internal static void ModuleInit()
+#pragma warning restore CA2255
+    {
+        RegisterBaseLibAssemblyResolve();
+    }
 
     public static void Initialize()
     {
@@ -61,5 +70,24 @@ public partial class MainFile : Node
     private static void OnConfigChanged(object? sender, EventArgs e)
     {
         
+    }
+
+    private static void RegisterBaseLibAssemblyResolve()
+    {
+        AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+        {
+            var assemblyName = new AssemblyName(args.Name);
+            if (assemblyName.Name == "BaseLib")
+            {
+                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (asm.GetName().Name == "BaseLib")
+                    {
+                        return asm;
+                    }
+                }
+            }
+            return null;
+        };
     }
 }
