@@ -26,5 +26,10 @@
   "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS_LOCKED.description": "你翻遍了口袋，却找不到一张值得涂毒的卡牌。\n\n书上写着：[red]\"没有武器，毒药也只是浪费。\"[/red]",
   "YUWANCARD-SELF_HELP_BOOK.pages.ARTHROPODKILLER.description": "你翻到节肢杀手篇章：\n[green]\"虫子虽多，但它们都有同一个弱点——被踩死！\"[/green]\n\n你学到了对付虫子的诀窍，卡牌上浮现出甲壳碎裂的幻象。",
   "YUWANCARD-SELF_HELP_BOOK.pages.SWEEPINGBLADE.description": "你翻到横扫之刃篇章：\n[blue]\"一剑扫千军！虽然你可能只需要扫两三个。\"[/blue]\n\n书页上画着一个挥剑的小人，你的卡牌似乎也学会了这种气势。",
-  "YUWANCARD-SELF_HELP_BOOK.pages.VENOMOUS.description": "你翻到淬毒篇章：\n[purple]\"毒药是最好的调味品——给敌人的最后一餐加点料！\"[/purple]\n\n你小心翼翼地将毒液涂抹在卡牌上，它开始散发出诡异的紫色光芒。"
+  "YUWANCARD-SELF_HELP_BOOK.pages.VENOMOUS.description": "你翻到淬毒篇章：\n[purple]\"毒药是最好的调味品——给敌人的最后一餐加点料！\"[/purple]\n\n你小心翼翼地将毒液涂抹在卡牌上，它开始散发出诡异的紫色光芒。",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL.title": "阅读忠诚篇章",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL.description": "选择一张卡牌附魔[purple]忠诚[/purple]。",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED.title": "锁定",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED.description": "你翻遍了口袋，却找不到一张值得托付忠诚的卡牌。\n\n书上写着：[gold]\"没有忠诚的对象，忠诚只是一纸空文。\"[/gold]",
+  "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description": "你翻到忠诚篇章：\n[gold]\"忠诚是最珍贵的品质——它会永远陪伴在你身边！\"[/gold]\n\n卡牌上浮现出一个金色的印记，仿佛在向你宣誓效忠。"
 }

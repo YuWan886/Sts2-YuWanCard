@@ -26,5 +26,10 @@
   "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS_LOCKED.description": "You search your pockets but find no card worth poisoning.\n\nThe book reads: [red]\"Without a weapon, poison is just a waste.\"[/red]",
   "YUWANCARD-SELF_HELP_BOOK.pages.ARTHROPODKILLER.description": "You turn to the Arthropod Killer passage:\n[green]\"Bugs are many, but they all share one weakness—getting squashed!\"[/green]\n\nYou learn the tricks for dealing with bugs. An illusion of shattering shells appears on your card.",
   "YUWANCARD-SELF_HELP_BOOK.pages.SWEEPINGBLADE.description": "You turn to the Sweeping Blade passage:\n[blue]\"One sword sweeps a thousand enemies! Though you might only need to sweep two or three.\"[/blue]\n\nA tiny figure swinging a sword is drawn on the page. Your card seems to have learned this momentum.",
-  "YUWANCARD-SELF_HELP_BOOK.pages.VENOMOUS.description": "You turn to the Venomous passage:\n[purple]\"Poison is the best seasoning—add some spice to your enemy's last meal!\"[/purple]\n\nYou carefully apply the poison to your card. It begins to glow with an eerie purple light."
+  "YUWANCARD-SELF_HELP_BOOK.pages.VENOMOUS.description": "You turn to the Venomous passage:\n[purple]\"Poison is the best seasoning—add some spice to your enemy's last meal!\"[/purple]\n\nYou carefully apply the poison to your card. It begins to glow with an eerie purple light.",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL.title": "Read the Loyal Passage",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL.description": "Choose a card to enchant with [blue]Loyal[/blue].",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED.title": "Read the Loyal Passage",
+  "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED.description": "You search your pockets but find no card worthy of loyalty.\n\nThe book reads: [gold]\"Without an object of loyalty, loyalty is just empty words.\"[/gold]",
+  "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description": "You turn to the Loyal passage:\n[gold]\"Loyalty is the most precious quality—it will stay by your side forever!\"[/gold]\n\nA golden mark appears on your card, as if swearing allegiance to you."
 }

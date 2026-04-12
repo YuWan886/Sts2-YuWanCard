@@ -4,5 +4,7 @@
   "SWEEPING_BLADE.title": "Sweeping Blade",
   "SWEEPING_BLADE.description": "Damage splashes, dealing [blue]50[/blue]% damage to other enemies.",
   "VENOMOUS.title": "Venomous",
-  "VENOMOUS.description": "Attacks apply [blue]3[/blue] [gold]Poison[/gold] to enemies."
+  "VENOMOUS.description": "Attacks apply [blue]3[/blue] [gold]Poison[/gold] to enemies.",
+  "LOYAL.title": "Loyal",
+  "LOYAL.description": "Automatically play this card at the start of each turn, costing no energy."
 }

@@ -56,6 +56,8 @@ A cute pig character that can use all card.
 | Many Pigs | X | Rare | Power | Gain X/X+1 stacks of Pig Friends. Exhaust |
 | Pig Recharge | 1 | Uncommon | Skill | Channel 1 Lightning orb. Upgraded: Cost becomes 0 |
 | Pig Stay Up Late | 1 | Uncommon | Attack | Deal 9 damage. When system time is between 23:00-02:00, damage is doubled and you gain Weak. |
+| Black Hole | 2 | Rare | Skill | Exhaust any number of cards from your hand. Deal 5 damage for each card exhausted. Exhaust. |
+| Hacker Pig | 3 | Rare | Skill | Choose 1 card from your hand and enchant it with Loyal. Exhaust. |
 
 **Exclusive Relics**
 
@@ -103,6 +105,8 @@ A cute pig character that can use all card.
 | Spirit Speech · Don't Die | 1 | Uncommon | Skill | Heal ally for 10% of max HP, give them 3 stacks of Regen. Exhaust. (Multiplayer) |
 | Pressuring You | 0 | Uncommon | Skill | Make an ally lose 1 Energy, you gain 1 Energy and draw 1 card. Exhaust. (Multiplayer) |
 | Moving Stone King | 1 | Uncommon | Skill | Transform all cards in an ally's hand into Boulders. Exhaust. (Multiplayer) |
+| Blood Wheel Eye | 3 | Rare | Skill | All cards gain 1 Replay this combat. Exhaust |
+| Pig Reversal | 3 | Rare | Skill | Has a chance to convert a random enemy to your side. Exhaust |
 
 ### Powers
 
@@ -126,6 +130,7 @@ A cute pig character that can use all card.
 | Arthropod Killer | Deal true damage to arthropod enemies, ignoring Block |
 | Sweeping Blade | Damage splashes, dealing 50% damage to other enemies |
 | Venomous | Attacks apply 3 Poison to enemies |
+| Loyal | Automatically play this card at the start of each turn, costing no energy |
 
 ### Relics
 

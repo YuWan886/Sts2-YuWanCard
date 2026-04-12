@@ -88,6 +88,15 @@ public class SelfHelpBookPatch
             DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.VENOMOUS.description",
             AvailabilityCheck: p => PlayerHasDamageCards<Venomous>(p),
             CardFilter: c => HasDamageVariable(c)
+        ),
+        new(
+            typeof(Loyal),
+            Weight: 1,
+            OptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL",
+            LockedOptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED",
+            DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description",
+            AvailabilityCheck: p => PlayerHasPlayableCards<Loyal>(p),
+            CardFilter: c => !c.Keywords.Contains(CardKeyword.Unplayable)
         )
     ];
 
@@ -176,6 +185,14 @@ public class SelfHelpBookPatch
             c.Pile?.Type == PileType.Deck && 
             enchantment.CanEnchant(c) && 
             HasDamageVariable(c));
+    }
+
+    private static bool PlayerHasPlayableCards<T>(Player player) where T : EnchantmentModel
+    {
+        var enchantment = ModelDb.Enchantment<T>();
+        return PileType.Deck.GetPile(player).Cards.Any(c => 
+            c.Pile?.Type == PileType.Deck && 
+            enchantment.CanEnchant(c));
     }
 
     private static bool HasDamageVariable(CardModel? card)

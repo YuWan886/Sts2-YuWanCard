@@ -3,8 +3,12 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
 using YuWanCard.Characters;
-using YuWanCard.Powers;
+using YuWanCard.Enchantments;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
@@ -16,7 +20,7 @@ public class HackerPig : YuWanCardModel
 
     public HackerPig() : base(
         baseCost: 3,
-        type: CardType.Power,
+        type: CardType.Skill,
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
@@ -29,10 +33,9 @@ public class HackerPig : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        var enchantment = ModelDb.Enchantment<Loyal>();
         var allCards = PileType.Hand.GetPile(Owner).Cards
-            .Where(c => c != this 
-                && !c.Keywords.Contains(CardKeyword.Unplayable) 
-                && (c.EnergyCost == null || !c.EnergyCost.CostsX))
+            .Where(c => c != this && enchantment.CanEnchant(c))
             .ToList();
 
         if (allCards.Count == 0) return;
@@ -44,13 +47,14 @@ public class HackerPig : YuWanCardModel
         if (selectedCard != null)
         {
             PlayMatrixRainVfx();
-            
+
             await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-            var power = await PowerCmd.Apply<HackerPigPower>(Owner.Creature, 1, Owner.Creature, this);
-            CardCmd.ApplyKeyword(selectedCard, CardKeyword.Retain);
-            if (power != null)
+            CardCmd.Enchant<Loyal>(selectedCard, 1);
+
+            var vfx = NCardEnchantVfx.Create(selectedCard);
+            if (vfx != null)
             {
-                HackerPigPower.MarkCard(selectedCard, power);
+                NRun.Instance?.GlobalUi.CardPreviewContainer.AddChildSafely(vfx);
             }
         }
     }
@@ -62,7 +66,7 @@ public class HackerPig : YuWanCardModel
             VfxUtils.PlayCentered(VfxMatrixRainPath);
             MainFile.Logger.Debug("HackerPig: Matrix rain VFX triggered");
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             MainFile.Logger.Error($"HackerPig: Failed to play matrix rain VFX: {ex.Message}");
         }
