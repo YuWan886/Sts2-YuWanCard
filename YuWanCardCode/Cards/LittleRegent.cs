@@ -2,18 +2,18 @@ using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models.Orbs;
-using YuWanCard.Characters;
+using MegaCrit.Sts2.Core.Models.CardPools;
+using YuWanCard.Orbs;
 
 namespace YuWanCard.Cards;
 
-[Pool(typeof(PigCardPool))]
-public class PigRecharge : YuWanCardModel
+[Pool(typeof(ColorlessCardPool))]
+public class LittleRegent : YuWanCardModel
 {
-    public PigRecharge() : base(
+    public LittleRegent() : base(
         baseCost: 1,
         type: CardType.Skill,
-        rarity: CardRarity.Common,
+        rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
     }
@@ -25,6 +25,6 @@ public class PigRecharge : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await OrbCmd.Channel<LightningOrb>(choiceContext, Owner);
+        await OrbCmd.Channel<LittleRegentOrb>(choiceContext, Owner);
     }
 }

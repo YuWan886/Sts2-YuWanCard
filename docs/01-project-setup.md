@@ -169,36 +169,73 @@ YourMod/
 
 ```
 YuWanCard/
-├── YuWanCardCode/
-│   ├── Cards/                 # 20+ 张卡牌定义
-│   │   ├── YuWanCardModel.cs  # 卡牌基类
-│   │   ├── PigHurt.cs         # 猪受伤
-│   │   ├── PigAngry.cs        # 猪愤怒
-│   │   ├── RainDark.cs        # 雨落狂流之暗
+├── YuWanCardCode/               # 模组源代码目录
+│   ├── Ancients/                # 先古之民定义
+│   │   └── PigPig.cs            # 猪猪先古之民
+│   ├── Cards/                   # 卡牌定义（50+ 张卡牌）
+│   │   ├── YuWanCardModel.cs    # 卡牌基类
+│   │   ├── PigStrike.cs         # 猪打击
+│   │   ├── PigAngry.cs          # 猪愤怒
+│   │   ├── RainDark.cs          # 雨落狂流之暗
 │   │   └── ...
-│   ├── Powers/                # 6 个能力定义
-│   │   ├── YuWanPowerModel.cs # 能力基类
-│   │   ├── PigDoubtPower.cs   # 猪疑惑
-│   │   ├── RainDarkPower.cs   # 雨落狂流
+│   ├── Characters/              # 角色定义
+│   │   ├── Pig.cs               # 猪角色
+│   │   ├── PigCardPool.cs       # 猪卡牌池
+│   │   ├── PigRelicPool.cs      # 猪遗物池
+│   │   └── PigPotionPool.cs     # 猪药水池
+│   ├── Powers/                  # 能力定义（12 个能力）
+│   │   ├── YuWanPowerModel.cs   # 能力基类
+│   │   ├── PigDoubtPower.cs     # 猪疑惑
+│   │   ├── RainDarkPower.cs     # 雨落狂流
 │   │   └── ...
-│   ├── Relics/                # 13 个遗物定义
-│   │   ├── YuWanRelicModel.cs # 遗物基类
+│   ├── Relics/                  # 遗物定义（18 个遗物）
+│   │   ├── YuWanRelicModel.cs   # 遗物基类
 │   │   ├── RingOfSevenCurses.cs # 七咒之戒
-│   │   ├── TenYearBamboo.cs   # 10 年孤竹
+│   │   ├── TenYearBamboo.cs     # 10 年孤竹
 │   │   └── ...
-│   ├── Ancients/
-│   │   └── PigPig.cs          # 猪猪先古之民
-│   ├── Modifiers/
-│   │   └── EndlessModifier.cs # 无尽模式
-│   ├── Monsters/
-│   │   └── Killer.cs          # 杀手精英怪
-│   ├── Encounters/
-│   │   └── KillerElite.cs     # 杀手遭遇
-│   └── Patches/               # Harmony 补丁
-│       ├── NeowSevenCursesPatch.cs
-│       ├── KillerRegistrationPatch.cs
-│       └── ...
-└── YuWanCard/                 # 资源目录
+│   ├── Modifiers/               # 修改器定义
+│   │   ├── YuWanModifierModel.cs # 修改器基类
+│   │   ├── EndlessModifier.cs   # 无尽模式
+│   │   └── VakuuTowerModifier.cs # Vakuu塔
+│   ├── Monsters/                # 怪物定义
+│   │   ├── YuWanMonsterModel.cs # 怪物基类
+│   │   ├── Killer.cs            # 杀手精英怪
+│   │   └── PigMinion.cs         # 猪随从
+│   ├── Encounters/              # 遭遇定义
+│   │   └── KillerElite.cs       # 杀手遭遇
+│   ├── Enchantments/            # 附魔定义
+│   │   ├── ArthropodKiller.cs   # 节肢动物杀手
+│   │   ├── Loyal.cs             # 忠诚
+│   │   └── ...
+│   ├── Events/                  # 事件定义
+│   │   └── Blacksmith.cs        # 铁匠事件
+│   ├── Orbs/                    # 能量球定义
+│   │   └── LittleCrownPrinceOrb.cs # 小王子能量球
+│   ├── GameActions/             # 自定义游戏动作
+│   │   └── RetreatVoteAction.cs # 撤退投票动作
+│   ├── Multiplayer/             # 多人游戏相关
+│   │   ├── TeammatePayMessageHandler.cs
+│   │   └── TeammatePayMessages.cs
+│   ├── RestSite/                # 休息处选项
+│   │   └── RoastPorkRestSiteOption.cs
+│   ├── UI/                      # UI 组件
+│   │   ├── ShoppingCartPopup.cs
+│   │   └── ...
+│   ├── Patches/                 # Harmony 补丁
+│   │   ├── NeowSevenCursesPatch.cs
+│   │   ├── KillerRegistrationPatch.cs
+│   │   └── ...
+│   ├── Utils/                   # 工具类
+│   │   ├── GameVersionCompat.cs # 版本兼容性
+│   │   ├── PowerSafetyUtils.cs  # 能力安全性检查
+│   │   └── ...
+│   ├── Vfx/                     # 视觉效果
+│   │   └── VfxGlitchController.cs
+│   ├── Config/                  # 配置
+│   │   └── YuWanCardConfig.cs
+│   └── Commands/                # 调试命令
+│       └── YwDebugCmd.cs
+└── YuWanCard/                   # 资源目录
     ├── images/
     ├── localization/zhs/
     └── ...

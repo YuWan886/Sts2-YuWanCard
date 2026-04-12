@@ -35,7 +35,7 @@ public class HackerPig : YuWanCardModel
     {
         var enchantment = ModelDb.Enchantment<Loyal>();
         var allCards = PileType.Hand.GetPile(Owner).Cards
-            .Where(c => c != this && enchantment.CanEnchant(c))
+            .Where(c => c != this && !c.EnergyCost.CostsX && enchantment.CanEnchant(c))
             .ToList();
 
         if (allCards.Count == 0) return;

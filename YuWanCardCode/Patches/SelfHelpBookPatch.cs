@@ -96,7 +96,7 @@ public class SelfHelpBookPatch
             LockedOptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED",
             DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description",
             AvailabilityCheck: p => PlayerHasPlayableCards<Loyal>(p),
-            CardFilter: c => !c.Keywords.Contains(CardKeyword.Unplayable)
+            CardFilter: c => !c.Keywords.Contains(CardKeyword.Unplayable) && !c.EnergyCost.CostsX
         )
     ];
 
@@ -192,6 +192,7 @@ public class SelfHelpBookPatch
         var enchantment = ModelDb.Enchantment<T>();
         return PileType.Deck.GetPile(player).Cards.Any(c => 
             c.Pile?.Type == PileType.Deck && 
+            !c.EnergyCost.CostsX &&
             enchantment.CanEnchant(c));
     }
 

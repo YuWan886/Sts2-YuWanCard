@@ -126,5 +126,7 @@
   "YUWANCARD-PIG_RECHARGE.title": "Pig Recharge",
   "YUWANCARD-PIG_RECHARGE.description": "Generate 1 [gold]Lightning Orb[/gold] for target player.",
   "YUWANCARD-PIG_DEFECTION.title": "Pig Defection",
-  "YUWANCARD-PIG_DEFECTION.description": "50% chance to defect a random enemy to your side. [gold]Exhaust[/gold]."
+  "YUWANCARD-PIG_DEFECTION.description": "50% chance to defect a random enemy to your side. [gold]Exhaust[/gold].",
+  "YUWANCARD-LITTLE_REGENT.title": "Little Regent",
+  "YUWANCARD-LITTLE_REGENT.description": "Channel 1 Little Crown Prince Orb."
 }

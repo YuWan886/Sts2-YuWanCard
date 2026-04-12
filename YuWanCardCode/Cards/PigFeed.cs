@@ -27,6 +27,7 @@ public class PigFeed : YuWanCardModel
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Cards.UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
