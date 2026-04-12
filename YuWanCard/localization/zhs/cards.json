@@ -144,5 +144,9 @@
   "YUWANCARD-FAT_PIG.title": "肥猪",
   "YUWANCARD-FAT_PIG.description": "获得{Block:diff()}点[gold]格挡[/gold]。获得{PlatingPower:diff()}层[gold]覆甲[/gold]。",
   "YUWANCARD-PIG_RED_WARM.title": "猪红温",
-  "YUWANCARD-PIG_RED_WARM.description": "造成{Damage:diff()}点伤害。获得{StrengthPower:diff()}点[gold]力量[/gold]。"
+  "YUWANCARD-PIG_RED_WARM.description": "造成{Damage:diff()}点伤害。获得{StrengthPower:diff()}点[gold]力量[/gold]。",
+  "YUWANCARD-PIG_BULLY.title": "猪霸凌",
+  "YUWANCARD-PIG_BULLY.description": "造成{PigBullyDamage:diff()}点伤害。每有1名队友，额外造成{IfUpgraded:show:4|3}点伤害。",
+  "YUWANCARD-TEN_DAY_ELBOW.title": "十日肘焉",
+  "YUWANCARD-TEN_DAY_ELBOW.description": "造成{Damage:diff()}点伤害10次。"
 }

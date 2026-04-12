@@ -121,7 +121,6 @@ public partial class NRetreatButton : Control
         _label = new MegaLabel
         {
             Name = "Label",
-            Theme = null,
             ZIndex = 103,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,

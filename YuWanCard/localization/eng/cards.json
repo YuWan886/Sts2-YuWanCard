@@ -144,5 +144,9 @@
   "YUWANCARD-FAT_PIG.title": "Fat Pig",
   "YUWANCARD-FAT_PIG.description": "Gain {Block:diff()} [gold]Block[/gold]. Gain {PlatingPower:diff()} [gold]Plating[/gold].",
   "YUWANCARD-PIG_RED_WARM.title": "Pig Red Hot",
-  "YUWANCARD-PIG_RED_WARM.description": "Deal {Damage:diff()} damage. Gain {StrengthPower:diff()} [gold]Strength[/gold]."
+  "YUWANCARD-PIG_RED_WARM.description": "Deal {Damage:diff()} damage. Gain {StrengthPower:diff()} [gold]Strength[/gold].",
+  "YUWANCARD-PIG_BULLY.title": "Pig Bully",
+  "YUWANCARD-PIG_BULLY.description": "Deal {PigBullyDamage:diff()} damage. Deal {IfUpgraded:show:4|3} additional damage for each ally.",
+  "YUWANCARD-TEN_DAY_ELBOW.title": "Ten Day Elbow",
+  "YUWANCARD-TEN_DAY_ELBOW.description": "Deal {Damage:diff()} damage 10 times."
 }

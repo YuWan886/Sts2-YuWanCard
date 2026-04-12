@@ -1,32 +1,31 @@
 using BaseLib.Utils;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.CardPools;
-using YuWanCard.Orbs;
 
 namespace YuWanCard.Cards;
 
 [Pool(typeof(ColorlessCardPool))]
-public class LittleRegent : YuWanCardModel
+public class TenDayElbow : YuWanCardModel
 {
-    public LittleRegent() : base(
+    private const int HitCount = 10;
+
+    public TenDayElbow() : base(
         baseCost: 1,
-        type: CardType.Skill,
+        type: CardType.Attack,
         rarity: CardRarity.Uncommon,
-        target: TargetType.Self)
+        target: TargetType.AnyEnemy)
     {
-        WithTip(new TooltipSource(_ => HoverTipFactory.FromOrb<LittleRegentOrb>()));
+        WithDamage(1);
     }
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars.Damage.UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await OrbCmd.Channel<LittleRegentOrb>(choiceContext, Owner);
+        await CommonActions.CardAttack(this, cardPlay, hitCount: HitCount).Execute(choiceContext);
     }
 }
