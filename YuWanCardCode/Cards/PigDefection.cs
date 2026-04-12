@@ -9,7 +9,7 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigDefection : YuWanCardModel
 {
-    private const int DefectionChance = 40;
+    private const int DefectionChance = 33;
 
     public PigDefection() : base(
         baseCost: 3,

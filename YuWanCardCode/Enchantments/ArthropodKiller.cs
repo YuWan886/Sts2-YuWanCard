@@ -22,16 +22,7 @@ public sealed class ArthropodKiller : EnchantmentModel
             return false;
         }
 
-        return HasDamageVariable(card);
-    }
-
-    private static bool HasDamageVariable(CardModel card)
-    {
-        var vars = card.DynamicVars;
-        return vars.ContainsKey("Damage") ||
-               vars.ContainsKey("CalculatedDamage") ||
-               vars.ContainsKey("OstyDamage") ||
-               vars.ContainsKey("ExtraDamage");
+        return CardUtils.HasDamageVariable(card);
     }
 
     public override Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)

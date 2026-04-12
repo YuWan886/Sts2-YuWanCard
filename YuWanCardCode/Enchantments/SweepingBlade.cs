@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Enchantments;
 
@@ -17,16 +18,7 @@ public sealed class SweepingBlade : EnchantmentModel
             return false;
         }
 
-        return HasDamageVariable(card);
-    }
-
-    private static bool HasDamageVariable(CardModel card)
-    {
-        var vars = card.DynamicVars;
-        return vars.ContainsKey("Damage") ||
-               vars.ContainsKey("CalculatedDamage") ||
-               vars.ContainsKey("OstyDamage") ||
-               vars.ContainsKey("ExtraDamage");
+        return CardUtils.HasDamageVariable(card);
     }
 
     public override async Task AfterDamageGiven(PlayerChoiceContext choiceContext, Creature? dealer, DamageResult result, ValueProp props, Creature target, CardModel? cardSource)

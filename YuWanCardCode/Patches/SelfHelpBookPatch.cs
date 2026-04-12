@@ -14,6 +14,7 @@ using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using YuWanCard.Enchantments;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
@@ -69,7 +70,7 @@ public class SelfHelpBookPatch
             LockedOptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.ARTHROPOD_KILLER_LOCKED",
             DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.ARTHROPODKILLER.description",
             AvailabilityCheck: p => PlayerHasDamageCards<ArthropodKiller>(p),
-            CardFilter: c => HasDamageVariable(c)
+            CardFilter: c => CardUtils.HasDamageVariable(c)
         ),
         new(
             typeof(SweepingBlade),
@@ -78,7 +79,7 @@ public class SelfHelpBookPatch
             LockedOptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SWEEPING_BLADE_LOCKED",
             DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.SWEEPINGBLADE.description",
             AvailabilityCheck: p => PlayerHasDamageCards<SweepingBlade>(p),
-            CardFilter: c => HasDamageVariable(c)
+            CardFilter: c => CardUtils.HasDamageVariable(c)
         ),
         new(
             typeof(Venomous),
@@ -87,7 +88,7 @@ public class SelfHelpBookPatch
             LockedOptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.VENOMOUS_LOCKED",
             DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.VENOMOUS.description",
             AvailabilityCheck: p => PlayerHasDamageCards<Venomous>(p),
-            CardFilter: c => HasDamageVariable(c)
+            CardFilter: c => CardUtils.HasDamageVariable(c)
         ),
         new(
             typeof(Loyal),
@@ -95,8 +96,8 @@ public class SelfHelpBookPatch
             OptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL",
             LockedOptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED",
             DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description",
-            AvailabilityCheck: p => PlayerHasPlayableCards<Loyal>(p),
-            CardFilter: c => !c.Keywords.Contains(CardKeyword.Unplayable) && !c.EnergyCost.CostsX
+            AvailabilityCheck: p => PlayerHasCardsForEnchant<Loyal>(p),
+            CardFilter: _ => true
         )
     ];
 
@@ -184,29 +185,15 @@ public class SelfHelpBookPatch
         return PileType.Deck.GetPile(player).Cards.Any(c => 
             c.Pile?.Type == PileType.Deck && 
             enchantment.CanEnchant(c) && 
-            HasDamageVariable(c));
+            CardUtils.HasDamageVariable(c));
     }
 
-    private static bool PlayerHasPlayableCards<T>(Player player) where T : EnchantmentModel
+    private static bool PlayerHasCardsForEnchant<T>(Player player) where T : EnchantmentModel
     {
         var enchantment = ModelDb.Enchantment<T>();
         return PileType.Deck.GetPile(player).Cards.Any(c => 
             c.Pile?.Type == PileType.Deck && 
-            !c.EnergyCost.CostsX &&
             enchantment.CanEnchant(c));
-    }
-
-    private static bool HasDamageVariable(CardModel? card)
-    {
-        if (card == null)
-        {
-            return false;
-        }
-        var vars = card.DynamicVars;
-        return vars.ContainsKey("Damage") ||
-               vars.ContainsKey("CalculatedDamage") ||
-               vars.ContainsKey("OstyDamage") ||
-               vars.ContainsKey("ExtraDamage");
     }
 
     private static async Task SelectAndEnchant(SelfHelpBook eventModel, Player owner, EnchantmentOptionDef optionDef)

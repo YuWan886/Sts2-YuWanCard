@@ -20,6 +20,16 @@ public sealed class Loyal : EnchantmentModel
             return false;
         }
 
+        if (card.Type == CardType.Power)
+        {
+            return false;
+        }
+
+        if (card.EnergyCost.CostsX)
+        {
+            return false;
+        }
+
         return !card.Keywords.Contains(CardKeyword.Unplayable);
     }
 
@@ -36,6 +46,11 @@ public sealed class Loyal : EnchantmentModel
         }
 
         if (CombatManager.Instance.IsOverOrEnding)
+        {
+            return;
+        }
+
+        if (Card.HasBeenRemovedFromState)
         {
             return;
         }
