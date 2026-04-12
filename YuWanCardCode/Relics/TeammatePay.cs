@@ -16,6 +16,11 @@ public class TeammatePay : YuWanRelicModel
     {
     }
 
+    public override bool IsAllowed(IRunState runState)
+    {
+        return IsMultiplayerGame();
+    }
+
     public static bool HasTeammatePayRelic(Player? player)
     {
         if (player == null) return false;

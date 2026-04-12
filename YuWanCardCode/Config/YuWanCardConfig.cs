@@ -16,5 +16,9 @@ public class YuWanCardConfig : SimpleModConfig
     [ConfigHoverTip]
     public static bool EnableAutoUpdateCheck { get; set; } = true;
 
+    [ConfigSection("自动爬塔设置")]
+    [ConfigHoverTip]
+    public static bool EnableAutoSlay { get; set; } = false;
+
     public YuWanCardConfig() : base() { }
 }

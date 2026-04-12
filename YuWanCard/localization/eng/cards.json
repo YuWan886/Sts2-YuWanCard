@@ -128,5 +128,21 @@
   "YUWANCARD-PIG_DEFECTION.title": "Pig Defection",
   "YUWANCARD-PIG_DEFECTION.description": "50% chance to defect a random enemy to your side. [gold]Exhaust[/gold].",
   "YUWANCARD-LITTLE_REGENT.title": "Little Regent",
-  "YUWANCARD-LITTLE_REGENT.description": "Channel 1 Little Crown Prince Orb."
+  "YUWANCARD-LITTLE_REGENT.description": "Channel 1 Little Crown Prince Orb.",
+  "YUWANCARD-PIG_SLAM.title": "Pig Slam",
+  "YUWANCARD-PIG_SLAM.description": "Deal {Damage:diff()} damage.",
+  "YUWANCARD-PIG_ROAR.title": "Pig Roar",
+  "YUWANCARD-PIG_ROAR.description": "Apply {WeakPower:diff()} [gold]Weak[/gold] to all enemies.",
+  "YUWANCARD-PIG_ROLL.title": "Pig Roll",
+  "YUWANCARD-PIG_ROLL.description": "Deal {Damage:diff()} damage. Gain {Block:diff()} [gold]Block[/gold].",
+  "YUWANCARD-PIG_EAT.title": "Pig Eat",
+  "YUWANCARD-PIG_EAT.description": "Gain {Block:diff()} [gold]Block[/gold]. Heal {Heal:diff()} HP.",
+  "YUWANCARD-PIG_CHARGE_UP.title": "Pig Charge Up",
+  "YUWANCARD-PIG_CHARGE_UP.description": "Gain {StrengthPower:diff()} [gold]Strength[/gold].",
+  "YUWANCARD-PIG_FRENZY.title": "Pig Frenzy",
+  "YUWANCARD-PIG_FRENZY.description": "Deal {Damage:diff()} damage {Repeat:diff()} times to one enemy.",
+  "YUWANCARD-FAT_PIG.title": "Fat Pig",
+  "YUWANCARD-FAT_PIG.description": "Gain {Block:diff()} [gold]Block[/gold]. Gain {PlatingPower:diff()} [gold]Plating[/gold].",
+  "YUWANCARD-PIG_RED_WARM.title": "Pig Red Hot",
+  "YUWANCARD-PIG_RED_WARM.description": "Deal {Damage:diff()} damage. Gain {StrengthPower:diff()} [gold]Strength[/gold]."
 }

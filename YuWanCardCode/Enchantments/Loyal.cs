@@ -48,11 +48,11 @@ public sealed class Loyal : EnchantmentModel
 
         if (currentPile != PileType.Hand)
         {
-            await CardPileCmd.Add(Card, PileType.Hand);
+            await CardPileCmd.Add(Card, PileType.Hand, skipVisuals: true);
         }
 
         var target = GetTargetForCard(Card, player.Creature.CombatState);
-        await CardCmd.AutoPlay(choiceContext, Card, target, AutoPlayType.Default, skipXCapture: true);
+        await CardCmd.AutoPlay(choiceContext, Card, target, AutoPlayType.Default, skipXCapture: true, skipCardPileVisuals: true);
     }
 
     private Creature? GetTargetForCard(CardModel card, CombatState? combatState)

@@ -128,5 +128,21 @@
   "YUWANCARD-PIG_DEFECTION.title": "猪反转",
   "YUWANCARD-PIG_DEFECTION.description": "有概率策反一名随机敌人，使其加入你的队伍。",
   "YUWANCARD-LITTLE_REGENT.title": "小储君",
-  "YUWANCARD-LITTLE_REGENT.description": "生成1个[gold]小储君[/gold]充能球。"
+  "YUWANCARD-LITTLE_REGENT.description": "生成1个[gold]小储君[/gold]充能球。",
+  "YUWANCARD-PIG_SLAM.title": "猪猛击",
+  "YUWANCARD-PIG_SLAM.description": "造成{Damage:diff()}点伤害。",
+  "YUWANCARD-PIG_ROAR.title": "猪咆哮",
+  "YUWANCARD-PIG_ROAR.description": "对所有敌人施加{WeakPower:diff()}层[gold]虚弱[/gold]。",
+  "YUWANCARD-PIG_ROLL.title": "猪翻滚",
+  "YUWANCARD-PIG_ROLL.description": "造成{Damage:diff()}点伤害。获得{Block:diff()}点[gold]格挡[/gold]。",
+  "YUWANCARD-PIG_EAT.title": "猪吃一点",
+  "YUWANCARD-PIG_EAT.description": "获得{Block:diff()}点[gold]格挡[/gold]。恢复{Heal:diff()}点生命。",
+  "YUWANCARD-PIG_CHARGE_UP.title": "猪蓄力",
+  "YUWANCARD-PIG_CHARGE_UP.description": "获得{StrengthPower:diff()}点[gold]力量[/gold]。",
+  "YUWANCARD-PIG_FRENZY.title": "猪狂暴",
+  "YUWANCARD-PIG_FRENZY.description": "对一名敌人造成{Repeat:diff()}次{Damage:diff()}点伤害。",
+  "YUWANCARD-FAT_PIG.title": "肥猪",
+  "YUWANCARD-FAT_PIG.description": "获得{Block:diff()}点[gold]格挡[/gold]。获得{PlatingPower:diff()}层[gold]覆甲[/gold]。",
+  "YUWANCARD-PIG_RED_WARM.title": "猪红温",
+  "YUWANCARD-PIG_RED_WARM.description": "造成{Damage:diff()}点伤害。获得{StrengthPower:diff()}点[gold]力量[/gold]。"
 }
