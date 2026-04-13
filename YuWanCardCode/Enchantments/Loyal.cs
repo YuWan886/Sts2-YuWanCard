@@ -30,7 +30,17 @@ public sealed class Loyal : EnchantmentModel
             return false;
         }
 
-        return !card.Keywords.Contains(CardKeyword.Unplayable);
+        if (card.Keywords.Contains(CardKeyword.Unplayable))
+        {
+            return false;
+        }
+
+        if (card.GetEnchantedReplayCount() > 0)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)

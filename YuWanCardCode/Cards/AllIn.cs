@@ -48,6 +48,11 @@ public class AllIn : YuWanCardModel
         {
             Creature? target = GetTargetForCard(card);
 
+            if (target == null && card.TargetType != TargetType.None && card.TargetType != TargetType.Self)
+            {
+                continue;
+            }
+
             await card.OnPlayWrapper(choiceContext, target, isAutoPlay: true, new ResourceInfo
             {
                 EnergySpent = 0,

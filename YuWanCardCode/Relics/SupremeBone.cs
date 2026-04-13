@@ -116,7 +116,7 @@ public class SupremeBone : YuWanRelicModel
 
     private bool FilterCard(CardModel c)
     {
-        return true;
+        return !c.Keywords.Contains(CardKeyword.Exhaust);
     }
 
     public override Task AfterCurrentHpChanged(Creature creature, decimal delta)

@@ -17,9 +17,9 @@ public class ShoppingCart : YuWanRelicModel
 
     private ShoppingCartData? _cartData;
 
-    public override RelicRarity Rarity => RelicRarity.Rare;
+    public override RelicRarity Rarity => RelicRarity.Uncommon;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Capacity", 5)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Capacity", 4)];
 
     protected override string RelicId => "shopping_cart";
     protected override string IconBasePath => $"res://YuWanCard/images/relics/{RelicId}";

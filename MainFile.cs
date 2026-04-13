@@ -27,13 +27,6 @@ public partial class MainFile : Node
     private const string PigVisualsPath = "res://YuWanCard/scenes/characters/pig.tscn";
     private const string PigMerchantPath = "res://YuWanCard/scenes/characters/pig_merchant.tscn";
 
-#pragma warning disable CA2255
-    [ModuleInitializer]
-    internal static void ModuleInit()
-#pragma warning restore CA2255
-    {
-        RegisterBaseLibAssemblyResolve();
-    }
 
     public static void Initialize()
     {
@@ -41,14 +34,14 @@ public partial class MainFile : Node
         harmony.TryPatchAll(Assembly.GetExecutingAssembly());
         EndlessModePatch.ApplyMapPointTypeCountsPatches(harmony);
         AutoSlayCharacterPatch.ApplyPatch(harmony);
-        
+
         Config = new YuWanCardConfig();
         ModConfigRegistry.Register(ModId, Config);
         Config.ConfigChanged += OnConfigChanged;
 
         NodeFactory.Init();
         RegisterSceneConversions();
-        
+
         VfxUtils.PreloadScenes(
             "res://YuWanCard/scenes/vfx/vfx_blood_wheel_eye.tscn",
             "res://YuWanCard/scenes/vfx/vfx_black_hole.tscn",
@@ -70,25 +63,6 @@ public partial class MainFile : Node
 
     private static void OnConfigChanged(object? sender, EventArgs e)
     {
-        
-    }
 
-    private static void RegisterBaseLibAssemblyResolve()
-    {
-        AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
-        {
-            var assemblyName = new AssemblyName(args.Name);
-            if (assemblyName.Name == "BaseLib")
-            {
-                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    if (asm.GetName().Name == "BaseLib")
-                    {
-                        return asm;
-                    }
-                }
-            }
-            return null;
-        };
     }
 }
