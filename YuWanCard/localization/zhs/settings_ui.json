@@ -15,7 +15,7 @@
   "YUWANCARD-自动爬塔设置.title": "自动爬塔设置",
   "YUWANCARD-ENABLE_AUTO_SLAY.title": "启用自动爬塔",
   "YUWANCARD-ENABLE_AUTO_SLAY.hover.title": "启用自动爬塔",
-  "YUWANCARD-ENABLE_AUTO_SLAY.hover.desc": "启用后游戏将自动运行爬塔流程，并自动选择猪。",
+  "YUWANCARD-ENABLE_AUTO_SLAY.hover.desc": "启用后游戏将自动运行爬塔流程，并自动选择猪。需要添加启动参数 -autoSlay。",
   "YUWANCARD-UPDATE_POPUP.title": "YuWanCard 有新版本可用",
   "YUWANCARD-UPDATE_POPUP.body": "YuWanCard 有新版本可用！\n\n当前版本：{0}\n最新版本：{1}\n\n是否前往下载新版本？",
   "YUWANCARD-UPDATE_POPUP.download": "前往下载",

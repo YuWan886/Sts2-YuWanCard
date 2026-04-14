@@ -27,7 +27,7 @@ public class TenYearBamboo : YuWanRelicModel
         }
     }
 
-    public override RelicRarity Rarity => RelicRarity.Rare;
+    public override RelicRarity Rarity => RelicRarity.Uncommon;
 
     public override bool ShowCounter => true;
 

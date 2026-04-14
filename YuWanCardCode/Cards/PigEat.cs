@@ -15,7 +15,7 @@ public class PigEat : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithVar("Heal", 1);
+        WithVar("Heal", 2);
         WithBlock(5);
         WithKeywords(CardKeyword.Exhaust);
     }

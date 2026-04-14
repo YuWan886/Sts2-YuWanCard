@@ -177,8 +177,9 @@ public static class PetManager
         int bonusHp = levels * 5;
         int bonusStrength = levels;
 
-        await CreatureCmd.GainMaxHp(pig, bonusHp);
-        await CreatureCmd.Heal(pig, bonusHp);
+        int newMaxHp = pig.MaxHp + bonusHp;
+        await CreatureCmd.SetMaxHp(pig, newMaxHp);
+        await CreatureCmd.SetCurrentHp(pig, Math.Min(pig.CurrentHp + bonusHp, newMaxHp));
 
         if (bonusStrength > 0 && owner != null)
         {
@@ -235,8 +236,7 @@ public static class PetManager
         }
         else
         {
-            await CreatureCmd.SetMaxHp(pig, pigHp);
-            await CreatureCmd.Heal(pig, pigHp);
+            await CreatureCmd.SetMaxAndCurrentHp(pig, pigHp);
             await PowerCmd.Apply<PigMinionPower>(pig, 1, null, null);
         }
 
