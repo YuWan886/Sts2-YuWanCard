@@ -2,6 +2,7 @@ using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Characters;
 
 namespace YuWanCard.Cards;
@@ -16,6 +17,7 @@ public class PigSlam : YuWanCardModel
         target: TargetType.AnyEnemy)
     {
         WithDamage(12);
+        WithPower<StrengthPower>(2);
     }
 
     protected override void OnUpgrade()
@@ -33,5 +35,7 @@ public class PigSlam : YuWanCardModel
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);
         }
+
+        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars.Strength.IntValue, Owner.Creature, this);
     }
 }

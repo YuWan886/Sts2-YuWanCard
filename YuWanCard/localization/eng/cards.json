@@ -130,7 +130,7 @@
   "YUWANCARD-LITTLE_REGENT.title": "Little Regent",
   "YUWANCARD-LITTLE_REGENT.description": "Channel 1 Little Crown Prince Orb.",
   "YUWANCARD-PIG_SLAM.title": "Pig Slam",
-  "YUWANCARD-PIG_SLAM.description": "Deal {Damage:diff()} damage.",
+  "YUWANCARD-PIG_SLAM.description": "Deal {Damage:diff()} damage. Gain {StrengthPower:diff()} [gold]Strength[/gold].",
   "YUWANCARD-PIG_ROAR.title": "Pig Roar",
   "YUWANCARD-PIG_ROAR.description": "Apply {WeakPower:diff()} [gold]Weak[/gold] to all enemies.",
   "YUWANCARD-PIG_ROLL.title": "Pig Roll",

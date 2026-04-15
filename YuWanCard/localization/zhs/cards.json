@@ -130,7 +130,7 @@
   "YUWANCARD-LITTLE_REGENT.title": "小储君",
   "YUWANCARD-LITTLE_REGENT.description": "生成1个[gold]小储君[/gold]充能球。",
   "YUWANCARD-PIG_SLAM.title": "猪猛击",
-  "YUWANCARD-PIG_SLAM.description": "造成{Damage:diff()}点伤害。",
+  "YUWANCARD-PIG_SLAM.description": "造成{Damage:diff()}点伤害。获得{StrengthPower:diff()}点[gold]力量[/gold]。",
   "YUWANCARD-PIG_ROAR.title": "猪咆哮",
   "YUWANCARD-PIG_ROAR.description": "对所有敌人施加{WeakPower:diff()}层[gold]虚弱[/gold]。",
   "YUWANCARD-PIG_ROLL.title": "猪翻滚",
