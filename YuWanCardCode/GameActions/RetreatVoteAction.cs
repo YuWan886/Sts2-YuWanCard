@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YuWanCard.Encounters;
 using YuWanCard.Patches;
+using YuWanCard.Utils;
 
 namespace YuWanCard.GameActions;
 
@@ -48,7 +49,7 @@ public class RetreatVoteAction : GameAction
     {
         if (NCombatRoom.Instance?.Ui != null)
         {
-            var button = NCombatRoom.Instance.Ui.GetNodeOrNull<NRetreatButton>("YuWanRetreatButton");
+            var button = NCombatRoom.Instance.Ui.GetNodeSafe<NRetreatButton>("YuWanRetreatButton");
             button?.CallDeferred(nameof(NRetreatButton.RefreshVotes));
         }
     }

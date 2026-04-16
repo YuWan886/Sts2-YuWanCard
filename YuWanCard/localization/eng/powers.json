@@ -40,5 +40,14 @@
   "YUWANCARD-BLOOD_WHEEL_EYE_POWER.smartDescription": "All cards gain Replay {ReplayCount} this combat.",
   "YUWANCARD-PIG_DEFECTION_POWER.title": "Pig Defection",
   "YUWANCARD-PIG_DEFECTION_POWER.description": "Defected unit. Cannot attack allies.",
-  "YUWANCARD-PIG_DEFECTION_POWER.smartDescription": "Defected unit. Cannot attack allies."
+  "YUWANCARD-PIG_DEFECTION_POWER.smartDescription": "Defected unit. Cannot attack allies.",
+  "YUWANCARD-PIG_VAMPIRIC_POWER.title": "Pig Vampiric",
+  "YUWANCARD-PIG_VAMPIRIC_POWER.description": "Whenever you play an Attack card, heal 1 HP.",
+  "YUWANCARD-PIG_VAMPIRIC_POWER.smartDescription": "Whenever you play an Attack card, heal {PigVampiricPower:diff()} HP.",
+  "YUWANCARD-PIG_COIN_POWER.title": "Pig Coin",
+  "YUWANCARD-PIG_COIN_POWER.description": "Whenever you play a card, gain 3 Gold.",
+  "YUWANCARD-PIG_COIN_POWER.smartDescription": "Whenever you play a card, gain {PigCoinPower:diff()} Gold.",
+  "YUWANCARD-PIG_BURGER_POWER.title": "Pig Burger",
+  "YUWANCARD-PIG_BURGER_POWER.description": "At the end of combat, heal 6 HP.",
+  "YUWANCARD-PIG_BURGER_POWER.smartDescription": "At the end of combat, heal {PigBurgerPower:diff()} HP."
 }

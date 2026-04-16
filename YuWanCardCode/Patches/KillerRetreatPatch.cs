@@ -15,6 +15,7 @@ using YuWanCard.Encounters;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.GameActions;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
@@ -323,7 +324,7 @@ public static class CombatUiEnablePatch
     [HarmonyPostfix]
     public static void Postfix(NCombatUi __instance)
     {
-        var retreatButton = __instance.GetNodeOrNull<NRetreatButton>("YuWanRetreatButton");
+        var retreatButton = __instance.GetNodeSafe<NRetreatButton>("YuWanRetreatButton");
         if (retreatButton == null) return;
 
         var combatState = CombatManager.Instance.DebugOnlyGetState();
@@ -351,7 +352,7 @@ public static class CombatUiDisablePatch
     [HarmonyPostfix]
     public static void Postfix(NCombatUi __instance)
     {
-        var retreatButton = __instance.GetNodeOrNull<NRetreatButton>("YuWanRetreatButton");
+        var retreatButton = __instance.GetNodeSafe<NRetreatButton>("YuWanRetreatButton");
         retreatButton?.Disable();
     }
 }
@@ -362,7 +363,7 @@ public static class CombatUiAnimOutPatch
     [HarmonyPostfix]
     public static void Postfix(NCombatUi __instance)
     {
-        var retreatButton = __instance.GetNodeOrNull<NRetreatButton>("YuWanRetreatButton");
+        var retreatButton = __instance.GetNodeSafe<NRetreatButton>("YuWanRetreatButton");
         retreatButton?.AnimOut();
     }
 }

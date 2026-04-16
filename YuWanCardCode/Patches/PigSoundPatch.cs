@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YuWanCard.Characters;
 using YuWanCard.Monsters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
@@ -37,11 +38,8 @@ public static class PigHurtSoundPatch
         
         if (!shouldPlay) return;
         
-        var hurtSound = visuals.GetNodeOrNull<AudioStreamPlayer>("HurtSound");
-        if (hurtSound != null)
-        {
-            hurtSound.Play();
-        }
+        visuals.TryExecuteOnNode<AudioStreamPlayer>("HurtSound", 
+            sound => sound.Play());
     }
 
     [HarmonyPostfix]
@@ -68,10 +66,9 @@ public static class PigDeathSoundPatch
         var visuals = nCreature.Visuals;
         if (visuals == null) return true;
         
-        var dieSound = visuals.GetNodeOrNull<AudioStreamPlayer>("DieSound");
-        if (dieSound != null)
+        if (visuals.TryExecuteOnNode<AudioStreamPlayer>("DieSound", 
+            sound => sound.Play()))
         {
-            dieSound.Play();
             return false;
         }
         
@@ -96,10 +93,9 @@ public static class PigMinionDeathSoundPatch
         var visuals = nCreature.Visuals;
         if (visuals == null) return true;
         
-        var dieSound = visuals.GetNodeOrNull<AudioStreamPlayer>("DieSound");
-        if (dieSound != null)
+        if (visuals.TryExecuteOnNode<AudioStreamPlayer>("DieSound", 
+            sound => sound.Play()))
         {
-            dieSound.Play();
             return false;
         }
         

@@ -86,12 +86,12 @@ public static class DeathEffectPatch
             if (effectNode == null)
                 return;
 
-            var animatedSprite = effectNode.GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-            if (animatedSprite != null)
-            {
-                animatedSprite.Scale = new Vector2(0.4f, 0.4f);
-                animatedSprite.Play();
-            }
+            effectNode.TryExecuteOnNode<AnimatedSprite2D>("AnimatedSprite2D",
+                sprite =>
+                {
+                    sprite.Scale = new Vector2(0.4f, 0.4f);
+                    sprite.Play();
+                });
 
             effectNode.AddChild(new DeathEffectAutoDestroy());
         }

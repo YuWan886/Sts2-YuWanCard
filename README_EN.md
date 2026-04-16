@@ -56,14 +56,17 @@ A cute pig character that can use all card.
 | Many Pigs | X | Rare | Power | Gain X/X+1 stacks of Pig Friends. Exhaust |
 | Pig Recharge | 1 | Uncommon | Skill | Channel 1 Lightning orb. Upgraded: Cost becomes 0 |
 | Pig Stay Up Late | 1 | Uncommon | Attack | Deal 9 damage. When system time is between 23:00-02:00, damage is doubled and you gain Weak. |
-| Pig Slam | 2 | Common | Attack | Deal 12 damage |
+| Pig Slam | 2 | Common | Attack | Deal 12 damage. Gain 2 Strength |
 | Pig Roar | 1 | Common | Skill | Apply 1 Weak to all enemies |
 | Pig Roll | 1 | Common | Attack | Deal 8 damage. Gain 4 Block |
-| Pig Eat | 1 | Uncommon | Skill | Gain 5 Block. Heal 1 HP. Exhaust |
+| Pig Eat | 1 | Uncommon | Skill | Gain 5 Block. Heal 2 HP. Exhaust |
 | Pig Charge Up | 1 | Uncommon | Skill | Gain 2 Strength. Exhaust |
 | Pig Frenzy | 2 | Rare | Attack | Deal 7 damage 3 times to one enemy |
 | Fat Pig | 2 | Rare | Skill | Gain 15 Block. Gain 3 Plating. Exhaust |
 | Pig Red Hot | 3 | Rare | Attack | Deal 15 damage. Gain 5 Strength |
+| Pig Vampiric | 1 | Uncommon | Power | When you play an Attack card, heal 1 HP. Upgraded: Heal 2 HP |
+| Pig Coin | 1 | Uncommon | Power | When you play any card, gain 3 Gold. Upgraded: Gain 4 Gold |
+| Pig Burger | 1 | Rare | Power | At the end of combat, heal 6 HP. Upgraded: Heal 8 HP |
 | Black Hole | 2 | Rare | Skill | Exhaust any number of cards from your hand. Deal 5 damage for each card exhausted. Exhaust. |
 | Hacker Pig | 3 | Rare | Skill | Choose 1 card from your hand and enchant it with Loyal. Exhaust. |
 
@@ -131,6 +134,9 @@ A cute pig character that can use all card.
 | Pig Friends | When gained, summon a Pig Minion. Every 3 stacks, the pig is upgraded (+5 max HP, +1 Strength) |
 | Pig Minion | Absorbs all unblocked attack damage for owner. Gains Block when owner gains Block. Strength added to owner's attacks. Gains 1 Strength when owner gains Strength |
 | Perfect Thing | Gain 1 Energy after playing a certain number of cards (upgraded: fewer cards) |
+| Pig Vampiric | When you play an Attack card, heal 1 HP |
+| Pig Coin | When you play any card, gain 3 Gold |
+| Pig Burger | At the end of combat, heal 6 HP |
 
 ### Enchantments
 

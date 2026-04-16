@@ -148,5 +148,11 @@
   "YUWANCARD-PIG_BULLY.title": "Pig Bully",
   "YUWANCARD-PIG_BULLY.description": "Deal {PigBullyDamage:diff()} damage. Deal {IfUpgraded:show:4|3} additional damage for each ally.",
   "YUWANCARD-TEN_DAY_ELBOW.title": "Ten Day Elbow",
-  "YUWANCARD-TEN_DAY_ELBOW.description": "Deal {Damage:diff()} damage 10 times."
+  "YUWANCARD-TEN_DAY_ELBOW.description": "Deal {Damage:diff()} damage 10 times.",
+  "YUWANCARD-PIG_VAMPIRIC.title": "Pig Vampiric",
+  "YUWANCARD-PIG_VAMPIRIC.description": "Whenever you play an Attack card, heal {PigVampiricPower:diff()} HP.",
+  "YUWANCARD-PIG_COIN.title": "Pig Coin",
+  "YUWANCARD-PIG_COIN.description": "Whenever you play a card, gain {PigCoinPower:diff()} Gold.",
+  "YUWANCARD-PIG_BURGER.title": "Pig Burger",
+  "YUWANCARD-PIG_BURGER.description": "At the end of combat, heal {PigBurgerPower:diff()} HP."
 }

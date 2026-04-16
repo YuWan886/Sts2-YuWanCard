@@ -65,13 +65,12 @@ public sealed class Loyal : EnchantmentModel
             return;
         }
 
-        var currentPile = Card.Pile?.Type;
-        if (currentPile == null)
+        if (Card.Pile?.Type is null or PileType.Play)
         {
             return;
         }
 
-        if (currentPile != PileType.Hand)
+        if (Card.Pile.Type != PileType.Hand)
         {
             await CardPileCmd.Add(Card, PileType.Hand, skipVisuals: true);
         }
