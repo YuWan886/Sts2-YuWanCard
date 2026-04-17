@@ -1,22 +1,85 @@
-[gd_scene load_steps=3 format=3 uid="uid://yuwancard_pig_rest_site"]
+[gd_scene load_steps=16 format=3 uid="uid://yuwancard_pig_rest_site"]
 
-[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/reset_pig.png" id="1_pig"]
-[ext_resource type="Script" path="res://src/Core/Nodes/RestSite/NRestSiteCharacter.cs" id="2_script"]
-[ext_resource type="PackedScene" path="res://scenes/ui/selection_reticle.tscn" id="3_reticle"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_1.png" id="1_sleep1"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_2.png" id="2_sleep2"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_3.png" id="3_sleep3"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_4.png" id="4_sleep4"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_5.png" id="5_sleep5"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_6.png" id="6_sleep6"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_7.png" id="7_sleep7"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_8.png" id="8_sleep8"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_9.png" id="9_sleep9"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_10.png" id="10_sleep10"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/characters/animations/pig_sleep_11.png" id="11_sleep11"]
+[ext_resource type="Script" path="res://src/Core/Nodes/RestSite/NRestSiteCharacter.cs" id="12_script"]
+[ext_resource type="PackedScene" path="res://scenes/ui/selection_reticle.tscn" id="13_reticle"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pig_rest"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_sleep1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_sleep2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_sleep3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_sleep4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_sleep5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_sleep6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_sleep7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_sleep8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_sleep9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_sleep10")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_sleep11")
+}],
+"loop": true,
+"name": &"idle_loop",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_sleep1")
+}],
+"loop": true,
+"name": &"relaxed_loop",
+"speed": 5.0
+}]
 
 [node name="PigRestSite" type="Node2D"]
 position = Vector2(-2, 42)
 scale = Vector2(0.76, 0.76)
-script = ExtResource("2_script")
+script = ExtResource("12_script")
 
-[node name="PigSprite" type="Sprite2D" parent="."]
-texture = ExtResource("1_pig")
+[node name="PigSprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, 0)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_pig_rest")
+animation = &"idle_loop"
+autoplay = "idle_loop"
 
 [node name="ControlRoot" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
 
-[node name="SelectionReticle" parent="ControlRoot" instance=ExtResource("3_reticle")]
+[node name="SelectionReticle" parent="ControlRoot" instance=ExtResource("13_reticle")]
 unique_name_in_owner = true
 offset_left = -153.0
 offset_top = -350.0

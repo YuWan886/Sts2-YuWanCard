@@ -3,7 +3,6 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
-using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.TestSupport;
 using YuWanCard.Modifiers;
@@ -164,35 +163,29 @@ public class EndlessModePatch
         int eliteBonus = CalculateEliteBonus(loopCount);
         int newEliteCount = __instance.NumOfElites + eliteBonus;
 
-        if (GameVersionCompat.TrySetNumOfElites(__instance, newEliteCount))
+        var elitesProperty = typeof(MapPointTypeCounts).GetProperty(nameof(MapPointTypeCounts.NumOfElites));
+        if (elitesProperty != null)
         {
-            MainFile.Logger.Info($"Endless mode: Increased elite count by {eliteBonus} (Loop {loopCount})");
+            var backingField = typeof(MapPointTypeCounts).GetField($"<NumOfElites>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (backingField != null)
+            {
+                backingField.SetValue(__instance, newEliteCount);
+                MainFile.Logger.Info($"Endless mode: Increased elite count by {eliteBonus} (Loop {loopCount})");
+            }
         }
     }
 
     public static void ApplyMapPointTypeCountsPatches(Harmony harmony)
     {
-        if (GameVersionCompat.MapPointTypeCountsNewConstructor != null)
-        {
-            var postfixMethod = AccessTools.Method(typeof(EndlessModePatch), nameof(NewConstructorPostfix));
-            harmony.Patch(GameVersionCompat.MapPointTypeCountsNewConstructor, postfix: new HarmonyMethod(postfixMethod));
-            MainFile.Logger.Info("Endless mode: Applied patch to MapPointTypeCounts(int, int) constructor");
-        }
-
-        if (GameVersionCompat.MapPointTypeCountsOldConstructor != null)
-        {
-            var postfixMethod = AccessTools.Method(typeof(EndlessModePatch), nameof(OldConstructorPostfix));
-            harmony.Patch(GameVersionCompat.MapPointTypeCountsOldConstructor, postfix: new HarmonyMethod(postfixMethod));
-            MainFile.Logger.Info("Endless mode: Applied patch to MapPointTypeCounts(Rng) constructor");
-        }
+        var postfixMethod = AccessTools.Method(typeof(EndlessModePatch), nameof(MapPointTypeCountsPostfix));
+        harmony.Patch(
+            AccessTools.Constructor(typeof(MapPointTypeCounts), [typeof(int), typeof(int)]),
+            postfix: new HarmonyMethod(postfixMethod)
+        );
+        MainFile.Logger.Info("Endless mode: Applied patch to MapPointTypeCounts(int, int) constructor");
     }
 
-    private static void NewConstructorPostfix(MapPointTypeCounts __instance, int unknownCount, int restCount)
-    {
-        ProcessEliteBonus(__instance);
-    }
-
-    private static void OldConstructorPostfix(MapPointTypeCounts __instance, Rng rng)
+    private static void MapPointTypeCountsPostfix(MapPointTypeCounts __instance, int unknownCount, int restCount)
     {
         ProcessEliteBonus(__instance);
     }

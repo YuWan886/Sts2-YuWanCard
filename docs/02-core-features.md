@@ -856,6 +856,87 @@ public class MyCustomPower : SomeOtherPower, ICustomPower
 - `ICustomPower` 接口适合需要继承其他能力类的情况
 - 实现此接口时，必须提供至少 `CustomPackedIconPath` 和 `CustomBigIconPath`
 
+### IAddDumbVariablesToPowerDescription 接口 (v3.0.3)
+
+BaseLib v3.0.3 新增了 `IAddDumbVariablesToPowerDescription` 接口，用于向能力描述中注入自定义变量。这个接口解耦了本地化补丁与具体的能力实现，允许任何 `PowerModel` 通过接口注入自定义描述变量。
+
+```csharp
+using BaseLib.Abstracts;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
+
+public class MyTemporaryPower : CustomPowerModel, IAddDumbVariablesToPowerDescription
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Duration;
+
+    // 实现接口方法，向描述中添加自定义变量
+    public void AddDumbVariablesToPowerDescription(LocString description)
+    {
+        description.Add("MyCustomVar", "自定义值");
+    }
+}
+```
+
+**接口说明**：
+- 接口方法：`void AddDumbVariablesToPowerDescription(LocString description)`
+- 参数：`description` - 原始描述文本
+- 用途：允许能力在描述中使用自定义变量，如 `{MyCustomVar}`
+
+**本地化示例**：
+```json
+{
+  "YUWANCARD-MY_TEMPORARY_POWER.description": "持续{MyCustomVar}回合"
+}
+```
+
+**与之前的对比**：
+- **v3.0.3 之前**：本地化补丁直接检查 `CustomTemporaryPowerModel` 类型
+- **v3.0.3+**：使用接口方式，任何 `PowerModel` 都可以实现此接口
+
+**优势**：
+- 解耦本地化补丁与具体能力实现
+- 允许跨模组的能力描述变量注入
+- 更灵活的本地化系统
+
+**CustomTemporaryPowerModel 实现**：
+BaseLib 提供了 `CustomTemporaryPowerModel` 抽象类，已经实现了该接口：
+
+```csharp
+using BaseLib.Abstracts;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Models;
+
+public abstract class CustomTemporaryPowerModel : CustomPowerModel, IAddDumbVariablesToPowerDescription
+{
+    // 自动添加临时能力的标题变量到描述中
+    public void AddDumbVariablesToPowerDescription(LocString description)
+    {
+        description.Add("TemporaryPowerTitle", this.InternallyAppliedPower.Title);
+    }
+    
+    protected abstract Func<Creature, decimal, Creature?, CardModel?, bool, Task> ApplyPowerFunc { get; }
+    public abstract PowerModel InternallyAppliedPower { get; }
+    public abstract AbstractModel OriginModel { get; }
+    protected virtual bool UntilEndOfOtherSideTurn => false;
+    protected virtual int LastForXExtraTurns => 0;
+}
+```
+
+**使用示例**：
+```csharp
+public class TemporaryStrengthPower : CustomTemporaryPowerModel
+{
+    protected override Func<Creature, decimal, Creature?, CardModel?, bool, Task> ApplyPowerFunc => 
+        async (target, amount, applier, card, _) => await PowerCmd.Apply<StrengthPower>(target, (int)amount, applier, card);
+    
+    public override PowerModel InternallyAppliedPower => new StrengthPower();
+    public override AbstractModel OriginModel => this;
+}
+```
+
 ### Health Bar Forecast（生命条预测）
 
 BaseLib v0.2.8 新增了生命条预测系统，允许能力在生物的生命条上显示预测效果（如毒素伤害、毁灭效果等）。

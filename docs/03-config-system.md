@@ -18,8 +18,8 @@ internal class MyModConfig : SimpleModConfig
     [ConfigSection("难度设置")]
     public static DifficultyLevel Difficulty { get; set; } = DifficultyLevel.Normal;
 
-    [SliderRange(0.1, 4.0, 0.05)]
-    [SliderLabelFormat("{0:0.00}x")]
+    // v3.0.4+ 推荐使用 ConfigSlider 替代 [SliderRange] + [SliderLabelFormat]
+    [ConfigSlider(0.1, 4.0, 0.05, labelFormat: "{0:0.00}x")]
     [ConfigSection("数值调整")]
     public static double DamageMultiplier { get; set; } = 1.0;
 
@@ -44,13 +44,15 @@ public enum DifficultyLevel
 | 特性 | 用途 |
 |------|------|
 | `[ConfigSection("名称")]` | 标记配置分区，自动生成分区标题 |
-| `[SliderRange(min, max, step)]` | 设置滑块范围和步长 |
-| `[SliderLabelFormat("格式")]` | 设置滑块标签格式 |
+| `[ConfigSlider(min, max, step, labelFormat)]` | 设置滑块范围、步长和标签格式（v3.0.4 新增，替代 `[SliderRange]` 和 `[SliderLabelFormat]`） |
+| `[SliderRange(min, max, step)]` | 设置滑块范围和步长（v3.0.4 已弃用，保持 ABI 兼容） |
+| `[SliderLabelFormat("格式")]` | 设置滑块标签格式（v3.0.4 已弃用，保持 ABI 兼容） |
 | `[ConfigHoverTip]` | 为设置项添加悬停提示 |
-| `[HoverTipsByDefault]` | 为类中所有设置项默认添加悬停提示 |
+| `[ConfigHoverTipsByDefault]` | 为类中所有设置项默认添加悬停提示（v3.0.4 重命名，旧名 `HoverTipsByDefault` 保持兼容） |
 | `[ConfigHideInUI]` | 保存和加载但不生成 UI |
 | `[ConfigIgnore]` | 完全忽略此属性 |
-| `[ConfigTextInput(preset)]` | 为文本输入设置字符验证 |
+| `[ConfigTextInput(preset)]` | 为文本输入设置字符验证（v3.0.4 新增无参构造函数） |
+| `[ConfigVisibleWhen]` | 已废弃，编译失败（v3.0.4） |
 
 **重要说明**：
 - 配置属性必须是**静态属性**（`static`）
@@ -394,7 +396,96 @@ internal class MyModConfig : SimpleModConfig
 }
 ```
 
-## 自定义按钮
+## 配置 UI 改进（v3.0.6）
+
+BaseLib v3.0.6 对配置 UI 进行了多项改进：
+
+### 滚动条修复
+
+- **修复滚动条在内容调整大小时消失的问题**：当内容适合容器但已向下滚动时，滚动条不再消失
+- **修复滚动条手柄位置不立即更新的问题**：滚动条手柄会在内容调整大小时立即更新位置
+- **自动滚动到活动模组**：初始加载时自动向下滚动并聚焦到活动模组
+- **修复内容突然增长时的抖动**：优化了内容布局，避免突然的跳动
+- **更新遮罩确保顶部不完全遮挡**：优化了渐变遮罩效果
+
+### 控制器支持改进
+
+- **重新设计焦点邻居设置**：更灵活且更正确的焦点处理
+  - 模组可以添加控件并要求 BaseLib 重新设置
+  - 支持自定义焦点邻居
+
+- **允许控制器输入重复**：
+  - 按住上/下键可以移动多个控件
+  - 初始延迟后加速
+
+- **添加 NSelectionReticle 到所有控件**：
+  - 特别改进了 `NConfigColorPicker` 和 `NConfigLineEdit`
+  - 注意：`NConfigColorPicker` 仍无法完全使用控制器（因为 Godot 基础颜色选择器不支持控制器）
+
+### 焦点处理优化
+
+- **改进配置屏幕的焦点处理**：
+  - 如果焦点移动到模组列表（未按取消键），确保正确处理过渡
+  - 修复热键图标可能保持显示的问题
+  - 确保焦点在活动项上，而不是列表顶部
+
+### 分隔线修复
+
+- **修复分隔线可见性**：通过刷新 UI 构建时的状态
+- **移除"幽灵"分隔线**：这些分隔线会在任何配置更改时消失
+
+## 配置属性重构（v3.0.4）
+
+BaseLib v3.0.4 对配置属性进行了重构，以提高可发现性和减少属性 spam：
+
+### ConfigSlider 属性
+
+合并了 `[SliderRange]` 和 `[SliderLabelFormat]` 为新的 `[ConfigSlider]` 属性：
+
+```csharp
+using BaseLib.Config;
+
+internal class MyModConfig : SimpleModConfig
+{
+    // 旧方式（已弃用，保持 ABI 兼容）
+    [SliderRange(0.1, 4.0, 0.05)]
+    [SliderLabelFormat("{0:0.00}x")]
+    public static double OldDamageMultiplier { get; set; } = 1.0;
+
+    // 新方式（推荐）
+    [ConfigSlider(0.1, 4.0, 0.05, labelFormat: "{0:0.00}x")]
+    public static double DamageMultiplier { get; set; } = 1.0;
+}
+```
+
+**ConfigSlider 参数**：
+- `min`：最小值
+- `max`：最大值
+- `step`：步长
+- `labelFormat`：可选，标签格式字符串（默认 `"{0}"`）
+
+### 属性命名统一
+
+- `HoverTipsByDefaultAttribute` → `ConfigHoverTipsByDefaultAttribute`
+- 旧名称保持 ABI 兼容（通过 `[Obsolete]` 继承）
+
+### ConfigTextInput 改进
+
+添加了无参构造函数，允许仅指定 `MaxLength`：
+
+```csharp
+// 现在可以这样写
+[ConfigTextInput(MaxLength = 16)]
+public static string PlayerName { get; set; } = "Player";
+```
+
+### ConfigVisibleWhen 废弃
+
+`[ConfigVisibleWhen]` 属性现在会导致编译失败，因为它实际上不起作用。迁移到条件显示逻辑应该很简单。
+
+### ABI 兼容性
+
+所有更改都保持 ABI 兼容，现有模组无需修改即可继续工作。但建议在新代码中使用新属性。
 
 在配置界面中添加自定义按钮：
 

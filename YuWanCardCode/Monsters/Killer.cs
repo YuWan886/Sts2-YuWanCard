@@ -57,7 +57,10 @@ public sealed class Killer : YuWanMonsterModel
 
     private static void PlayTalkLine(LocString line, Creature speaker)
     {
-        GameVersionCompat.TalkCmdPlay(line, speaker);
+        if (!speaker.IsDead)
+        {
+            TalkCmd.Play(line, speaker, VfxColor.Red);
+        }
     }
 
     public override async Task AfterAddedToRoom()

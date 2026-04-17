@@ -2,14 +2,29 @@
 
 ## 概述
 
-Slay the Spire 2 有两个主要分支：main 分支（稳定版）和 beta 分支（测试版）。这两个分支之间存在 API 差异，BaseLib 提供了多种工具来处理这些差异。
+Slay the Spire 2 目前 main 分支和 beta 分支已统一为 0.103.2 版本，API 差异已消除。BaseLib 提供了版本兼容性工具来处理历史版本的差异。
 
 ## 版本定义
 
 | 分支 | 版本号 | 说明 |
 |------|--------|------|
-| Main | 0.99.1 | 稳定发布版本 |
-| Beta | 0.103.0 | 测试分支版本 |
+| 统一版本 | 0.103.2 | main 和 beta 分支已统一 |
+| Beta 阈值 | 0.103.0 | 用于区分旧版本和新版本的版本号 |
+
+## 项目内版本检测工具
+
+### GameVersionCompat
+
+`GameVersionCompat` 类提供游戏版本检测功能：
+
+```csharp
+using YuWanCard.Utils;
+
+// 获取当前游戏版本
+var version = GameVersionCompat.GameVersion;
+```
+
+**注意**：由于游戏版本已统一，`GameVersionCompat` 已简化为仅提供版本检测功能，不再包含 API 兼容性封装方法。
 
 ## BaseLib 兼容性工具
 
@@ -40,8 +55,8 @@ var value = MyField.Get();
 
 **内置的兼容性引用**：
 
-| 引用 | Main 分支 | Beta 分支 |
-|------|-----------|-----------|
+| 引用 | 旧版本 | 新版本 |
+|------|--------|--------|
 | `LoadedMods` | `LoadedMods` 字段 | `GetLoadedMods()` 方法 |
 | `FontSize` | `FontSize` | `fontSize` |
 | `Font` | `Font` | `font` |
@@ -64,15 +79,17 @@ public class MySingletonModel : CustomSingletonModel
 }
 ```
 
-## API 差异对照表
+## API 差异对照表（历史参考）
 
-| API | Main (0.99.1) | Beta (0.103.0) |
-|-----|---------------|----------------|
+> **注意**：以下 API 差异在 0.103.2 版本之前存在。当前版本已统一，所有 API 都使用新版本（>=0.103）的签名。
+
+| API | 旧版本 (<0.103) | 新版本 (>=0.103) |
+|-----|---------------|------------------|
 | `ModifyEnergyGain` | ❌ 不存在 | ✅ 存在于 AbstractModel |
 | `TalkCmd.Play` | `Play(line, speaker, double, VfxColor)` | `Play(line, speaker, VfxColor, VfxDuration)` |
 | `MapPointTypeCounts` 构造函数 | `(Rng rng)` | `(int unknownCount, int restCount)` |
 | `VfxDuration` 枚举 | ❌ 不存在 | ✅ 存在 |
-| `VfxColor` 枚举 | 8个值 | 11个值 (新增 Orange, Swamp, DarkGray) |
+| `VfxColor` 枚举 | 8 个值 | 11 个值 (新增 Orange, Swamp, DarkGray) |
 | `ModManager.LoadedMods` | 字段 | 方法 `GetLoadedMods()` |
 | `ThemeConstants.Label` | PascalCase 属性 | camelCase 属性 |
 

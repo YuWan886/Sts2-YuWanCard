@@ -32,7 +32,11 @@ public class PigDoubtPower : YuWanPowerModel
                 var randomPower = GetRandomPower();
                 if (randomPower != null)
                 {
-                    await PowerCmd.Apply(randomPower.ToMutable(), Owner, 1, Owner, null);
+                    var mutablePower = randomPower.ToMutable();
+                    if (mutablePower != null)
+                    {
+                        await PowerCmd.Apply(mutablePower, Owner, 1, Owner, null);
+                    }
                 }
 
                 if (CombatManager.Instance != null && await CombatManager.Instance.CheckWinCondition())
@@ -49,12 +53,35 @@ public class PigDoubtPower : YuWanPowerModel
         if (rng == null) return null;
 
         var filteredPowers = ModelDb.AllPowers
-            .Where(p => !p.IsInstanced && IsSafePower(p))
+            .Where(p => !p.IsInstanced && IsSafePower(p) && IsValidPower(p))
             .ToList();
 
         if (filteredPowers.Count == 0) return null;
 
         return rng.Niche.NextItem(filteredPowers);
+    }
+
+    private bool IsValidPower(PowerModel power)
+    {
+        if (power.Id == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var mutable = power.ToMutable();
+            if (mutable == null)
+            {
+                return false;
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[PigDoubtPower] 能力 {power.Id} ToMutable() 失败：{ex.Message}");
+            return false;
+        }
     }
 
     private bool IsSafePower(PowerModel power)

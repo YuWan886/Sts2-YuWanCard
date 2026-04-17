@@ -12,7 +12,7 @@ public sealed class Blacksmith : EventModel
 {
     public override bool IsShared => false;
 
-    public override bool IsAllowed(RunState runState)
+    public override bool IsAllowed(IRunState runState)
     {
         return runState.Players.Any(p => p.Deck.Cards.Any(c => c.IsUpgradable) || p.Deck.Cards.Count(c => CanFuse(c)) >= 2);
     }
