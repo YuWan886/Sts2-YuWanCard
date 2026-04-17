@@ -255,8 +255,7 @@ BaseLib 提供了完整的配置 UI 组件系统，外观现代美观：
 - 右对齐标签
 
 ```csharp
-[SliderRange(-10, 10, 1)]
-[SliderLabelFormat("{0}")]
+[ConfigSlider(-10, 10, 1, labelFormat: "{0}")]
 [ConfigSection("数值设置")]
 public static int MyValue { get; set; } = 0;
 ```
@@ -316,15 +315,15 @@ config.AddRestoreDefaultsButton(optionContainer);
 
 ## 悬停提示系统
 
-使用 `[ConfigHoverTip]` 和 `[HoverTipsByDefault]` 特性为配置项添加悬停提示：
+使用 `[ConfigHoverTip]` 和 `[ConfigHoverTipsByDefault]` 特性为配置项添加悬停提示：
 
 ```csharp
 using BaseLib.Config;
 
-[HoverTipsByDefault]  // 为所有属性默认添加悬停提示
+[ConfigHoverTipsByDefault]  // 为所有属性默认添加悬停提示
 internal class MyModConfig : SimpleModConfig
 {
-    // 会自动添加悬停提示（因为类上有 HoverTipsByDefault）
+    // 会自动添加悬停提示（因为类上有 ConfigHoverTipsByDefault）
     public static bool EnableFeature { get; set; } = true;
 
     // 禁用此属性的悬停提示

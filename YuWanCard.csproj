@@ -1,5 +1,6 @@
 <Project Sdk="Godot.NET.Sdk/4.5.1" InitialTargets="CheckDependencyPaths">
     <Import Project=".\Sts2PathDiscovery.props"/>
+    <Import Project=".\GenerateBaseLibVersion.targets"/>
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Version>0.4.1</Version>
@@ -46,12 +47,9 @@
 
     <ItemGroup>
         <Compile Remove="others\**" />
-        <Compile Remove="change_code\**" />
         <Compile Remove="**/*.uid" />
         <EmbeddedResource Remove="others\**" />
-        <EmbeddedResource Remove="change_code\**" />
         <None Remove="others\**" />
-        <None Remove="change_code\**" />
     </ItemGroup>
 
     <ItemGroup>

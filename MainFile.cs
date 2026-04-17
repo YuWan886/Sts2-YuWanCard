@@ -34,6 +34,7 @@ public partial class MainFile : Node
         harmony.TryPatchAll(Assembly.GetExecutingAssembly());
         EndlessModePatch.ApplyMapPointTypeCountsPatches(harmony);
         AutoSlayCharacterPatch.ApplyPatch(harmony);
+        AutoSlayOptionsPatch.ApplyPatch(harmony);
 
         Config = new YuWanCardConfig();
         ModConfigRegistry.Register(ModId, Config);

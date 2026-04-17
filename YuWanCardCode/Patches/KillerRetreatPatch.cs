@@ -187,9 +187,8 @@ public partial class NRetreatButton : Control
     {
         if (@event is InputEventMouseMotion)
         {
-            var rect = GetRect();
-            var globalRect = new Rect2(GlobalPosition, rect.Size);
-            bool inButton = globalRect.HasPoint(GetGlobalMousePosition());
+            var visualGlobalRect = GetVisualGlobalRect();
+            bool inButton = visualGlobalRect.HasPoint(GetGlobalMousePosition());
             
             if (inButton && _isEnabled)
             {
@@ -205,9 +204,8 @@ public partial class NRetreatButton : Control
         
         if (@event is InputEventMouseButton mouseButton)
         {
-            var rect = GetRect();
-            var globalRect = new Rect2(GlobalPosition, rect.Size);
-            bool inButton = globalRect.HasPoint(GetGlobalMousePosition());
+            var visualGlobalRect = GetVisualGlobalRect();
+            bool inButton = visualGlobalRect.HasPoint(GetGlobalMousePosition());
             
             if (mouseButton.ButtonIndex == MouseButton.Left)
             {
@@ -225,6 +223,14 @@ public partial class NRetreatButton : Control
                 }
             }
         }
+    }
+
+    private Rect2 GetVisualGlobalRect()
+    {
+        return new Rect2(
+            GlobalPosition + _visuals.Position,
+            _visuals.Size
+        );
     }
 
     private void OnHoverEnter()

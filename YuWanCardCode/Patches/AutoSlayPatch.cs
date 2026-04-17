@@ -24,6 +24,73 @@ public static class AutoSlayPatch
     }
 }
 
+public static class AutoSlayOptionsPatch
+{
+    private const string OldPath = "/root/Game/RootSceneContainer/Run/GlobalUi/TopBar/RightAlignedStuff/Options";
+    private const string NewPath = "/root/Game/RootSceneContainer/Run/GlobalUi/TopBar/RightAlignedStuff/PauseButton";
+
+    public static void ApplyPatch(Harmony harmony)
+    {
+        var autoSlayerType = typeof(AutoSlayer);
+        
+        var asyncMethod = AccessTools.Method(autoSlayerType, "AbandonRunAsync");
+        if (asyncMethod == null)
+        {
+            MainFile.Logger.Warn("[AutoSlay] Could not find AbandonRunAsync method");
+            return;
+        }
+        
+        var stateMachineType = asyncMethod
+            .GetCustomAttribute<AsyncStateMachineAttribute>()?
+            .StateMachineType;
+        
+        if (stateMachineType == null)
+        {
+            MainFile.Logger.Warn("[AutoSlay] Could not find state machine type for AbandonRunAsync");
+            return;
+        }
+        
+        var moveNextMethod = AccessTools.Method(stateMachineType, "MoveNext");
+        if (moveNextMethod == null)
+        {
+            MainFile.Logger.Warn("[AutoSlay] Could not find MoveNext method in AbandonRunAsync state machine");
+            return;
+        }
+        
+        var transpilerMethod = AccessTools.Method(typeof(AutoSlayOptionsPatch), nameof(Transpiler));
+        
+        harmony.Patch(moveNextMethod, transpiler: new HarmonyMethod(transpilerMethod));
+        MainFile.Logger.Info($"[AutoSlay] Applied Options->PauseButton transpiler to {stateMachineType.Name}.MoveNext");
+    }
+    
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        var found = false;
+        
+        foreach (var instruction in instructions)
+        {
+            if (!found && 
+                instruction.opcode == OpCodes.Ldstr && 
+                instruction.operand is string str && 
+                str == OldPath)
+            {
+                found = true;
+                MainFile.Logger.Info("[AutoSlay] Found Options path, replacing with PauseButton");
+                yield return new CodeInstruction(OpCodes.Ldstr, NewPath);
+            }
+            else
+            {
+                yield return instruction;
+            }
+        }
+        
+        if (!found)
+        {
+            MainFile.Logger.Warn("[AutoSlay] Could not find Options path in AbandonRunAsync");
+        }
+    }
+}
+
 public static class AutoSlayCharacterPatch
 {
     private static readonly MethodInfo SelectPigMethod = AccessTools.Method(

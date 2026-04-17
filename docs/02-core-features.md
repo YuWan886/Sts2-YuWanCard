@@ -499,7 +499,7 @@ public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controll
 public override NCreatureVisuals? CreateCustomVisuals()
 {
     if (CustomVisualPath == null) return null;
-    return GodotUtils.CreatureVisualsFromScene(CustomVisualPath);
+    return NodeFactory<NCreatureVisuals>.CreateFromScene(CustomVisualPath);
 }
 ```
 

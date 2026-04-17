@@ -17,7 +17,7 @@ public sealed class KillerElite : CustomEncounterModel
     {
     }
 
-    public override string? CustomScenePath => "res://YuWanCard/scenes/encounters/killer_elite.tscn";
+    public override string? CustomScenePath => null;
 
     public override IEnumerable<MonsterModel> AllPossibleMonsters => [ModelDb.Monster<Killer>()];
 

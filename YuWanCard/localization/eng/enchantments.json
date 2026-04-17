@@ -1,10 +1,10 @@
 {
-  "ARTHROPOD_KILLER.title": "Arthropod Killer",
-  "ARTHROPOD_KILLER.description": "Deal {Amount} true damage to [gold]Arthropods[/gold], ignoring Block.",
-  "SWEEPING_BLADE.title": "Sweeping Blade",
-  "SWEEPING_BLADE.description": "Damage splashes, dealing [blue]50[/blue]% damage to other enemies.",
-  "VENOMOUS.title": "Venomous",
-  "VENOMOUS.description": "Attacks apply [blue]3[/blue] [gold]Poison[/gold] to enemies.",
-  "LOYAL.title": "Loyal",
-  "LOYAL.description": "Automatically play this card at the start of each turn, costing no energy."
+  "YUWANCARD-ARTHROPOD_KILLER.title": "Arthropod Killer",
+  "YUWANCARD-ARTHROPOD_KILLER.description": "Deal {Amount} true damage to [gold]Arthropods[/gold], ignoring Block.",
+  "YUWANCARD-SWEEPING_BLADE.title": "Sweeping Blade",
+  "YUWANCARD-SWEEPING_BLADE.description": "Damage splashes, dealing [blue]50[/blue]% damage to other enemies.",
+  "YUWANCARD-VENOMOUS.title": "Venomous",
+  "YUWANCARD-VENOMOUS.description": "Attacks apply [blue]3[/blue] [gold]Poison[/gold] to enemies.",
+  "YUWANCARD-LOYAL.title": "Loyal",
+  "YUWANCARD-LOYAL.description": "Automatically play this card at the start of each turn, costing no energy."
 }

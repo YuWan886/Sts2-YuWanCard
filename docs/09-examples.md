@@ -1181,14 +1181,13 @@ using MegaCrit.Sts2.Core.Nodes.CommonUi;
 
 namespace YuWanCard.Config;
 
-[HoverTipsByDefault]
+[ConfigHoverTipsByDefault]
 internal class YuWanCardConfig : SimpleModConfig
 {
     [ConfigSection("日志设置")]
     public static bool OpenLogWindowOnStartup { get; set; } = false;
 
-    [SliderRange(128, 2048, 64)]
-    [SliderLabelFormat("{0:0}")]
+    [ConfigSlider(128, 2048, 64, labelFormat: "{0:0}")]
     [ConfigHoverTip(false)]
     public static double LimitedLogSize { get; set; } = 256;
 
@@ -1198,13 +1197,11 @@ internal class YuWanCardConfig : SimpleModConfig
     [ConfigSection("难度设置")]
     public static DifficultyPreset Difficulty { get; set; } = DifficultyPreset.Normal;
 
-    [SliderRange(0.5, 2.0, 0.1)]
-    [SliderLabelFormat("{0:0.0}x")]
+    [ConfigSlider(0.5, 2.0, 0.1, labelFormat: "{0:0.0}x")]
     [ConfigSection("数值调整")]
     public static double DamageMultiplier { get; set; } = 1.0;
 
-    [SliderRange(-50, 50, 5)]
-    [SliderLabelFormat("{0:+0;-0;0} HP")]
+    [ConfigSlider(-50, 50, 5, labelFormat: "{0:+0;-0;0} HP")]
     [ConfigHoverTip(false)]
     public static double StartingHealthOffset { get; set; } = 0;
 

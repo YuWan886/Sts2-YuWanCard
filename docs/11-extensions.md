@@ -360,12 +360,10 @@ BaseLib 提供了增强的日志窗口，支持缩放、过滤和自定义配置
 [ConfigSection("LogSection")]
 public static bool OpenLogWindowOnStartup { get; set; } = false;  // 启动时打开日志窗口
 
-[SliderRange(128, 2048, 64)]
-[SliderLabelFormat("{0:0} lines")]
+[ConfigSlider(128, 2048, 64, labelFormat: "{0:0} lines")]
 public static double LimitedLogSize { get; set; } = 256;  // 日志行数限制
 
-[SliderRange(8, 48)]
-[SliderLabelFormat("{0:0} px")]
+[ConfigSlider(8, 48, 1, labelFormat: "{0:0} px")]
 public static double LogFontSize { get; set; } = 14;  // 字体大小
 ```
 
@@ -454,8 +452,7 @@ public static bool OpenLogWindowOnStartup { get; set; } = false;
 **滑动条范围**：
 
 ```csharp
-[SliderRange(8, 48)]
-[SliderLabelFormat("{0:0} px")]
+[ConfigSlider(8, 48, 1, labelFormat: "{0:0} px")]
 public static double LogFontSize { get; set; } = 14;
 ```
 
@@ -476,7 +473,7 @@ ModConfig.SaveDebounced<BaseLibConfig>();
 ### 悬停提示支持
 
 ```csharp
-[HoverTipsByDefault]
+[ConfigHoverTipsByDefault]
 internal class BaseLibConfig : SimpleModConfig
 {
     // 配置项会自动显示悬停提示

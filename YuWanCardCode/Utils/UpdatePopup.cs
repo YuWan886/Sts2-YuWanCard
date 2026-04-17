@@ -62,7 +62,8 @@ public partial class UpdatePopup : Control, IScreenContext
         string rawBody = bodyLoc.GetRawText();
         string bodyText = rawBody
             .Replace("{0}", _currentVersion)
-            .Replace("{1}", _latestVersion);
+            .Replace("{1}", _latestVersion)
+            .Replace("{2}", BaseLibVersion.Version);
 
         _verticalPopup.SetText(titleLoc.GetRawText(), bodyText);
 

@@ -1,3 +1,4 @@
+using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -8,7 +9,7 @@ using YuWanCard.Utils;
 
 namespace YuWanCard.Enchantments;
 
-public sealed class Venomous : EnchantmentModel
+public sealed class Venomous : CustomEnchantmentModel
 {
     public override bool ShowAmount => true;
 

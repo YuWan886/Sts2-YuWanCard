@@ -147,8 +147,7 @@ BaseLib 提供了一个内置的日志窗口，方便实时查看游戏日志。
 [ConfigSection("日志设置")]
 public static bool OpenLogWindowOnStartup { get; set; } = false;
 
-[SliderRange(128, 2048, 64)]
-[SliderLabelFormat("{0:0}")]
+[ConfigSlider(128, 2048, 64, labelFormat: "{0:0}")]
 public static double LimitedLogSize { get; set; } = 256;
 ```
 

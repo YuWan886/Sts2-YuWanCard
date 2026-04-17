@@ -1,3 +1,4 @@
+using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -8,9 +9,11 @@ using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Events;
 
-public sealed class Blacksmith : EventModel
+public sealed class Blacksmith : CustomEventModel
 {
-    public override bool IsShared => false;
+    public override ActModel[] Acts => [];
+
+    public override string? CustomInitialPortraitPath => "res://YuWanCard/images/events/blacksmith.png";
 
     public override bool IsAllowed(IRunState runState)
     {
@@ -55,7 +58,7 @@ public sealed class Blacksmith : EventModel
         var cardList = cardsToUpgrade.ToList();
         if (cardList.Count < 1)
         {
-            SetEventFinished(L10NLookup("BLACKSMITH.pages.CANCELLED.description"));
+            SetEventFinished(L10NLookup("YUWANCARD-BLACKSMITH.pages.CANCELLED.description"));
             return;
         }
 
@@ -64,7 +67,7 @@ public sealed class Blacksmith : EventModel
             CardCmd.Upgrade(card);
         }
 
-        SetEventFinished(L10NLookup("BLACKSMITH.pages.UPGRADED.description"));
+        SetEventFinished(L10NLookup("YUWANCARD-BLACKSMITH.pages.UPGRADED.description"));
     }
 
     private async Task FuseCards()
@@ -77,20 +80,20 @@ public sealed class Blacksmith : EventModel
 
             if (fusableCards.Count < 2)
             {
-                SetEventFinished(L10NLookup("BLACKSMITH.pages.NO_CARDS.description"));
+                SetEventFinished(L10NLookup("YUWANCARD-BLACKSMITH.pages.NO_CARDS.description"));
                 return;
             }
 
             var cardsToFuse = await CardSelectCmd.FromDeckGeneric(
                 Owner!,
-                new CardSelectorPrefs(new LocString("events", "BLACKSMITH.pages.FUSE_PROMPT"), 2, 2),
+                new CardSelectorPrefs(new LocString("events", "YUWANCARD-BLACKSMITH.pages.FUSE_PROMPT"), 2, 2),
                 c => CanFuse(c)
             );
 
             var cardList = cardsToFuse.ToList();
             if (cardList.Count < 2)
             {
-                SetEventFinished(L10NLookup("BLACKSMITH.pages.CANCELLED.description"));
+                SetEventFinished(L10NLookup("YUWANCARD-BLACKSMITH.pages.CANCELLED.description"));
                 return;
             }
 
@@ -112,7 +115,7 @@ public sealed class Blacksmith : EventModel
 
             if (availableCards.Count == 0)
             {
-                SetEventFinished(L10NLookup("BLACKSMITH.pages.FUSE_FAILED.description"));
+                SetEventFinished(L10NLookup("YUWANCARD-BLACKSMITH.pages.FUSE_FAILED.description"));
                 return;
             }
 
@@ -125,12 +128,12 @@ public sealed class Blacksmith : EventModel
                 CardCmd.PreviewCardPileAdd(addResult, 2f);
             }
 
-            SetEventFinished(L10NLookup("BLACKSMITH.pages.FUSED.description"));
+            SetEventFinished(L10NLookup("YUWANCARD-BLACKSMITH.pages.FUSED.description"));
         }
         catch (Exception ex)
         {
             MainFile.Logger.Error($"[Blacksmith] FuseCards error: {ex.Message}");
-            SetEventFinished(L10NLookup("BLACKSMITH.pages.FUSE_FAILED.description"));
+            SetEventFinished(L10NLookup("YUWANCARD-BLACKSMITH.pages.FUSE_FAILED.description"));
         }
     }
 

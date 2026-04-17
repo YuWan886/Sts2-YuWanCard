@@ -4,7 +4,7 @@
   "author": "一条鱼丸_",
   "description": "pig card",
   "version": "v0.4.1",
-  "has_pck": true,    
+  "has_pck": true,  
   "has_dll": true,
   "dependencies": ["BaseLib"],
   "affects_gameplay": true
