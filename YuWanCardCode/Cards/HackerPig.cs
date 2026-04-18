@@ -20,10 +20,11 @@ public class HackerPig : YuWanCardModel
 
     public HackerPig() : base(
         baseCost: 3,
-        type: CardType.Skill,
+        type: CardType.Power,
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
+        WithTip(typeof(Loyal));
     }
 
     protected override void OnUpgrade()

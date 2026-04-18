@@ -6,5 +6,5 @@
   "YUWANCARD-VENOMOUS.title": "淬毒",
   "YUWANCARD-VENOMOUS.description": "攻击给予敌人[blue]3[/blue]层[gold]中毒[/gold]。",
   "YUWANCARD-LOYAL.title": "忠诚",
-  "YUWANCARD-LOYAL.description": "每回合开始时自动打出此卡牌。"
+  "YUWANCARD-LOYAL.description": "当该卡牌不在手牌时，每回合开始时自动打出此卡牌。"
 }

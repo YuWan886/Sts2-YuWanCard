@@ -71,10 +71,12 @@ public sealed class Loyal : CustomEnchantmentModel
             return;
         }
 
-        if (Card.Pile.Type != PileType.Hand)
+        if (Card.Pile.Type == PileType.Hand)
         {
-            await CardPileCmd.Add(Card, PileType.Hand, skipVisuals: true);
+            return;
         }
+
+        await CardPileCmd.Add(Card, PileType.Hand, skipVisuals: true);
 
         var target = GetTargetForCard(Card, player.Creature.CombatState);
         await CardCmd.AutoPlay(choiceContext, Card, target, AutoPlayType.Default, skipXCapture: true, skipCardPileVisuals: true);

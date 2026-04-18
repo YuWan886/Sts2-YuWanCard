@@ -6,5 +6,5 @@
   "YUWANCARD-VENOMOUS.title": "Venomous",
   "YUWANCARD-VENOMOUS.description": "Attacks apply [blue]3[/blue] [gold]Poison[/gold] to enemies.",
   "YUWANCARD-LOYAL.title": "Loyal",
-  "YUWANCARD-LOYAL.description": "Automatically play this card at the start of each turn, costing no energy."
+  "YUWANCARD-LOYAL.description": "When this card is not in hand, automatically played at the start of each turn."
 }

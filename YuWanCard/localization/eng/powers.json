@@ -27,7 +27,7 @@
   "YUWANCARD-PIG_FRIENDS_POWER.description": "When gained, summon a [gold]Pig Minion[/gold]. Every 3 stacks, the pig is upgraded.",
   "YUWANCARD-PIG_FRIENDS_POWER.smartDescription": "When gained, summon a Pig Minion. Every 3 stacks, upgrade it.",
   "YUWANCARD-PIG_MINION_POWER.title": "Pig Minion",
-  "YUWANCARD-PIG_MINION_POWER.description": "Absorb all unblocked attack damage meant for owner. When owner gains Block, gain {BonusBlock} Block. Pig's Strength is added to owner's attack damage. When owner gains Strength, pig gains 1 Strength.",
+  "YUWANCARD-PIG_MINION_POWER.description": "Absorb all unblocked attack damage meant for owner. When owner gains Block, gain {BonusBlock} Block. Pig's Strength is added to owner's attack damage. When owner gains Strength, pig gains 1 Strength. At the start of each turn, give all players 1 [gold]Energy[/gold].",
   "YUWANCARD-PIG_MINION_POWER.smartDescription": "Absorbs all unblocked attack damage for owner. Gains {BonusBlock} Block when owner gains Block. Strength added to owner's attacks. Gains 1 Strength when owner gains Strength.",
   "YUWANCARD-PERFECT_THING_POWER.title": "Perfect Thing",
   "YUWANCARD-PERFECT_THING_POWER.description": "Gain 1 [gold]Energy[/gold] every certain number of cards you play. Upgraded: fewer cards.",
