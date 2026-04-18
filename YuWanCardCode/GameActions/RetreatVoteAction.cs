@@ -49,7 +49,7 @@ public class RetreatVoteAction : GameAction
     {
         if (NCombatRoom.Instance?.Ui != null)
         {
-            var button = NCombatRoom.Instance.Ui.GetNodeSafe<NRetreatButton>("YuWanRetreatButton");
+            var button = NCombatRoom.Instance.Ui.GetNodeSafe<NRetreatButton>("YuWanRetreatButton", logWarning: false);
             button?.CallDeferred(nameof(NRetreatButton.RefreshVotes));
         }
     }

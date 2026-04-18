@@ -29,20 +29,20 @@ public sealed class Blacksmith : CustomEventModel
 
         if (hasUpgradeableCards)
         {
-            options.Add(new EventOption(this, UpgradeCards, InitialOptionKey("UPGRADE")));
+            options.Add(new EventOption(this, UpgradeCards, $"{Id.Entry}.pages.INITIAL.options.UPGRADE"));
         }
         else
         {
-            options.Add(new EventOption(this, null, InitialOptionKey("UPGRADE")));
+            options.Add(new EventOption(this, null, $"{Id.Entry}.pages.INITIAL.options.UPGRADE_LOCKED"));
         }
 
         if (hasFusableCards)
         {
-            options.Add(new EventOption(this, FuseCards, InitialOptionKey("FUSE")));
+            options.Add(new EventOption(this, FuseCards, $"{Id.Entry}.pages.INITIAL.options.FUSE"));
         }
         else
         {
-            options.Add(new EventOption(this, null, InitialOptionKey("FUSE")));
+            options.Add(new EventOption(this, null, $"{Id.Entry}.pages.INITIAL.options.FUSE_LOCKED"));
         }
 
         return options;

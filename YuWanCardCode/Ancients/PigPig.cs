@@ -7,6 +7,9 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Extensions;
+using MegaCrit.Sts2.Core.Factories;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Models.CardPools;
@@ -138,9 +141,27 @@ public class PigPig : CustomAncientModel
         }
 
         var shuffled = pigCards.OrderBy(_ => Rng.NextInt()).ToList();
-        var cardsToOffer = shuffled.Take(Math.Min(5, shuffled.Count)).ToList();
-        var cardReward = new CardReward(cardsToOffer, CardCreationSource.Other, Owner!);
-        await RewardsCmd.OfferCustom(Owner!, [cardReward]);
+        var cardsToOffer = shuffled.Take(Math.Min(6, shuffled.Count)).ToList();
+        var cardCreationResults = cardsToOffer.Select(c => new CardCreationResult(c)).ToList();
+        
+        var prefs = new CardSelectorPrefs(
+            new LocString("ancients", "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_CARD.selectionScreenPrompt"),
+            0,
+            3
+        );
+        
+        var selectedCards = await CardSelectCmd.FromSimpleGridForRewards(
+            prefs: prefs,
+            context: new BlockingPlayerChoiceContext(),
+            cards: cardCreationResults,
+            player: Owner!
+        );
+        
+        foreach (var card in selectedCards)
+        {
+            CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck));
+        }
+        
         FinishEvent();
     }
 

@@ -330,7 +330,7 @@ public static class CombatUiEnablePatch
     [HarmonyPostfix]
     public static void Postfix(NCombatUi __instance)
     {
-        var retreatButton = __instance.GetNodeSafe<NRetreatButton>("YuWanRetreatButton");
+        var retreatButton = __instance.GetNodeSafe<NRetreatButton>("YuWanRetreatButton", logWarning: false);
         if (retreatButton == null) return;
 
         var combatState = CombatManager.Instance.DebugOnlyGetState();
@@ -358,7 +358,7 @@ public static class CombatUiDisablePatch
     [HarmonyPostfix]
     public static void Postfix(NCombatUi __instance)
     {
-        var retreatButton = __instance.GetNodeSafe<NRetreatButton>("YuWanRetreatButton");
+        var retreatButton = __instance.GetNodeSafe<NRetreatButton>("YuWanRetreatButton", logWarning: false);
         retreatButton?.Disable();
     }
 }
@@ -369,7 +369,7 @@ public static class CombatUiAnimOutPatch
     [HarmonyPostfix]
     public static void Postfix(NCombatUi __instance)
     {
-        var retreatButton = __instance.GetNodeSafe<NRetreatButton>("YuWanRetreatButton");
+        var retreatButton = __instance.GetNodeSafe<NRetreatButton>("YuWanRetreatButton", logWarning: false);
         retreatButton?.AnimOut();
     }
 }

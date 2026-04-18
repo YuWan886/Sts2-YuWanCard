@@ -5,17 +5,21 @@ namespace YuWanCard.Utils;
 public static class NodeUtils
 {
     /// <summary>
-    /// 安全获取指定类型的子节点，如果获取失败则记录警告日志。
+    /// 安全获取指定类型的子节点。
     /// </summary>
     /// <typeparam name="T">要获取的节点类型，必须继承自 Node。</typeparam>
     /// <param name="node">要搜索的父节点。</param>
     /// <param name="path">节点路径，如果为 null 则使用 FindChild 方法。</param>
+    /// <param name="logWarning">是否在获取失败时记录警告日志，默认为 true。</param>
     /// <returns>找到的节点实例，如果未找到则返回 null。</returns>
-    public static T? GetNodeSafe<T>(this Node node, string? path = null) where T : Node
+    public static T? GetNodeSafe<T>(this Node node, string? path = null, bool logWarning = true) where T : Node
     {
         if (node == null)
         {
-            MainFile.Logger.Warn($"NodeUtils: Cannot get node, parent node is null");
+            if (logWarning)
+            {
+                MainFile.Logger.Warn($"NodeUtils: Cannot get node, parent node is null");
+            }
             return null;
         }
 
@@ -29,7 +33,7 @@ public static class NodeUtils
             result = node.GetNodeOrNull<T>(path);
         }
 
-        if (result == null)
+        if (result == null && logWarning)
         {
             var typeName = typeof(T).Name;
             var pathInfo = path ?? "(FindChild)";
