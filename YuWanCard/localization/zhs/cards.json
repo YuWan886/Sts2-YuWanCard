@@ -154,5 +154,11 @@
   "YUWANCARD-PIG_COIN.title": "你个猪币",
   "YUWANCARD-PIG_COIN.description": "每打出1张卡牌，获得{PigCoinPower:diff()}金币。",
   "YUWANCARD-PIG_BURGER.title": "猪汉堡",
-  "YUWANCARD-PIG_BURGER.description": "在战斗结束时，恢复{PigBurgerPower:diff()}点生命值。"
+  "YUWANCARD-PIG_BURGER.description": "在战斗结束时，恢复{PigBurgerPower:diff()}点生命值。",
+  "YUWANCARD-KILLING_INTENT.title": "杀意",
+  "YUWANCARD-KILLING_INTENT.description": "你打出的下{IfUpgraded:show:2|1}张攻击牌造成2倍伤害。",
+  "YUWANCARD-TRAGIC_MANDARIN_DUCK.title": "苦命鸳鸯",
+  "YUWANCARD-TRAGIC_MANDARIN_DUCK.description": "获得{StrengthPower:diff()}点[gold]力量[/gold]和{DexterityPower:diff()}点[gold]敏捷[/gold]。在你的回合结束时，如果你在本回合没有打出任何攻击牌，则失去1点[gold]力量[/gold]和1点[gold]敏捷[/gold]，并对所有敌人造成{Damage:diff()}点伤害。",
+  "YUWANCARD-EMPERORS_NEW_PIG.title": "皇帝的新猪",
+  "YUWANCARD-EMPERORS_NEW_PIG.description": "{IfUpgraded:show:敌人不会对你造成伤害，也不会对你施加负面效果。|敌人不会对你造成伤害。}持续{Turns:diff()}回合。"
 }
