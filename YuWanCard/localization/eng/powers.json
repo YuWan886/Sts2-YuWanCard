@@ -58,5 +58,11 @@
   "YUWANCARD-TRAGIC_MANDARIN_DUCK_POWER.smartDescription": "At the end of your turn, if you didn't play any Attack, lose 1 [gold]Strength[/gold] and 1 [gold]Dexterity[/gold], deal {Damage} damage to all enemies.",
   "YUWANCARD-EMPERORS_NEW_PIG_POWER.title": "Emperor's New Pig",
   "YUWANCARD-EMPERORS_NEW_PIG_POWER.description": "Enemies cannot deal damage to you.",
-  "YUWANCARD-EMPERORS_NEW_PIG_POWER.smartDescription": "Enemies cannot deal damage to you. Lasts for {Amount} turns."
+  "YUWANCARD-EMPERORS_NEW_PIG_POWER.smartDescription": "Enemies cannot deal damage to you. Lasts for {Amount} turns.",
+  "YUWANCARD-SHIELD_TO_FRONT_POWER.title": "Shield To Front",
+  "YUWANCARD-SHIELD_TO_FRONT_POWER.description": "Take double damage from enemies during enemy turn.",
+  "YUWANCARD-SHIELD_TO_FRONT_POWER.smartDescription": "Take double damage from enemies during enemy turn. Lasts 1 turn.",
+  "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.title": "Shield To Front",
+  "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.description": "Take no damage from enemies during enemy turn.",
+  "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.smartDescription": "Take no damage from enemies during enemy turn. Lasts 1 turn."
 }

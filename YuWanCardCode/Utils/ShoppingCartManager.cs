@@ -4,13 +4,26 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.GameActions;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Utils;
 
 public static class ShoppingCartManager
 {
+    public static bool IsMultiplayerGame
+    {
+        get
+        {
+            var runManager = RunManager.Instance;
+            if (runManager == null || !runManager.IsInProgress)
+                return false;
+            return runManager.NetService.Type.IsMultiplayer();
+        }
+    }
+
     public static ShoppingCart? GetShoppingCartRelic(Player? player = null)
     {
         if (player == null)
@@ -118,7 +131,6 @@ public static class ShoppingCartManager
 
     public static async Task<bool> PurchaseItem(int index, Player? player = null)
     {
-        var data = GetCartData(player);
         if (player == null)
         {
             var runState = RunManager.Instance.DebugOnlyGetState();
@@ -126,7 +138,11 @@ public static class ShoppingCartManager
                 player = LocalContext.GetMe(runState.Players);
         }
 
-        if (data == null || player == null)
+        if (player == null)
+            return false;
+
+        var data = GetCartData(player);
+        if (data == null)
             return false;
 
         var item = data.GetItem(index);
@@ -137,6 +153,14 @@ public static class ShoppingCartManager
         {
             MainFile.Logger.Warn($"ShoppingCartManager: Not enough gold ({player.Gold} < {item.Price})");
             return false;
+        }
+
+        if (IsMultiplayerGame)
+        {
+            var action = new ShoppingCartPurchaseAction(player, index);
+            var synchronizer = RunManager.Instance.ActionQueueSynchronizer;
+            synchronizer.RequestEnqueue(action);
+            return true;
         }
 
         bool success = false;
@@ -164,7 +188,7 @@ public static class ShoppingCartManager
         return success;
     }
 
-    private static async Task<bool> PurchaseCard(ShoppingCartItem item, Player player)
+    internal static async Task<bool> PurchaseCard(ShoppingCartItem item, Player player)
     {
         if (item.ModelId == null)
             return false;
@@ -191,7 +215,7 @@ public static class ShoppingCartManager
         return true;
     }
 
-    private static async Task<bool> PurchaseRelic(ShoppingCartItem item, Player player)
+    internal static async Task<bool> PurchaseRelic(ShoppingCartItem item, Player player)
     {
         if (item.ModelId == null)
             return false;
@@ -212,7 +236,7 @@ public static class ShoppingCartManager
         return true;
     }
 
-    private static async Task<bool> PurchasePotion(ShoppingCartItem item, Player player)
+    internal static async Task<bool> PurchasePotion(ShoppingCartItem item, Player player)
     {
         if (item.ModelId == null)
             return false;

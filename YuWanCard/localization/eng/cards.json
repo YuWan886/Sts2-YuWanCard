@@ -160,5 +160,14 @@
   "YUWANCARD-TRAGIC_MANDARIN_DUCK.title": "Tragic Mandarin Duck",
   "YUWANCARD-TRAGIC_MANDARIN_DUCK.description": "Gain {StrengthPower:diff()} [gold]Strength[/gold] and {DexterityPower:diff()} [gold]Dexterity[/gold]. At the end of your turn, if you didn't play any Attack this turn, lose 1 [gold]Strength[/gold] and 1 [gold]Dexterity[/gold], and deal {Damage:diff()} damage to all enemies.",
   "YUWANCARD-EMPERORS_NEW_PIG.title": "Emperor's New Pig",
-  "YUWANCARD-EMPERORS_NEW_PIG.description": "{IfUpgraded:show:Enemies cannot deal damage to you or apply debuffs.|Enemies cannot deal damage to you.} Lasts for {Turns:diff()} turns."
+  "YUWANCARD-EMPERORS_NEW_PIG.description": "{IfUpgraded:show:Enemies cannot deal damage to you or apply debuffs.|Enemies cannot deal damage to you.} Lasts for {Turns:diff()} turns.",
+  "YUWANCARD-PIG_MISS_YOU.title": "Pig Miss You",
+  "YUWANCARD-PIG_MISS_YOU.description": "Gain {PigFriendsPower:diff()} [gold]Pig Friends[/gold]. ",
+  "YUWANCARD-PIG_MAKE_WISH.title": "Pig Make Wish",
+  "YUWANCARD-PIG_MAKE_WISH.description": "Choose up to {IfUpgraded:show:3|2} cards from {IfUpgraded:show:8|6} random cards to add to your hand.",
+  "YUWANCARD-PIG_MAKE_WISH.selectionScreenPrompt": "Select cards to add to hand",
+  "YUWANCARD-PIG_TRIBULATION.title": "Pig Tribulation",
+  "YUWANCARD-PIG_TRIBULATION.description": "Deal {Damage:diff()} damage to all enemies.",
+  "YUWANCARD-SHIELD_TO_FRONT.title": "Shield To Front",
+  "YUWANCARD-SHIELD_TO_FRONT.description": "The player who dealt the lowest damage this turn takes 2x damage during enemy turn. Other players take no damage during enemy turn. Lasts 1 turn. Exhaust."
 }

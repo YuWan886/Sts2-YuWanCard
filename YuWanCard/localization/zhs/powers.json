@@ -55,5 +55,11 @@
   "YUWANCARD-TRAGIC_MANDARIN_DUCK_POWER.smartDescription": "回合结束时，如果你没有打出攻击牌，失去1点[gold]力量[/gold]和1点[gold]敏捷[/gold]，对所有敌人造成{Damage}点伤害。",
   "YUWANCARD-EMPERORS_NEW_PIG_POWER.title": "皇帝的新猪",
   "YUWANCARD-EMPERORS_NEW_PIG_POWER.description": "敌人不会对你造成伤害。",
-  "YUWANCARD-EMPERORS_NEW_PIG_POWER.smartDescription": "敌人不会对你造成伤害。持续{Amount}回合。"
+  "YUWANCARD-EMPERORS_NEW_PIG_POWER.smartDescription": "敌人不会对你造成伤害。持续{Amount}回合。",
+  "YUWANCARD-SHIELD_TO_FRONT_POWER.title": "护至身前",
+  "YUWANCARD-SHIELD_TO_FRONT_POWER.description": "受到敌人伤害翻倍。",
+  "YUWANCARD-SHIELD_TO_FRONT_POWER.smartDescription": "受到敌人伤害翻倍。",
+  "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.title": "护至身前",
+  "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.description": "完全减免敌人伤害。",
+  "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.smartDescription": "完全减免敌人伤害。"
 }

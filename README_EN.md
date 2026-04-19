@@ -69,6 +69,10 @@ A cute pig character that can use all card.
 | Pig Burger | 1 | Rare | Power | At the end of combat, heal 6 HP. Upgraded: Heal 8 HP |
 | Black Hole | 2 | Rare | Skill | Exhaust any number of cards from your hand. Deal 5 damage for each card exhausted. Exhaust. |
 | Hacker Pig | 3 | Rare | Skill | Choose 1 card from your hand and enchant it with Loyal. Exhaust. |
+| Emperor's New Pig | 0 | Rare | Power | Enemies cannot deal damage to you. Lasts for 1 turn. Upgraded: Also cannot apply debuffs. |
+| Pig Miss You | 0 | Uncommon | Skill | Gain 1 stack of Pig Friends. Exhaust. Upgraded: Gain 2 stacks. |
+| Pig Make Wish | 0 | Uncommon | Skill | Choose up to 2 cards from 6 random cards to add to your hand. Exhaust. Upgraded: Choose up to 3 from 8. |
+| Pig Tribulation | 0 | Common | Attack | Deal 3 damage to all enemies. Upgraded: Deal 4 damage. |
 
 **Exclusive Relics**
 

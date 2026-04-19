@@ -12,20 +12,27 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class ShoppingCart : YuWanRelicModel
 {
+    private string _shoppingCartData = string.Empty;
+    
     [SavedProperty]
-    public string YuWanCard_ShoppingCartData { get; set; } = string.Empty;
+    public string YuWanCard_ShoppingCartData 
+    { 
+        get => _shoppingCartData;
+        set
+        {
+            if (_shoppingCartData != value)
+            {
+                _shoppingCartData = value;
+                _cartData = null;
+            }
+        }
+    }
 
     private ShoppingCartData? _cartData;
 
     public override RelicRarity Rarity => RelicRarity.Uncommon;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Capacity", 4)];
-
-    protected override string RelicId => "shopping_cart";
-    protected override string IconBasePath => $"res://YuWanCard/images/relics/{RelicId}";
-    public override string PackedIconPath => $"{IconBasePath}.png";
-    protected override string BigIconPath => $"{IconBasePath}.png";
-    protected override string PackedIconOutlinePath => $"{IconBasePath}.png";
 
     public ShoppingCart() : base(true)
     {
@@ -36,9 +43,9 @@ public class ShoppingCart : YuWanRelicModel
         if (_cartData == null)
         {
             _cartData = new ShoppingCartData();
-            if (!string.IsNullOrEmpty(YuWanCard_ShoppingCartData))
+            if (!string.IsNullOrEmpty(_shoppingCartData))
             {
-                _cartData.Deserialize(YuWanCard_ShoppingCartData);
+                _cartData.Deserialize(_shoppingCartData);
             }
             _cartData.ItemAdded += OnCartItemChanged;
             _cartData.ItemRemoved += OnCartItemChanged;
@@ -61,8 +68,12 @@ public class ShoppingCart : YuWanRelicModel
     {
         if (_cartData != null)
         {
-            YuWanCard_ShoppingCartData = _cartData.Serialize();
-            MainFile.Logger.Debug($"ShoppingCart: Saved cart data ({_cartData.Count} items)");
+            var newData = _cartData.Serialize();
+            if (_shoppingCartData != newData)
+            {
+                _shoppingCartData = newData;
+                MainFile.Logger.Debug($"ShoppingCart: Saved cart data ({_cartData.Count} items)");
+            }
         }
     }
 

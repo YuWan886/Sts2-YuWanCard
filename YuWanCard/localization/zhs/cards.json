@@ -160,5 +160,14 @@
   "YUWANCARD-TRAGIC_MANDARIN_DUCK.title": "苦命鸳鸯",
   "YUWANCARD-TRAGIC_MANDARIN_DUCK.description": "获得{StrengthPower:diff()}点[gold]力量[/gold]和{DexterityPower:diff()}点[gold]敏捷[/gold]。在你的回合结束时，如果你在本回合没有打出任何攻击牌，则失去1点[gold]力量[/gold]和1点[gold]敏捷[/gold]，并对所有敌人造成{Damage:diff()}点伤害。",
   "YUWANCARD-EMPERORS_NEW_PIG.title": "皇帝的新猪",
-  "YUWANCARD-EMPERORS_NEW_PIG.description": "{IfUpgraded:show:敌人不会对你造成伤害，也不会对你施加负面效果。|敌人不会对你造成伤害。}持续{Turns:diff()}回合。"
+  "YUWANCARD-EMPERORS_NEW_PIG.description": "{IfUpgraded:show:敌人不会对你造成伤害，也不会对你施加负面效果。|敌人不会对你造成伤害。}持续{Turns:diff()}回合。",
+  "YUWANCARD-PIG_MISS_YOU.title": "猪想你",
+  "YUWANCARD-PIG_MISS_YOU.description": "获得{PigFriendsPower:diff()}层[gold]猪朋猪友[/gold]。",
+  "YUWANCARD-PIG_MAKE_WISH.title": "猪许愿",
+  "YUWANCARD-PIG_MAKE_WISH.description": "从{IfUpgraded:show:8|6}张随机的卡牌中选择最多{IfUpgraded:show:3|2}张加入手牌。",
+  "YUWANCARD-PIG_MAKE_WISH.selectionScreenPrompt": "选择卡牌加入手牌",
+  "YUWANCARD-PIG_TRIBULATION.title": "猪渡劫",
+  "YUWANCARD-PIG_TRIBULATION.description": "对所有敌人造成{Damage:diff()}点伤害。",
+  "YUWANCARD-SHIELD_TO_FRONT.title": "护至身前",
+  "YUWANCARD-SHIELD_TO_FRONT.description": "截止卡牌打出前，造成伤害最低的玩家受到敌人的伤害翻倍，其他玩家免疫敌人攻击。"
 }

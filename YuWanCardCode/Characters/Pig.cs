@@ -51,13 +51,13 @@ public class Pig : PlaceholderCharacterModel
         => "res://YuWanCard/images/characters/multiplayer_hand/pig_point.png";
     
     public override string CustomArmRockTexturePath 
-        => "res://YuWanCard/images/characters/multiplayer_hand/pig_rock.png";
+        => "res://images/ui/hands/multiplayer_hand_defect_rock.png";
     
     public override string CustomArmPaperTexturePath 
-        => "res://YuWanCard/images/characters/multiplayer_hand/pig_paper.png";
+        => "res://images/ui/hands/multiplayer_hand_defect_paper.png";
     
     public override string CustomArmScissorsTexturePath 
-        => "res://YuWanCard/images/characters/multiplayer_hand/pig_scissors.png";
+        => "res://images/ui/hands/multiplayer_hand_defect_scissors.png";
     
     public override IEnumerable<CardModel> StartingDeck =>
     [
