@@ -57,5 +57,8 @@
   "YUWANCARD-TEAMMATE_PAY.flavor": "Share the fortune, share the burden.",
   "YUWANCARD-SHOPPING_CART.title": "Shopping Cart",
   "YUWANCARD-SHOPPING_CART.description": "Add items to your cart in the shop and buy them later. The cart can hold up to {Capacity} items.",
-  "YUWANCARD-SHOPPING_CART.flavor": "Shopping made easier."
+  "YUWANCARD-SHOPPING_CART.flavor": "Shopping made easier.",
+  "YUWANCARD-HEARTSTEEL.title": "Heartsteel",
+  "YUWANCARD-HEARTSTEEL.description": "When you deal {Threshold} or more damage to the same enemy in a single turn, trigger \"Colossal Appetite\" on that enemy (once per enemy per combat). Colossal Appetite: This attack deals bonus damage equal to {BonusDamagePercent} of your current HP and permanently increases your max HP by {MaxHpGain}.",
+  "YUWANCARD-HEARTSTEEL.flavor": "Steel forged from the heart."
 }

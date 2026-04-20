@@ -47,7 +47,7 @@ public class PigStayUpLate : YuWanCardModel
 
     private static bool IsLateNight()
     {
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         int hour = now.Hour;
         return hour >= 23 || hour < 2;
     }

@@ -27,7 +27,7 @@
   "YUWANCARD-PIG_FRIENDS_POWER.description": "获得能力时召唤一只[gold]小猪[/gold]。每2层小猪升级一次。",
   "YUWANCARD-PIG_FRIENDS_POWER.smartDescription": "获得能力时召唤一只小猪。每2层升级一次。",
   "YUWANCARD-PIG_MINION_POWER.title": "猪猪伙伴",
-  "YUWANCARD-PIG_MINION_POWER.description": "吸收主人受到的所有未被格挡的攻击伤害。主人获得格挡时获得{BonusBlock}点格挡。主人获得力量时获得1点力量。小猪的力量能加成到主人。每回合开始给予所有玩家礼物。",
+  "YUWANCARD-PIG_MINION_POWER.description": "吸收主人受到的所有未被格挡的攻击伤害。\n主人获得格挡时获得{BonusBlock}点格挡。主人获得力量时获得1点力量。小猪的力量能加成到主人。\n每回合开始给予所有玩家礼物。",
   "YUWANCARD-PIG_MINION_POWER.smartDescription": "吸收主人受到的所有未被格挡的攻击伤害。获得格挡时获得{BonusBlock}点格挡。主人获得力量时获得1点力量。力量加成给主人。。",
   "YUWANCARD-PERFECT_THING_POWER.title": "完美之物",
   "YUWANCARD-PERFECT_THING_POWER.description": "你每打出一定数量的牌，获得1点能量。",

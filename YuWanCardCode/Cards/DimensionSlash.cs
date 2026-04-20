@@ -47,7 +47,9 @@ public class DimensionSlash : YuWanCardModel
         {
             if (power is PowerModel powerModel && powerModel.Type == PowerType.Debuff)
             {
-                debuffsToApply.Add((powerModel, powerModel.Amount));
+                var doubledAmount = powerModel.Amount * 2;
+                await PowerCmd.Apply(powerModel, target, doubledAmount, Owner.Creature, this);
+                debuffsToApply.Add((powerModel, doubledAmount));
             }
         }
 

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YuWanCard.Powers;
 
@@ -105,15 +106,11 @@ public class TragicMandarinDuckPower : YuWanPowerModel
             var enemies = CombatState?.HittableEnemies;
             if (enemies != null && enemies.Count > 0)
             {
-                foreach (var enemy in enemies)
+                foreach (var enemy in enemies.ToList())
                 {
-                    var attackCmd = DamageCmd.Attack(YUWANCARD_DamageAmount)
-                        .Targeting(enemy)
-                        .WithHitFx("vfx/vfx_attack_slash");
-
-                    attackCmd.GetType().GetProperty("Attacker")?.SetValue(attackCmd, Owner);
-
-                    await attackCmd.Execute(null);
+                    if (enemy == null || !enemy.IsAlive) continue;
+                    
+                    await CreatureCmd.Damage(choiceContext, enemy, YUWANCARD_DamageAmount, ValueProp.Move, Owner);
                 }
             }
         }

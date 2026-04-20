@@ -2,6 +2,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -90,13 +91,7 @@ public class PigDefectionPower : YuWanPowerModel
         var strengthPower = Owner.GetPower<StrengthPower>();
         int damage = 7 + (strengthPower?.Amount ?? 0);
 
-        var attackCmd = DamageCmd.Attack(damage)
-            .Targeting(target)
-            .WithHitFx("vfx/vfx_attack_slash");
-
-        attackCmd.GetType().GetProperty("Attacker")?.SetValue(attackCmd, Owner);
-
-        await attackCmd.Execute(null);
+        await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), target, damage, ValueProp.Move, Owner);
     }
 
     public override bool ShouldCreatureBeRemovedFromCombatAfterDeath(Creature creature)

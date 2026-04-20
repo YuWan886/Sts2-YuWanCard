@@ -1,5 +1,5 @@
 {
-  "SEA_GLASS.YUWANCARD-PIG.title":"海玻璃",
+  "SEA_GLASS.YUWANCARD-PIG.title": "海玻璃",
   "YUWANCARD-SEVEN_CURSES_SELECT.title": "七咒之戒",
   "YUWANCARD-SEVEN_CURSES_SELECT.description": "获得七咒之戒遗物",
   "YUWANCARD-SEVEN_CURSES_SKIP.title": "跳过",
@@ -32,7 +32,7 @@
   "YUWANCARD-FURIOUS_PIG.description": "每场战斗开始时获得{StrengthPower}点[gold]力量[/gold]和1层[gold]脆弱[/gold]。",
   "YUWANCARD-FURIOUS_PIG.flavor": "暴怒的猪，力量无穷。",
   "YUWANCARD-LAZY_PIG.title": "懒惰猪",
-  "YUWANCARD-LAZY_PIG.description": "每2回合获得2点[gold]敏捷[/gold]。抽到[gold]攻击牌[/gold]的概率减少50%。", 
+  "YUWANCARD-LAZY_PIG.description": "每2回合获得2点[gold]敏捷[/gold]。抽到[gold]攻击牌[/gold]的概率减少50%。",
   "YUWANCARD-LAZY_PIG.flavor": "懒惰的猪，能不动就不动。",
   "YUWANCARD-GREEDY_PIG.title": "贪婪猪",
   "YUWANCARD-GREEDY_PIG.description": "每场战斗开始时，将1张[gold]贪婪[/gold]加入手牌。获得的[gold]金币[/gold]增加100%。",
@@ -57,5 +57,8 @@
   "YUWANCARD-TEAMMATE_PAY.flavor": "有福同享，有难同当。",
   "YUWANCARD-SHOPPING_CART.title": "购物车",
   "YUWANCARD-SHOPPING_CART.description": "可以在商店中将物品加入购物车，稍后购买。购物车最多容纳{Capacity}个物品。",
-  "YUWANCARD-SHOPPING_CART.flavor": "购物车，让购物更轻松。"
+  "YUWANCARD-SHOPPING_CART.flavor": "购物车，让购物更轻松。",
+  "YUWANCARD-HEARTSTEEL.title": "心之钢",
+  "YUWANCARD-HEARTSTEEL.description": "在一回合内对同一敌人造成伤害大于{Threshold}点时，对该敌人触发\"[gold]庞然吞食[/gold]\"（每场战斗每个敌人限一次）。\n[gold]庞然吞食[/gold]：本次攻击额外造成你当前生命值[blue]10%[/blue]的伤害，并使你的最大生命值提高[green]{MaxHpGain}[/green]点。",
+  "YUWANCARD-HEARTSTEEL.flavor": "心之所向，钢之所成。"
 }

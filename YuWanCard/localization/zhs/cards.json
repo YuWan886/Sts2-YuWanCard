@@ -105,7 +105,7 @@
   "YUWANCARD-PIG_CHOP.title": "猪排",
   "YUWANCARD-PIG_CHOP.description": "获得{RegenPower:diff()}层[gold]再生[/gold]。",
   "YUWANCARD-DIMENSION_SLASH.title": "次元斩",
-  "YUWANCARD-DIMENSION_SLASH.description": "造成{Damage:diff()}点伤害。将目标敌人的所有[gold]减益效果[/gold]复制到其他敌人身上。",
+  "YUWANCARD-DIMENSION_SLASH.description": "造成{Damage:diff()}点伤害。将目标敌人的所有[gold]负面效果[/gold]翻倍，然后复制到其他敌人身上。",
   "YUWANCARD-PERFECT_THING.title": "完美之物",
   "YUWANCARD-PERFECT_THING.description": "你每打出{IfUpgraded:show:2|3}张牌，获得 1 点能量。",
   "YUWANCARD-BLACK_HOLE.title": "黑洞",

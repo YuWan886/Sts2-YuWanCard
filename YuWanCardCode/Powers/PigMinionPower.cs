@@ -110,15 +110,26 @@ public class PigMinionPower : YuWanPowerModel
         }
     }
 
+    private bool _isProcessingStrengthChange = false;
+
     public override async Task AfterPowerAmountChanged(PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
     {
         if (power.Owner != Owner.PetOwner?.Creature) return;
         if (power is not StrengthPower) return;
         if (amount <= 0) return;
         if (Owner.IsDead) return;
+        if (_isProcessingStrengthChange) return;
 
-        Flash();
-        await PowerCmd.Apply<StrengthPower>(Owner, 1, Owner.PetOwner?.Creature, cardSource);
+        _isProcessingStrengthChange = true;
+        try
+        {
+            Flash();
+            await PowerCmd.Apply<StrengthPower>(Owner, 1, Owner.PetOwner?.Creature, cardSource);
+        }
+        finally
+        {
+            _isProcessingStrengthChange = false;
+        }
     }
 
     public override async Task AfterBlockGained(Creature creature, decimal amount, ValueProp props, CardModel? cardSource)
