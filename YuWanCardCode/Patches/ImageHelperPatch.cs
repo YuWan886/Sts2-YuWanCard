@@ -9,23 +9,6 @@ namespace YuWanCard.Patches;
 [HarmonyPatch(typeof(ImageHelper))]
 public static class ImageHelperPatch
 {
-    private static readonly HashSet<string> ModEnchantmentIds = [];
-
-    static ImageHelperPatch()
-    {
-        var assembly = typeof(ImageHelperPatch).Assembly;
-        var enchantmentBaseType = typeof(EnchantmentModel);
-
-        foreach (var type in assembly.GetTypes())
-        {
-            if (type.IsClass && !type.IsAbstract && enchantmentBaseType.IsAssignableFrom(type))
-            {
-                var id = StringHelper.Slugify(type.Name).ToLowerInvariant();
-                ModEnchantmentIds.Add(id);
-            }
-        }
-    }
-
     [HarmonyPrefix]
     [HarmonyPatch(nameof(ImageHelper.GetRoomIconPath))]
     public static bool GetRoomIconPathPrefix(MapPointType mapPointType, RoomType roomType, ModelId? modelId, ref string? __result)
@@ -46,21 +29,6 @@ public static class ImageHelperPatch
         {
             __result = "res://YuWanCard/images/events/blacksmith.png";
             return;
-        }
-
-        if (innerPath.StartsWith("enchantments/"))
-        {
-            var fileName = innerPath["enchantments/".Length..];
-            if (fileName.EndsWith(".png"))
-            {
-                fileName = fileName[..^4];
-            }
-
-            if (ModEnchantmentIds.Contains(fileName))
-            {
-                __result = $"res://YuWanCard/images/enchantments/{fileName}.png";
-                return;
-            }
         }
 
         if (innerPath == "ui/rest_site/option_roast_pork.png")

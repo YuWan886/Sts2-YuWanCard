@@ -9,7 +9,7 @@ using YuWanCard.Utils;
 
 namespace YuWanCard.Enchantments;
 
-public sealed class Venomous : CustomEnchantmentModel
+public sealed class Venomous : YuWanEnchantmentModel
 {
     public override bool ShowAmount => true;
 

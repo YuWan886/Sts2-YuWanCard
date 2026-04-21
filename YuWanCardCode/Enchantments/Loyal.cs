@@ -9,7 +9,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace YuWanCard.Enchantments;
 
-public sealed class Loyal : CustomEnchantmentModel
+public sealed class Loyal : YuWanEnchantmentModel
 {
     public override bool ShowAmount => true;
     public override bool IsStackable => false;

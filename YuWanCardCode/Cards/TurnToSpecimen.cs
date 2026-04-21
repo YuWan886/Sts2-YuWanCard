@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.CardPools;
-using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 
 namespace YuWanCard.Cards;
@@ -51,12 +50,12 @@ public class TurnToSpecimen : YuWanCardModel
                     // 保存原始颜色
                     var originalColor = body.Modulate;
                     
-                    // 渐变到灰白色（更明显的标本效果）
+                    // 渐变到灰白色
                     var tween = creatureNode.CreateTween();
                     tween.TweenProperty(body, "modulate", new Color(0.7f, 0.7f, 0.7f, 1.0f), 0.3f)
                         .SetEase(Tween.EaseType.InOut);
                     
-                    // 停止动画（如果有 Spine 动画）
+                    // 停止动画
                     if (creatureNode.HasSpineAnimation)
                     {
                         // 设置为 idle 动画并暂停
@@ -78,8 +77,6 @@ public class TurnToSpecimen : YuWanCardModel
                             creatureNode.SpineAnimation.SetAnimation("idle", loop: true, 0);
                         }
                     }));
-                    
-                    MainFile.Logger.Info("TurnToSpecimen: Applied grayscale effect and froze enemy for 3 seconds");
                 }
             }
         }

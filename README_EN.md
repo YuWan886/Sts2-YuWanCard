@@ -212,3 +212,4 @@ A cute pig character that can use all card.
 - Cute Piggy - [PigHub](https://www.pighub.top/)
 - Seven Curses Ring - [Enigmatic-Legacy](https://github.com/Aizistral-Studios/Enigmatic-Legacy)
 - Spire Codex - [Spire Codex](https://github.com/ptrlrd/spire-codex)
+- 《God of the Reincarnation World》 - [「勇者の肋骨」俺＆女神さまのボイス収めたカオスな本PV、キービジュアルも公開](https://natalie.mu/comic/news/663320)

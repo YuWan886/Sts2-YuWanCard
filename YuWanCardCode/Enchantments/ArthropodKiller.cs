@@ -7,7 +7,7 @@ using YuWanCard.Utils;
 
 namespace YuWanCard.Enchantments;
 
-public sealed class ArthropodKiller : CustomEnchantmentModel
+public sealed class ArthropodKiller : YuWanEnchantmentModel
 {
     public override bool ShowAmount => true;
 
