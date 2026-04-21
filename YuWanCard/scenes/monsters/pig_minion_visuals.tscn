@@ -342,12 +342,11 @@ autoplay = "idle_loop"
 
 [node name="Bounds" type="Control" parent="."]
 unique_name_in_owner = true
-visible = false
 layout_mode = 3
 anchors_preset = 0
-offset_left = -64.0
+offset_left = -80.0
 offset_top = -147.0
-offset_right = 65.0
+offset_right = 85.0
 offset_bottom = -4.0
 mouse_filter = 2
 

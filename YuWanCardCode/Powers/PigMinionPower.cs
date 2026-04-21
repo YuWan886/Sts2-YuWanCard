@@ -15,7 +15,7 @@ namespace YuWanCard.Powers;
 public class PigMinionPower : YuWanPowerModel
 {
     public override PowerType Type => PowerType.Buff;
-    public override PowerStackType StackType => PowerStackType.Counter;
+    public override PowerStackType StackType => PowerStackType.None;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
