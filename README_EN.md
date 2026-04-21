@@ -73,6 +73,9 @@ A cute pig character that can use all card.
 | Pig Miss You | 0 | Uncommon | Skill | Gain 1 stack of Pig Friends. Exhaust. Upgraded: Gain 2 stacks. |
 | Pig Make Wish | 0 | Uncommon | Skill | Choose up to 2 cards from 6 random cards to add to your hand. Exhaust. Upgraded: Choose up to 3 from 8. |
 | Pig Tribulation | 0 | Common | Attack | Deal 3 damage to all enemies. Upgraded: Deal 4 damage. |
+| Brave Rib | 2 | Uncommon | Skill | Exhaust all cards in your hand, then draw cards until your hand is full. |
+| Justice Iron Fist | 3 | Rare | Attack | Deal 20 damage. [gold]Stun[/gold] the target. |
+| Turn To Specimen | 1 | Uncommon | Skill | Remove all [gold]Powers[/gold] from all enemies. [gold]Exhaust[/gold] |
 
 **Exclusive Relics**
 

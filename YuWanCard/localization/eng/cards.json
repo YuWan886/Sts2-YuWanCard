@@ -169,5 +169,11 @@
   "YUWANCARD-PIG_TRIBULATION.title": "Pig Tribulation",
   "YUWANCARD-PIG_TRIBULATION.description": "Deal {Damage:diff()} damage to all enemies.",
   "YUWANCARD-SHIELD_TO_FRONT.title": "Shield To Front",
-  "YUWANCARD-SHIELD_TO_FRONT.description": "The player who dealt the lowest damage this turn takes 2x damage during enemy turn. Other players take no damage during enemy turn. Lasts 1 turn. Exhaust."
+  "YUWANCARD-SHIELD_TO_FRONT.description": "The player who dealt the lowest damage this turn takes 2x damage during enemy turn. Other players take no damage during enemy turn. Lasts 1 turn. Exhaust.",
+  "YUWANCARD-BRAVE_RIB.title": "Brave Rib",
+  "YUWANCARD-BRAVE_RIB.description": "Exhaust all cards in your hand, then draw cards until your hand is full.",
+  "YUWANCARD-JUSTICE_IRON_FIST.title": "Justice Iron Fist",
+  "YUWANCARD-JUSTICE_IRON_FIST.description": "Deal {Damage:diff()} damage. [gold]Stun[/gold] the target.",
+  "YUWANCARD-TURN_TO_SPECIMEN.title": "Turn To Specimen",
+  "YUWANCARD-TURN_TO_SPECIMEN.description": "Remove all [gold]Powers[/gold] from all enemies. [gold]Exhaust[/gold]"
 }

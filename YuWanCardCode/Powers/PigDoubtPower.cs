@@ -53,7 +53,7 @@ public class PigDoubtPower : YuWanPowerModel
         if (rng == null) return null;
 
         var filteredPowers = ModelDb.AllPowers
-            .Where(p => !p.IsInstanced && IsSafePower(p) && IsValidPower(p))
+            .Where(p => !p.IsInstanced && IsSafePower(p) && IsValidPower(p) && p.Type == PowerType.Buff)
             .ToList();
 
         if (filteredPowers.Count == 0) return null;

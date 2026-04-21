@@ -169,5 +169,11 @@
   "YUWANCARD-PIG_TRIBULATION.title": "猪渡劫",
   "YUWANCARD-PIG_TRIBULATION.description": "对所有敌人造成{Damage:diff()}点伤害。",
   "YUWANCARD-SHIELD_TO_FRONT.title": "护至身前",
-  "YUWANCARD-SHIELD_TO_FRONT.description": "截止卡牌打出前，造成伤害最低的玩家受到敌人的伤害翻倍，其他玩家免疫敌人攻击。"
+  "YUWANCARD-SHIELD_TO_FRONT.description": "截止卡牌打出前，造成伤害最低的玩家受到敌人的伤害翻倍，其他玩家免疫敌人攻击。",
+  "YUWANCARD-BRAVE_RIB.title": "勇者的肋骨",
+  "YUWANCARD-BRAVE_RIB.description": "消耗所有手牌，然后抽牌直到抽满手牌。",
+  "YUWANCARD-JUSTICE_IRON_FIST.title": "正义的铁拳",
+  "YUWANCARD-JUSTICE_IRON_FIST.description": "造成{Damage:diff()}点伤害。并[gold]击晕[/gold]该敌人。",
+  "YUWANCARD-TURN_TO_SPECIMEN.title": "变成标本吧",
+  "YUWANCARD-TURN_TO_SPECIMEN.description": "移除所有敌人身上的[gold]增益能力[/gold]。"
 }
