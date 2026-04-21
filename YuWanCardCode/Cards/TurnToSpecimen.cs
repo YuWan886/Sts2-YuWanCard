@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 
@@ -20,7 +19,11 @@ public class TurnToSpecimen : YuWanCardModel
         target: TargetType.AllEnemies)
     {
         WithKeywords(CardKeyword.Exhaust);
-        WithTip(new TooltipSource(_ => HoverTipFactory.Static(StaticHoverTip.Stun)));
+    }
+
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -49,12 +52,12 @@ public class TurnToSpecimen : YuWanCardModel
                 {
                     // 保存原始颜色
                     var originalColor = body.Modulate;
-                    
+
                     // 渐变到灰白色
                     var tween = creatureNode.CreateTween();
                     tween.TweenProperty(body, "modulate", new Color(0.7f, 0.7f, 0.7f, 1.0f), 0.3f)
                         .SetEase(Tween.EaseType.InOut);
-                    
+
                     // 停止动画
                     if (creatureNode.HasSpineAnimation)
                     {
@@ -62,12 +65,12 @@ public class TurnToSpecimen : YuWanCardModel
                         creatureNode.SpineAnimation.SetAnimation("idle", loop: false, 0);
                         creatureNode.SpineAnimation.SetTimeScale(0f);
                     }
-                    
+
                     // 3 秒后恢复原始颜色和动画
                     tween.TweenInterval(2.7f);
                     tween.TweenProperty(body, "modulate", originalColor, 0.5f)
                         .SetEase(Tween.EaseType.InOut);
-                    
+
                     // 恢复动画
                     tween.TweenCallback(Callable.From(() =>
                     {
@@ -82,10 +85,5 @@ public class TurnToSpecimen : YuWanCardModel
         }
 
         await Task.CompletedTask;
-    }
-
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
     }
 }

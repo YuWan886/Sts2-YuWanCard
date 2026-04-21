@@ -18,7 +18,7 @@ public class PerfectThingPower : YuWanPowerModel
 
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.None;
+    public override PowerStackType StackType => PowerStackType.Counter;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsPerEnergyVar(this)];
 
@@ -73,7 +73,7 @@ public class PerfectThingPower : YuWanPowerModel
         if (data.CardsPlayedThisTurn % YUWANCARD_CardsPerEnergy == 0)
         {
             Flash();
-            await PlayerCmd.GainEnergy(1, Owner.Player);
+            await PlayerCmd.GainEnergy(Amount, Owner.Player);
         }
     }
 }

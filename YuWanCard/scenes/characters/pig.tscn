@@ -262,9 +262,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("36_jknt1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("2_pig")
 }],
 "loop": false,
 "name": &"hurt",
@@ -513,21 +510,20 @@ animations = [{
 
 [node name="Visuals" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(2, -104)
-scale = Vector2(0.5, 0.5)
+position = Vector2(2, -102)
+scale = Vector2(1, 0.945)
 sprite_frames = SubResource("SpriteFrames_pig")
 animation = &"relaxed_loop"
 autoplay = "idle_loop"
-frame_progress = 0.29236808
 
 [node name="Bounds" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
-offset_left = -119.0
-offset_top = -197.0
-offset_right = 142.0
-offset_bottom = -9.0
+offset_left = -130.0
+offset_top = -223.0
+offset_right = 131.0
+offset_bottom = 1.0
 mouse_filter = 2
 
 [node name="IntentPos" type="Marker2D" parent="."]
