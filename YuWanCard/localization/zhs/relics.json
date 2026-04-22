@@ -60,5 +60,8 @@
   "YUWANCARD-SHOPPING_CART.flavor": "购物车，让购物更轻松。",
   "YUWANCARD-HEARTSTEEL.title": "心之钢",
   "YUWANCARD-HEARTSTEEL.description": "在一回合内对同一敌人造成伤害大于{Threshold}点时，对该敌人触发\"[gold]庞然吞食[/gold]\"（每场战斗每个敌人限一次）。\n[gold]庞然吞食[/gold]：本次攻击额外造成你当前生命值[blue]10%[/blue]的伤害，并使你的最大生命值提高[green]{MaxHpGain}[/green]点。",
-  "YUWANCARD-HEARTSTEEL.flavor": "心之所向，钢之所成。"
+  "YUWANCARD-HEARTSTEEL.flavor": "心之所向，钢之所成。",
+  "YUWANCARD-WHITE_SCARF.title": "白色围巾",
+  "YUWANCARD-WHITE_SCARF.description": "战斗胜利后，额外获得一次[gold]无色卡牌[/gold]奖励。",
+  "YUWANCARD-WHITE_SCARF.flavor": "温暖的围巾，带来意外的惊喜。"
 }

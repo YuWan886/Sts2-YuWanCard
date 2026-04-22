@@ -60,5 +60,8 @@
   "YUWANCARD-SHOPPING_CART.flavor": "Shopping made easier.",
   "YUWANCARD-HEARTSTEEL.title": "Heartsteel",
   "YUWANCARD-HEARTSTEEL.description": "When you deal {Threshold} or more damage to the same enemy in a single turn, trigger \"Colossal Appetite\" on that enemy (once per enemy per combat). Colossal Appetite: This attack deals bonus damage equal to {BonusDamagePercent} of your current HP and permanently increases your max HP by {MaxHpGain}.",
-  "YUWANCARD-HEARTSTEEL.flavor": "Steel forged from the heart."
+  "YUWANCARD-HEARTSTEEL.flavor": "Steel forged from the heart.",
+  "YUWANCARD-WHITE_SCARF.title": "White Scarf",
+  "YUWANCARD-WHITE_SCARF.description": "After combat victory, gain an additional [gold]Colorless card[/gold] reward.",
+  "YUWANCARD-WHITE_SCARF.flavor": "A warm scarf that brings unexpected surprises."
 }

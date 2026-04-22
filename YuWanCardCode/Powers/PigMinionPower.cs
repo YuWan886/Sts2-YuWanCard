@@ -172,26 +172,19 @@ public class PigMinionPower : YuWanPowerModel
             switch (buffType)
             {
                 case 0:
-                    var cardPool = player.Character.CardPool;
-                    var availableCards = cardPool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint).ToList();
-                    if (availableCards.Count > 0)
-                    {
-                        var randomCardModel = rng.NextItem(availableCards)!;
-                        var randomCard = CombatState.CreateCard(randomCardModel, player);
-                        await CardPileCmd.AddGeneratedCardToCombat(randomCard, PileType.Hand, addedByPlayer: true);
-                    }
-                    break;
-                case 1:
                     await PlayerCmd.GainEnergy(1, player);
                     break;
-                case 2:
+                case 1:
                     await PowerCmd.Apply<StrengthPower>(creature, 1, Owner, null);
                     break;
-                case 3:
+                case 2:
                     await PowerCmd.Apply<DexterityPower>(creature, 1, Owner, null);
                     break;
-                case 4:
+                case 3:
                     await CreatureCmd.Heal(creature, 1);
+                    break;
+                case 4:
+                    await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), 1, player);
                     break;
             }
         }

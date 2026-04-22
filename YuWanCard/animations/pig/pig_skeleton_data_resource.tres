@@ -1,0 +1,8 @@
+[gd_resource type="SpineSkeletonDataResource" load_steps=3 format=3 uid="uid://desb515e3wcdo"]
+
+[ext_resource type="SpineAtlasResource" uid="uid://c2qm4y8xorrg3" path="res://YuWanCard/animations/pig/pig.atlas" id="1_74ckp"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://bko2iphr3ofcl" path="res://YuWanCard/animations/pig/pig.skel" id="2_lwit2"]
+
+[resource]
+atlas_res = ExtResource("1_74ckp")
+skeleton_file_res = ExtResource("2_lwit2")

@@ -39,8 +39,8 @@
   "YUWANCARD-PIG_DEFECTION_POWER.description": "被策反的单位。",
   "YUWANCARD-PIG_DEFECTION_POWER.smartDescription": "被策反的单位。。",
   "YUWANCARD-PIG_VAMPIRIC_POWER.title": "猪吸血",
-  "YUWANCARD-PIG_VAMPIRIC_POWER.description": "每打出一张攻击牌时，恢复1点生命值。",
-  "YUWANCARD-PIG_VAMPIRIC_POWER.smartDescription": "每打出一张攻击牌时，恢复{PigVampiricPower:diff()}点生命值。",
+  "YUWANCARD-PIG_VAMPIRIC_POWER.description": "每打出一张攻击牌，恢复1点生命值。",
+  "YUWANCARD-PIG_VAMPIRIC_POWER.smartDescription": "每打出一张攻击牌，恢复{PigVampiricPower:diff()}点生命值。",
   "YUWANCARD-PIG_COIN_POWER.title": "你个猪币",
   "YUWANCARD-PIG_COIN_POWER.description": "每打出1张卡牌，获得3金币。",
   "YUWANCARD-PIG_COIN_POWER.smartDescription": "每打出1张卡牌，获得{PigCoinPower:diff()}金币。",
@@ -61,5 +61,8 @@
   "YUWANCARD-SHIELD_TO_FRONT_POWER.smartDescription": "受到敌人伤害翻倍。",
   "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.title": "护至身前",
   "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.description": "完全减免敌人伤害。",
-  "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.smartDescription": "完全减免敌人伤害。"
+  "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.smartDescription": "完全减免敌人伤害。",
+  "YUWANCARD-LOLICON_POWER.title": "萝莉控",
+  "YUWANCARD-LOLICON_POWER.description": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。",
+  "YUWANCARD-LOLICON_POWER.smartDescription": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。"
 }

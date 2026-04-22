@@ -33,7 +33,6 @@ public class PigScalePatch
     {
         if (creature.Player != null && creature.Player.Character is Pig && NCombatRoom.Instance != null)
         {
-            MainFile.Logger.Info($"PigScale OnHpChanged (CreatureCmd): amount={amount}, currentHp={creature.CurrentHp}");
             UpdateScale(creature);
         }
     }
@@ -44,8 +43,6 @@ public class PigScalePatch
     {
         if (__instance.Player != null && __instance.Player.Character is Pig && NCombatRoom.Instance != null)
         {
-            MainFile.Logger.Info($"PigScale OnHpChanged (Internal): currentHp={__instance.CurrentHp}");
-            UpdateScale(__instance);
         }
     }
 
@@ -55,7 +52,6 @@ public class PigScalePatch
     {
         if (__instance.Player != null && __instance.Player.Character is Pig && NCombatRoom.Instance != null)
         {
-            MainFile.Logger.Info($"PigScale OnLoseHpInternal: currentHp={__instance.CurrentHp}");
             UpdateScale(__instance);
         }
     }
@@ -69,7 +65,6 @@ public class PigScalePatch
             if (_initialMaxHp <= 0)
             {
                 _initialMaxHp = creature.MaxHp;
-                MainFile.Logger.Info($"PigScale: Initial max HP set to {_initialMaxHp}");
             }
             UpdateScale(creature);
         }
@@ -83,7 +78,6 @@ public class PigScalePatch
         if (_initialMaxHp <= 0)
         {
             _initialMaxHp = creature.MaxHp;
-            MainFile.Logger.Info($"PigScale: Initial max HP set to {_initialMaxHp}");
         }
         
         float hpPercent = (float)creature.CurrentHp / _initialMaxHp;
@@ -93,7 +87,6 @@ public class PigScalePatch
         if (creatureNode != null)
         {
             creatureNode.SetDefaultScaleTo(targetScale, 0.1f);
-            MainFile.Logger.Info($"PigScale: Scale updated to {targetScale:F2} (HP: {creature.CurrentHp}/{_initialMaxHp})");
         }
     }
 }

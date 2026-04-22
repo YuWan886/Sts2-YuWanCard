@@ -83,7 +83,7 @@
   "YUWANCARD-PIG_GUARD.title": "猪守护",
   "YUWANCARD-PIG_GUARD.description": "目标队友获得{Block:diff()}点[gold]格挡[/gold]。你获得{PlatingPower}层[gold]覆甲[/gold]。",
   "YUWANCARD-PIG_FRIENDS.title": "猪朋猪友",
-  "YUWANCARD-PIG_FRIENDS.description": "获得{PigFriendsPower:diff()}层[gold]猪朋猪友[/gold]。获得能力时召唤一只[gold]小猪[/gold]，每2层升级一次。",
+  "YUWANCARD-PIG_FRIENDS.description": "获得能力时召唤一只[gold]小猪[/gold]，每2层升级一次。",
   "YUWANCARD-PIG_ENCOURAGE.title": "猪激励",
   "YUWANCARD-PIG_ENCOURAGE.description": "所有队友获得{Energy:energyIcons()}。抽{Cards:diff()}张牌。",
   "YUWANCARD-PIG_CURSE.title": "猪诅咒",
@@ -150,10 +150,10 @@
   "YUWANCARD-TEN_DAY_ELBOW.title": "十日肘焉",
   "YUWANCARD-TEN_DAY_ELBOW.description": "造成{Damage:diff()}点伤害10次。",
   "YUWANCARD-PIG_VAMPIRIC.title": "猪吸血",
-  "YUWANCARD-PIG_VAMPIRIC.description": "每打出一张攻击牌时，恢复{PigVampiricPower:diff()}点生命值。",
+  "YUWANCARD-PIG_VAMPIRIC.description": "每打出一张攻击牌，恢复{PigVampiricPower:diff()}点生命值。",
   "YUWANCARD-PIG_COIN.title": "你个猪币",
   "YUWANCARD-PIG_COIN.description": "每打出1张卡牌，获得{PigCoinPower:diff()}金币。",
-  "YUWANCARD-PIG_BURGER.title": "猪汉堡",
+  "YUWANCARD-PIG_BURGER.title": "猪堡",
   "YUWANCARD-PIG_BURGER.description": "在战斗结束时，恢复{PigBurgerPower:diff()}点生命值。",
   "YUWANCARD-KILLING_INTENT.title": "杀意",
   "YUWANCARD-KILLING_INTENT.description": "你打出的下{IfUpgraded:show:2|1}张攻击牌造成2倍伤害。",
@@ -175,5 +175,7 @@
   "YUWANCARD-JUSTICE_IRON_FIST.title": "正义的铁拳",
   "YUWANCARD-JUSTICE_IRON_FIST.description": "造成{Damage:diff()}点伤害。并[gold]击晕[/gold]该敌人。",
   "YUWANCARD-TURN_TO_SPECIMEN.title": "变成标本吧",
-  "YUWANCARD-TURN_TO_SPECIMEN.description": "移除所有敌人身上的[gold]增益能力[/gold]。"
+  "YUWANCARD-TURN_TO_SPECIMEN.description": "移除所有敌人身上的[gold]增益能力[/gold]。",
+  "YUWANCARD-LOLICON.title": "萝莉控",
+  "YUWANCARD-LOLICON.description": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。"
 }

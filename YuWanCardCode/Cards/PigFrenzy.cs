@@ -1,5 +1,4 @@
 using BaseLib.Utils;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using YuWanCard.Characters;
@@ -10,9 +9,9 @@ namespace YuWanCard.Cards;
 public class PigFrenzy : YuWanCardModel
 {
     public PigFrenzy() : base(
-        baseCost: 2,
+        baseCost: 3,
         type: CardType.Attack,
-        rarity: CardRarity.Rare,
+        rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
         WithDamage(7);

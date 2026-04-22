@@ -76,6 +76,7 @@ A cute pig character that can use all card.
 | Brave Rib | 2 | Uncommon | Skill | Exhaust all cards in your hand, then draw cards until your hand is full. |
 | Justice Iron Fist | 3 | Rare | Attack | Deal 20 damage. [gold]Stun[/gold] the target. |
 | Turn To Specimen | 1 | Uncommon | Skill | Remove all [gold]Powers[/gold] from all enemies. [gold]Exhaust[/gold] |
+| Lolicon | 1 | Rare | Power | Gain Lolicon Power. Upgraded: Cost -1 |
 
 **Exclusive Relics**
 
@@ -144,6 +145,7 @@ A cute pig character that can use all card.
 | Pig Vampiric | When you play an Attack card, heal 1 HP |
 | Pig Coin | When you play any card, gain 3 Gold |
 | Pig Burger | At the end of combat, heal 6 HP |
+| Lolicon | Double attack damage to enemies taller than 140 |
 
 ### Enchantments
 
@@ -170,6 +172,7 @@ A cute pig character that can use all card.
 | Greedy Pig | Event | Ancient Name | At the start of each combat, add a Greed to your hand. Gold gained +100% |
 | Gluttonous Pig | Event | Ancient Name | You can eat your card rewards. For every 2 card rewards eaten, at the start of each combat gain 1 Plating and 1 Strength |
 | Lustful Pig | Event | Ancient Name | At the start of each combat, all enemies gain 2 Weak. Enemies have a 40% chance to attack themselves |
+| White Scarf | Shared | Shop | After combat victory, gain an additional Colorless card reward |
 
 ### Ancient One
 
@@ -213,3 +216,4 @@ A cute pig character that can use all card.
 - Seven Curses Ring - [Enigmatic-Legacy](https://github.com/Aizistral-Studios/Enigmatic-Legacy)
 - Spire Codex - [Spire Codex](https://github.com/ptrlrd/spire-codex)
 - 《God of the Reincarnation World》 - [「勇者の肋骨」俺＆女神さまのボイス収めたカオスな本PV、キービジュアルも公開](https://natalie.mu/comic/news/663320)
+- Pig Spine Animation by [mmmmm基因](https://space.bilibili.com/51792041)
