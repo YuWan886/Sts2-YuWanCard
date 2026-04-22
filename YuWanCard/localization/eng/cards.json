@@ -177,5 +177,5 @@
   "YUWANCARD-TURN_TO_SPECIMEN.title": "Turn To Specimen",
   "YUWANCARD-TURN_TO_SPECIMEN.description": "Remove all [gold]Powers[/gold] from all enemies. [gold]Exhaust[/gold]",
   "YUWANCARD-LOLICON.title": "Lolicon",
-  "YUWANCARD-LOLICON.description": "Gain {LoliconPower:diff()} [gold]Lolicon[/gold].\nDeal double damage to enemies taller than [blue]150[/blue]."
+  "YUWANCARD-LOLICON.description": "Gain {LoliconPower:diff()} [gold]Lolicon[/gold].\nDeal double damage to enemies taller than [blue]140[/blue]. When attacking enemies [blue]140[/blue] or shorter, take damage equal to the damage dealt."
 }

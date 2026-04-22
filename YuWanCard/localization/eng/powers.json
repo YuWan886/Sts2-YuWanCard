@@ -66,6 +66,6 @@
   "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.description": "Take no damage from enemies during enemy turn.",
   "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.smartDescription": "Take no damage from enemies during enemy turn. Lasts 1 turn.",
   "YUWANCARD-LOLICON_POWER.title": "Lolicon",
-  "YUWANCARD-LOLICON_POWER.description": "Deal double damage to enemies taller than [blue]150[/blue].",
-  "YUWANCARD-LOLICON_POWER.smartDescription": "Deal double damage to enemies taller than [blue]150[/blue]."
+  "YUWANCARD-LOLICON_POWER.description": "Deal double damage to enemies taller than [blue]140[/blue]. When attacking enemies [blue]140[/blue] or shorter, take damage equal to the damage dealt.",
+  "YUWANCARD-LOLICON_POWER.smartDescription": "Deal double damage to enemies taller than [blue]140[/blue]. When attacking enemies [blue]140[/blue] or shorter, take damage equal to the damage dealt."
 }

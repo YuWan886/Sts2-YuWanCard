@@ -177,5 +177,5 @@
   "YUWANCARD-TURN_TO_SPECIMEN.title": "变成标本吧",
   "YUWANCARD-TURN_TO_SPECIMEN.description": "移除所有敌人身上的[gold]增益能力[/gold]。",
   "YUWANCARD-LOLICON.title": "萝莉控",
-  "YUWANCARD-LOLICON.description": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。"
+  "YUWANCARD-LOLICON.description": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。对身高不超过[blue]140[/blue]的敌人造成伤害时，自己受到同等伤害。"
 }

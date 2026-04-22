@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 using YuWanCard.Cards;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
@@ -34,8 +35,7 @@ class NeowRainDarkPatch
                     var card = neow.Owner.RunState.CreateCard(ModelDb.Card<RainDark>(), neow.Owner);
                     CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck));
                     
-                    var setEventFinishedMethod = typeof(EventModel).GetMethod("SetEventFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, [typeof(LocString)], null);
-                    setEventFinishedMethod?.Invoke(neow, [new LocString("events", "NEOW.pages.DONE.POSITIVE.description")]);
+                    YuWanReflectionHelper.CallPrivateMethod(neow, "SetEventFinished", new LocString("events", "NEOW.pages.DONE.POSITIVE.description"));
                 }
             },
             selectTitle,

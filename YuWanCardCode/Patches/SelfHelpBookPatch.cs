@@ -239,8 +239,6 @@ public class SelfHelpBookPatch
 
     private static void SetEventFinished(EventModel eventModel, LocString description)
     {
-        var method = typeof(EventModel).GetMethod("SetEventFinished",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        method?.Invoke(eventModel, [description]);
+        YuWanReflectionHelper.CallPrivateMethod(eventModel, "SetEventFinished", description);
     }
 }

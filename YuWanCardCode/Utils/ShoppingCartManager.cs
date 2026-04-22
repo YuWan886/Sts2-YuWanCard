@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
-using YuWanCard.GameActions;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Utils;
@@ -20,7 +19,8 @@ public static class ShoppingCartManager
             var runManager = RunManager.Instance;
             if (runManager == null || !runManager.IsInProgress)
                 return false;
-            return runManager.NetService.Type.IsMultiplayer();
+            var netService = runManager.NetService;
+            return netService != null && netService.Type != NetGameType.Singleplayer && netService.Type != NetGameType.Replay;
         }
     }
 
@@ -155,14 +155,6 @@ public static class ShoppingCartManager
             return false;
         }
 
-        if (IsMultiplayerGame)
-        {
-            var action = new ShoppingCartPurchaseAction(player, index);
-            var synchronizer = RunManager.Instance.ActionQueueSynchronizer;
-            synchronizer.RequestEnqueue(action);
-            return true;
-        }
-
         bool success = false;
 
         switch (item.ItemType)
@@ -183,6 +175,7 @@ public static class ShoppingCartManager
             data.RemoveAt(index);
             var cart = GetShoppingCartRelic(player);
             cart?.SaveCartData();
+            MainFile.Logger.Info($"ShoppingCartManager: Purchased {item.ItemId} for {item.Price} gold");
         }
 
         return success;

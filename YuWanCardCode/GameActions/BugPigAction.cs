@@ -1,3 +1,4 @@
+using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -10,7 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.TestSupport;
-using YuWanCard.Characters;
+using YuWanCard.Cards;
 using YuWanCard.Utils;
 
 namespace YuWanCard.GameActions;
@@ -18,45 +19,43 @@ namespace YuWanCard.GameActions;
 public class BugPigAction : GameAction
 {
     private readonly Player _player;
-    private readonly ulong _targetNetId;
-    private readonly int _errorCount;
-    private readonly bool _isUpgraded;
+    private readonly int _targetIndex;
+    private readonly int _totalDamage;
 
     public override ulong OwnerId => _player.NetId;
 
     public override GameActionType ActionType => GameActionType.CombatPlayPhaseOnly;
 
-    public BugPigAction(Player player, ulong targetNetId, int errorCount, bool isUpgraded)
+    public BugPigAction(Player player, int targetIndex, int totalDamage)
     {
         _player = player;
-        _targetNetId = targetNetId;
-        _errorCount = errorCount;
-        _isUpgraded = isUpgraded;
+        _targetIndex = targetIndex;
+        _totalDamage = totalDamage;
     }
 
     protected override async Task ExecuteAction()
     {
         var target = GetTargetCreature();
         if (target == null)
-            return;
-
-        var card = GetCardFromHand();
-        if (card == null)
         {
-            MainFile.Logger.Warn($"BugPigAction: Card not found in hand");
+            MainFile.Logger.Warn($"BugPigAction: Target not found (index={_targetIndex})");
             return;
         }
 
-        const int baseDamage = 7;
-        const int errorBonus = 3;
-        const int errorBonusUpgraded = 5;
+        var card = GetCardFromPiles();
+        if (card == null)
+        {
+            card = RunManager.Instance?.DebugOnlyGetState()?.CreateCard(ModelDb.Card<BugPig>(), _player);
+            if (card == null)
+            {
+                MainFile.Logger.Warn($"BugPigAction: Failed to create card instance");
+                return;
+            }
+        }
 
-        int damageBonus = _isUpgraded ? _errorCount * errorBonusUpgraded : _errorCount * errorBonus;
-        int totalDamage = baseDamage + damageBonus;
+        MainFile.Logger.Info($"BugPigAction: Dealing {_totalDamage} damage");
 
-        MainFile.Logger.Info($"BugPig: Dealing {totalDamage} damage (base: {baseDamage}, errors: {_errorCount}, bonus: {damageBonus})");
-
-        await DamageCmd.Attack(totalDamage)
+        await DamageCmd.Attack(_totalDamage)
             .FromCard(card)
             .Targeting(target)
             .WithHitFx("vfx/vfx_attack_slash")
@@ -70,74 +69,94 @@ public class BugPigAction : GameAction
 
     private Creature? GetTargetCreature()
     {
+        if (_targetIndex < 0) return null;
+        
         var combatState = _player.Creature?.CombatState;
         if (combatState == null) return null;
 
-        foreach (var creature in combatState.Creatures)
-        {
-            if (creature.Player != null && creature.Player.NetId == _targetNetId)
-            {
-                return creature;
-            }
-        }
-        return null;
+        var creatures = combatState.Creatures.ToList();
+        if (_targetIndex >= creatures.Count) return null;
+
+        return creatures[_targetIndex];
     }
 
-    private CardModel? GetCardFromHand()
+    private CardModel? GetCardFromPiles()
     {
-        var hand = _player.PlayerCombatState?.Hand;
-        if (hand == null) return null;
+        var combatState = _player.PlayerCombatState;
+        if (combatState == null) return null;
 
-        foreach (var card in hand.Cards)
+        if (combatState.Hand != null)
         {
-            if (card.Id.Entry == "BUG_PIG")
+            foreach (var card in combatState.Hand.Cards)
             {
-                return card;
+                if (card.Id.Entry == "BUG_PIG")
+                {
+                    return card;
+                }
             }
         }
+
+        if (combatState.ExhaustPile != null)
+        {
+            foreach (var card in combatState.ExhaustPile.Cards)
+            {
+                if (card.Id.Entry == "BUG_PIG")
+                {
+                    return card;
+                }
+            }
+        }
+
+        if (combatState.DiscardPile != null)
+        {
+            foreach (var card in combatState.DiscardPile.Cards)
+            {
+                if (card.Id.Entry == "BUG_PIG")
+                {
+                    return card;
+                }
+            }
+        }
+
         return null;
     }
 
     public override INetAction ToNetAction()
     {
-        return new NetBugPigAction(_targetNetId, _errorCount, _isUpgraded);
+        return new NetBugPigAction(_targetIndex, _totalDamage);
     }
 
     public override string ToString()
     {
-        return $"BugPigAction player={_player.NetId} target={_targetNetId} errors={_errorCount} upgraded={_isUpgraded}";
+        return $"BugPigAction player={_player.NetId} targetIndex={_targetIndex} damage={_totalDamage}";
     }
 }
 
 public struct NetBugPigAction : INetAction, IPacketSerializable
 {
-    private ulong _targetNetId;
-    private int _errorCount;
-    private bool _isUpgraded;
+    private int _targetIndex;
+    private int _totalDamage;
 
-    public NetBugPigAction(ulong targetNetId, int errorCount, bool isUpgraded)
+    public NetBugPigAction(int targetIndex, int totalDamage)
     {
-        _targetNetId = targetNetId;
-        _errorCount = errorCount;
-        _isUpgraded = isUpgraded;
+        _targetIndex = targetIndex;
+        _totalDamage = totalDamage;
     }
 
     public GameAction ToGameAction(Player owner)
     {
-        return new BugPigAction(owner, _targetNetId, _errorCount, _isUpgraded);
+        return new BugPigAction(owner, _targetIndex, _totalDamage);
     }
 
     public void Serialize(PacketWriter writer)
     {
-        writer.WriteULong(_targetNetId);
-        writer.WriteInt(_errorCount);
-        writer.WriteBool(_isUpgraded);
+        writer.WriteInt(_targetIndex);
+        writer.WriteInt(_totalDamage);
     }
 
     public void Deserialize(PacketReader reader)
     {
-        _targetNetId = reader.ReadULong();
-        _errorCount = reader.ReadInt();
-        _isUpgraded = reader.ReadBool();
+        _targetIndex = reader.ReadInt();
+        _totalDamage = reader.ReadInt();
     }
 }

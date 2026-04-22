@@ -14,9 +14,10 @@ namespace YuWanCard.Utils;
 
 public static class PetManager
 {
-    private const float PetVerticalSpacing = 80f;
     private const float PetBaseOffsetY = 30f;
     private const float DefectedPetBaseOffsetY = 40f;
+    private const float PetSpacing = 20f;
+    private const float HealthBarHeight = 24f;
 
     public static async Task<Creature?> SummonPigMinion(Player owner, int upgradeLevel = 0)
     {
@@ -128,14 +129,15 @@ public static class PetManager
         float baseOffsetX = ownerNode.Hitbox.Size.X * 0.5f + (isDefected ? 260f : 190f);
         float baseOffsetY = isDefected ? DefectedPetBaseOffsetY : PetBaseOffsetY;
 
+        float currentYOffset = baseOffsetY;
+
         for (int i = 0; i < petCount; i++)
         {
             var pet = pets[i];
             var petNode = NCombatRoom.Instance?.GetCreatureNode(pet);
             if (petNode == null) continue;
 
-            float yOffset = baseOffsetY - i * PetVerticalSpacing;
-            Vector2 offset = new Vector2(baseOffsetX, yOffset);
+            Vector2 offset = new Vector2(baseOffsetX, currentYOffset);
             petNode.Position = ownerNode.Position + offset;
 
             bool hasDefectionPower = pet.HasPower<PigDefectionPower>();
@@ -152,7 +154,16 @@ public static class PetManager
                 }
             }
 
-            petNode.ToggleIsInteractable(true);
+            bool isHealthBarVisible = pet.Monster?.IsHealthBarVisible ?? true;
+            petNode.ToggleIsInteractable(isHealthBarVisible);
+
+            float petHeight = petNode.Hitbox.Size.Y;
+            float effectiveHeight = petHeight + PetSpacing;
+            if (isHealthBarVisible)
+            {
+                effectiveHeight += HealthBarHeight;
+            }
+            currentYOffset -= effectiveHeight;
         }
     }
 

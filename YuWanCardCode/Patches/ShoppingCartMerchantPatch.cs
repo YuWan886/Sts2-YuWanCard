@@ -1,4 +1,3 @@
-using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
@@ -15,11 +14,15 @@ public static class NMerchantSlot_ShoppingCartPatch
 {
     private static readonly Dictionary<NMerchantSlot, Button> _addToCartButtons = new();
 
-    private static readonly MethodInfo? _clearAfterPurchaseMethod = 
-        typeof(MerchantEntry).GetMethod("ClearAfterPurchase", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static bool ClearAfterPurchase(MerchantEntry entry)
+    {
+        return YuWanReflectionHelper.CallPrivateMethod(entry, "ClearAfterPurchase");
+    }
 
-    private static readonly MethodInfo? _updateVisualMethod = 
-        typeof(NMerchantSlot).GetMethod("UpdateVisual", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static bool UpdateVisual(NMerchantSlot slot)
+    {
+        return YuWanReflectionHelper.CallPrivateMethod(slot, "UpdateVisual");
+    }
 
     [HarmonyPostfix]
     [HarmonyPatch("Initialize")]
@@ -102,8 +105,8 @@ public static class NMerchantSlot_ShoppingCartPatch
 
         if (added)
         {
-            _clearAfterPurchaseMethod?.Invoke(entry, null);
-            _updateVisualMethod?.Invoke(slot, null);
+            ClearAfterPurchase(entry);
+            UpdateVisual(slot);
             SfxCmd.Play("event:/sfx/ui/ui_card_reward_open");
         }
         else

@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Relics;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
@@ -13,8 +14,8 @@ public static class MapScreenPatch
     [HarmonyPostfix]
     public static void RecalculateTravelabilityPostfix(NMapScreen __instance)
     {
-        var runStateField = __instance.GetType().GetField("_runState", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (runStateField?.GetValue(__instance) is not RunState runState)
+        var runState = YuWanReflectionHelper.GetPrivateField<RunState>(__instance, "_runState");
+        if (runState == null)
         {
             return;
         }
@@ -34,14 +35,14 @@ public static class MapScreenPatch
             return;
         }
 
-        var mapField = __instance.GetType().GetField("_map", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (mapField?.GetValue(__instance) is not ActMap map)
+        var map = YuWanReflectionHelper.GetPrivateField<ActMap>(__instance, "_map");
+        if (map == null)
         {
             return;
         }
 
-        var mapPointDictionaryField = __instance.GetType().GetField("_mapPointDictionary", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (mapPointDictionaryField?.GetValue(__instance) is not IDictionary<MegaCrit.Sts2.Core.Map.MapCoord, NMapPoint> mapPointDictionary || !runState.VisitedMapCoords.Any())
+        var mapPointDictionary = YuWanReflectionHelper.GetPrivateField<IDictionary<MegaCrit.Sts2.Core.Map.MapCoord, NMapPoint>>(__instance, "_mapPointDictionary");
+        if (mapPointDictionary == null || !runState.VisitedMapCoords.Any())
         {
             return;
         }
@@ -54,11 +55,10 @@ public static class MapScreenPatch
             return;
         }
 
-        var secondBossPointNodeField = __instance.GetType().GetField("_secondBossPointNode", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var bossPointNodeField = __instance.GetType().GetField("_bossPointNode", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var bossPointNode = bossPointNodeField?.GetValue(__instance) as NMapPoint;
+        var secondBossPointNode = YuWanReflectionHelper.GetPrivateField<NMapPoint>(__instance, "_secondBossPointNode");
+        var bossPointNode = YuWanReflectionHelper.GetPrivateField<NMapPoint>(__instance, "_bossPointNode");
 
-        if (secondBossPointNodeField?.GetValue(__instance) is NMapPoint secondBossPointNode && lastVisitedCoord == bossPointNode?.Point.coord)
+        if (secondBossPointNode != null && lastVisitedCoord == bossPointNode?.Point.coord)
         {
             secondBossPointNode.State = MapPointState.Travelable;
             return;

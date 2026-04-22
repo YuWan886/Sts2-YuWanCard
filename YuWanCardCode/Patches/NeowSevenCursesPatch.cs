@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 using YuWanCard.Relics;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
@@ -12,7 +13,11 @@ namespace YuWanCard.Patches;
 class NeowSevenCursesPatch
 {
     private static readonly ConcurrentDictionary<Neow, List<EventOption>> _originalOptions = new();
-    private static readonly System.Reflection.MethodInfo? _setEventStateMethod = typeof(EventModel).GetMethod("SetEventState", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, [typeof(LocString), typeof(IEnumerable<EventOption>)], null);
+
+    private static bool SetEventState(EventModel eventModel, LocString description, IEnumerable<EventOption> options)
+    {
+        return YuWanReflectionHelper.CallPrivateMethod(eventModel, "SetEventState", description, options);
+    }
 
     [HarmonyPostfix]
     [HarmonyPatch("GenerateInitialOptions")]
@@ -38,7 +43,7 @@ class NeowSevenCursesPatch
                     await MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain<RingOfSevenCurses>(__instance.Owner);
                     if (_originalOptions.TryGetValue(__instance, out var options))
                     {
-                        _setEventStateMethod?.Invoke(__instance, [__instance.InitialDescription, options]);
+                        SetEventState(__instance, __instance.InitialDescription, options);
                     }
                 },
                 selectTitle,
@@ -56,7 +61,7 @@ class NeowSevenCursesPatch
             {
                 if (_originalOptions.TryGetValue(__instance, out var options))
                 {
-                    _setEventStateMethod?.Invoke(__instance, [__instance.InitialDescription, options]);
+                    SetEventState(__instance, __instance.InitialDescription, options);
                 }
                 return Task.CompletedTask;
             },

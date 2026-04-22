@@ -86,11 +86,6 @@ public class PigDoubtPower : YuWanPowerModel
 
     private bool IsSafePower(PowerModel power)
     {
-        if (power is YuWanPowerModel)
-        {
-            return false;
-        }
-
         return PowerSafetyUtils.IsSafePower(power);
     }
 }

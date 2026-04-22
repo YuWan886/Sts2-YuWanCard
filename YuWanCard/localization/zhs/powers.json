@@ -63,6 +63,6 @@
   "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.description": "完全减免敌人伤害。",
   "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.smartDescription": "完全减免敌人伤害。",
   "YUWANCARD-LOLICON_POWER.title": "萝莉控",
-  "YUWANCARD-LOLICON_POWER.description": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。",
-  "YUWANCARD-LOLICON_POWER.smartDescription": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。"
+  "YUWANCARD-LOLICON_POWER.description": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。对身高不超过[blue]140[/blue]的敌人造成伤害时，自己受到同等伤害。",
+  "YUWANCARD-LOLICON_POWER.smartDescription": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。对身高不超过[blue]140[/blue]的敌人造成伤害时，自己受到同等伤害。"
 }

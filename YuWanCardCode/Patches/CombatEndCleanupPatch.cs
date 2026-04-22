@@ -12,7 +12,6 @@ public class CombatEndCleanupPatch
     public static void EndCombatInternalPostfix()
     {
         RainDarkEffectPatch.CleanupAfterCombat();
-        BugPig.ResetErrorCount();
     }
 
     [HarmonyPostfix]
@@ -20,6 +19,5 @@ public class CombatEndCleanupPatch
     public static void AfterCombatRoomLoadedPostfix()
     {
         RainDarkEffectPatch.TryApplyPendingRainEffect();
-        BugPig.CaptureInitialErrorCount();
     }
 }

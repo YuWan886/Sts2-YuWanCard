@@ -6,15 +6,22 @@ using MegaCrit.Sts2.Core.Entities.RestSite;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 
 [HarmonyPatch(typeof(SmithRestSiteOption))]
 public static class SmithRestSiteOptionPatch
 {
-    private static readonly System.Reflection.FieldInfo? SelectionField = 
-        typeof(SmithRestSiteOption).GetField("_selection", 
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+    private static Player? GetOwner(RestSiteOption option)
+    {
+        return YuWanReflectionHelper.GetPrivateField<Player>(option, "Owner");
+    }
+
+    private static bool SetSelection(SmithRestSiteOption instance, IEnumerable<CardModel> selection)
+    {
+        return YuWanReflectionHelper.SetPrivateField(instance, "_selection", selection);
+    }
 
     [HarmonyPatch("OnSelect")]
     [HarmonyPrefix]
@@ -33,9 +40,11 @@ public static class SmithRestSiteOptionPatch
 
     private static async Task<bool> OnSelectWithFlexibleCount(SmithRestSiteOption instance)
     {
-        var owner = (Player)typeof(RestSiteOption)
-            .GetProperty("Owner", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
-            .GetValue(instance)!;
+        var owner = GetOwner(instance);
+        if (owner == null)
+        {
+            return false;
+        }
 
         var smithCount = instance.SmithCount;
 
@@ -56,7 +65,7 @@ public static class SmithRestSiteOptionPatch
 
         var selection = await CardSelectCmd.FromDeckForUpgrade(owner, prefs);
         
-        SelectionField?.SetValue(instance, selection);
+        SetSelection(instance, selection);
         
         if (!selection.Any())
         {

@@ -95,17 +95,19 @@ public class EndlessModePatch
             return;
         }
 
-        var mapScreenType = typeof(NMapScreen);
-        
-        var bossPointNodeField = mapScreenType.GetField("_bossPointNode", BindingFlags.NonPublic | BindingFlags.Instance);
-        var secondBossPointNodeField = mapScreenType.GetField("_secondBossPointNode", BindingFlags.NonPublic | BindingFlags.Instance);
-        var startingPointNodeField = mapScreenType.GetField("_startingPointNode", BindingFlags.NonPublic | BindingFlags.Instance);
+        bool success = true;
+        success &= YuWanReflectionHelper.SetPrivateField(NMapScreen.Instance, "_bossPointNode", null);
+        success &= YuWanReflectionHelper.SetPrivateField(NMapScreen.Instance, "_secondBossPointNode", null);
+        success &= YuWanReflectionHelper.SetPrivateField(NMapScreen.Instance, "_startingPointNode", null);
 
-        bossPointNodeField?.SetValue(NMapScreen.Instance, null);
-        secondBossPointNodeField?.SetValue(NMapScreen.Instance, null);
-        startingPointNodeField?.SetValue(NMapScreen.Instance, null);
-
-        MainFile.Logger.Debug("Endless mode: Cleared NMapScreen map point references to prevent double-free");
+        if (success)
+        {
+            MainFile.Logger.Debug("Endless mode: Cleared NMapScreen map point references to prevent double-free");
+        }
+        else
+        {
+            MainFile.Logger.Warn("Endless mode: Failed to clear some NMapScreen map point references");
+        }
     }
 
     private static int CalculateEliteBonus(int loopCount)
@@ -163,15 +165,11 @@ public class EndlessModePatch
         int eliteBonus = CalculateEliteBonus(loopCount);
         int newEliteCount = __instance.NumOfElites + eliteBonus;
 
-        var elitesProperty = typeof(MapPointTypeCounts).GetProperty(nameof(MapPointTypeCounts.NumOfElites));
-        if (elitesProperty != null)
+        var backingField = YuWanReflectionHelper.GetPrivateField(typeof(MapPointTypeCounts), $"<NumOfElites>k__BackingField");
+        if (backingField != null)
         {
-            var backingField = typeof(MapPointTypeCounts).GetField($"<NumOfElites>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (backingField != null)
-            {
-                backingField.SetValue(__instance, newEliteCount);
-                MainFile.Logger.Info($"Endless mode: Increased elite count by {eliteBonus} (Loop {loopCount})");
-            }
+            backingField.SetValue(__instance, newEliteCount);
+            MainFile.Logger.Info($"Endless mode: Increased elite count by {eliteBonus} (Loop {loopCount})");
         }
     }
 

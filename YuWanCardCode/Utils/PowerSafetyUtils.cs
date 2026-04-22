@@ -21,6 +21,9 @@ public static class PowerSafetyUtils
         "SANDPIT",
         "BURROWED",
         "BATTLEWORN_DUMMY_TIME_LIMIT",
+        "GRASP",
+        "HUNGER",
+        "SCRUTINY",
         "YUWANCARD-PIG_DEFECTION",
         "YUWANCARD-PIG_FRIENDS",
         "YUWANCARD-HACKER_PIG_POWER"

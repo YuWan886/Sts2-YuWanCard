@@ -23,26 +23,8 @@ public class BugPig : YuWanCardModel
     private const int ErrorDamageBonus = 3;
     private const int ErrorDamageBonusUpgraded = 5;
 
-    private static int _cachedErrorCount = -1;
-    private static int _initialErrorCount = -1;
-
     [SavedProperty]
     private int YuWanCard_CalculatedDamageBonus { get; set; } = -1;
-
-    public static void ResetErrorCount()
-    {
-        _cachedErrorCount = -1;
-        _initialErrorCount = -1;
-    }
-
-    public static void CaptureInitialErrorCount()
-    {
-        if (_initialErrorCount < 0)
-        {
-            _initialErrorCount = CountTotalErrorsInLog();
-            _cachedErrorCount = 0;
-        }
-    }
 
     public BugPig() : base(
         baseCost: 1,
@@ -64,26 +46,49 @@ public class BugPig : YuWanCardModel
         {
             var netService = RunManager.Instance?.NetService;
             bool isMultiplayer = netService != null && netService.Type != NetGameType.Singleplayer && netService.Type != NetGameType.Replay;
+            bool isHost = netService?.Type == NetGameType.Host;
+
+            if (isMultiplayer && !isHost)
+            {
+                MainFile.Logger.Debug($"BugPig: Client skipping OnPlay, waiting for Host to sync damage");
+                return;
+            }
 
             if (isMultiplayer)
             {
-                int errorCount = 0;
+                int errorCount = CountTotalErrorsInLog();
+                int damageBonus = IsUpgraded ? errorCount * ErrorDamageBonusUpgraded : errorCount * ErrorDamageBonus;
+                int totalDamage = BaseDamage + damageBonus;
+                YuWanCard_CalculatedDamageBonus = damageBonus;
 
-                if (netService!.Type == NetGameType.Host)
+                int targetIndex = -1;
+                var combatState = Owner.Creature?.CombatState;
+                if (combatState != null)
                 {
-                    CaptureInitialErrorCount();
-                    errorCount = CountNewErrorsInLog();
-                    MainFile.Logger.Info($"BugPig: Host calculated error count: {errorCount}");
+                    int index = 0;
+                    foreach (var creature in combatState.Creatures)
+                    {
+                        if (creature == cardPlay.Target)
+                        {
+                            targetIndex = index;
+                            break;
+                        }
+                        index++;
+                    }
                 }
 
-                ulong targetNetId = cardPlay.Target.Player?.NetId ?? 0;
-                var action = new BugPigAction(Owner, targetNetId, errorCount, IsUpgraded);
+                MainFile.Logger.Info($"BugPig: Host calculated total error count: {errorCount}, damage bonus: {damageBonus}, total damage: {totalDamage}");
+
+                var action = new BugPigAction(Owner, targetIndex, totalDamage);
                 RunManager.Instance?.ActionQueueSynchronizer?.RequestEnqueue(action);
             }
             else
             {
-                int damageBonus = GetDamageBonusSingleplayer();
+                int errorCount = CountTotalErrorsInLog();
+                int damageBonus = IsUpgraded ? errorCount * ErrorDamageBonusUpgraded : errorCount * ErrorDamageBonus;
                 int totalDamage = BaseDamage + damageBonus;
+
+                MainFile.Logger.Info($"BugPig: Singleplayer error count: {errorCount}, damage bonus: {damageBonus}, total damage: {totalDamage}");
 
                 await DamageCmd.Attack(totalDamage)
                     .FromCard(this)
@@ -97,21 +102,6 @@ public class BugPig : YuWanCardModel
                 }
             }
         }
-    }
-
-    private int GetDamageBonusSingleplayer()
-    {
-        if (YuWanCard_CalculatedDamageBonus >= 0)
-        {
-            return YuWanCard_CalculatedDamageBonus;
-        }
-
-        CaptureInitialErrorCount();
-        int newErrors = CountNewErrorsInLog();
-        int damageBonus = IsUpgraded ? newErrors * ErrorDamageBonusUpgraded : newErrors * ErrorDamageBonus;
-
-        YuWanCard_CalculatedDamageBonus = damageBonus;
-        return damageBonus;
     }
 
     public static int CountTotalErrorsInLog()
@@ -132,7 +122,7 @@ public class BugPig : YuWanCardModel
                 string? line;
                 while ((line = streamReader.ReadLine()) != null)
                 {
-                    if (line.Contains("[YuWanCard] BugPig:"))
+                    if (line.Contains("[YuWanCard] BugPig:") || line.Contains("BugPigAction:"))
                     {
                         continue;
                     }
@@ -152,20 +142,6 @@ public class BugPig : YuWanCardModel
             MainFile.Logger.Error($"BugPig: Error reading log file: {ex.Message}");
             return 0;
         }
-    }
-
-    public static int CountNewErrorsInLog()
-    {
-        if (_cachedErrorCount >= 0)
-        {
-            return _cachedErrorCount;
-        }
-
-        int totalErrors = CountTotalErrorsInLog();
-        int newErrors = Math.Max(0, totalErrors - _initialErrorCount);
-        _cachedErrorCount = newErrors;
-
-        return newErrors;
     }
 
     public int GetSynchronizedDamageBonus()
@@ -188,6 +164,7 @@ public class BugPigDamageVar(int baseDamage, int errorBonus, int errorBonusUpgra
     {
         var netService = RunManager.Instance?.NetService;
         bool isMultiplayer = netService != null && netService.Type != NetGameType.Singleplayer && netService.Type != NetGameType.Replay;
+        bool isHost = netService?.Type == NetGameType.Host;
 
         int damageBonus = 0;
         
@@ -195,10 +172,9 @@ public class BugPigDamageVar(int baseDamage, int errorBonus, int errorBonusUpgra
         {
             damageBonus = bugPig.GetSynchronizedDamageBonus();
         }
-        else if (!isMultiplayer)
+        else if (!isMultiplayer || isHost)
         {
-            BugPig.CaptureInitialErrorCount();
-            int errorCount = BugPig.CountNewErrorsInLog();
+            int errorCount = BugPig.CountTotalErrorsInLog();
             bool isUpgraded = card.IsUpgraded;
             damageBonus = isUpgraded ? errorCount * errorBonusUpgraded : errorCount * errorBonus;
         }
