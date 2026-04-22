@@ -43,6 +43,7 @@ public class PigScalePatch
     {
         if (__instance.Player != null && __instance.Player.Character is Pig && NCombatRoom.Instance != null)
         {
+            UpdateScale(__instance);
         }
     }
 
@@ -74,15 +75,15 @@ public class PigScalePatch
     {
         if (creature == null || NCombatRoom.Instance == null)
             return;
-        
+
         if (_initialMaxHp <= 0)
         {
             _initialMaxHp = creature.MaxHp;
         }
-        
+
         float hpPercent = (float)creature.CurrentHp / _initialMaxHp;
         float targetScale = Mathf.Max(0.3f, hpPercent);
-        
+
         var creatureNode = NCombatRoom.Instance.GetCreatureNode(creature);
         if (creatureNode != null)
         {
