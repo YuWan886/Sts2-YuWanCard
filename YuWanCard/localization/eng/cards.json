@@ -180,5 +180,14 @@
   "YUWANCARD-LOLICON.description": "Gain {LoliconPower:diff()} [gold]Lolicon[/gold].\nDeal double damage to enemies taller than [blue]140[/blue]. When attacking enemies [blue]140[/blue] or shorter, take damage equal to the damage dealt.",
   "YUWANCARD-PIG_TEAMMATE.title": "Pig Teammate",
   "YUWANCARD-PIG_TEAMMATE.description": "Take all cards from target player's hand and all their energy. That player gains 1 [gold]Buffer[/gold]. [gold]Exhaust[/gold]",
-  "YUWANCARD-PIG_TEAMMATE.selectionScreenPrompt": "Choose a teammate"
+  "YUWANCARD-PIG_TEAMMATE.selectionScreenPrompt": "Choose a teammate",
+  "YUWANCARD-PIG_PUDDING.title": "Pig Pudding",
+  "YUWANCARD-PIG_PUDDING.description": "Remove a random [gold]debuff[/gold] from yourself.",
+  "YUWANCARD-TIRAMISU_PIG.title": "Tiramisu Pig",
+  "YUWANCARD-TIRAMISU_PIG.description": "Gain {Block:diff()} [gold]Block[/gold]. Gain {RegenPower:diff()} [gold]Regen[/gold]. ",
+  "YUWANCARD-PIG_SOUFFLE.title": "Pig Soufflé",
+  "YUWANCARD-PIG_SOUFFLE.description": "Gain {Energy:energyIcons()}, {DexterityPower:diff()} [gold]Dexterity[/gold].",
+  "YUWANCARD-PIG_BLUEBERRY_CAKE.title": "Pig Blueberry Cake",
+  "YUWANCARD-PIG_BLUEBERRY_CAKE.description": "Gain {StrengthPower:diff()} [gold]Strength[/gold]. Gain {ArtifactPower:diff()} [gold]Artifact[/gold].",
+  "YUWANCARD-CHEF_PIG.description": "At the start of each turn, choose 1 card from your hand to [gold]transform[/gold] into a random [gold]Food Pig[/gold] card."
 }

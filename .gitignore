@@ -21,3 +21,4 @@ libs/
 assets/
 AGENTS.md
 CLAUDE.md
+.claude/

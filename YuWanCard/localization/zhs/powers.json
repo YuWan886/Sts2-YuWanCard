@@ -32,9 +32,6 @@
   "YUWANCARD-PERFECT_THING_POWER.title": "完美之物",
   "YUWANCARD-PERFECT_THING_POWER.description": "你每打出一定数量的牌，获得能量。",
   "YUWANCARD-PERFECT_THING_POWER.smartDescription": "你每打出{CardsPerEnergy}张牌，获得{Amount}点能量。",
-  "YUWANCARD-HACKER_PIG_POWER.title": "骇客猪",
-  "YUWANCARD-HACKER_PIG_POWER.description": "回合开始时自动打出被标记的卡牌。",
-  "YUWANCARD-HACKER_PIG_POWER.smartDescription": "回合开始时自动打出被标记的卡牌。",
   "YUWANCARD-PIG_DEFECTION_POWER.title": "猪反转",
   "YUWANCARD-PIG_DEFECTION_POWER.description": "被策反的单位。",
   "YUWANCARD-PIG_DEFECTION_POWER.smartDescription": "被策反的单位。。",
@@ -64,5 +61,9 @@
   "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.smartDescription": "完全减免敌人伤害。",
   "YUWANCARD-LOLICON_POWER.title": "萝莉控",
   "YUWANCARD-LOLICON_POWER.description": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。对身高不超过[blue]140[/blue]的敌人造成伤害时，自己受到同等伤害。",
-  "YUWANCARD-LOLICON_POWER.smartDescription": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。对身高不超过[blue]140[/blue]的敌人造成伤害时，自己受到同等伤害。"
+  "YUWANCARD-LOLICON_POWER.smartDescription": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。对身高不超过[blue]140[/blue]的敌人造成伤害时，自己受到同等伤害。",
+  "YUWANCARD-CHEF_PIG_POWER.title": "厨师猪",
+  "YUWANCARD-CHEF_PIG_POWER.description": "每回合开始时，选择1张手牌，将其变化为[gold]食物猪[/gold]卡牌。",
+  "YUWANCARD-CHEF_PIG_POWER.smartDescription": "每回合开始时，选择{ChefPigPower}张手牌，将其变化为[gold]食物猪[/gold]卡牌。",
+  "YUWANCARD-CHEF_PIG_POWER.selectionScreenPrompt": "选择1张手牌变化为的食物猪卡牌"
 }

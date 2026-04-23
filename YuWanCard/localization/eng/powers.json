@@ -32,9 +32,6 @@
   "YUWANCARD-PERFECT_THING_POWER.title": "Perfect Thing",
   "YUWANCARD-PERFECT_THING_POWER.description": "Gain 1 [gold]Energy[/gold] every certain number of cards you play. Upgraded: fewer cards.",
   "YUWANCARD-PERFECT_THING_POWER.smartDescription": "Gain 1 [gold]Energy[/gold] every {CardsPerEnergy} cards you play.",
-  "YUWANCARD-HACKER_PIG_POWER.title": "Hacker Pig",
-  "YUWANCARD-HACKER_PIG_POWER.description": "Automatically play marked cards at the start of your turn.",
-  "YUWANCARD-HACKER_PIG_POWER.smartDescription": "Automatically play marked cards at the start of your turn.",
   "YUWANCARD-BLOOD_WHEEL_EYE_POWER.title": "Blood Wheel Eye",
   "YUWANCARD-BLOOD_WHEEL_EYE_POWER.description": "All cards gain Replay 1 this combat.",
   "YUWANCARD-BLOOD_WHEEL_EYE_POWER.smartDescription": "All cards gain Replay {ReplayCount} this combat.",
@@ -67,5 +64,9 @@
   "YUWANCARD-SHIELD_TO_FRONT_IMMUNE_POWER.smartDescription": "Take no damage from enemies during enemy turn. Lasts 1 turn.",
   "YUWANCARD-LOLICON_POWER.title": "Lolicon",
   "YUWANCARD-LOLICON_POWER.description": "Deal double damage to enemies taller than [blue]140[/blue]. When attacking enemies [blue]140[/blue] or shorter, take damage equal to the damage dealt.",
-  "YUWANCARD-LOLICON_POWER.smartDescription": "Deal double damage to enemies taller than [blue]140[/blue]. When attacking enemies [blue]140[/blue] or shorter, take damage equal to the damage dealt."
+  "YUWANCARD-LOLICON_POWER.smartDescription": "Deal double damage to enemies taller than [blue]140[/blue]. When attacking enemies [blue]140[/blue] or shorter, take damage equal to the damage dealt.",
+  "YUWANCARD-PIG_CHEF_POWER.title": "Chef Pig",
+  "YUWANCARD-PIG_CHEF_POWER.description": "At the start of each turn, choose 1 card from your hand to [gold]transform[/gold] into [gold]Pig Chop[/gold].",
+  "YUWANCARD-PIG_CHEF_POWER.smartDescription": "At the start of each turn, choose {PigChefPower} card(s) from your hand to [gold]transform[/gold] into [gold]Pig Chop[/gold].",
+  "YUWANCARD-PIG_CHEF_POWER.selectionScreenPrompt": "Choose 1 card from hand to transform into Pig Chop"
 }

@@ -2,6 +2,8 @@ using System.Reflection;
 using System.Collections.Concurrent;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Exceptions;
+using YuWanCard.Powers;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace YuWanCard.Utils;
 
@@ -15,18 +17,17 @@ public static class PowerSafetyUtils
         "YuWanCard"
     };
 
-    private static readonly HashSet<string> UnsafePowerPatterns = new()
+    private static readonly List<Func<PowerModel>> UnsafePowerTypes = new()
     {
-        "PERSONAL_HIVE",
-        "SANDPIT",
-        "BURROWED",
-        "BATTLEWORN_DUMMY_TIME_LIMIT",
-        "GRASP",
-        "HUNGER",
-        "SCRUTINY",
-        "YUWANCARD-PIG_DEFECTION",
-        "YUWANCARD-PIG_FRIENDS",
-        "YUWANCARD-HACKER_PIG_POWER"
+        ModelDb.Power<PersonalHivePower>,
+        ModelDb.Power<SandpitPower>,
+        ModelDb.Power<BurrowedPower>,
+        ModelDb.Power<BattlewornDummyTimeLimitPower>,
+        ModelDb.Power<GraspPower>,
+        ModelDb.Power<HungerPower>,
+        ModelDb.Power<ScrutinyPower>,
+        ModelDb.Power<PigDefectionPower>,
+        ModelDb.Power<PigFriendsPower>
     };
 
     public static bool IsSafePower(PowerModel power)
@@ -41,7 +42,7 @@ public static class PowerSafetyUtils
             return false;
         }
 
-        if (UnsafePowerPatterns.Any(p => powerId.Contains(p) || powerName == p))
+        if (UnsafePowerTypes.Any(func => func.Method.GetGenericArguments()[0] == powerType))
         {
             return false;
         }
@@ -69,7 +70,7 @@ public static class PowerSafetyUtils
 
         bool result = AnalyzePowerSafety(powerType);
         SafetyCache[powerType] = result;
-        
+
         return result;
     }
 
@@ -78,7 +79,7 @@ public static class PowerSafetyUtils
         try
         {
             var methods = powerType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            
+
             foreach (var method in methods)
             {
                 if (method.IsStatic || method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))
@@ -262,9 +263,9 @@ public static class PowerSafetyUtils
                         try
                         {
                             var resolvedMethod = module.ResolveMethod(token);
-                            if (resolvedMethod != null && 
+                            if (resolvedMethod != null &&
                                 resolvedMethod.DeclaringType?.Name == "Creature" &&
-                                (resolvedMethod.Name == "get_Side" || 
+                                (resolvedMethod.Name == "get_Side" ||
                                  resolvedMethod.Name == "get_Monster" ||
                                  resolvedMethod.Name == "get_Player"))
                             {
@@ -298,23 +299,23 @@ public static class PowerSafetyUtils
         for (int i = loadIndex + 1; i < ilBytes.Length; i++)
         {
             byte opCode = ilBytes[i];
-            
+
             if (opCode == 0x2C || opCode == 0x2D)
             {
                 return true;
             }
-            
+
             if (opCode == 0x39 || opCode == 0x3A)
             {
                 return true;
             }
-            
+
             if (opCode == 0x31)
             {
                 return true;
             }
         }
-        
+
         return false;
     }
 }
