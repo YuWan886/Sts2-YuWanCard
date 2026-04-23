@@ -34,7 +34,9 @@ public class ShieldToFront : YuWanCardModel
         var combatState = CombatState;
         if (combatState == null) return;
 
-        var teammates = combatState.GetTeammatesOf(Owner.Creature).ToList();
+        var teammates = combatState.GetTeammatesOf(Owner.Creature)
+            .Where(c => c.Player != null && c.PetOwner == null)
+            .ToList();
         if (teammates.Count == 0) return;
 
         var lowestDamagePlayer = FindLowestDamagePlayer(teammates);
@@ -70,7 +72,7 @@ public class ShieldToFront : YuWanCardModel
         var damageEntries = history.Entries
             .OfType<DamageReceivedEntry>()
             .Where(e => e.HappenedThisTurn(CombatState!))
-            .Where(e => e.Dealer != null && damageByPlayer.ContainsKey(e.Dealer));
+            .Where(e => e.Dealer != null && damageByPlayer.ContainsKey(e.Dealer) && e.Dealer.Player != null && e.Dealer.PetOwner == null);
 
         foreach (var entry in damageEntries)
         {

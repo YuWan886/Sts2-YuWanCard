@@ -13,11 +13,6 @@ namespace YuWanCard.Patches;
 [HarmonyPatch(typeof(SmithRestSiteOption))]
 public static class SmithRestSiteOptionPatch
 {
-    private static Player? GetOwner(RestSiteOption option)
-    {
-        return YuWanReflectionHelper.GetPrivateField<Player>(option, "Owner");
-    }
-
     private static bool SetSelection(SmithRestSiteOption instance, IEnumerable<CardModel> selection)
     {
         return YuWanReflectionHelper.SetPrivateField(instance, "_selection", selection);
@@ -40,7 +35,7 @@ public static class SmithRestSiteOptionPatch
 
     private static async Task<bool> OnSelectWithFlexibleCount(SmithRestSiteOption instance)
     {
-        var owner = GetOwner(instance);
+        var owner = instance.Owner;
         if (owner == null)
         {
             return false;

@@ -63,5 +63,8 @@
   "YUWANCARD-HEARTSTEEL.flavor": "Steel forged from the heart.",
   "YUWANCARD-WHITE_SCARF.title": "White Scarf",
   "YUWANCARD-WHITE_SCARF.description": "After combat victory, gain an additional [gold]Colorless card[/gold] reward.",
-  "YUWANCARD-WHITE_SCARF.flavor": "A warm scarf that brings unexpected surprises."
+  "YUWANCARD-WHITE_SCARF.flavor": "A warm scarf that brings unexpected surprises.",
+  "YUWANCARD-TRIPLE_PLAY.title": "Triple Play",
+  "YUWANCARD-TRIPLE_PLAY.description": "When you play the 3rd card of the same type in a row in a turn, play it an additional time.",
+  "YUWANCARD-TRIPLE_PLAY.flavor": "Third time's the charm, literally."
 }

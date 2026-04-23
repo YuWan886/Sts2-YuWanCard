@@ -212,7 +212,7 @@ YuWanCard/
 │   ├── Orbs/                    # 能量球定义
 │   │   └── LittleCrownPrinceOrb.cs # 小王子能量球
 │   ├── GameActions/             # 自定义游戏动作
-│   │   └── RetreatVoteAction.cs # 撤退投票动作
+│   │   └── BugPigAction.cs      # 虫猪动作
 │   ├── Multiplayer/             # 多人游戏相关
 │   │   ├── TeammatePayMessageHandler.cs
 │   │   └── TeammatePayMessages.cs
