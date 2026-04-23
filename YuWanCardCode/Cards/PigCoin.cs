@@ -16,7 +16,7 @@ public class PigCoin : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithPower<PigCoinPower>(3);
+        WithPower<PigCoinPower>(2);
     }
 
     protected override void OnUpgrade()

@@ -24,7 +24,6 @@ public static class TeammatePayMessageHandler
         var netService = RunManager.Instance?.NetService;
         if (netService == null)
         {
-            MainFile.Logger.Warn("TeammatePay: NetService not available for registration");
             return;
         }
 
@@ -35,6 +34,8 @@ public static class TeammatePayMessageHandler
         _isRegistered = true;
         MainFile.Logger.Info("TeammatePay: Message handlers registered");
     }
+
+    public static bool IsRegistered => _isRegistered;
 
     public static void Unregister()
     {

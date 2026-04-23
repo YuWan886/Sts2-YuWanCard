@@ -1,6 +1,4 @@
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using BaseLib.Config;
 using BaseLib.Extensions;
 using BaseLib.Utils.NodeFactories;
@@ -11,6 +9,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Config;
 using YuWanCard.Patches;
+using YuWanCard.Multiplayer;
 using YuWanCard.Utils;
 
 namespace YuWanCard;
@@ -42,6 +41,8 @@ public partial class MainFile : Node
 
         NodeFactory.Init();
         RegisterSceneConversions();
+
+        TeammatePayMessageHandler.Register();
 
         VfxUtils.PreloadScenes(
             "res://YuWanCard/scenes/vfx/vfx_blood_wheel_eye.tscn",

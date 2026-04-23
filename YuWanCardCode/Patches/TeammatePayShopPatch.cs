@@ -38,9 +38,10 @@ public static class TeammatePayShopPatch
     [HarmonyPatch(nameof(NMerchantInventory._Ready))]
     public static void OnReady(NMerchantInventory __instance)
     {
+        TeammatePayMessageHandler.Register();
+        
         if (!_isInitialized)
         {
-            TeammatePayMessageHandler.Register();
             TeammatePayMessageHandler.OnRequestReceived += OnPayRequestReceived;
             TeammatePayMessageHandler.OnResponseReceived += OnPayResponseReceived;
             _isInitialized = true;

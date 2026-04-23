@@ -15,7 +15,7 @@ public class PigCoinPower : YuWanPowerModel
 
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("PigCoinPower", 3m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("PigCoinPower", 2m)];
 
     public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
