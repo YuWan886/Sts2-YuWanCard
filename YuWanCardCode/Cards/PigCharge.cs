@@ -8,7 +8,7 @@ using YuWanCard.Powers;
 
 namespace YuWanCard.Cards;
 
-[Pool(typeof(ColorlessCardPool))]
+[Pool(typeof(TokenCardPool))]
 public class PigCharge : YuWanCardModel
 {
     public PigCharge() : base(

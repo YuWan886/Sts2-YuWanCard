@@ -126,7 +126,7 @@ public static class PetManager
         var pets = owner.Pets.ToList();
         int petCount = pets.Count;
 
-        float baseOffsetX = ownerNode.Hitbox.Size.X * 0.5f + (isDefected ? 260f : 190f);
+        float baseOffsetX = ownerNode.Hitbox.Size.X * 0.5f + (isDefected ? 250f : 130f);
         float baseOffsetY = isDefected ? DefectedPetBaseOffsetY : PetBaseOffsetY;
 
         float currentYOffset = baseOffsetY;

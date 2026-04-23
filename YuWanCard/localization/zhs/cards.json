@@ -107,7 +107,7 @@
   "YUWANCARD-DIMENSION_SLASH.title": "次元斩",
   "YUWANCARD-DIMENSION_SLASH.description": "造成{Damage:diff()}点伤害。将目标敌人的所有[gold]负面效果[/gold]翻倍，然后复制到其他敌人身上。",
   "YUWANCARD-PERFECT_THING.title": "完美之物",
-  "YUWANCARD-PERFECT_THING.description": "你每打出{IfUpgraded:show:2|3}张牌，获得 1 点能量。",
+  "YUWANCARD-PERFECT_THING.description": "你每打出{IfUpgraded:show:2|3}张牌，获得1点能量。",
   "YUWANCARD-BLACK_HOLE.title": "黑洞",
   "YUWANCARD-BLACK_HOLE.description": "消耗任意数量的手牌。每张被消耗的牌造成{Magic:diff()}点伤害。",
   "YUWANCARD-BLACK_HOLE.selectionScreenPrompt": "选择要消耗的手牌",
@@ -177,5 +177,7 @@
   "YUWANCARD-TURN_TO_SPECIMEN.title": "变成标本吧",
   "YUWANCARD-TURN_TO_SPECIMEN.description": "移除所有敌人身上的[gold]增益能力[/gold]。",
   "YUWANCARD-LOLICON.title": "萝莉控",
-  "YUWANCARD-LOLICON.description": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。对身高不超过[blue]140[/blue]的敌人造成伤害时，自己受到同等伤害。"
+  "YUWANCARD-LOLICON.description": "对身高超过 [blue]140[/blue] 的敌人造成的伤害翻倍。对身高不超过 [blue]140[/blue] 的敌人造成伤害时，自己受到同等伤害。",
+  "YUWANCARD-PIG_TEAMMATE.title": "猪队友",
+  "YUWANCARD-PIG_TEAMMATE.description": "抢走另一名玩家所有手牌和能量。该玩家获得1层[gold]缓冲[/gold]。"
 }

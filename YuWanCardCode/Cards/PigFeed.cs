@@ -9,7 +9,7 @@ using YuWanCard.Monsters;
 
 namespace YuWanCard.Cards;
 
-[Pool(typeof(ColorlessCardPool))]
+[Pool(typeof(TokenCardPool))]
 public class PigFeed : YuWanCardModel
 {
     public PigFeed() : base(

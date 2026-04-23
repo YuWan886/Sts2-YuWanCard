@@ -6,7 +6,7 @@ using MegaCrit.Sts2.Core.Models.CardPools;
 
 namespace YuWanCard.Cards;
 
-[Pool(typeof(ColorlessCardPool))]
+[Pool(typeof(TokenCardPool))]
 public class PigShieldBreak : YuWanCardModel
 {
     public PigShieldBreak() : base(

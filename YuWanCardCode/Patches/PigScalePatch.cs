@@ -37,9 +37,9 @@ public class PigScalePatch
         {
             foreach (var player in run.Players)
             {
-                if (player.Character is Pig && player.Creature != null && player.Creature.CombatId.HasValue)
+                if (player.Character is Pig pig && player.Creature != null && player.Creature.CombatId.HasValue)
                 {
-                    _initialMaxHpMap[player.Creature.CombatId.Value] = player.Creature.MaxHp;
+                    _initialMaxHpMap[player.Creature.CombatId.Value] = pig.StartingHp;
                 }
             }
         }
@@ -108,7 +108,7 @@ public class PigScalePatch
 
         if (!_initialMaxHpMap.TryGetValue(creature.CombatId.Value, out int initialMaxHp))
         {
-            initialMaxHp = creature.MaxHp;
+            initialMaxHp = ((Pig)creature.Player.Character).StartingHp;
             _initialMaxHpMap[creature.CombatId.Value] = initialMaxHp;
         }
 
