@@ -14,8 +14,12 @@ public class Pig : PlaceholderCharacterModel
     public override string PlaceholderID => "ironclad";
     
     public override string CustomVisualPath => "res://YuWanCard/scenes/characters/pig.tscn";
+
+    public override string CustomEnergyCounterPath => "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
     
-    public override Color NameColor => new("FFDAB9");
+    public override Color NameColor => new("FA8072");
+
+    public override Color EnergyLabelOutlineColor => new("FF623A");
     
     public override CharacterGender Gender => CharacterGender.Neutral;
     

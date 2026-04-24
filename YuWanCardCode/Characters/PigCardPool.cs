@@ -7,7 +7,9 @@ public class PigCardPool : CustomCardPoolModel
 {
     public override string Title => "yuwan_pig";
     
-    public override string EnergyColorName => "ironclad";
+    public override string? TextEnergyIconPath => "res://YuWanCard/images/characters/pig_text_enery.png";
+
+    public override string? BigEnergyIconPath => "res://YuWanCard/images/characters/pig_enery_counter.png";
     
     public override Color ShaderColor => new("F5C48C");
     
@@ -17,5 +19,5 @@ public class PigCardPool : CustomCardPoolModel
     
     public override Color DeckEntryCardColor => new("FAFAD2");
     
-    public override Color EnergyOutlineColor => new("A46B2B");
+    public override Color EnergyOutlineColor => new("FF623A");
 }
