@@ -41,9 +41,8 @@ public class RainDark : YuWanCardModel
         {
             int targetHp = (int)(teammate.MaxHp * HpPercentage);
             await CreatureCmd.SetCurrentHp(teammate, targetHp);
-
-            await CommonActions.Apply<IntangiblePower>(teammate, this, DynamicVars["IntangiblePower"].IntValue);
-            await CommonActions.Apply<RainDarkPower>(teammate, this, DynamicVars["RainDarkPower"].IntValue);
+            await CommonActions.Apply<IntangiblePower>(choiceContext, teammate, this, DynamicVars["IntangiblePower"].IntValue);
+            await CommonActions.Apply<RainDarkPower>(choiceContext, teammate, this, DynamicVars["RainDarkPower"].IntValue);
 
             var player = teammate.Player;
             if (player != null && player.PlayerCombatState != null)
