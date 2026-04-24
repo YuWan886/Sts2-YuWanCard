@@ -12,11 +12,11 @@ public class PigCoin : YuWanCardModel
 {
     public PigCoin() : base(
         baseCost: 1,
-        type: CardType.Power,
+        type: CardType.Skill,
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithPower<PigCoinPower>(2);
+        WithPower<PigCoinPower>(1);
     }
 
     protected override void OnUpgrade()

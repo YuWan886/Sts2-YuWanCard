@@ -12,7 +12,7 @@ public class PigVampiric : YuWanCardModel
 {
     public PigVampiric() : base(
         baseCost: 1,
-        type: CardType.Power,
+        type: CardType.Skill,
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
