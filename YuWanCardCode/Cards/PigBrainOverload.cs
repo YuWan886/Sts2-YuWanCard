@@ -34,6 +34,6 @@ public class PigBrainOverload : YuWanCardModel
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PlayerCmd.GainEnergy(DynamicVars["Energy"].IntValue, Owner);
         await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner);
-        await PowerCmd.Apply<PigBrainOverloadPower>(Owner.Creature, DynamicVars["PigBrainOverloadPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<PigBrainOverloadPower>(choiceContext, Owner.Creature, DynamicVars["PigBrainOverloadPower"].BaseValue, Owner.Creature, this);
     }
 }

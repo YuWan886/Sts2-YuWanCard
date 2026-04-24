@@ -35,7 +35,7 @@ public class Nyjk : YuWanCardModel
             {
                 await CreatureCmd.LoseBlock(cardPlay.Target, blockToRemove);
             }
-            await PowerCmd.Apply<WeakPower>(cardPlay.Target, 1, Owner.Creature, this);
+            await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target, 1, Owner.Creature, this);
         }
     }
 }

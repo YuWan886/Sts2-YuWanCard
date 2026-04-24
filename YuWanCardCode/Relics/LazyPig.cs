@@ -44,7 +44,7 @@ public class LazyPig : YuWanRelicModel
         if (_turnCount % 2 == 0)
         {
             Flash();
-            await PowerCmd.Apply<DexterityPower>(player.Creature, 2, player.Creature, null);
+            await PowerCmd.Apply<DexterityPower>(choiceContext, player.Creature, 2, player.Creature, null);
         }
     }
 

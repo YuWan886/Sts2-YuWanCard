@@ -30,6 +30,6 @@ public class TragicMandarinDuck : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<TragicMandarinDuckPower>(Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<TragicMandarinDuckPower>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
     }
 }

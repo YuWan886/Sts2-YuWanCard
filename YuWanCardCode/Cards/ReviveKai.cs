@@ -1,5 +1,6 @@
 using BaseLib.Utils;
 using Godot;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -90,11 +91,11 @@ public class ReviveKai : YuWanCardModel
 
         if (cardsToAdd.Count > 0)
         {
-            await CardPileCmd.Add((IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>)cardsToAdd, PileType.Draw, CardPilePosition.Bottom, this, skipVisuals: true);
+            await CardPileCmd.Add(cardsToAdd, PileType.Draw, CardPilePosition.Bottom, this, skipVisuals: true);
             player.PlayerCombatState.DrawPile.RandomizeOrderInternal(
                 player,
                 player.RunState.Rng.Shuffle,
-                CombatState!
+                (CombatState)CombatState!
             );
         }
     }

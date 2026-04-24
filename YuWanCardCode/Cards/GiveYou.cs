@@ -53,7 +53,7 @@ public class GiveYou : YuWanCardModel
             {
                 CardCmd.Upgrade(newCard);
             }
-            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, addedByPlayer: true);
+            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, targetPlayer);
         }
     }
 }

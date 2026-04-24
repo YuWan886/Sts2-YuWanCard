@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ascension;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models.Cards;
@@ -66,7 +67,7 @@ public sealed class Killer : YuWanMonsterModel
     public override async Task AfterAddedToRoom()
     {
         await base.AfterAddedToRoom();
-        await PowerCmd.Apply<HardenedShellPower>(Creature, HardenedShellAmount, Creature, null);
+        await PowerCmd.Apply<HardenedShellPower>(new ThrowingPlayerChoiceContext(), Creature, HardenedShellAmount, Creature, null);
         foreach (var player in CombatState.Players)
         {
             player.Creature.Died += OnPlayerDied;
@@ -152,9 +153,9 @@ public sealed class Killer : YuWanMonsterModel
         {
             NRunMusicController.Instance?.TriggerEliteSecondPhase();
         }
-        await PowerCmd.Apply<StrengthPower>(Creature, 8m, Creature, null);
-        await PowerCmd.Apply<PersonalHivePower>(Creature, PersonalHiveAmount, Creature, null);
-        await PowerCmd.Apply<SkittishPower>(Creature, SkittishAmount, Creature, null);
+        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Creature, 8m, Creature, null);
+        await PowerCmd.Apply<PersonalHivePower>(new ThrowingPlayerChoiceContext(), Creature, PersonalHiveAmount, Creature, null);
+        await PowerCmd.Apply<SkittishPower>(new ThrowingPlayerChoiceContext(), Creature, SkittishAmount, Creature, null);
         LocString line = L10NMonsterLookup("KILLER.moves.WAKE.speakLine");
         PlayTalkLine(line, Creature);
         await Cmd.Wait(0.5f);
@@ -184,7 +185,7 @@ public sealed class Killer : YuWanMonsterModel
     {
         SfxCmd.Play(CastSfx);
         await CreatureCmd.TriggerAnim(Creature, "Cast", 0.4f);
-        await PowerCmd.Apply<TenderPower>(targets, 1m, Creature, null);
+        await PowerCmd.Apply<TenderPower>(new ThrowingPlayerChoiceContext(), targets, 1m, Creature, null);
     }
 
     private async Task ZoomMove(IReadOnlyList<Creature> targets)
@@ -200,13 +201,13 @@ public sealed class Killer : YuWanMonsterModel
     {
         SfxCmd.Play(CastSfx);
         await CreatureCmd.TriggerAnim(Creature, "Cast", 1.0f);
-        await PowerCmd.Apply<StrengthPower>(Creature, StrengthGain, Creature, null);
+        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Creature, StrengthGain, Creature, null);
 
         // 只给存活的目标添加 Dazed 牌
         var aliveTargets = targets.Where(t => t != null && t.IsAlive).ToList();
         if (aliveTargets.Count > 0)
         {
-            await CardPileCmd.AddToCombatAndPreview<Dazed>(aliveTargets, PileType.Discard, DazedCount, addedByPlayer: false);
+            await CardPileCmd.AddToCombatAndPreview<Dazed>(aliveTargets, PileType.Discard, DazedCount, null);
         }
 
         _enlargeTriggers++;

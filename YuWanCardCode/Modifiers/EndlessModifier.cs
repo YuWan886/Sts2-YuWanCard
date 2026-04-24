@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -130,7 +131,7 @@ public class EndlessModifier : YuWanModifierModel
 
         if (strengthBonus > 0)
         {
-            await PowerCmd.Apply<StrengthPower>(creature, (decimal)strengthBonus, null, null);
+            await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), creature, (decimal)strengthBonus, null, null);
         }
 
         MainFile.Logger.Info($"Applied endless difficulty to {creature.ModelId} (Boss: {isBoss}): HP x{hpMultiplier:F2}, Strength +{strengthBonus}");

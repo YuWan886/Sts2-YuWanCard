@@ -56,7 +56,7 @@ public class PigMakeWish : YuWanCardModel
 
         if (selectedCards.Any())
         {
-            await CardPileCmd.AddGeneratedCardsToCombat(selectedCards.ToList(), PileType.Hand, addedByPlayer: true);
+            await CardPileCmd.AddGeneratedCardsToCombat(selectedCards.ToList(), PileType.Hand, Owner);
         }
     }
 }

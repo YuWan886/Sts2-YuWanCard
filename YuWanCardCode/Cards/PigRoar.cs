@@ -27,9 +27,10 @@ public class PigRoar : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<WeakPower>(
-            CombatState!.HittableEnemies, 
-            DynamicVars.Weak.IntValue, 
-            Owner.Creature, 
+            choiceContext,
+            CombatState!.HittableEnemies,
+            DynamicVars.Weak.IntValue,
+            Owner.Creature,
             this);
     }
 }

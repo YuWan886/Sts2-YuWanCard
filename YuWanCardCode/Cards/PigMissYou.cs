@@ -28,6 +28,6 @@ public class PigMissYou : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<PigFriendsPower>(Owner.Creature, DynamicVars["PigFriendsPower"].IntValue, Owner.Creature, this);
+        await PowerCmd.Apply<PigFriendsPower>(choiceContext, Owner.Creature, DynamicVars["PigFriendsPower"].IntValue, Owner.Creature, this);
     }
 }

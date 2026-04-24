@@ -38,6 +38,6 @@ public class PullNetCable : YuWanCardModel
         if (targetPlayer == null || targetPlayer == Owner) return;
 
         int turns = DynamicVars["turns"].IntValue;
-        await PowerCmd.Apply<VakuuTakeoverPower>(cardPlay.Target, turns, Owner.Creature, this);
+        await PowerCmd.Apply<VakuuTakeoverPower>(choiceContext, cardPlay.Target, turns, Owner.Creature, this);
     }
 }

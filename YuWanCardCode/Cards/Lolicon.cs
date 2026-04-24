@@ -26,6 +26,6 @@ public class Lolicon : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<LoliconPower>(Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<LoliconPower>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
     }
 }

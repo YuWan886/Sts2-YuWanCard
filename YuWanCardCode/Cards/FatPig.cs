@@ -30,6 +30,7 @@ public class FatPig : YuWanCardModel
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         await PowerCmd.Apply<PlatingPower>(
+            choiceContext,
             Owner.Creature, 
             DynamicVars["PlatingPower"].IntValue, 
             Owner.Creature, 

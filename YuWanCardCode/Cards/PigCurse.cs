@@ -31,8 +31,8 @@ public class PigCurse : YuWanCardModel
         var enemies = CombatState!.HittableEnemies;
         foreach (var enemy in enemies)
         {
-            await PowerCmd.Apply<WeakPower>(enemy, DynamicVars["WeakPower"].IntValue, Owner.Creature, this);
-            await PowerCmd.Apply<VulnerablePower>(enemy, DynamicVars["VulnerablePower"].IntValue, Owner.Creature, this);
+            await PowerCmd.Apply<WeakPower>(choiceContext, enemy, DynamicVars["WeakPower"].IntValue, Owner.Creature, this);
+            await PowerCmd.Apply<VulnerablePower>(choiceContext, enemy, DynamicVars["VulnerablePower"].IntValue, Owner.Creature, this);
         }
     }
 }

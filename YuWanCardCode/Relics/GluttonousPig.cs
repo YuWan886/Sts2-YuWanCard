@@ -81,8 +81,8 @@ public class GluttonousPig : YuWanRelicModel
             HasAddedBuffThisCombat = true;
             Flash();
 
-            await PowerCmd.Apply<PlatingPower>(Owner.Creature, buffStacks, Owner.Creature, null);
-            await PowerCmd.Apply<StrengthPower>(Owner.Creature, buffStacks, Owner.Creature, null);
+            await PowerCmd.Apply<PlatingPower>(choiceContext, Owner.Creature, buffStacks, Owner.Creature, null);
+            await PowerCmd.Apply<StrengthPower>(choiceContext, Owner.Creature, buffStacks, Owner.Creature, null);
 
             MainFile.Logger.Info($"GluttonousPig: Applied {buffStacks} Plating and Strength (eaten {CardsEatenCount} cards)");
         }

@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YuWanCard.Monsters;
 using YuWanCard.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace YuWanCard.Utils;
 
@@ -101,7 +102,7 @@ public static class PetManager
             await CreatureCmd.SetCurrentHp(defectedCreature, Math.Min(currentHp, maxHp));
         }
 
-        await PowerCmd.Apply<PigDefectionPower>(defectedCreature, 1, owner.Creature, null);
+        await PowerCmd.Apply<PigDefectionPower>(new ThrowingPlayerChoiceContext(), defectedCreature, 1, owner.Creature, null);
 
         NCombatRoom.Instance?.AddCreature(defectedCreature);
         await CombatManager.Instance.AfterCreatureAdded(defectedCreature);
@@ -194,7 +195,7 @@ public static class PetManager
 
         if (bonusStrength > 0 && owner != null)
         {
-            await PowerCmd.Apply<StrengthPower>(pig, bonusStrength, owner, null);
+            await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), pig, bonusStrength, owner, null);
         }
     }
 
@@ -219,7 +220,7 @@ public static class PetManager
         return null;
     }
 
-    public static Creature? FindDeadPetByType<T>(CombatState? combatState) where T : MonsterModel
+    public static Creature? FindDeadPetByType<T>(ICombatState? combatState) where T : MonsterModel
     {
         if (combatState == null) return null;
 
@@ -248,7 +249,7 @@ public static class PetManager
         else
         {
             await CreatureCmd.SetMaxAndCurrentHp(pig, pigHp);
-            await PowerCmd.Apply<PigMinionPower>(pig, 1, null, null);
+            await PowerCmd.Apply<PigMinionPower>(new ThrowingPlayerChoiceContext(), pig, 1, null, null);
         }
 
         if (upgradeLevel > 0)

@@ -29,7 +29,7 @@ public class PigInspire : YuWanCardModel
         var teammates = CombatState!.GetTeammatesOf(Owner.Creature);
         foreach (var teammate in teammates)
         {
-            await PowerCmd.Apply<StrengthPower>(teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
+            await PowerCmd.Apply<StrengthPower>(choiceContext, teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
         }
     }
 }

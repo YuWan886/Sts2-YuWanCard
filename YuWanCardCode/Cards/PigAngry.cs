@@ -27,6 +27,6 @@ public class PigAngry : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<StrengthPower>(CombatState!.GetTeammatesOf(Owner.Creature), DynamicVars.Strength.BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<StrengthPower>(choiceContext, CombatState!.GetTeammatesOf(Owner.Creature), DynamicVars.Strength.BaseValue, Owner.Creature, this);
     }
 }

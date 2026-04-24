@@ -27,7 +27,7 @@ public class PerfectThing : YuWanCardModel
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
 
-        var power = await PowerCmd.Apply<PerfectThingPower>(Owner.Creature, 1, Owner.Creature, this);
+        var power = await PowerCmd.Apply<PerfectThingPower>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
 
         if (power != null && IsUpgraded)
         {

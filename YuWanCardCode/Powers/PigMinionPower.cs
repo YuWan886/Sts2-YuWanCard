@@ -112,7 +112,7 @@ public class PigMinionPower : YuWanPowerModel
 
     private bool _isProcessingStrengthChange = false;
 
-    public override async Task AfterPowerAmountChanged(PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
+    public override async Task AfterPowerAmountChanged(PlayerChoiceContext choiceContext, PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
     {
         if (power.Owner != Owner.PetOwner?.Creature) return;
         if (power is not StrengthPower) return;
@@ -124,7 +124,7 @@ public class PigMinionPower : YuWanPowerModel
         try
         {
             Flash();
-            await PowerCmd.Apply<StrengthPower>(Owner, 1, Owner.PetOwner?.Creature, cardSource);
+            await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, 1, Owner.PetOwner?.Creature, cardSource);
         }
         finally
         {
@@ -142,7 +142,7 @@ public class PigMinionPower : YuWanPowerModel
         await CreatureCmd.GainBlock(Owner, BonusBlock, ValueProp.Unpowered, null);
     }
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
     {
         if (side != Owner.Side) return;
         if (Owner.IsDead) return;
@@ -175,10 +175,10 @@ public class PigMinionPower : YuWanPowerModel
                     await PlayerCmd.GainEnergy(1, player);
                     break;
                 case 1:
-                    await PowerCmd.Apply<StrengthPower>(creature, 1, Owner, null);
+                    await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), creature, 1, Owner, null);
                     break;
                 case 2:
-                    await PowerCmd.Apply<DexterityPower>(creature, 1, Owner, null);
+                    await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), creature, 1, Owner, null);
                     break;
                 case 3:
                     await CreatureCmd.Heal(creature, 1);

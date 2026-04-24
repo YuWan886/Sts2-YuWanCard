@@ -21,6 +21,6 @@ public class EmperorsNewPig : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<EmperorsNewPigPower>(Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<EmperorsNewPigPower>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
     }
 }

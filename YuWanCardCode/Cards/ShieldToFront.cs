@@ -45,11 +45,11 @@ public class ShieldToFront : YuWanCardModel
         {
             if (creature == lowestDamagePlayer)
             {
-                await PowerCmd.Apply<ShieldToFrontPower>(creature, 1, Owner.Creature, this);
+                await PowerCmd.Apply<ShieldToFrontPower>(choiceContext, creature, 1, Owner.Creature, this);
             }
             else
             {
-                await PowerCmd.Apply<ShieldToFrontImmunePower>(creature, 1, Owner.Creature, this);
+                await PowerCmd.Apply<ShieldToFrontImmunePower>(choiceContext, creature, 1, Owner.Creature, this);
             }
         }
     }

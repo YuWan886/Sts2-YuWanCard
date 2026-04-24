@@ -29,6 +29,6 @@ public class PigCharge : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CommonActions.CardAttack(this, cardPlay, hitCount: 1).Execute(choiceContext);
-        await PowerCmd.Apply<PigChargePower>(Owner.Creature, DynamicVars.Strength.IntValue, Owner.Creature, this);
+        await PowerCmd.Apply<PigChargePower>(choiceContext, Owner.Creature, DynamicVars.Strength.IntValue, Owner.Creature, this);
     }
 }

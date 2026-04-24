@@ -27,6 +27,6 @@ public class PigCoin : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<PigCoinPower>(Owner.Creature, DynamicVars["PigCoinPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<PigCoinPower>(choiceContext, Owner.Creature, DynamicVars["PigCoinPower"].BaseValue, Owner.Creature, this);
     }
 }

@@ -31,7 +31,7 @@ public class PigTouchFish : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<RetainHandPower>(Owner.Creature, DynamicVars["RetainHandPower"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<EnergyNextTurnPower>(Owner.Creature, DynamicVars["EnergyNextTurnPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<RetainHandPower>(choiceContext, Owner.Creature, DynamicVars["RetainHandPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<EnergyNextTurnPower>(choiceContext, Owner.Creature, DynamicVars["EnergyNextTurnPower"].BaseValue, Owner.Creature, this);
     }
 }

@@ -51,7 +51,7 @@ public class PerfectThingPower : YuWanPowerModel
         return new Data();
     }
 
-    public override Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
     {
         if (side == Owner.Side)
         {

@@ -60,7 +60,7 @@ public class LustfulPig : YuWanRelicModel
 
         foreach (var enemy in combatState.Enemies)
         {
-            await PowerCmd.Apply<WeakPower>(enemy, 2, Owner.Creature, null);
+            await PowerCmd.Apply<WeakPower>(choiceContext, enemy, 2, Owner.Creature, null);
         }
 
         MainFile.Logger.Info($"LustfulPig: Applied 2 Weak to all enemies");

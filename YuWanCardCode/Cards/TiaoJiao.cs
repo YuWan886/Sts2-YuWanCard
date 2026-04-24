@@ -38,6 +38,6 @@ public class TiaoJiao : YuWanCardModel
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .Execute(choiceContext);
         
-        await PowerCmd.Apply<TrainYouWellPower>(cardPlay.Target, DynamicVars["TrainYouWellPower"].IntValue, Owner.Creature, this);
+        await PowerCmd.Apply<TrainYouWellPower>(choiceContext, cardPlay.Target, DynamicVars["TrainYouWellPower"].IntValue, Owner.Creature, this);
     }
 }

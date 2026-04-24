@@ -29,6 +29,7 @@ public class PigChargeUp : YuWanCardModel
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<StrengthPower>(
+            choiceContext,
             Owner.Creature, 
             DynamicVars.Strength.IntValue, 
             Owner.Creature, 

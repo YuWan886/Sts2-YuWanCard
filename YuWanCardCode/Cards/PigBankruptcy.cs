@@ -29,6 +29,6 @@ public class PigBankruptcy : YuWanCardModel
     {
         NPowerUpVfx.CreateNormal(Owner.Creature);
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<PigBankruptcyPower>(Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<PigBankruptcyPower>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
     }
 }

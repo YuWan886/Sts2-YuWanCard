@@ -58,12 +58,12 @@ public class TragicMandarinDuckPower : YuWanPowerModel
 
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
-        await PowerCmd.Apply<StrengthPower>(Owner, YUWANCARD_StrengthAmount, Owner, cardSource);
-        await PowerCmd.Apply<DexterityPower>(Owner, YUWANCARD_DexterityAmount, Owner, cardSource);
+        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner, YUWANCARD_StrengthAmount, Owner, cardSource);
+        await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), Owner, YUWANCARD_DexterityAmount, Owner, cardSource);
         await base.AfterApplied(applier, cardSource);
     }
 
-    public override Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
     {
         if (side == Owner.Side)
         {
@@ -96,11 +96,11 @@ public class TragicMandarinDuckPower : YuWanPowerModel
 
             if (strengthPower != null)
             {
-                await PowerCmd.Apply<StrengthPower>(Owner, -1, Owner, null);
+                await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, -1, Owner, null);
             }
             if (dexterityPower != null)
             {
-                await PowerCmd.Apply<DexterityPower>(Owner, -1, Owner, null);
+                await PowerCmd.Apply<DexterityPower>(choiceContext, Owner, -1, Owner, null);
             }
 
             var enemies = CombatState?.HittableEnemies;

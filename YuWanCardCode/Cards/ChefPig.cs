@@ -11,9 +11,9 @@ namespace YuWanCard.Cards;
 public class ChefPig : YuWanCardModel
 {
     public ChefPig() : base(
-        baseCost: 2,
+        baseCost: 3,
         type: CardType.Power,
-        rarity: CardRarity.Uncommon,
+        rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
         WithPower<ChefPigPower>(1);
@@ -27,6 +27,6 @@ public class ChefPig : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<ChefPigPower>(Owner.Creature, DynamicVars["ChefPigPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<ChefPigPower>(choiceContext, Owner.Creature, DynamicVars["ChefPigPower"].BaseValue, Owner.Creature, this);
     }
 }

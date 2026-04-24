@@ -62,7 +62,7 @@ public class PigBrainOverloadPower : YuWanPowerModel
         await base.AfterApplied(applier, cardSource);
     }
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
     {
         if (side == Owner.Side)
         {
@@ -75,7 +75,7 @@ public class PigBrainOverloadPower : YuWanPowerModel
                 for (int i = 0; i < DazedCount; i++)
                 {
                     CardModel dazed = combatState.CreateCard<Dazed>(Owner.Player!);
-                    CardCmd.PreviewCardPileAdd(await CardPileCmd.AddGeneratedCardToCombat(dazed, PileType.Hand, addedByPlayer: true));
+                    CardCmd.PreviewCardPileAdd(await CardPileCmd.AddGeneratedCardToCombat(dazed, PileType.Hand, Owner.Player!));
                 }
             }
         }

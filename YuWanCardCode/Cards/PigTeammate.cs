@@ -48,14 +48,14 @@ public class PigTeammate : YuWanCardModel
                     CardCmd.Upgrade(newCard);
                 }
             }
-            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, addedByPlayer: true);
+            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, Owner);
         }
 
         var energyToTake = targetPlayer.PlayerCombatState?.Energy ?? 0;
         await PlayerCmd.SetEnergy(0, targetPlayer);
         await PlayerCmd.GainEnergy(energyToTake, Owner);
 
-        await PowerCmd.Apply<BufferPower>(targetPlayer.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<BufferPower>(choiceContext, targetPlayer.Creature, 1, Owner.Creature, this);
 
         await CardPileCmd.Add(this, PileType.Exhaust);
     }

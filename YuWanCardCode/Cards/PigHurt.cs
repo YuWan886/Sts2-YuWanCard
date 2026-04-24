@@ -26,6 +26,6 @@ public class PigHurt : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<VulnerablePower>(CombatState!.HittableEnemies, DynamicVars.Vulnerable.IntValue, Owner.Creature, this);
+        await PowerCmd.Apply<VulnerablePower>(choiceContext, CombatState!.HittableEnemies, DynamicVars.Vulnerable.IntValue, Owner.Creature, this);
     }
 }

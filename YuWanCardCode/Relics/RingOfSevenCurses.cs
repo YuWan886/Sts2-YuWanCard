@@ -79,7 +79,7 @@ public class RingOfSevenCurses : YuWanRelicModel
             return;
         }
         CardModel card = Owner.Creature.CombatState.CreateCard(curseCard, Owner);
-        var results = await CardPileCmd.AddGeneratedCardsToCombat([card], PileType.Hand, addedByPlayer: true);
+        var results = await CardPileCmd.AddGeneratedCardsToCombat([card], PileType.Hand, Owner);
         if (results.Count == 0 || !results[0].success)
         {
             MainFile.Logger.Warn($"RingOfSevenCurses: Failed to add curse card to hand");

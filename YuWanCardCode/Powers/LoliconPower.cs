@@ -45,7 +45,7 @@ public class LoliconPower : YuWanPowerModel
         return 1m;
     }
 
-    public override async Task AfterAttack(AttackCommand command)
+    public override async Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)
     {
         var internalData = GetInternalData<Data>();
         if (internalData.ReflectTargets.Count == 0) return;

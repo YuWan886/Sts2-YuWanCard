@@ -38,6 +38,6 @@ public class DoNotDie : YuWanCardModel
         int healAmount = (int)(targetCreature.MaxHp * HealPercentage);
 
         await CreatureCmd.Heal(targetCreature, healAmount);
-        await PowerCmd.Apply<RegenPower>(targetCreature, DynamicVars["RegenPower"].IntValue, Owner.Creature, this);
+        await PowerCmd.Apply<RegenPower>(choiceContext, targetCreature, DynamicVars["RegenPower"].IntValue, Owner.Creature, this);
     }
 }

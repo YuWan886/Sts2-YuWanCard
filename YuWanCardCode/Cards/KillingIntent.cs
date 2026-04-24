@@ -27,6 +27,6 @@ public class KillingIntent : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<KillingIntentPower>(Owner.Creature, DynamicVars["KillingIntentPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<KillingIntentPower>(choiceContext, Owner.Creature, DynamicVars["KillingIntentPower"].BaseValue, Owner.Creature, this);
     }
 }

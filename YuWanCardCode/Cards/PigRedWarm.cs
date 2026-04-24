@@ -35,6 +35,6 @@ public class PigRedWarm : YuWanCardModel
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);
         }
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars.Strength.IntValue, Owner.Creature, this);
+        await PowerCmd.Apply<StrengthPower>(choiceContext, Owner.Creature, DynamicVars.Strength.IntValue, Owner.Creature, this);
     }
 }

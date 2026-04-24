@@ -21,7 +21,7 @@ public class VakuuTakeoverPower : YuWanPowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Duration", 1m)];
 
-    public override async Task BeforePlayPhaseStart(PlayerChoiceContext choiceContext, Player player)
+    public override async Task AfterPlayerTurnStartEarly(PlayerChoiceContext choiceContext, Player player)
     {
         if (player.Creature != Owner) return;
 
@@ -59,7 +59,7 @@ public class VakuuTakeoverPower : YuWanPowerModel
         return card is Discovery;
     }
 
-    private Creature? GetTarget(CardModel card, CombatState combatState)
+    private Creature? GetTarget(CardModel card, ICombatState combatState)
     {
         var rng = Owner.Player?.RunState.Rng;
         if (rng == null) return null;

@@ -36,6 +36,6 @@ public class PigGuard : YuWanCardModel
             await CreatureCmd.GainBlock(cardPlay.Target, DynamicVars.Block, cardPlay);
         }
 
-        await PowerCmd.Apply<PlatingPower>(Owner.Creature, DynamicVars["PlatingPower"].IntValue, Owner.Creature, this);
+        await PowerCmd.Apply<PlatingPower>(choiceContext, Owner.Creature, DynamicVars["PlatingPower"].IntValue, Owner.Creature, this);
     }
 }
