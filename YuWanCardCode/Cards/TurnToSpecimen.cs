@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using BaseLib.Utils;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
@@ -5,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 
 namespace YuWanCard.Cards;
@@ -12,6 +16,11 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class TurnToSpecimen : YuWanCardModel
 {
+    private static readonly HashSet<Type> s_powerBlacklist = new()
+    {
+        typeof(SandpitPower),
+    };
+
     public TurnToSpecimen() : base(
         baseCost: 1,
         type: CardType.Skill,
@@ -33,7 +42,9 @@ public class TurnToSpecimen : YuWanCardModel
 
         foreach (var enemy in CombatState.Enemies)
         {
-            var powersToRemove = enemy.Powers.Where(p => p.Type == PowerType.Buff).ToList();
+            var powersToRemove = enemy.Powers
+                .Where(p => p.Type == PowerType.Buff && !s_powerBlacklist.Contains(p.GetType()))
+                .ToList();
 
             foreach (var buff in powersToRemove)
             {
