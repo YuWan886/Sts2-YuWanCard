@@ -11,9 +11,9 @@ namespace YuWanCard.Cards;
 public class ChefPig : YuWanCardModel
 {
     public ChefPig() : base(
-        baseCost: 2,
+        baseCost: 3,
         type: CardType.Power,
-        rarity: CardRarity.Uncommon,
+        rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
         WithPower<ChefPigPower>(1);
