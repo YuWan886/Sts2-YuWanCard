@@ -40,13 +40,14 @@ public class ChefPigPower : YuWanPowerModel
 
         Flash();
 
-        int count = Amount;
+        int count = Math.Min(Amount, transformableCards.Count);
         var transformations = new List<CardTransformation>();
+        var selectedCardSet = new HashSet<CardModel>();
 
         for (int i = 0; i < count; i++)
         {
             var remaining = PileType.Hand.GetPile(player).Cards
-                .Where(c => c.IsTransformable)
+                .Where(c => c.IsTransformable && !selectedCardSet.Contains(c))
                 .ToList();
 
             if (remaining.Count == 0) break;
@@ -66,13 +67,14 @@ public class ChefPigPower : YuWanPowerModel
                     context: choiceContext,
                     player: player,
                     prefs: prefs,
-                    filter: c => c.IsTransformable,
+                    filter: c => c.IsTransformable && !selectedCardSet.Contains(c),
                     source: this
                 )).ToList();
             }
 
             if (selectedCards.Count == 0) break;
 
+            selectedCardSet.Add(selectedCards[0]);
             var randomFoodCardFactory = FoodPigCardFactories
                 .OrderBy(_ => player.RunState.Rng.CombatCardGeneration.NextFloat())
                 .First();

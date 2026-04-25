@@ -22,8 +22,7 @@ public class PigCurse : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars["WeakPower"].UpgradeValueBy(1);
-        DynamicVars["VulnerablePower"].UpgradeValueBy(1);
+        WithKeyword(CardKeyword.Retain);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

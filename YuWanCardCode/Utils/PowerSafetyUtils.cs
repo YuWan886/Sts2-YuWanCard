@@ -26,6 +26,7 @@ public static class PowerSafetyUtils
         ModelDb.Power<GraspPower>,
         ModelDb.Power<HungerPower>,
         ModelDb.Power<ScrutinyPower>,
+        ModelDb.Power<RampartPower>,
         ModelDb.Power<PigDefectionPower>,
         ModelDb.Power<PigFriendsPower>
     };

@@ -21,6 +21,7 @@ public class PigRoar : YuWanCardModel
 
     protected override void OnUpgrade()
     {
+        EnergyCost.UpgradeBy(-1);
         DynamicVars.Weak.UpgradeValueBy(1);
     }
 
