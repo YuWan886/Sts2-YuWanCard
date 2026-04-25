@@ -19,7 +19,7 @@ public class Pig : PlaceholderCharacterModel
     
     public override Color NameColor => new("FA8072");
 
-    public override Color EnergyLabelOutlineColor => new("FF623A");
+    public override Color EnergyLabelOutlineColor => new("773726");
     
     public override CharacterGender Gender => CharacterGender.Neutral;
     

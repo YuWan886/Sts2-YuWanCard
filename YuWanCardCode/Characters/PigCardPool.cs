@@ -19,5 +19,5 @@ public class PigCardPool : CustomCardPoolModel
     
     public override Color DeckEntryCardColor => new("FAFAD2");
     
-    public override Color EnergyOutlineColor => new("FF623A");
+    public override Color EnergyOutlineColor => new("773726");
 }
