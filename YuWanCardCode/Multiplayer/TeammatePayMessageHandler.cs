@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Multiplayer;
@@ -17,13 +18,14 @@ public static class TeammatePayMessageHandler
     public static event Action<TeammatePayResponseMessage>? OnResponseReceived;
     public static event Action<TeammatePayGoldResponseMessage>? OnGoldResponseReceived;
 
-    public static void Register()
+    public static void Register(INetGameService? netService = null)
     {
         if (_isRegistered) return;
         
-        var netService = RunManager.Instance?.NetService;
+        netService ??= RunManager.Instance?.NetService;
         if (netService == null)
         {
+            MainFile.Logger.Warn("TeammatePay: Cannot register handlers - no net service available");
             return;
         }
 
@@ -37,11 +39,11 @@ public static class TeammatePayMessageHandler
 
     public static bool IsRegistered => _isRegistered;
 
-    public static void Unregister()
+    public static void Unregister(INetGameService? netService = null)
     {
         if (!_isRegistered) return;
         
-        var netService = RunManager.Instance?.NetService;
+        netService ??= RunManager.Instance?.NetService;
         if (netService == null) return;
 
         netService.UnregisterMessageHandler<TeammatePayRequestMessage>(HandleRequest);
