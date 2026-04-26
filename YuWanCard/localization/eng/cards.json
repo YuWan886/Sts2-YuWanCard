@@ -191,5 +191,10 @@
   "YUWANCARD-PIG_BLUEBERRY_CAKE.description": "Gain {StrengthPower:diff()} [gold]Strength[/gold]. Gain {ArtifactPower:diff()} [gold]Artifact[/gold].",
   "YUWANCARD-CHEF_PIG.description": "At the start of each turn, choose 1 card from your hand to [gold]transform[/gold] into a random [gold]Food Pig[/gold] card.",
   "YUWANCARD-HORIZON.title": "Horizon",
-  "YUWANCARD-HORIZON.description": "All cards cost 1 less this combat."
+  "YUWANCARD-HORIZON.description": "All cards cost 1 less this combat.",
+  "YUWANCARD-BORROW_KNIFE_TO_KILL.title": "Borrow Knife to Kill",
+  "YUWANCARD-BORROW_KNIFE_TO_KILL.description": "Choose an [gold]Attack[/gold] card from target teammate's hand and play it.{IfUpgraded:show: || The played card costs no energy.}",
+  "YUWANCARD-BORROW_KNIFE_TO_KILL.selectionScreenPrompt": "Choose 1 Attack card",
+  "YUWANCARD-GROUP_FRIEND_FORM.title": "Group Friend Form",
+  "YUWANCARD-GROUP_FRIEND_FORM.description": "Each time you play a card this turn, add 1 copy of that card to your draw pile. [gold]Retain[/gold]."
 }

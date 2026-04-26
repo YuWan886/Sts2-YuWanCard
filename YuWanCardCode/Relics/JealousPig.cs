@@ -80,33 +80,7 @@ public class JealousPig : YuWanRelicModel
 
     private static bool IsSafePower(PowerModel power)
     {
-        // 检查是否是怪物专属能力
-        var powerType = power.GetType();
-        
-        // 检查能力名称是否包含特定关键词（怪物专属能力）
-        string powerFullName = powerType.FullName ?? "";
-        if (powerFullName.Contains("Monsters"))
-        {
-            MainFile.Logger.Debug($"JealousPig: Skipping monster power {powerFullName}");
-            return false;
-        }
-
-        // 检查能力 ID 是否包含特定关键词
-        string powerId = power.Id.ToString();
-        if (powerId.Contains("HIGH_VOLTAGE"))
-        {
-            MainFile.Logger.Debug($"JealousPig: Skipping HighVoltagePower");
-            return false;
-        }
-
-        // 使用 PowerSafetyUtils 进行详细的安全检查
-        if (!PowerSafetyUtils.IsSafePower(power))
-        {
-            MainFile.Logger.Debug($"JealousPig: Skipping unsafe power {power.Id}");
-            return false;
-        }
-
-        return true;
+        return PowerSafetyUtils.IsSafePower(power);
     }
 
     public override Task AfterCombatEnd(CombatRoom room)

@@ -71,5 +71,8 @@
   "YUWANCARD-PIG_CHEF_POWER.selectionScreenPrompt": "Choose 1 card from hand to transform into Pig Chop",
   "YUWANCARD-HORIZON_POWER.title": "Horizon",
   "YUWANCARD-HORIZON_POWER.description": "All cards cost 1 less this combat.",
-  "YUWANCARD-HORIZON_POWER.smartDescription": "All cards cost {Amount} less this combat."
+  "YUWANCARD-HORIZON_POWER.smartDescription": "All cards cost {Amount} less this combat.",
+  "YUWANCARD-GROUP_FRIEND_FORM_POWER.title": "Group Friend Form",
+  "YUWANCARD-GROUP_FRIEND_FORM_POWER.description": "Each time you play a card, add 1 copy of that card to your draw pile.",
+  "YUWANCARD-GROUP_FRIEND_FORM_POWER.smartDescription": "Each time you play a card, add 1 copy of that card to your draw pile."
 }

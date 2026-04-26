@@ -68,5 +68,8 @@
   "YUWANCARD-CHEF_PIG_POWER.selectionScreenPrompt": "选择1张手牌变化为的食物猪卡牌",
   "YUWANCARD-HORIZON_POWER.title": "天涯海角",
   "YUWANCARD-HORIZON_POWER.description": "本场战斗所有卡牌耗能减1。",
-  "YUWANCARD-HORIZON_POWER.smartDescription": "本场战斗所有卡牌耗能减{Amount}。"
+  "YUWANCARD-HORIZON_POWER.smartDescription": "本场战斗所有卡牌耗能减{Amount}。",
+  "YUWANCARD-GROUP_FRIEND_FORM_POWER.title": "群友形态",
+  "YUWANCARD-GROUP_FRIEND_FORM_POWER.description": "你每打出1张牌，就将该牌复制1张加入抽牌堆。\n能力牌除外。",
+  "YUWANCARD-GROUP_FRIEND_FORM_POWER.smartDescription": "你每打出1张牌，就将该牌复制1张加入[gold]抽牌堆[/gold]。\n能力牌除外。"
 }

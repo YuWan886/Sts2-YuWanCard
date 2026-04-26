@@ -68,6 +68,6 @@
   "YUWANCARD-TRIPLE_PLAY.description": "一回合内，连续打出3张相同类型的卡牌时，第3张卡牌额外打出1次。",
   "YUWANCARD-TRIPLE_PLAY.flavor": "事不过三。",
   "YUWANCARD-BLACK_FLASH.title": "黑闪",
-  "YUWANCARD-BLACK_FLASH.description": "打出带有[gold]打击[/gold]标签的卡牌时，有[blue]10%[/blue]概率造成[blue]2.5倍[/blue]伤害。",
+  "YUWANCARD-BLACK_FLASH.description": "打出带有名字中带有“打击”的牌时，有10%概率造成2.5倍伤害。",
   "YUWANCARD-BLACK_FLASH.flavor": "那一瞬间的闪光，足以致命。"
 }
