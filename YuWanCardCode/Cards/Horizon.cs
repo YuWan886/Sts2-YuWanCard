@@ -7,7 +7,7 @@ using YuWanCard.Powers;
 
 namespace YuWanCard.Cards;
 
-[Pool(typeof(ColorlessCardPool))]
+[Pool(typeof(EventCardPool))]
 public class Horizon : YuWanCardModel
 {
     public Horizon() : base(

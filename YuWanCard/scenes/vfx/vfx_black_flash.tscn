@@ -1,0 +1,60 @@
+[gd_scene load_steps=4 format=3 uid="uid://yuwancard/vfx/black_flash"]
+
+[ext_resource type="Shader" path="res://YuWanCard/shaders/vfx/vfx_black_flash.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_black_flash"]
+shader = ExtResource("1_shader")
+shader_parameter/intensity = 1.0
+shader_parameter/time = 0.0
+shader_parameter/scale = 0.7
+
+[sub_resource type="Animation" id="Animation_black_flash"]
+resource_name = "black_flash"
+length = 0.8
+loop_mode = 0
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:material:shader_parameter/time")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.8),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 0.8]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:material:shader_parameter/intensity")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.15, 0.3, 0.5, 0.65, 0.8),
+"transitions": PackedFloat32Array(1, 1, 0.8, 1, 1.2, 1.5, 2),
+"update": 0,
+"values": [0.0, 1.0, 0.9, 1.0, 0.85, 0.5, 0.0]
+}
+
+[node name="VfxBlackFlash" type="ColorRect"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -200.0
+offset_right = 200.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_black_flash")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "black_flash"
+anims/black_flash = SubResource("Animation_black_flash")
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="queue_free"]

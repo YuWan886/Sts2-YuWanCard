@@ -117,8 +117,35 @@ public static class VfxUtils
             return null;
         }
 
-        var position = creatureNode.Position;
-        return PlayAt(scenePath, position);
+        var globalPos = creatureNode.GlobalPosition;
+
+        var scene = GetOrLoadScene(scenePath);
+        if (scene == null)
+        {
+            return null;
+        }
+
+        var vfxContainer = NCombatRoom.Instance?.CombatVfxContainer;
+        if (vfxContainer == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: CombatVfxContainer not found, cannot play effect at creature position");
+            return null;
+        }
+
+        var effect = scene.Instantiate<Control>(PackedScene.GenEditState.Disabled);
+        if (effect == null)
+        {
+            MainFile.Logger.Error($"VfxUtils: Failed to instantiate effect from: {scenePath}");
+            return null;
+        }
+
+        vfxContainer.AddChildSafely(effect);
+
+        var containerGlobalPos = vfxContainer.GlobalPosition;
+        effect.Position = globalPos - containerGlobalPos - effect.Size * 0.5f;
+
+        MainFile.Logger.Debug($"VfxUtils: Played effect at creature position {globalPos}: {scenePath}");
+        return effect;
     }
 
     public static (Control? effect, AudioStreamPlayer? audioPlayer) PlayWithSound(string scenePath, string soundPath)

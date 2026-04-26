@@ -66,5 +66,8 @@
   "YUWANCARD-WHITE_SCARF.flavor": "A warm scarf that brings unexpected surprises.",
   "YUWANCARD-TRIPLE_PLAY.title": "Triple Play",
   "YUWANCARD-TRIPLE_PLAY.description": "When you play the 3rd card of the same type in a row in a turn, play it an additional time.",
-  "YUWANCARD-TRIPLE_PLAY.flavor": "Third time's the charm, literally."
+  "YUWANCARD-TRIPLE_PLAY.flavor": "Third time's the charm, literally.",
+  "YUWANCARD-BLACK_FLASH.title": "Black Flash",
+  "YUWANCARD-BLACK_FLASH.description": "When playing a card with the [gold]Strike[/gold] tag, there is a [blue]10%[/blue] chance to deal [blue]2.5x[/blue] damage.",
+  "YUWANCARD-BLACK_FLASH.flavor": "In that fleeting flash, death strikes."
 }
