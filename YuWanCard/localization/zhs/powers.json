@@ -24,11 +24,11 @@
   "YUWANCARD-PIG_CHARGE_POWER.description": "本回合获得力量。",
   "YUWANCARD-PIG_CHARGE_POWER.smartDescription": "本回合获得{Amount}点[gold]力量[/gold]。",
   "YUWANCARD-PIG_FRIENDS_POWER.title": "猪朋猪友",
-  "YUWANCARD-PIG_FRIENDS_POWER.description": "获得能力时召唤一只[gold]小猪[/gold]。每2层小猪升级一次。",
-  "YUWANCARD-PIG_FRIENDS_POWER.smartDescription": "获得能力时召唤一只小猪。每2层升级一次。",
+  "YUWANCARD-PIG_FRIENDS_POWER.description": "获得本能力时召唤一只[gold]小猪[/gold]。每2层小猪升级一次。",
+  "YUWANCARD-PIG_FRIENDS_POWER.smartDescription": "获得本能力时召唤一只小猪。每2层升级一次。",
   "YUWANCARD-PIG_MINION_POWER.title": "猪猪伙伴",
-  "YUWANCARD-PIG_MINION_POWER.description": "吸收主人受到的所有未被格挡的攻击伤害。\n主人获得格挡时获得{BonusBlock}点格挡。主人获得力量时获得1点力量。小猪的力量能加成到主人。\n每回合开始给予所有玩家礼物。",
-  "YUWANCARD-PIG_MINION_POWER.smartDescription": "吸收主人受到的所有未被格挡的攻击伤害。获得格挡时获得{BonusBlock}点格挡。主人获得力量时获得1点力量。力量加成给主人。。",
+  "YUWANCARD-PIG_MINION_POWER.description": "吸收主人受到的所有未被格挡的攻击伤害。\n主人获得格挡时获得{BonusBlock}点格挡。主人获得力量时获得1点力量。力量能加成给主人。\n每回合开始给予所有玩家随机的增益（能量，力量，敏捷，回血，抽牌）。",
+  "YUWANCARD-PIG_MINION_POWER.smartDescription": "吸收主人受到的所有未被格挡的攻击伤害。主人获得格挡时获得{BonusBlock}点格挡。主人获得力量时获得1点力量。力量加成给主人。每回合开始给予所有玩家随机的[gold]增益（能量，力量，敏捷，回血，抽牌）[/gold]。",
   "YUWANCARD-PERFECT_THING_POWER.title": "完美之物",
   "YUWANCARD-PERFECT_THING_POWER.description": "你每打出一定数量的牌，获得能量。",
   "YUWANCARD-PERFECT_THING_POWER.smartDescription": "你每打出{CardsPerEnergy}张牌，获得{Amount}点能量。",
@@ -65,5 +65,8 @@
   "YUWANCARD-CHEF_PIG_POWER.title": "厨师猪",
   "YUWANCARD-CHEF_PIG_POWER.description": "每回合开始时，选择1张手牌，将其变化为[gold]食物猪[/gold]卡牌。",
   "YUWANCARD-CHEF_PIG_POWER.smartDescription": "每回合开始时，选择{ChefPigPower}张手牌，将其变化为[gold]食物猪[/gold]卡牌。",
-  "YUWANCARD-CHEF_PIG_POWER.selectionScreenPrompt": "选择1张手牌变化为的食物猪卡牌"
+  "YUWANCARD-CHEF_PIG_POWER.selectionScreenPrompt": "选择1张手牌变化为的食物猪卡牌",
+  "YUWANCARD-HORIZON_POWER.title": "天涯海角",
+  "YUWANCARD-HORIZON_POWER.description": "本场战斗所有卡牌耗能减1。",
+  "YUWANCARD-HORIZON_POWER.smartDescription": "本场战斗所有卡牌耗能减{Amount}。"
 }

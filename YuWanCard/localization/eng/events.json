@@ -35,5 +35,13 @@
   "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL.description": "Choose a card to enchant with [blue]Loyal[/blue].",
   "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED.title": "Read the Loyal Passage",
   "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED.description": "You search your pockets but find no card worthy of loyalty.\n\nThe book reads: [gold]\"Without an object of loyalty, loyalty is just empty words.\"[/gold]",
-  "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description": "You turn to the Loyal passage:\n[gold]\"Loyalty is the most precious quality—it will stay by your side forever!\"[/gold]\n\nA golden mark appears on your card, as if swearing allegiance to you."
+  "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description": "You turn to the Loyal passage:\n[gold]\"Loyalty is the most precious quality—it will stay by your side forever!\"[/gold]\n\nA golden mark appears on your card, as if swearing allegiance to you.",
+  "YUWANCARD-HORIZON_EVENT.title": "Horizon",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.description": "\"A bosom friend afar brings a distant land near.\"\n\nYou feel a warm power surrounding you, as if friends from afar are waving to you.",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.options.ADD_CARD.title": "Get Card",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.options.ADD_CARD.description": "Add 1 [gold]Horizon[/gold] to your deck.",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.options.HEAL_MAX_HP.title": "Recovery and Growth",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.options.HEAL_MAX_HP.description": "Restore all HP. Gain [blue]10[/blue] Max HP.",
+  "YUWANCARD-HORIZON_EVENT.pages.CARD_ADDED.description": "A card glowing with golden light slowly floats into your hand.\n\n\"May this power help you go further.\"",
+  "YUWANCARD-HORIZON_EVENT.pages.HEALED.description": "Warm power flows into your body, and you feel unprecedentedly fulfilled.\n\n\"The road ahead is long, take care.\""
 }

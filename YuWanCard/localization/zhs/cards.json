@@ -190,5 +190,7 @@
   "YUWANCARD-PIG_SOUFFLE.title": "猪芙蕾",
   "YUWANCARD-PIG_SOUFFLE.description": "获得{Energy:energyIcons()}，{DexterityPower:diff()}点[gold]敏捷[/gold]。",
   "YUWANCARD-PIG_BLUEBERRY_CAKE.title": "猪咪莓蛋糕",
-  "YUWANCARD-PIG_BLUEBERRY_CAKE.description": "获得{StrengthPower:diff()}点[gold]力量[/gold]，{ArtifactPower:diff()}层[gold]人工制品[/gold]。"
+  "YUWANCARD-PIG_BLUEBERRY_CAKE.description": "获得{StrengthPower:diff()}点[gold]力量[/gold]，{ArtifactPower:diff()}层[gold]人工制品[/gold]。",
+  "YUWANCARD-HORIZON.title": "天涯海角",
+  "YUWANCARD-HORIZON.description": "本场战斗所有卡牌耗能减1。"
 }

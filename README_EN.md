@@ -110,6 +110,7 @@ A cute pig character that can use all card.
 | Sad Army Wins | 3 | Rare | Skill | Kill an enemy when HP is below 10% |
 | Revive! | 4 | Rare | Skill | Resurrect a dead ally with 50% max HP (Multiplayer) |
 | Rain Dark | 3 | Ancient | Skill | Set all players' HP to 25% of max HP, gain 3 stacks of Intangible and Rain Dark (double energy gained for 3 turns), double current energy, draw full hand, heal 6 HP after combat. Exhaust |
+| Horizon | 2 | Ancient | Skill | All cards cost 1 less this combat. Innate. Exhaust. Upgraded: Cost -1 |
 | Ten Thousand Swords | 1 | Uncommon | Skill | Stack all other players' Forge Points onto yourself, then clear other players' Forge Points. Exhaust (Multiplayer) |
 | Pig Brain Overload | 0 | Uncommon | Power | Gain 3 Energy this turn. Draw 2 cards. Every 2 turns, gain 1 Dazed. Exhaust |
 | Pig Melt | 0 | Uncommon | Skill | Gain 1 Buffer. End your turn. Exhaust |
@@ -197,6 +198,7 @@ A cute pig character that can use all card.
 | Name | Effect |
 |------|--------|
 | Blacksmith | Provides two options:<br>• **Upgrade Cards**: Choose 2 cards to upgrade<br>• **Fuse Cards**: Choose 2 cards to fuse into a higher rarity card. Same rarity guarantees higher rarity, different rarity has 60% chance for higher rarity |
+| Horizon | Only appears in ACT3. Provides two options:<br>• **Get Card**: Add 1 Horizon to your deck<br>• **Recovery and Growth**: Restore all HP. Gain 10 Max HP |
 
 ## Installation
 

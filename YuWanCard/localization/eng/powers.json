@@ -68,5 +68,8 @@
   "YUWANCARD-PIG_CHEF_POWER.title": "Chef Pig",
   "YUWANCARD-PIG_CHEF_POWER.description": "At the start of each turn, choose 1 card from your hand to [gold]transform[/gold] into [gold]Pig Chop[/gold].",
   "YUWANCARD-PIG_CHEF_POWER.smartDescription": "At the start of each turn, choose {PigChefPower} card(s) from your hand to [gold]transform[/gold] into [gold]Pig Chop[/gold].",
-  "YUWANCARD-PIG_CHEF_POWER.selectionScreenPrompt": "Choose 1 card from hand to transform into Pig Chop"
+  "YUWANCARD-PIG_CHEF_POWER.selectionScreenPrompt": "Choose 1 card from hand to transform into Pig Chop",
+  "YUWANCARD-HORIZON_POWER.title": "Horizon",
+  "YUWANCARD-HORIZON_POWER.description": "All cards cost 1 less this combat.",
+  "YUWANCARD-HORIZON_POWER.smartDescription": "All cards cost {Amount} less this combat."
 }

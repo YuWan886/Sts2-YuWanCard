@@ -189,5 +189,7 @@
   "YUWANCARD-PIG_SOUFFLE.description": "Gain {Energy:energyIcons()}, {DexterityPower:diff()} [gold]Dexterity[/gold].",
   "YUWANCARD-PIG_BLUEBERRY_CAKE.title": "Pig Blueberry Cake",
   "YUWANCARD-PIG_BLUEBERRY_CAKE.description": "Gain {StrengthPower:diff()} [gold]Strength[/gold]. Gain {ArtifactPower:diff()} [gold]Artifact[/gold].",
-  "YUWANCARD-CHEF_PIG.description": "At the start of each turn, choose 1 card from your hand to [gold]transform[/gold] into a random [gold]Food Pig[/gold] card."
+  "YUWANCARD-CHEF_PIG.description": "At the start of each turn, choose 1 card from your hand to [gold]transform[/gold] into a random [gold]Food Pig[/gold] card.",
+  "YUWANCARD-HORIZON.title": "Horizon",
+  "YUWANCARD-HORIZON.description": "All cards cost 1 less this combat."
 }

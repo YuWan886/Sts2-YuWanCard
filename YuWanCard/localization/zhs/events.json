@@ -35,5 +35,13 @@
   "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL.description": "选择一张卡牌附魔[purple]忠诚[/purple]。",
   "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED.title": "锁定",
   "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED.description": "你翻遍了口袋，却找不到一张值得托付忠诚的卡牌。\n\n书上写着：[gold]\"没有忠诚的对象，忠诚只是一纸空文。\"[/gold]",
-  "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description": "你翻到忠诚篇章：\n[gold]\"忠诚是最珍贵的品质——它会永远陪伴在你身边！\"[/gold]\n\n卡牌上浮现出一个金色的印记，仿佛在向你宣誓效忠。"
+  "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description": "你翻到忠诚篇章：\n[gold]\"忠诚是最珍贵的品质——它会永远陪伴在你身边！\"[/gold]\n\n卡牌上浮现出一个金色的印记，仿佛在向你宣誓效忠。",
+  "YUWANCARD-HORIZON_EVENT.title": "天涯海角",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.description": "\"海内存知己，天涯若比邻。\"\n\n你感受到一股温暖的力量环绕着你，仿佛远方的朋友正在向你招手。",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.options.ADD_CARD.title": "获取卡牌",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.options.ADD_CARD.description": "将1张[gold]天涯海角[/gold]加入你的[gold]牌组[/gold]。",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.options.HEAL_MAX_HP.title": "恢复与成长",
+  "YUWANCARD-HORIZON_EVENT.pages.INITIAL.options.HEAL_MAX_HP.description": "恢复全部生命值。获得[green]10[/green]点最大生命值。",
+  "YUWANCARD-HORIZON_EVENT.pages.CARD_ADDED.description": "一张闪烁着金色光芒的卡牌缓缓飘入你的手中。\n\n\"愿这份力量，助你走得更远。\"",
+  "YUWANCARD-HORIZON_EVENT.pages.HEALED.description": "温暖的力量涌入你的身体，你感到前所未有的充实。\n\n\"前路漫漫，珍重。\""
 }
