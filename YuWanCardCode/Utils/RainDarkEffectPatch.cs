@@ -1,7 +1,7 @@
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Utils;
 
 /// <summary>
 /// 管理 RainDark 卡牌的下雨场景特效
@@ -143,4 +143,4 @@ public class RainDarkEffectPatch
             RemoveRainEffect();
         }
     }
-} 
+}

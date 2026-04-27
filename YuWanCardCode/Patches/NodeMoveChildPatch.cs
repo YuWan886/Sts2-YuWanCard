@@ -17,4 +17,3 @@ public static class NodeMoveChildPatch
         return true;
     }
 }
-

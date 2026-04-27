@@ -1,6 +1,6 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
-using YuWanCard.Cards;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
 

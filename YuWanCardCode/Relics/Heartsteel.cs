@@ -27,6 +27,8 @@ public class Heartsteel : YuWanRelicModel
 
     public override bool ShowCounter => true;
 
+    public override string FlashSfx => "";
+
     public override int DisplayAmount => TriggerCount;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -115,6 +117,7 @@ public class Heartsteel : YuWanRelicModel
         {
             tracker.HasTriggered = true;
             TriggerCount++;
+            InvokeDisplayAmountChanged();
             _hasTriggeredThisDamage = true;
             await TriggerColossalAppetite(target, choiceContext);
         }
