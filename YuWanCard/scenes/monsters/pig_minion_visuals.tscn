@@ -1,14 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://cracws2xqlra3"]
+[gd_scene load_steps=5 format=3 uid="uid://cracws2xqlra3"]
 
 [ext_resource type="SpineSkeletonDataResource" uid="uid://desb515e3wcdo" path="res://YuWanCard/animations/pig/pig_skeleton_data_resource.tres" id="1_p4le1"]
 [ext_resource type="AudioStream" uid="uid://dxcc74cxo2rs5" path="res://YuWanCard/sounds/characters/pig_hurt.mp3" id="2_hurt"]
 [ext_resource type="AudioStream" uid="uid://7m0okygv2w17" path="res://YuWanCard/sounds/characters/pig_die.mp3" id="3_die"]
+[ext_resource type="Script" path="res://YuWanCard/scripts/characters/spine_skin_setter.gd" id="4_skin"]
 
 [node name="PigMinionVisuals" type="Node2D"]
 
 [node name="Visuals" type="SpineSprite" parent="."]
+script = ExtResource("4_skin")
+initial_skin = "normal"
 skeleton_data_res = ExtResource("1_p4le1")
-preview_skin = "default"
+preview_skin = "normal"
 preview_animation = "idle_loop"
 preview_frame = false
 preview_time = 0.0

@@ -68,6 +68,9 @@
   "YUWANCARD-TRIPLE_PLAY.description": "一回合内，连续打出3张相同类型的卡牌时，第3张卡牌额外打出1次。",
   "YUWANCARD-TRIPLE_PLAY.flavor": "事不过三。",
   "YUWANCARD-BLACK_FLASH.title": "黑闪",
-  "YUWANCARD-BLACK_FLASH.description": "打出带有名字中带有“打击”的牌时，有10%概率造成2.5倍伤害。",
-  "YUWANCARD-BLACK_FLASH.flavor": "那一瞬间的闪光，足以致命。"
+  "YUWANCARD-BLACK_FLASH.description": "打出带有名字中带有\"打击\"的牌时，有10%概率造成2.5倍伤害。",
+  "YUWANCARD-BLACK_FLASH.flavor": "那一瞬间的闪光，足以致命。",
+  "YUWANCARD-PIG_RUSH_FORWARD.title": "猪突猛进",
+  "YUWANCARD-PIG_RUSH_FORWARD.description": "每场战斗中，你第一次用卡牌对敌人造成伤害时，减少敌人等量于伤害的最大生命值。",
+  "YUWANCARD-PIG_RUSH_FORWARD.flavor": "一往无前，势不可挡。"
 }

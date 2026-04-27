@@ -77,6 +77,10 @@ A cute pig character that can use all card.
 | Justice Iron Fist | 3 | Rare | Attack | Deal 20 damage. [gold]Stun[/gold] the target. |
 | Turn To Specimen | 1 | Uncommon | Skill | Remove all [gold]Powers[/gold] from all enemies. [gold]Exhaust[/gold] |
 | Lolicon | 1 | Rare | Power | Gain Lolicon Power. Upgraded: Cost -1 |
+| Pig Climb Tower | 2 | Uncommon | Skill | Deal damage equal to current floor. Gain Block equal to current floor. Retain when upgraded. |
+| Pig Make Food | 1 | Uncommon | Skill | Exhaust X cards from your hand, add equal number of random Pig Food cards to your hand. Exhaust. |
+| Pig Swap | 1 | Uncommon | Skill | Swap your draw pile and discard pile. Exhaust. Upgraded: Cost -1 |
+| ZhuGe Pig | 3 | Rare | Power | At the start of each turn, look at the top X cards of your draw pile, choose any number to exile from this combat. |
 
 **Exclusive Relics**
 
@@ -147,6 +151,7 @@ A cute pig character that can use all card.
 | Pig Coin | When you play any card, gain 3 Gold |
 | Pig Burger | At the end of combat, heal 6 HP |
 | Lolicon | Double attack damage to enemies taller than 140 |
+| ZhuGe Pig Power | At the start of each turn, look at the top X cards of your draw pile, choose any number to exile from this combat. |
 
 ### Enchantments
 
@@ -174,6 +179,7 @@ A cute pig character that can use all card.
 | Gluttonous Pig | Event | Ancient Name | You can eat your card rewards. For every 2 card rewards eaten, at the start of each combat gain 1 Plating and 1 Strength |
 | Lustful Pig | Event | Ancient Name | At the start of each combat, all enemies gain 2 Weak. Enemies have a 40% chance to attack themselves |
 | White Scarf | Shared | Shop | After combat victory, gain an additional Colorless card reward |
+| Pig Rush Forward | Shared | Shop | When you first deal damage to an enemy in combat, reduce that enemy max HP by the damage amount. |
 
 ### Ancient One
 

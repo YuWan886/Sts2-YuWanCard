@@ -69,5 +69,8 @@
   "YUWANCARD-TRIPLE_PLAY.flavor": "Third time's the charm, literally.",
   "YUWANCARD-BLACK_FLASH.title": "Black Flash",
   "YUWANCARD-BLACK_FLASH.description": "When playing a card with the [gold]Strike[/gold] tag, there is a [blue]10%[/blue] chance to deal [blue]2.5x[/blue] damage.",
-  "YUWANCARD-BLACK_FLASH.flavor": "In that fleeting flash, death strikes."
+  "YUWANCARD-BLACK_FLASH.flavor": "In that fleeting flash, death strikes.",
+  "YUWANCARD-PIG_RUSH_FORWARD.title": "Pig Rush Forward",
+  "YUWANCARD-PIG_RUSH_FORWARD.description": "In each combat, the first time you deal damage to an enemy with a card, reduce that enemy's max HP by the damage dealt.",
+  "YUWANCARD-PIG_RUSH_FORWARD.flavor": "Charge forward, unstoppable."
 }

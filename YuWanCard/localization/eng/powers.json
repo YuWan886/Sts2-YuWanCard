@@ -74,5 +74,12 @@
   "YUWANCARD-HORIZON_POWER.smartDescription": "All cards cost {Amount} less this combat.",
   "YUWANCARD-GROUP_FRIEND_FORM_POWER.title": "Group Friend Form",
   "YUWANCARD-GROUP_FRIEND_FORM_POWER.description": "Each time you play a card, add 1 copy of that card to your draw pile.",
-  "YUWANCARD-GROUP_FRIEND_FORM_POWER.smartDescription": "Each time you play a card, add 1 copy of that card to your draw pile."
+  "YUWANCARD-GROUP_FRIEND_FORM_POWER.smartDescription": "Each time you play a card, add 1 copy of that card to your draw pile.",
+  "YUWANCARD-ZHU_GE_PIG_POWER.title": "Zhuge Pig",
+  "YUWANCARD-ZHU_GE_PIG_POWER.description": "At the start of each turn, 3 Scry.",
+  "YUWANCARD-ZHU_GE_PIG_POWER.smartDescription": "At the start of each turn, {ZhuGePigPower} [gold]Scry[/gold].",
+  "YUWANCARD-ZHU_GE_PIG_POWER.selectionScreenPrompt": "Choose cards to discard (or none)",
+  "YUWANCARD-PIG_INVERT_POWER.title": "Pig Invert",
+  "YUWANCARD-PIG_INVERT_POWER.description": "Swap your draw pile with your discard pile, and swap your used energy with remaining energy.",
+  "YUWANCARD-PIG_INVERT_POWER.smartDescription": "Swap your draw pile with your discard pile, and swap your used energy with remaining energy. Removed at end of turn."
 }

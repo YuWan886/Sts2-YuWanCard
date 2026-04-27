@@ -44,6 +44,13 @@ public partial class MainFile : Node
 
         TeammatePayMessageHandler.Register();
 
+        PreloadAssets();
+
+        Logger.Info("YuWanCard initialized");
+    }
+
+    private static void PreloadAssets()
+    {
         VfxUtils.PreloadScenes(
             "res://YuWanCard/scenes/vfx/vfx_blood_wheel_eye.tscn",
             "res://YuWanCard/scenes/vfx/vfx_black_hole.tscn",
@@ -54,7 +61,10 @@ public partial class MainFile : Node
 
         VfxUtils.PreloadFrames("res://YuWanCard/images/vfx/blood_wheel_eye/blood_wheel_eye", 48);
 
-        Logger.Info("YuWanCard initialized");
+        PreloadTextures(
+            "res://YuWanCard/images/characters/character_icon_pig.png",
+            "res://YuWanCard/images/powers/pig_doubt_power.png"
+        );
     }
 
     private static void RegisterSceneConversions()
@@ -66,5 +76,26 @@ public partial class MainFile : Node
     private static void OnConfigChanged(object? sender, EventArgs e)
     {
 
+    }
+
+    private static void PreloadTextures(params string[] texturePaths)
+    {
+        int loadedCount = 0;
+        foreach (var path in texturePaths)
+        {
+            if (ResourceLoader.Exists(path))
+            {
+                ResourceLoader.Load<Texture2D>(path);
+                loadedCount++;
+            }
+            else
+            {
+                Logger.Warn($"PreloadTextures: Texture not found: {path}");
+            }
+        }
+        if (loadedCount > 0)
+        {
+            Logger.Debug($"PreloadTextures: Preloaded {loadedCount} textures");
+        }
     }
 }

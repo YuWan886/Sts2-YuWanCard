@@ -25,7 +25,7 @@ public static class TeammatePayMessageHandler
         netService ??= RunManager.Instance?.NetService;
         if (netService == null)
         {
-            MainFile.Logger.Warn("TeammatePay: Cannot register handlers - no net service available");
+            MainFile.Logger.Debug("TeammatePay: Net service not available, will register later when multiplayer starts");
             return;
         }
 

@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using YuWanCard.Cards;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Powers;
 
@@ -18,15 +18,6 @@ public class ChefPigPower : YuWanPowerModel
     public override PowerStackType StackType => PowerStackType.Counter;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("PigChefPower", 1m)];
-
-    private static readonly List<Func<CardModel>> FoodPigCardFactories =
-    [
-        ModelDb.Card<PigChop>,
-        ModelDb.Card<PigPudding>,
-        ModelDb.Card<TiramisuPig>,
-        ModelDb.Card<PigSouffle>,
-        ModelDb.Card<PigBlueberryCake>
-    ];
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
@@ -75,10 +66,7 @@ public class ChefPigPower : YuWanPowerModel
             if (selectedCards.Count == 0) break;
 
             selectedCardSet.Add(selectedCards[0]);
-            var randomFoodCardFactory = FoodPigCardFactories
-                .OrderBy(_ => player.RunState.Rng.CombatCardGeneration.NextFloat())
-                .First();
-            var foodCard = CombatState!.CreateCard(randomFoodCardFactory(), player);
+            var foodCard = CardUtils.CreateRandomFoodPigCard(player);
             transformations.Add(new CardTransformation(selectedCards[0], foodCard));
         }
 

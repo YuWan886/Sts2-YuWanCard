@@ -196,5 +196,16 @@
   "YUWANCARD-BORROW_KNIFE_TO_KILL.description": "Choose an [gold]Attack[/gold] card from target teammate's hand and play it.{IfUpgraded:show: || The played card costs no energy.}",
   "YUWANCARD-BORROW_KNIFE_TO_KILL.selectionScreenPrompt": "Choose 1 Attack card",
   "YUWANCARD-GROUP_FRIEND_FORM.title": "Group Friend Form",
-  "YUWANCARD-GROUP_FRIEND_FORM.description": "Each time you play a card this turn, add 1 copy of that card to your draw pile. [gold]Retain[/gold]."
+  "YUWANCARD-GROUP_FRIEND_FORM.description": "Each time you play a card this turn, add 1 copy of that card to your draw pile. [gold]Retain[/gold].",
+  "YUWANCARD-PIG_MAKE_FOOD.title": "Pig Make Food",
+  "YUWANCARD-PIG_MAKE_FOOD.description": "Exhaust 1 card from hand, gain 1 random [gold]Food Pig[/gold] card.",
+  "YUWANCARD-PIG_MAKE_FOOD.smartDescription": "Exhaust {ExhaustCount} card(s) from hand, gain {ExhaustCount} random [gold]Food Pig[/gold] card(s).",
+  "YUWANCARD-PIG_MAKE_FOOD.selectionScreenPrompt": "Choose cards to exhaust",
+  "YUWANCARD-ZHU_GE_PIG.title": "Zhuge Pig",
+  "YUWANCARD-ZHU_GE_PIG.description": "At the start of each turn, 3 [gold]Scry[/gold].",
+  "YUWANCARD-ZHU_GE_PIG.smartDescription": "At the start of each turn, {ZhuGePigPower} [gold]Scry[/gold].",
+  "YUWANCARD-PIG_CLIMB_TOWER.title": "Pig Climb Tower",
+  "YUWANCARD-PIG_CLIMB_TOWER.description": "Deal {PigClimbTowerDamage} damage. Gain {PigClimbTowerBlock} [gold]Block[/gold]. (Values equal to current floor)",
+  "YUWANCARD-PIG_SWAP.title": "Pig Swap",
+  "YUWANCARD-PIG_SWAP.description": "Swap draw pile and discard pile. Swap used energy and remaining energy."
 }
