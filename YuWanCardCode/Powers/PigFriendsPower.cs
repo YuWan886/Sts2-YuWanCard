@@ -78,6 +78,10 @@ public class PigFriendsPower : YuWanPowerModel
         if (existingPig != null && existingPig.IsAlive)
         {
             _summonedPig = existingPig;
+            if (Owner.HasPower<PigDemonFormPower>())
+            {
+                PigDemonFormPower.SwitchCreatureSkin(_summonedPig, "demon");
+            }
             return;
         }
 
@@ -87,5 +91,10 @@ public class PigFriendsPower : YuWanPowerModel
         _lastUpgradeLevel = upgradeLevel;
 
         _summonedPig = await PetManager.SummonPigMinion(Owner.Player, upgradeLevel);
+
+        if (_summonedPig != null && Owner.HasPower<PigDemonFormPower>())
+        {
+            PigDemonFormPower.SwitchCreatureSkin(_summonedPig, "demon");
+        }
     }
 }

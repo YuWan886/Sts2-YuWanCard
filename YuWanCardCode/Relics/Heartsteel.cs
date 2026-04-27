@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -124,6 +125,7 @@ public class Heartsteel : YuWanRelicModel
         if (Owner == null || Owner.Creature.IsDead) return;
 
         Flash();
+        AudioUtils.Play("res://YuWanCard/sounds/vfx/heart_steel.mp3");
 
         decimal currentHp = Owner.Creature.CurrentHp;
         decimal bonusDamagePercent = DynamicVars["BonusDamagePercent"].BaseValue;

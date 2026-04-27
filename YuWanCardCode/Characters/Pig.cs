@@ -93,7 +93,7 @@ public class Pig : PlaceholderCharacterModel
     
     public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller)
     {
-        return SetupAnimationState(controller, 
+        var animator = SetupAnimationState(controller, 
             idleName: "idle_loop",
             deadName: "die",
             deadLoop: false,
@@ -105,5 +105,13 @@ public class Pig : PlaceholderCharacterModel
             castLoop: false,
             relaxedName: "relaxed_loop",
             relaxedLoop: true);
+
+        var tfAnim = new AnimState("tf", false)
+        {
+            NextState = new AnimState("idle_loop", true)
+        };
+        animator.AddAnyState("Tf", tfAnim);
+
+        return animator;
     }
 }

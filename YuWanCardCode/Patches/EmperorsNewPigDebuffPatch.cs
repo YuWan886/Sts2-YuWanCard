@@ -2,16 +2,18 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Powers;
 
 namespace YuWanCard.Patches;
 
-[HarmonyPatch(typeof(PowerCmd), nameof(PowerCmd.Apply), [typeof(PowerModel), typeof(Creature), typeof(decimal), typeof(Creature), typeof(CardModel), typeof(bool)])]
+[HarmonyPatch(typeof(PowerCmd), nameof(PowerCmd.Apply), 
+    [typeof(PlayerChoiceContext), typeof(PowerModel), typeof(Creature), typeof(decimal), typeof(Creature), typeof(CardModel), typeof(bool)])]
 public static class EmperorsNewPigDebuffPatch
 {
     [HarmonyPrefix]
-    static bool Prefix(ref Task __result, PowerModel power, Creature target, decimal amount, Creature? applier, CardModel? cardSource)
+    static bool Prefix(ref Task __result, PlayerChoiceContext choiceContext, PowerModel power, Creature target, decimal amount, Creature? applier, CardModel? cardSource, bool silent = false)
     {
         if (power.Type != PowerType.Debuff) return true;
         if (amount <= 0) return true;
@@ -25,7 +27,7 @@ public static class EmperorsNewPigDebuffPatch
         if (applier.Side == target.Side) return true;
 
         emperorsNewPigPower.Flash();
-        __result = Task.FromResult(power);
+        __result = Task.CompletedTask;
         return false;
     }
 }

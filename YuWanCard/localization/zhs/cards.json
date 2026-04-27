@@ -206,5 +206,7 @@
   "YUWANCARD-PIG_CLIMB_TOWER.title": "猪爬塔",
   "YUWANCARD-PIG_CLIMB_TOWER.description": "造成{PigClimbTowerDamage}点伤害。获得{PigClimbTowerBlock}点[gold]格挡[/gold]。\n（数值等于当前层数）",
   "YUWANCARD-PIG_SWAP.title": "猪互换",
-  "YUWANCARD-PIG_SWAP.description": "交换[gold]抽牌堆[/gold]与[gold]弃牌堆[/gold]。\n当前能量(新)=最大能量-当前能量。"
+  "YUWANCARD-PIG_SWAP.description": "交换[gold]抽牌堆[/gold]与[gold]弃牌堆[/gold]。\n当前能量(新)=最大能量-当前能量。",
+  "YUWANCARD-PIG_DEMON_FORM.title": "恶魔形态",
+  "YUWANCARD-PIG_DEMON_FORM.description": "在你的回合开始时，获得2点[gold]力量[/gold]。"
 }

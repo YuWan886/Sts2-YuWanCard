@@ -207,5 +207,7 @@
   "YUWANCARD-PIG_CLIMB_TOWER.title": "Pig Climb Tower",
   "YUWANCARD-PIG_CLIMB_TOWER.description": "Deal {PigClimbTowerDamage} damage. Gain {PigClimbTowerBlock} [gold]Block[/gold]. (Values equal to current floor)",
   "YUWANCARD-PIG_SWAP.title": "Pig Swap",
-  "YUWANCARD-PIG_SWAP.description": "Swap draw pile and discard pile. Swap used energy and remaining energy."
+  "YUWANCARD-PIG_SWAP.description": "Swap draw pile and discard pile. Swap used energy and remaining energy.",
+  "YUWANCARD-PIG_DEMON_FORM.title": "Demon Form",
+  "YUWANCARD-PIG_DEMON_FORM.description": "Gain {PigDemonFormPower:diff()} [gold]Demon Form[/gold]."
 }

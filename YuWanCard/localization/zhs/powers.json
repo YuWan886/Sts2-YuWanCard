@@ -75,5 +75,8 @@
   "YUWANCARD-ZHU_GE_PIG_POWER.title": "诸葛猪",
   "YUWANCARD-ZHU_GE_PIG_POWER.description": "每回合开始时，获得3层预见。\n[gold]预见[/gold]：可以查看[gold]抽牌堆[/gold]顶部的牌，并可以选择任意数量的卡牌放入[gold]弃牌堆[/gold]。",
   "YUWANCARD-ZHU_GE_PIG_POWER.smartDescription": "每回合开始时，获得{ZhuGePigPower}层[gold]预见[/gold]。\n[gold]预见[/gold]：可以查看[gold]抽牌堆[/gold]顶部的牌，并可以选择任意数量的卡牌放入[gold]弃牌堆[/gold]。",
-  "YUWANCARD-ZHU_GE_PIG_POWER.selectionScreenPrompt": "选择要丢弃的牌"
+  "YUWANCARD-ZHU_GE_PIG_POWER.selectionScreenPrompt": "选择要丢弃的牌",
+  "YUWANCARD-PIG_DEMON_FORM_POWER.title": "恶魔形态",
+  "YUWANCARD-PIG_DEMON_FORM_POWER.description": "在你的回合开始时，获得力量。",
+  "YUWANCARD-PIG_DEMON_FORM_POWER.smartDescription": "在你的回合开始时，获得{StrengthGain}点[gold]力量[/gold]。"
 }
