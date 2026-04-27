@@ -36,8 +36,8 @@ public class PigDemonForm : YuWanCardModel
 
         if (isPigCharacter)
         {
-            await CreatureCmd.TriggerAnim(Owner.Creature, "Tf", 3.2f);
-            await Task.Delay(TimeSpan.FromSeconds(3.4f));
+            await CreatureCmd.TriggerAnim(Owner.Creature, "Tf", 4.5f);
+            await Task.Delay(TimeSpan.FromSeconds(4.7f));
 
             PigDemonFormPower.SwitchCreatureSkin(Owner.Creature, "demon");
             NCombatRoom.Instance?.GetCreatureNode(Owner.Creature)?.SetAnimationTrigger("Idle");
