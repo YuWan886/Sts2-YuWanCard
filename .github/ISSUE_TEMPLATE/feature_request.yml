@@ -17,22 +17,6 @@ body:
     validations:
       required: true
 
-  - type: textarea
-    id: motivation
-    attributes:
-      label: 功能动机
-      description: 为什么您认为这个功能有用？
-      placeholder: "例如：这个功能可以..."
-    validations:
-      required: true
-
-  - type: textarea
-    id: solution
-    attributes:
-      label: 建议的解决方案
-      description: 您有关于如何实现这个功能的想法吗？
-      placeholder: "例如：可以通过修改...来实现"
-
   - type: dropdown
     id: type
     attributes:

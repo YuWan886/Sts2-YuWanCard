@@ -30,22 +30,6 @@ body:
     validations:
       required: true
 
-  - type: textarea
-    id: expected
-    attributes:
-      label: 预期行为
-      description: 您期望发生什么？
-    validations:
-      required: true
-
-  - type: textarea
-    id: actual
-    attributes:
-      label: 实际行为
-      description: 实际发生了什么？
-    validations:
-      required: true
-
   - type: input
     id: mod-version
     attributes:
