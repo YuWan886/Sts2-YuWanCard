@@ -1,151 +1,131 @@
 # 版本兼容性
 
-## 概述
+## 当前版本状态
 
-Slay the Spire 2 目前 main 分支和 beta 分支已统一为 0.103.2 版本，API 差异已消除。BaseLib 提供了版本兼容性工具来处理历史版本的差异。
+游戏 main 分支和 beta 分支已统一为 **0.103.2** 版本，API 差异已消除。
 
-## 版本定义
+## GameVersionCompat 工具类
 
-| 分支 | 版本号 | 说明 |
-|------|--------|------|
-| 统一版本 | 0.103.2 | main 和 beta 分支已统一 |
-| Beta 阈值 | 0.103.0 | 用于区分旧版本和新版本的版本号 |
-
-## 项目内版本检测工具
-
-### GameVersionCompat
-
-`GameVersionCompat` 类提供游戏版本检测功能：
+`GameVersionCompat` 类提供版本检测功能：
 
 ```csharp
 using YuWanCard.Utils;
 
-// 获取当前游戏版本
+// 获取游戏版本
 var version = GameVersionCompat.GameVersion;
+
+// 当前版本常量
+var currentVersion = GameVersionCompat.CurrentVersion; // 0.103.2
 ```
 
-**注意**：由于游戏版本已统一，`GameVersionCompat` 已简化为仅提供版本检测功能，不再包含 API 兼容性封装方法。
+## 版本常量
 
-## BaseLib 兼容性工具
+| 常量 | 值 | 说明 |
+|------|------|------|
+| `CurrentVersion` | 0.103.2 | 当前支持的版本 |
 
-### BetaMainCompatibility
-
-BaseLib 提供了 `BetaMainCompatibility` 类来处理 API 重命名和差异：
-
-```csharp
-using BaseLib.Utils;
-
-// 自动适配不同版本的 API
-var loadedMods = BetaMainCompatibility.Renamed.LoadedMods.Get();
-```
-
-### VariableReference
-
-`VariableReference<T>` 类可以引用多个可能名称的字段/属性/方法：
+## 版本检测示例
 
 ```csharp
-// 创建兼容性引用
-public static VariableReference<SomeType> MyField = new(
-    typeof(TargetClass), "OldName", "NewName"
-);
+using YuWanCard.Utils;
 
-// 使用
-var value = MyField.Get();
-```
-
-**内置的兼容性引用**：
-
-| 引用 | 旧版本 | 新版本 |
-|------|--------|--------|
-| `LoadedMods` | `LoadedMods` 字段 | `GetLoadedMods()` 方法 |
-| `FontSize` | `FontSize` | `fontSize` |
-| `Font` | `Font` | `font` |
-| `LineSpacing` | `LineSpacing` | `lineSpacing` |
-
-### CustomSingletonModel 兼容性
-
-`CustomSingletonModel` 在不支持的游戏分支上会记录警告但不会崩溃：
-
-```csharp
-public class MySingletonModel : CustomSingletonModel
+public class MyCard : YuWanCardModel
 {
-    public MySingletonModel() : base(
-        receiveCombatHooks: true,
-        receiveRunHooks: true
-    )
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 如果当前分支不支持，会记录警告
+        // 检查版本
+        if (GameVersionCompat.GameVersion >= new Version(0, 103, 2))
+        {
+            // 使用新 API
+        }
+        else
+        {
+            // 使用旧 API 或显示警告
+            MainFile.Logger.Warn($"Unsupported game version: {GameVersionCompat.GameVersion}");
+        }
     }
 }
 ```
 
-## API 差异对照表（历史参考）
+## 历史版本兼容性
 
-> **注意**：以下 API 差异在 0.103.2 版本之前存在。当前版本已统一，所有 API 都使用新版本（>=0.103）的签名。
+### 0.103.2 版本
 
-| API | 旧版本 (<0.103) | 新版本 (>=0.103) |
-|-----|---------------|------------------|
-| `ModifyEnergyGain` | ❌ 不存在 | ✅ 存在于 AbstractModel |
-| `TalkCmd.Play` | `Play(line, speaker, double, VfxColor)` | `Play(line, speaker, VfxColor, VfxDuration)` |
-| `MapPointTypeCounts` 构造函数 | `(Rng rng)` | `(int unknownCount, int restCount)` |
-| `VfxDuration` 枚举 | ❌ 不存在 | ✅ 存在 |
-| `VfxColor` 枚举 | 8 个值 | 11 个值 (新增 Orange, Swamp, DarkGray) |
-| `ModManager.LoadedMods` | 字段 | 方法 `GetLoadedMods()` |
-| `ThemeConstants.Label` | PascalCase 属性 | camelCase 属性 |
+- main 分支和 beta 分支统一
+- API 差异消除
+- `GameVersionCompat` 类简化
 
-## 自定义版本兼容性处理
+### 早期版本
 
-### 创建自定义兼容性引用
-
-```csharp
-using BaseLib.Utils;
-
-public static class MyCompatibility
-{
-    // 为可能重命名的 API 创建引用
-    public static VariableReference<SomeType> RenamedApi = new(
-        typeof(TargetClass), "OldName", "NewName", "AnotherPossibleName"
-    );
-    
-    // 使用类型元组创建引用
-    public static VariableReference<SomeType> MovedApi = new(
-        (typeof(OldClass), "Property"),
-        (typeof(NewClass), "Property")
-    );
-}
-```
-
-### 条件性代码执行
-
-```csharp
-// 检查 API 是否存在
-try
-{
-    var value = BetaMainCompatibility.Renamed.SomeReference.Get();
-    // 使用新 API
-}
-catch (Exception)
-{
-    // 回退到旧 API 或跳过功能
-}
-```
+早期版本存在 main 和 beta 分支的 API 差异，需要使用条件编译或运行时检测来处理。
 
 ## 最佳实践
 
-1. **优先使用 BaseLib 提供的兼容性工具**：`BetaMainCompatibility.Renamed` 已处理常见差异
-2. **创建自定义兼容性引用**：对于 BaseLib 未覆盖的 API，使用 `VariableReference<T>`
-3. **优雅降级**：当 API 不存在时，提供合理的回退方案
-4. **记录日志**：在兼容性处理中记录日志，便于调试
+### 1. 使用版本检测
 
-## 错误处理
+对于可能受版本影响的功能，使用版本检测：
 
-所有兼容性工具都包含错误处理：
+```csharp
+if (GameVersionCompat.GameVersion >= new Version(0, 103, 2))
+{
+    // 新版本代码
+}
+```
 
-- `VariableReference` 在找不到任何引用时抛出异常
-- `CustomSingletonModel` 在不支持时记录警告但继续运行
-- 使用 `try-catch` 处理可能的异常
+### 2. 记录版本信息
 
-## 相关文档
+在模组初始化时记录版本信息：
 
-- [工具类 - BetaMainCompatibility](05-utils.md#betamaincompatibility版本兼容性工具)
-- [扩展功能 - CustomSingletonModel](11-extensions.md#customsingletonmodel)
+```csharp
+public override void Initialize()
+{
+    MainFile.Logger.Info($"Game version: {GameVersionCompat.GameVersion}");
+    MainFile.Logger.Info($"Mod version: {ModVersion}");
+}
+```
+
+### 3. 提供降级方案
+
+对于可能不存在的新 API，提供降级方案：
+
+```csharp
+try
+{
+    // 尝试使用新 API
+    await NewMethod();
+}
+catch (MissingMethodException)
+{
+    // 降级到旧 API
+    await OldMethod();
+}
+```
+
+### 4. 使用反射处理可选功能
+
+对于可选的新功能，使用反射：
+
+```csharp
+var method = typeof(SomeClass).GetMethod("NewMethod");
+if (method != null)
+{
+    method.Invoke(instance, null);
+}
+else
+{
+    // 降级处理
+}
+```
+
+## 更新日志
+
+### 2024-XX-XX
+
+- 游戏版本统一为 0.103.2
+- `GameVersionCompat` 类简化
+- 移除不再需要的版本兼容代码
+
+## 参考资源
+
+- [游戏更新日志](https://store.steampowered.com/news/app/2868840)
+- [BaseLib 更新日志](https://github.com/Alchyr/BaseLib-StS2)

@@ -1,4 +1,4 @@
-using BaseLib.Utils;
+using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.HoverTips;

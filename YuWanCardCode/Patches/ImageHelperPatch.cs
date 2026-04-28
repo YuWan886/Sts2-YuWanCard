@@ -15,7 +15,7 @@ public static class ImageHelperPatch
     {
         if (modelId != null && modelId.Entry == "YUWANCARD-PIG_PIG")
         {
-            __result = "res://YuWanCard/images/ancients/pig_pig_outline.png";
+            __result = "res://YuWanCard/images/ancients/pig_pig.png";
             return false;
         }
         return true;
@@ -40,6 +40,18 @@ public static class ImageHelperPatch
         if (innerPath == "ui/top_panel/character_icon_yuwancard-pig_outline.png")
         {
             __result = "res://YuWanCard/images/characters/character_icon_pig.png";
+            return;
+        }
+
+        if (innerPath == "ui/run_history/yuwancard-pig_pig_outline.png")
+        {
+            __result = "res://YuWanCard/images/ancients/pig_pig.png";
+            return;
+        }
+
+        if (innerPath == "packed/map/ancients/ancient_node_yuwancard-pig_pig_outline.png")
+        {
+            __result = "res://YuWanCard/images/ancients/pig_pig.png";
             return;
         }
     }

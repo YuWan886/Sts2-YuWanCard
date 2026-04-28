@@ -1,4 +1,4 @@
-using BaseLib.Abstracts;
+using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -9,7 +9,7 @@ using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Events;
 
-public sealed class Blacksmith : CustomEventModel
+public sealed class Blacksmith : YuWanEventModel
 {
     public override ActModel[] Acts => [];
 

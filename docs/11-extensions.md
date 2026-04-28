@@ -1,29 +1,35 @@
 # 扩展功能
 
-## Health Bar Forecast（生命条预测）
+## 自定义 ID 属性
 
-BaseLib v0.2.8 新增了完整的生命条预测系统，允许模组在生物的生命条上显示预测效果。
-
-### 核心接口和类
-
-| 类型 | 说明 |
-|------|------|
-| `IHealthBarForecastSource` | 预测来源接口，提供预测片段 |
-| `HealthBarForecastSegment` | 预测片段结构，定义预测条的属性 |
-| `HealthBarForecastContext` | 预测上下文，包含生物和战斗状态信息 |
-| `HealthBarForecastDirection` | 预测方向枚举（FromLeft/FromRight） |
-| `HealthBarForecastRegistry` | 预测来源注册表 |
-| `HealthBarForecastOrder` | 渲染顺序辅助方法 |
-
-### 在能力中实现预测
-
-`CustomPowerModel` 默认实现了 `IHealthBarForecastSource`：
+使用 `CustomIDAttribute` 覆盖默认的自动前缀生成：
 
 ```csharp
-using BaseLib.Hooks;
+using YuWanCard.Core.Utils.Attributes;
+
+[CustomID("MYMOD-CUSTOM_ID")]
+public class MyCard : YuWanCardModel
+{
+    // 此卡牌的 ID 将是 "MYMOD-CUSTOM_ID"
+}
+```
+
+**用途**：
+- 与其他模组保持 ID 兼容
+- 迁移旧版本 ID
+- 特殊 ID 格式需求
+
+---
+
+## 生命条预测
+
+在能力中实现 `IHealthBarForecastSource` 接口，可在生命条上显示预测效果：
+
+```csharp
+using MegaCrit.Sts2.Core.Entities.Powers;
 using Godot;
 
-public class MyPoisonPower : CustomPowerModel
+public class MyPoisonPower : YuWanPowerModel, IHealthBarForecastSource
 {
     public override PowerType Type => PowerType.Debuff;
     public override PowerStackType StackType => PowerStackType.Counter;
@@ -36,1008 +42,364 @@ public class MyPoisonPower : CustomPowerModel
                 Amount,
                 new Color(0.5f, 0.2f, 0.8f),
                 HealthBarForecastDirection.FromRight,
-                Order: HealthBarForecastOrder.ForSideTurnStart(context.Creature, Owner.Side)
+                Order: 0
             );
         }
     }
 }
 ```
 
-### 注册外部预测来源
+### HealthBarForecastSegment 参数
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `Amount` | `decimal` | 预测的 HP 变化量 |
+| `Color` | `Color` | 预测条颜色 |
+| `Direction` | `HealthBarForecastDirection` | 生长方向 |
+| `Order` | `int` | 渲染顺序 |
+| `OverlayMaterial` | `Material?` | 可选的覆盖材质 |
+
+### 生长方向
+
+| 值 | 说明 |
+|------|------|
+| `FromRight` | 从当前 HP 向内生长 |
+| `FromLeft` | 从空白向外生长 |
+
+### 毁灭条着色器
+
+使用毁灭条着色器创建特殊效果：
 
 ```csharp
-using BaseLib.Hooks;
+using YuWanCard.Core.Utils;
 
-// 注册类型化来源
-HealthBarForecastRegistry.Register<MyForecastSource>("MyMod", "MySource");
-
-// 取消注册
-HealthBarForecastRegistry.Unregister("MyMod", "MySource");
-```
-
-### 使用毁灭条着色器
-
-```csharp
 var material = ShaderUtils.CreateDoomBarShaderMaterial(
     ShaderUtils.CreateVanillaDoomBarGradientTexture()
 );
 
 yield return new HealthBarForecastSegment(
     Amount,
-    new Color(0.8f, 0.3f, 0.5f),
-    HealthBarForecastDirection.FromLeft,
-    Order: 0,
-    OverlayMaterial: material
+    color,
+    direction,
+    0,
+    material
 );
 ```
 
-## CustomSingletonModel
+---
 
-`CustomSingletonModel` 是一个抽象类，表示将在运行时持续接收钩子的模型。它支持运行状态和战斗状态的钩子订阅，使得模型可以在不同的游戏状态下接收事件回调。
+## 自定义游戏动作
 
-### 基本用法
+用于多人游戏同步的自定义游戏动作：
 
 ```csharp
-using BaseLib.Utils;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 
-public class MySingletonModel : CustomSingletonModel
+namespace YuWanCard.GameActions;
+
+public class ShoppingCartPurchaseAction : GameAction
 {
-    public MySingletonModel() : base(
-        receiveCombatHooks: true,  // 接收战斗状态钩子
-        receiveRunHooks: true      // 接收运行状态钩子
-    )
+    private readonly Player _player;
+    private readonly int _itemIndex;
+
+    public override ulong OwnerId => _player.NetId;
+    public override GameActionType ActionType => GameActionType.CombatPlayPhaseOnly;
+
+    public ShoppingCartPurchaseAction(Player player, int itemIndex = 0)
     {
+        _player = player;
+        _itemIndex = itemIndex;
     }
 
-    // 实现需要的钩子方法
-    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    protected override async Task ExecuteAction()
     {
-        // 在玩家回合开始时触发
+        // 执行动作逻辑
+    }
+
+    public override INetAction ToNetAction()
+    {
+        return new NetShoppingCartPurchaseAction(_itemIndex);
+    }
+}
+
+public struct NetShoppingCartPurchaseAction : INetAction, IPacketSerializable
+{
+    private int _itemIndex;
+
+    public GameAction ToGameAction(Player owner)
+    {
+        return new ShoppingCartPurchaseAction(owner, _itemIndex);
+    }
+
+    public void Serialize(PacketWriter writer)
+    {
+        writer.WriteInt(_itemIndex);
+    }
+
+    public void Deserialize(PacketReader reader)
+    {
+        _itemIndex = reader.ReadInt();
     }
 }
 ```
 
-### 构造函数参数
+---
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| `receiveCombatHooks` | `bool` | 是否接收战斗状态钩子 |
-| `receiveRunHooks` | `bool` | 是否接收运行状态钩子 |
+## 多人游戏消息
 
-### 工作原理
-
-`CustomSingletonModel` 通过反射调用 `ModHelper.SubscribeForCombatStateHooks` 和 `ModHelper.SubscribeForRunStateHooks` 方法来注册钩子：
-
-1. 在构造函数中，根据参数决定订阅哪些钩子
-2. 通过 `RunSubModels` 和 `CombatSubModels` 方法返回自身，使模型能够接收钩子调用
-3. 如果当前游戏分支不支持这些 API，会记录警告日志
-
-### 使用场景
-
-- 创建全局事件监听器
-- 实现跨战斗的状态管理
-- 监听游戏运行时事件
-
-### 注意事项
-
-- 需要游戏支持 `ModHelper.SubscribeForCombatStateHooks` 和 `ModHelper.SubscribeForRunStateHooks` API
-- 如果 API 不存在，会记录警告日志但不会崩溃
-- 继承 `ICustomModel` 接口，会自动添加模组前缀
-
-## Harmony 补丁转储 (Harmony Patch Dump)
-
-BaseLib 提供了 Harmony 补丁转储功能，可以将所有 Harmony 修补的方法记录到文件中，便于调试和分析。
-
-### 配置选项
-
-在 BaseLib 模组配置中可以设置：
+用于自定义网络通信：
 
 ```csharp
-[ConfigSection("HarmonyDumpSection")]
-[ConfigTextInput(TextInputPreset.Anything, MaxLength = 1024)]
-public static string HarmonyPatchDumpOutputPath { get; set; } = "";
+using MegaCrit.Sts2.Core.Logging;
+using MegaCrit.Sts2.Core.Multiplayer.Messages.Game;
+using MegaCrit.Sts2.Core.Multiplayer.Serialization;
+using MegaCrit.Sts2.Core.Multiplayer.Transport;
+using MegaCrit.Sts2.Core.Runs;
 
-public static bool HarmonyPatchDumpOnFirstMainMenu { get; set; }
-```
+namespace YuWanCard.Multiplayer;
 
-| 配置项 | 说明 |
-|--------|------|
-| `HarmonyPatchDumpOutputPath` | 输出文件路径（支持 `user://`、`res://` 或绝对路径） |
-| `HarmonyPatchDumpOnFirstMainMenu` | 是否在首次进入主菜单时自动转储 |
-
-### 手动触发转储
-
-```csharp
-using BaseLib.Diagnostics;
-
-// 手动触发补丁转储
-HarmonyPatchDumpCoordinator.TryManualDumpFromSettings();
-```
-
-### 输出格式
-
-转储文件包含以下信息：
-
-```
-=======================================================
-===          Harmony Patch Dump Report             ===
-=======================================================
-Generated at: 2024-01-01T12:00:00.0000000
-User data dir: C:\Users\User\AppData\Roaming\SlayTheSpire2
-=======================================================
-
-┌─ [MegaCrit.Sts2.Core.Nodes.Screens.MainMenu.NMainMenu]
-│  Method: void _Ready()
-│
-│  ├─ Prefixes (1):
-│  │  ├─ [Priority: 0] [BaseLib] BaseLib.Patches.Utils.NMainMenuReadyOpenLogWindowPatch.Prefix
-│  ├─ Postfixes (1):
-│  │  ├─ [Priority: 0] [BaseLib] BaseLib.Patches.Utils.NMainMenuReadyOpenLogWindowPatch.Postfix
-└─────────────────────────────────────────────────────────────────
-
-=======================================================
-===                   Summary                      ===
-=======================================================
-Total Patched Methods:  42
-  - Prefix patches:     15
-  - Postfix patches:    20
-  - Transpiler patches: 5
-  - Finalizer patches:  2
-  - Total patches:      42
-=======================================================
-```
-
-### 使用场景
-
-- 调试模组冲突
-- 分析补丁优先级
-- 检查补丁是否正确应用
-- 了解其他模组的补丁行为
-
-## 日志系统增强
-
-BaseLib 提供了增强的日志系统，使用 Godot 日志来获取与普通日志文件相同的文本内容。
-
-### LogListener
-
-`LogListener` 继承自 `Godot.Logger`，重写 `_LogMessage` 方法将日志消息添加到日志窗口：
-
-```csharp
-using BaseLib.Patches.Utils;
-
-// LogListener 自动捕获 Godot 日志
-// 日志会自动添加到 NLogWindow
-```
-
-### 日志窗口配置
-
-```csharp
-using BaseLib.Config;
-
-// 启动时打开日志窗口
-BaseLibConfig.OpenLogWindowOnStartup = true;
-
-// 日志行数限制
-BaseLibConfig.LimitedLogSize = 256;
-
-// 日志字体大小
-BaseLibConfig.LogFontSize = 14;
-```
-
-### 日志窗口功能
-
-| 功能 | 说明 |
-|------|------|
-| 缩放/字体大小调整 | Ctrl + 鼠标滚轮调整字体大小（8-48px） |
-| 窗口大小和位置记忆 | 自动保存上次关闭窗口时的大小和位置 |
-| 日志级别过滤 | 可选择显示 Error、Warn、Info、Debug 等级别 |
-| 文本过滤 | 支持普通文本搜索和正则表达式搜索 |
-| 反向过滤 | 反转过滤结果 |
-| 自动跟随日志 | 可选择是否自动滚动到最新日志 |
-| 超宽屏/HiDPI 支持 | 自动适配不同的显示缩放比例 |
-
-### 使用日志
-
-```csharp
-using BaseLib.BaseLibScenes;
-
-// 日志会自动添加到窗口
-BaseLibMain.Logger.Info("这是一条信息");
-BaseLibMain.Logger.Warn("这是一条警告");
-BaseLibMain.Logger.Error("这是一条错误");
-
-// 手动打开日志窗口
-var logWindow = new NLogWindow();
-logWindow.Show();
-```
-
-### 日志级别颜色
-
-| 级别 | 颜色 |
-|------|------|
-| Error | 红色 |
-| Warn | 黄色 |
-| Info | 默认颜色 |
-| Debug | 蓝色 |
-
-## BaseLib 补丁系统
-
-BaseLib 通过 Harmony 补丁提供了多种功能扩展。
-
-### 代码本地化提供器 (ILocalizationProvider)
-
-`ILocalizationProvider` 接口允许模型在代码中直接提供本地化内容，而无需依赖外部 JSON 文件：
-
-```csharp
-using BaseLib.Utils;
-
-public class MyCard : CustomCardModel, ILocalizationProvider
+public struct TeammatePayRequestMessage : INetMessage, IPacketSerializable, IRunLocationTargetedMessage
 {
-    // 返回本地化表名称（可选）
-    public string? LocTable => "cards";
-    
-    // 提供本地化内容
-    public List<(string, string)>? Localization => new CardLoc(
-        Title: "卡牌名称",
-        Description: "卡牌描述"
-    );
-}
-```
+    public required int PurchaseId { get; set; }
+    public required ulong RequesterNetId { get; set; }
+    public required ulong TargetNetId { get; set; }
+    public required int GoldAmount { get; set; }
+    public required string EntryId { get; set; }
+    public required RunLocation Location { get; set; }
 
-**支持的本地化类型**：
-- `CardLoc`：卡牌本地化
-- `PowerLoc`：能力本地化
-- `RelicLoc`：遗物本地化
-- `PotionLoc`：药水本地化
-- `OrbLoc`：能量球本地化
-- `CharacterLoc`：角色本地化
-- `MonsterLoc`：怪物本地化
-- `EncounterLoc`：遭遇本地化
-- `ModifierLoc`：修改器本地化
-- `ActLoc`：章节本地化
-- `CardModifierLoc`：卡牌修改器本地化
+    public bool ShouldBroadcast => false;
+    public NetTransferMode Mode => NetTransferMode.Reliable;
+    public LogLevel LogLevel => LogLevel.Debug;
 
-**多语言支持**：
+    RunLocation IRunLocationTargetedMessage.Location => Location;
 
-```csharp
-public List<(string, string)>? Localization => LocManager.Instance.Language switch
-{
-    "zhs" => new CardLoc("简体中文标题", "简体中文描述"),
-    "eng" => new CardLoc("English Title", "English Description"),
-    _ => new CardLoc("默认标题", "默认描述")
-};
-```
-
-**使用场景**：
-- 动态生成的卡牌/遗物
-- 需要程序化本地化的内容
-- 基于条件变化的文本
-
-**注意事项**：
-- 推荐优先使用 JSON 文件进行本地化
-- 代码本地化适用于动态内容
-- 实现此接口的模型会自动将本地化添加到对应的本地化表中
-
-### Content 补丁（内容注册）
-
-| 补丁类 | 功能 |
-|--------|------|
-| `ContentPatches` | 核心内容注册，管理自定义模型的添加、共享池注册 |
-| `CustomEnums` | 自动生成枚举值，支持自定义关键词和牌堆类型 |
-| `CustomPilePatches` | 自定义牌堆支持 |
-| `PrefixIdPatch` | 为自定义模型自动添加模组前缀 |
-| `StarterUpgradePatches` | 支持遗物升级替换 |
-| `AddAncientDialogues` | 为自定义角色添加先古之民对话 |
-| `CustomAnimationPatch` | 支持自定义生物使用 AnimationPlayer（非 Spine 动画） |
-
-### Features 补丁（功能特性）
-
-| 补丁类 | 功能 |
-|--------|------|
-| `ExhaustivePatch` | 实现"究极"机制（卡牌打出 N 次后消耗） |
-| `PersistPatch` | 实现"持续"机制（卡牌本回合打出后留在手牌） |
-| `RefundPatch` | 实现"退还"机制（打出后返还能量） |
-| `SelfApplyDebuffPatch` | 修复玩家对自己施加负面效果的持续回合计算 |
-| `ModInteropPatch` | 实现模组间互操作 |
-| `LogPatch` | 提供日志窗口功能，可通过配置开启 |
-
-### 日志窗口功能
-
-BaseLib 提供了增强的日志窗口，支持缩放、过滤和自定义配置：
-
-**功能特性**：
-- **缩放/字体大小调整**：Ctrl + 鼠标滚轮调整字体大小（8-48px）
-- **窗口大小和位置记忆**：自动保存上次关闭窗口时的大小和位置
-- **日志级别过滤**：可选择显示 Error、Warn、Info、Debug 等级别
-- **文本过滤**：支持普通文本搜索和正则表达式搜索
-- **反向过滤**：反转过滤结果
-- **自动跟随日志**：可选择是否自动滚动到最新日志
-- **超宽屏/HiDPI 支持**：自动适配不同的显示缩放比例
-
-**配置选项**（在模组配置中）：
-
-```csharp
-[ConfigSection("LogSection")]
-public static bool OpenLogWindowOnStartup { get; set; } = false;  // 启动时打开日志窗口
-
-[ConfigSlider(128, 2048, 64, labelFormat: "{0:0} lines")]
-public static double LimitedLogSize { get; set; } = 256;  // 日志行数限制
-
-[ConfigSlider(8, 48, 1, labelFormat: "{0:0} px")]
-public static double LogFontSize { get; set; } = 14;  // 字体大小
-```
-
-**使用日志窗口**：
-
-```csharp
-using BaseLib.BaseLibScenes;
-
-// 日志会自动添加到窗口
-BaseLibMain.Logger.Info("这是一条信息");
-BaseLibMain.Logger.Warn("这是一条警告");
-BaseLibMain.Logger.Error("这是一条错误");
-
-// 手动打开日志窗口
-var logWindow = new NLogWindow();
-logWindow.Show();
-```
-
-**日志窗口 UI 组件**：
-- `LogLevelOption`：日志级别下拉选择
-- `FilterText`：过滤文本输入框
-- `RegexButton`：正则表达式模式切换
-- `InverseButton`：反向过滤切换
-- `Log`：日志内容显示区域（RichTextLabel）
-
-**注意事项**：
-- 日志窗口是独立场景，可以多个实例同时存在
-- 日志内容限制为 256 行（可配置），超出部分自动移除
-- 支持日志级别颜色区分（Error=红色，Warn=黄色，Debug=蓝色）
-
-### Hooks 补丁（钩子）
-
-| 补丁类 | 功能 |
-|--------|------|
-| `ModifyHealAmountPatches` | 实现治疗量修改钩子 |
-
-### UI 补丁
-
-| 补丁类 | 功能 |
-|--------|------|
-| `AutoKeywordText` | 自动将自定义关键词添加到卡牌描述 |
-| `CustomCompendiumPatch` | 在卡牌图书馆添加自定义角色筛选按钮 |
-| `CustomEnergyIconPatches` | 支持自定义能量图标 |
-| `ExtraTooltips` | 为卡牌添加额外的悬停提示 |
-| `ModConfigButtonPatch` | 在模组信息界面添加配置按钮 |
-| `ModelUiPatch` | 支持为卡牌、遗物、药水添加自定义 UI |
-
-### Compatibility 补丁（兼容性）
-
-| 补丁类 | 功能 |
-|--------|------|
-| `MissingLocPatch` | 防止本地化键缺失导致的崩溃 |
-| `UnknownCharacterPatches` | 处理卸载模组后的存档兼容性 |
-
-## 模组配置系统改进
-
-BaseLib 的模组配置系统提供了多种 UI 组件和配置选项：
-
-### 配置 UI 组件
-
-BaseLib 提供了丰富的配置 UI 组件，用于创建模组配置界面：
-
-| 组件类 | 功能 |
-|--------|------|
-| `NConfigButton` | 按钮组件，点击触发操作 |
-| `NConfigDropdown` | 下拉选择框，支持多项选择 |
-| `NConfigDropdownItem` | 下拉选项项 |
-| `NConfigLineEdit` | 文本输入框 |
-| `NConfigOpenerButton` | 子菜单打开按钮 |
-| `NConfigOptionRow` | 配置选项行布局 |
-| `NConfigSlider` | 滑动条，支持范围设置 |
-| `NConfigTickbox` | 复选框/开关 |
-| `NModConfigSubmenu` | 配置子菜单 |
-
-### 配置特性
-
-**配置分区**：
-
-```csharp
-using BaseLib.Config;
-
-[ConfigSection("LogSection")]
-public static bool OpenLogWindowOnStartup { get; set; } = false;
-```
-
-**滑动条范围**：
-
-```csharp
-[ConfigSlider(8, 48, 1, labelFormat: "{0:0} px")]
-public static double LogFontSize { get; set; } = 14;
-```
-
-**隐藏配置项**：
-
-```csharp
-[ConfigHideInUI]
-public static int LastLogLevel { get; set; } = 3;  // 不在 UI 中显示
-```
-
-**配置保存**：
-
-```csharp
-// 自动保存配置
-ModConfig.SaveDebounced<BaseLibConfig>();
-```
-
-### 悬停提示支持
-
-```csharp
-[ConfigHoverTipsByDefault]
-internal class BaseLibConfig : SimpleModConfig
-{
-    // 配置项会自动显示悬停提示
-}
-```
-
-## 模组互操作 (ModInterop)
-
-BaseLib 提供了模组间互操作系统，允许模组之间进行软依赖交互：
-
-### 创建互操作类
-
-```csharp
-using BaseLib.Utils.ModInterop;
-
-[ModInterop("OtherModId")]
-public class OtherModInterop : InteropClassWrapper
-{
-    [InteropTarget("OtherModNamespace.OtherClass")]
-    public static MethodInfo? SomeMethod { get; set; }
-
-    [InteropTarget(Type = "OtherModNamespace.OtherClass")]
-    public static Type? SomeType { get; set; }
-
-    public static void DoSomething()
+    public void Serialize(PacketWriter writer)
     {
-        if (SomeMethod != null)
+        writer.WriteInt(PurchaseId);
+        writer.WriteULong(RequesterNetId);
+        writer.WriteULong(TargetNetId);
+        writer.WriteInt(GoldAmount);
+        writer.WriteString(EntryId);
+        writer.Write(Location);
+    }
+
+    public void Deserialize(PacketReader reader)
+    {
+        PurchaseId = reader.ReadInt();
+        RequesterNetId = reader.ReadULong();
+        TargetNetId = reader.ReadULong();
+        GoldAmount = reader.ReadInt();
+        EntryId = reader.ReadString();
+        Location = reader.Read<RunLocation>();
+    }
+}
+```
+
+---
+
+## 自定义 UI
+
+使用 Godot Controls 创建自定义 UI：
+
+```csharp
+using Godot;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Runs;
+
+namespace YuWanCard.UI;
+
+public partial class MyPopup : Control, IScreenContext
+{
+    public Control? DefaultFocusedControl => null;
+
+    public static MyPopup? Create()
+    {
+        var popup = new MyPopup();
+        popup.SetAnchorsPreset(LayoutPreset.FullRect);
+        popup.MouseFilter = MouseFilterEnum.Ignore;
+        popup.SetupUI();
+        return popup;
+    }
+
+    private void SetupUI()
+    {
+        var mainPanel = new PanelContainer();
+        mainPanel.AnchorLeft = 0.5f;
+        mainPanel.AnchorRight = 0.5f;
+        mainPanel.OffsetLeft = -350f;
+        mainPanel.OffsetRight = 350f;
+
+        var styleBox = new StyleBoxFlat();
+        styleBox.BgColor = new Color(0.1f, 0.1f, 0.15f, 0.95f);
+        styleBox.BorderColor = new Color(0.4f, 0.35f, 0.25f);
+        styleBox.SetBorderWidthAll(3);
+        styleBox.SetCornerRadiusAll(10);
+        mainPanel.AddThemeStyleboxOverride("panel", styleBox);
+
+        AddChild(mainPanel);
+    }
+
+    public void Open()
+    {
+        NModalContainer.Instance?.Add(this, showBackstop: true);
+        SfxCmd.Play("event:/sfx/ui/ui_card_reward_open");
+    }
+
+    public void Close()
+    {
+        NModalContainer.Instance?.Clear();
+        SfxCmd.Play("event:/sfx/ui/ui_button_click");
+    }
+
+    private static string GetLocText(string key) => new LocString("settings_ui", key).GetRawText();
+}
+```
+
+---
+
+## 遗物升级系统
+
+实现可升级的遗物：
+
+```csharp
+using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Models.RelicPools;
+using MegaCrit.Sts2.Core.Saves.Runs;
+
+namespace YuWanCard.Relics;
+
+[Pool(typeof(SharedRelicPool))]
+public class UpgradableRelic : YuWanRelicModel
+{
+    public override RelicRarity Rarity => RelicRarity.Uncommon;
+
+    [SavedProperty]
+    public int YuWanCard_UpgradeLevel { get; set; } = 0;
+
+    public int MaxUpgradeLevel => 3;
+
+    public bool CanUpgrade => YuWanCard_UpgradeLevel < MaxUpgradeLevel;
+
+    public override async Task AfterCombatVictory()
+    {
+        await base.AfterCombatVictory();
+        
+        if (CanUpgrade && SomeCondition())
         {
-            SomeMethod.Invoke(null, new object[] { "arg" });
+            YuWanCard_UpgradeLevel++;
+            Flash();
+            MainFile.Logger.Info($"Relic upgraded to level {YuWanCard_UpgradeLevel}");
         }
     }
-}
-```
 
-### 特性说明
-
-| 特性 | 用途 |
-|------|------|
-| `[ModInterop("ModId")]` | 标记互操作类，指定目标模组 ID |
-| `[InteropTarget("FullTypeName")]` | 标记互操作目标（方法、类型等） |
-
-### 使用互操作
-
-```csharp
-// 检查目标模组是否加载
-if (OtherModInterop.IsLoaded)
-{
-    OtherModInterop.DoSomething();
-}
-
-// 获取目标模组的类型
-var targetType = OtherModInterop.SomeType;
-if (targetType != null)
-{
-    var instance = Activator.CreateInstance(targetType);
-}
-```
-
-**重要说明**：
-- ModInterop 使用软依赖，目标模组不存在时不会报错
-- 互操作类会在目标模组加载时自动绑定
-- 使用前检查 `IsLoaded` 或目标是否为 null
-
-## 自定义枚举和关键词 (CustomEnums)
-
-BaseLib 支持自动生成枚举值和自定义关键词。
-
-### CustomEnumAttribute
-
-标记字段为需要自动生成枚举值的字段：
-
-```csharp
-using BaseLib.Patches.Content;
-
-public static class MyKeywords
-{
-    [CustomEnum("MY_KEYWORD")]
-    [KeywordProperties(AutoKeywordPosition.After)]
-    public static readonly CardKeyword MyKeyword;
-}
-```
-
-### Bitflag 枚举支持
-
-BaseLib 现在支持带有 `[Flags]` 属性的枚举类型，会自动使用位标志增量逻辑：
-
-```csharp
-using BaseLib.Patches.Content;
-using System;
-
-[Flags]
-public enum MyFlags
-{
-    None = 0,
-    Flag1 = 1,
-    Flag2 = 2,
-    Flag3 = 4
-}
-
-public static class MyCustomEnums
-{
-    // 自动生成下一个位标志值（8）
-    [CustomEnum]
-    public static readonly MyFlags MyCustomFlag;
-}
-```
-
-**位标志增量逻辑**：
-- 对于普通枚举：`value + 1`
-- 对于 `[Flags]` 枚举：`value << 1`（左移一位）
-
-### KeywordPropertiesAttribute
-
-为 CardKeyword 字段添加额外属性：
-
-| 参数 | 说明 |
-|------|------|
-| `AutoKeywordPosition.None` | 不自动添加关键词文本 |
-| `AutoKeywordPosition.Before` | 在描述前添加关键词标题 |
-| `AutoKeywordPosition.After` | 在描述后添加关键词标题 |
-| `richKeyword` (v0.2.8 新增) | 是否启用富文本关键词（支持能量图标等） |
-
-**RichKeyword 参数**（v0.2.8 新增）：
-
-```csharp
-// 启用富文本关键词（默认 true）- 支持能量图标、? 等格式
-[KeywordProperties(AutoKeywordPosition.After, richKeyword: true)]
-public static readonly CardKeyword MyKeyword;
-
-// 禁用富文本关键词
-[KeywordProperties(AutoKeywordPosition.After, richKeyword: false)]
-public static readonly CardKeyword MySimpleKeyword;
-```
-
-**富文本关键词支持**：
-- 能量图标：`[energy]` 或 `[energy|PoolId]`
-- 问号占位符：`?` 和 `?`
-- 其他 BBCode 格式
-
-### 自定义牌堆类型
-
-```csharp
-using BaseLib.Utils;
-using BaseLib.Patches.Content;
-
-public class MyCustomPile : CustomPile
-{
-    [CustomEnum]
-    public static readonly PileType MyPileType;
-
-    public MyCustomPile() { } // 必须有无参构造函数
-
-    public override string PileName => "My Custom Pile";
-
-    public override bool CardShouldBeVisible(CardModel card) => true;
-
-    public override Vector2 GetTargetPosition(CardModel model, Vector2 size) => Vector2.Zero;
-}
-```
-
-### 关键词本地化
-
-```json
-{
-  "MYMOD-MY_KEYWORD.title": "关键词名称",
-  "MYMOD-MY_KEYWORD.description": "关键词描述"
-}
-```
-
-## 自定义卡牌变量
-
-你可以创建自己的动态变量：
-
-```csharp
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Models;
-
-public class MyCustomVar : DynamicVar
-{
-    public const string Key = "MyCustom";
-
-    public MyCustomVar(decimal value) : base(Key, value)
+    public override decimal ModifyDamageMultiplicative(decimal amount, Player player)
     {
-    }
-
-    public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
-    {
-        PreviewValue = IntValue * 2;
+        return player == Owner ? amount * (1m + 0.1m * YuWanCard_UpgradeLevel) : amount;
     }
 }
 ```
 
-**使用自定义变量**：
-
-```csharp
-protected override IEnumerable<DynamicVar> CanonicalVars => [new MyCustomVar(5)];
-```
-
-**本地化描述**：
-
-```json
-{
-  "MYMOD-MYCARD.description": "造成 {MyCustom:diff()} 点伤害。"
-}
-```
-
-## 自定义遗物升级
-
-遗物可以设置升级替换：
-
-```csharp
-public override RelicModel? GetUpgradeReplacement()
-{
-    return new MyUpgradedRelic();
-}
-```
-
-**完整示例**：
-
-```csharp
-[Pool(typeof(SharedRelicPool))]
-public class MyRelic : CustomRelicModel
-{
-    public override RelicRarity Rarity => RelicRarity.Common;
-
-    public override RelicModel? GetUpgradeReplacement() => new MyUpgradedRelic();
-}
-
-[Pool(typeof(SharedRelicPool))]
-public class MyUpgradedRelic : CustomRelicModel
-{
-    public override RelicRarity Rarity => RelicRarity.Rare;
-}
-```
-
-## 自定义先古之民选项
-
-创建带有变体的先古之民选项：
-
-```csharp
-protected override OptionPools MakeOptionPools => new OptionPools(
-    MakePool(
-        AncientOption<MyRelic>(
-            weight: 1,
-            relicPrep: relic => relic.Setup(),
-            makeAllVariants: relic => new[] { relic, relic.UpgradedVersion }
-        )
-    )
-);
-```
-
-**选项参数说明**：
-- `weight`：选项权重，影响随机选择概率
-- `relicPrep`：遗物预处理函数，用于在生成前配置遗物
-- `makeAllVariants`：生成所有变体的函数，用于创建多个版本的遗物
+---
 
 ## 自定义卡牌池
 
 创建自定义卡牌池：
 
 ```csharp
-using BaseLib.Utils;
-using Godot;
+using MegaCrit.Sts2.Core.Models.CardPools;
 
-public class MyCustomCardPool : CustomCardPoolModel
+namespace YuWanCard.CardPools;
+
+public class PigCardPool : CustomCardPoolModel
 {
-    public MyCustomCardPool()
-    {
-        Title = "My Card Pool";
-    }
-
+    public override string Title => "pig_pool";
     public override bool IsShared => false;
+    public override bool IsColorless => false;
 
-    public override string? CardFrameMaterialPath => null;
+    protected override CardModel[] GenerateAllCards()
+    {
+        return YuWanCardModel.RegisteredCards
+            .Where(c => c is IYuWanCard)
+            .ToArray();
+    }
+}
+```
 
-    public override Color ShaderColor => new Color(1, 0, 0);
+---
 
-    public override float H => ShaderColor.H;
-    public override float S => ShaderColor.S;
-    public override float V => ShaderColor.V;
+## 自定义遭遇
 
-    protected override CardModel[] GenerateAllCards() => 
+注册自定义遭遇：
+
+```csharp
+using MegaCrit.Sts2.Core.Models.Encounters;
+
+namespace YuWanCard.Encounters;
+
+public class PigEncounter : EncounterModel
+{
+    public override string EncounterId => "pig_battle";
+
+    public override List<EncounterMonster> Monsters =>
     [
-        ModelDb.Card<Card1>(),
-        ModelDb.Card<Card2>(),
-        ModelDb.Card<Card3>()
+        new EncounterMonster(typeof(PigMinion), 0, 0),
     ];
+
+    public override EncounterType Type => EncounterType.Normal;
+    public override Act[] Acts => [Act.One];
 }
 ```
 
-**重要说明**：
-- 所有卡牌池必须是角色池或共享池，否则无法被找到
-- 角色池通过 `CharacterModel.CardPool` 属性获取
-- 共享池通过 `ModelDb.AllSharedCardPools` 获取
-- `IsShared` 为 true 时，池会自动注册到 `ModelDb.AllSharedCardPools`
+---
 
-## 自定义遗物池
+## 自定义事件
 
-创建自定义遗物池：
+创建自定义事件：
 
 ```csharp
-using BaseLib.Utils;
+using MegaCrit.Sts2.Core.Entities.Events;
 
-public class MyCustomRelicPool : CustomRelicPoolModel
+namespace YuWanCard.Events;
+
+public class PigEvent : EventModel
 {
-    public MyCustomRelicPool()
+    public override string EventId => "pig_event";
+    public override Act[] Acts => [Act.One, Act.Two];
+
+    public override async Task<EventState> Initialize(Player player)
     {
-        Title = "My Relic Pool";
-    }
-
-    public override bool IsShared => false;
-
-    protected override IEnumerable<RelicModel> GenerateAllRelics() => 
-    [
-        ModelDb.Relic<Relic1>(),
-        ModelDb.Relic<Relic2>()
-    ];
-}
-```
-
-## 自定义药水池
-
-创建自定义药水池：
-
-```csharp
-using BaseLib.Utils;
-
-public class MyCustomPotionPool : CustomPotionPoolModel
-{
-    public MyCustomPotionPool()
-    {
-        Title = "My Potion Pool";
-    }
-
-    public override bool IsShared => false;
-
-    protected override IEnumerable<PotionModel> GenerateAllPotions() => 
-    [
-        ModelDb.Potion<Potion1>(),
-        ModelDb.Potion<Potion2>()
-    ];
-}
-```
-
-## Harmony 补丁技巧
-
-### 修改私有方法
-
-使用反射调用私有方法：
-
-```csharp
-using System.Reflection;
-using HarmonyLib;
-
-var method = typeof(TargetClass).GetMethod("PrivateMethod", 
-    BindingFlags.NonPublic | BindingFlags.Instance);
-method?.Invoke(instance, new object[] { arg1, arg2 });
-```
-
-### 修改属性
-
-使用 `AccessTools` 获取和设置属性：
-
-```csharp
-using HarmonyLib;
-
-var property = AccessTools.Property(typeof(TargetClass), "PropertyName");
-var value = property.GetValue(instance);
-property.SetValue(instance, newValue);
-```
-
-### 修改字段
-
-使用 `AccessTools` 获取和设置字段：
-
-```csharp
-using HarmonyLib;
-
-var field = AccessTools.Field(typeof(TargetClass), "fieldName");
-var value = field.GetValue(instance);
-field.SetValue(instance, newValue);
-```
-
-### 创建自定义字段
-
-使用 `SpireField` 创建自定义字段：
-
-```csharp
-using BaseLib.Utils;
-
-private static readonly SpireField<Creature, int> MyCustomField = new(() => 0);
-
-MyCustomField.Set(creature, 10);
-var value = MyCustomField.Get(creature);
-
-MyCustomField[creature] = 20;
-```
-
-## IL 补丁工具
-
-BaseLib 提供了简化 Transpiler 编写的工具：
-
-### InstructionPatcher 示例
-
-```csharp
-using BaseLib.Utils.Patching;
-using HarmonyLib;
-
-[HarmonyPatch(typeof(TargetClass), nameof(TargetClass.TargetMethod))]
-public class MyTranspilerPatch
-{
-    [HarmonyTranspiler]
-    public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-    {
-        var patcher = new InstructionPatcher(instructions);
-
-        // 查找并替换方法调用
-        while (patcher.Find(new IMatcher[]
-        {
-            InstructionMatcher.OpCode(OpCodes.Call, AccessTools.Method(typeof(TargetClass), "OldMethod"))
-        }))
-        {
-            patcher.GetLabels(out var labels);
-            patcher.Replace(new CodeInstruction(OpCodes.Call, 
-                AccessTools.Method(typeof(MyClass), "NewMethod")).WithLabels(labels));
-        }
-
-        return patcher;
+        return new EventState(
+            "page_1",
+            new EventPage(
+                new LocString("events", "PIG_EVENT.page_1.description"),
+                [
+                    new EventOption(
+                        "option_1",
+                        async () => {
+                            await PlayerCmd.GainGold(50, player);
+                            return "page_2";
+                        },
+                        new LocString("events", "PIG_EVENT.page_1.option_1.title")
+                    ),
+                    new EventOption(
+                        "option_2",
+                        async () => {
+                            await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), player.Creature, 5m);
+                            return null;
+                        },
+                        new LocString("events", "PIG_EVENT.page_1.option_2.title")
+                    ),
+                ]
+            )
+        );
     }
 }
 ```
-
-### 复杂匹配示例
-
-```csharp
-// 匹配多个指令序列
-while (patcher.Find(new IMatcher[]
-{
-    InstructionMatcher.OpCode(OpCodes.Ldarg_0),
-    InstructionMatcher.OpCode(OpCodes.Ldfld, someField),
-    InstructionMatcher.OpCode(OpCodes.Callvirt, someMethod)
-}))
-{
-    // 在匹配位置前插入代码
-    patcher.Step(-1);
-    patcher.Insert(new[]
-    {
-        new CodeInstruction(OpCodes.Ldarg_0),
-        new CodeInstruction(OpCodes.Call, myCheckMethod)
-    });
-}
-```
-
-### InstructionMatcher 流式 API
-
-```csharp
-var matcher = new InstructionMatcher(instructions);
-
-// 流式匹配
-if (matcher
-    .Match(OpCodes.Ldarg_0)
-    .Match(OpCodes.Call, methodA)
-    .Match(OpCodes.Stloc_0)
-    .Success)
-{
-    // 匹配成功，处理代码
-}
-```
-
-## 自定义牌堆 (CustomPile)
-
-继承 `CustomPile` 创建自定义牌堆：
-
-```csharp
-using BaseLib.Utils;
-
-public class MyCustomPile : CustomPile
-{
-    public MyCustomPile(Player player) : base(player)
-    {
-    }
-
-    public override string PileName => "My Custom Pile";
-
-    // 自定义牌堆逻辑
-}
-```
-
-**使用 SpireField 存储自定义牌堆**：
-
-```csharp
-private static readonly SpireField<PlayerCombatState, MyCustomPile> MyPileField = new(() => null!);
-
-public static MyCustomPile GetMyPile(Player player)
-{
-    var pile = MyPileField.Get(player.PlayerCombatState);
-    if (pile == null)
-    {
-        pile = new MyCustomPile(player);
-        MyPileField.Set(player.PlayerCombatState, pile);
-    }
-    return pile;
-}
-```
-
-## IHealAmountModifier 接口
-
-实现 `IHealAmountModifier` 接口可以修改治疗量：
-
-```csharp
-using BaseLib.Hooks;
-using MegaCrit.Sts2.Core.Entities.Creatures;
-
-public class MyHealModifier : IHealAmountModifier
-{
-    public decimal ModifyHealAdditive(Creature creature, decimal amount)
-    {
-        return 5; // 额外治疗 5 点（加法）
-    }
-
-    public decimal ModifyHealMultiplicative(Creature creature, decimal amount)
-    {
-        return 1.5m; // 治疗 150%（乘法）
-    }
-}
-```
-
-**执行顺序**：
-1. `IHealAmountModifier.ModifyHealAdditive()` - 加法修改，返回额外治疗量
-2. `AbstractModel.ModifyHealAmount()` - 遗物/能力等的修改
-3. `IHealAmountModifier.ModifyHealMultiplicative()` - 乘法修改，返回倍率
-
-**方法说明**：
-
-| 方法 | 说明 | 默认返回值 |
-|------|------|-----------|
-| `ModifyHealAdditive(Creature, decimal)` | 加法修改，返回额外治疗量 | `0m` |
-| `ModifyHealMultiplicative(Creature, decimal)` | 乘法修改，返回倍率 | `1m` |
-
-**注意事项**：
-- `ModifyHealAdditive` 的 `amount` 参数是原始治疗量（在任何修改之前）
-- `ModifyHealMultiplicative` 的 `amount` 参数是加法修改后的治疗量
-- 最终治疗量会使用 `Math.Max(0m, result)` 确保不为负数
-
-## 自定义能量图标池
-
-实现 `ICustomEnergyIconPool` 接口为卡牌池添加自定义能量图标：
-
-```csharp
-using BaseLib.Utils;
-
-public class MyCardPool : CustomCardPoolModel, ICustomEnergyIconPool
-{
-    public string? BigEnergyIconPath => "res://MyMod/images/ui/energy_big.png";
-    public string? TextEnergyIconPath => "res://MyMod/images/ui/energy_text.png";
-    public string? EnergyColorName => "my_custom_energy";
-}
-```
-
-**属性说明**：
-| 属性 | 说明 |
-|------|------|
-| `BigEnergyIconPath` | 大能量图标路径 |
-| `TextEnergyIconPath` | 文本能量图标路径 |
-| `EnergyColorName` | 能量颜色名称（用于本地化等） |

@@ -1,15 +1,13 @@
 using System.Reflection;
-using BaseLib.Config;
-using BaseLib.Extensions;
-using BaseLib.Utils.NodeFactories;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Config;
-using YuWanCard.Patches;
 using YuWanCard.Multiplayer;
+using YuWanCard.Patches;
 using YuWanCard.Utils;
 
 namespace YuWanCard;
@@ -25,19 +23,30 @@ public partial class MainFile : Node
 
     private const string PigVisualsPath = "res://YuWanCard/scenes/characters/pig.tscn";
     private const string PigMerchantPath = "res://YuWanCard/scenes/characters/pig_merchant.tscn";
-
+    private const string PigEnergyCounterPath = "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
+    private const string PigRestSitePath = "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
 
     public static void Initialize()
     {
         Harmony harmony = new(ModId);
-        harmony.TryPatchAll(Assembly.GetExecutingAssembly());
+        harmony.PatchAll(Assembly.GetExecutingAssembly());
         EndlessModePatch.ApplyMapPointTypeCountsPatches(harmony);
         AutoSlayCharacterPatch.ApplyPatch(harmony);
         AutoSlayOptionsPatch.ApplyPatch(harmony);
 
-        Config = new YuWanCardConfig();
-        ModConfigRegistry.Register(ModId, Config);
-        Config.ConfigChanged += OnConfigChanged;
+        // Register all models with [Pool] attribute before ModelDb initializes
+        ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
+
+        try
+        {
+            Config = new YuWanCardConfig();
+            RegisterConfig();
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn($"Config init failed (BaseLib not available?): {ex.Message}");
+            Config = null;
+        }
 
         NodeFactory.Init();
         RegisterSceneConversions();
@@ -47,6 +56,24 @@ public partial class MainFile : Node
         PreloadAssets();
 
         Logger.Info("YuWanCard initialized");
+    }
+
+    private static void RegisterConfig()
+    {
+        try
+        {
+            var baseLibConfigType = Type.GetType("BaseLib.Config.ModConfigRegistry, BaseLib");
+            if (baseLibConfigType != null)
+            {
+                var registerMethod = baseLibConfigType.GetMethod("Register");
+                registerMethod?.Invoke(null, [ModId, Config]);
+                Logger.Info("Registered config via BaseLib");
+            }
+        }
+        catch (Exception)
+        {
+            Logger.Warn("BaseLib not available; config UI disabled");
+        }
     }
 
     private static void PreloadAssets()
@@ -71,11 +98,12 @@ public partial class MainFile : Node
     {
         NodeFactory.RegisterSceneType<NCreatureVisuals>(PigVisualsPath);
         NodeFactory.RegisterSceneType<NMerchantCharacter>(PigMerchantPath);
+        NodeFactory.RegisterSceneType<NEnergyCounter>(PigEnergyCounterPath);
+        NodeFactory.RegisterSceneType<NRestSiteCharacter>(PigRestSitePath);
     }
 
     private static void OnConfigChanged(object? sender, EventArgs e)
     {
-
     }
 
     private static void PreloadTextures(params string[] texturePaths)
@@ -99,3 +127,4 @@ public partial class MainFile : Node
         }
     }
 }
+

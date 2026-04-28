@@ -1,5 +1,4 @@
-using BaseLib.Abstracts;
-using BaseLib.Utils;
+using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ancients;
@@ -7,20 +6,19 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Extensions;
-using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.RelicPools;
-using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Core.Utils;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Ancients;
 
-public class PigPig : CustomAncientModel
+public class PigPig : YuWanAncientModel
 {
     private const string IconBasePath = "res://YuWanCard/images/ancients/pig_pig";
 
@@ -35,7 +33,7 @@ public class PigPig : CustomAncientModel
         ModelDb.Relic<LustfulPig>()
     ]);
 
-    public PigPig() : base(autoAdd: true)
+    public PigPig()
     {
     }
 
@@ -44,9 +42,9 @@ public class PigPig : CustomAncientModel
 
     public override bool ShouldForceSpawn(ActModel act, AncientEventModel? rngChosenAncient) => false;
 
-    private const string RunHistoryIconPath = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig.png";
-    private const string RunHistoryIconOutlinePathStr = "res://YuWanCard/images/ui/run_history/yuwancard-pig_pig_outline.png";
-    
+    private const string RunHistoryIconPath = "res://YuWanCard/images/ancients/pig_pig.png";
+    private const string RunHistoryIconOutlinePathStr = "res://YuWanCard/images/ancients/pig_pig.png";
+
     public override string? CustomScenePath => "res://YuWanCard/scenes/ancients/pig_pig.tscn";
     public override string? CustomMapIconPath => $"{IconBasePath}.png";
     public override string? CustomMapIconOutlinePath => $"{IconBasePath}.png";

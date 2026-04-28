@@ -1,172 +1,52 @@
-# 自定义 Modifier
+# 自定义修改器
 
-Modifier（修改器）是一种可以修改游戏规则的特殊模型，用于创建自定义游戏模式（如无尽模式）。
+## 概述
 
-## 创建自定义 Modifier
+修改器（Modifier）是一种可以改变游戏运行规则的内容，类似于《杀戮尖塔 1》的进阶模式。项目提供了 `YuWanModifierModel` 基类来简化修改器的创建。
 
-继承 `ModifierModel` 来创建自定义修改器：
+## 基类：YuWanModifierModel
 
 ```csharp
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Events;
-using MegaCrit.Sts2.Core.Saves.Runs;
 
-public class EndlessModifier : ModifierModel
+namespace YuWanCard.Modifiers;
+
+public abstract partial class YuWanModifierModel : ModifierModel
 {
-    public const string ModifierId = "YUWANCARD-ENDLESS";
-
-    [SavedProperty]
-    public int YuWanCard_EndlessLoopCount { get; set; } = 0;
-
-    [SavedProperty]
-    public int YuWanCard_TotalActsCleared { get; set; } = 0;
-
-    [SavedProperty]
-    public bool YuWanCard_HasStarted { get; set; } = false;
-
+    protected virtual string ModifierId => "YUWANCARD-" + ...;
+    protected virtual string IconBasePath => ...;
+    
     public override LocString Title => new("modifiers", ModifierId + ".title");
     public override LocString Description => new("modifiers", ModifierId + ".description");
     public override LocString NeowOptionTitle => new("modifiers", ModifierId + ".neow_title");
     public override LocString NeowOptionDescription => new("modifiers", ModifierId + ".neow_description");
-
-    public override string IconPath => "res://YuWanCard/images/modifiers/endless.png";
-
-    public int EffectiveLoopCount => Math.Max(0, YuWanCard_EndlessLoopCount);
-
-    public override Func<Task>? GenerateNeowOption(EventModel eventModel)
-    {
-        if (YuWanCard_HasStarted)
-        {
-            return null;
-        }
-        return () => ActivateModifier(eventModel.Owner!, eventModel.Rng);
-    }
-
-    private async Task ActivateModifier(Player player, Rng rng)
-    {
-        MainFile.Logger.Info("Endless mode activated!");
-
-        YuWanCard_HasStarted = true;
-
-        if (LocalContext.IsMe(player))
-        {
-            await CreatureCmd.GainMaxHp(player.Creature, 10m);
-        }
-    }
-
-    public override void AfterRunCreated(RunState runState)
-    {
-        MainFile.Logger.Info($"Endless modifier initialized. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
-    }
-
-    public override void AfterRunLoaded(RunState runState)
-    {
-        MainFile.Logger.Info($"Endless modifier loaded. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
-    }
 }
 ```
 
-**重要说明**：
-- 使用 `[SavedProperty]` 标记需要持久化的属性
-- BaseLib 会自动处理 SavedProperty 的注册，无需手动注入
-- 使用 `LocalContext.IsMe(player)` 检查是否为本地玩家，避免多人游戏中重复执行
-- 属性名建议使用前缀（如 `YuWanCard_`）以避免命名冲突
+## ID 自动生成
 
-## Modifier 常用钩子方法
-
-| 方法 | 说明 |
-|------|------|
-| `GenerateNeowOption(EventModel)` | 生成 Neow 事件选项 |
-| `AfterRunCreated(RunState)` | Run 创建后调用 |
-| `AfterRunLoaded(RunState)` | Run 加载后调用 |
-| `AfterRoomEntered(AbstractRoom)` | 进入房间后调用 |
-| `AfterCreatureAddedToCombat(Creature)` | 生物加入战斗后调用 |
-| `ShouldAllowAncient(Player, AncientEventModel)` | 是否允许先古之民事件 |
-| `ShouldAllowSelectingMoreCardRewards(Player)` | 是否允许选择更多卡牌奖励 |
-
-## 注册 Modifier
-
-需要通过 Harmony 补丁将 Modifier 注册到 `ModelDb` 和 `GoodModifiers` 列表：
+修改器 ID 自动从类名生成，格式为 `YUWANCARD-{SNAKE_CASE_NAME}`：
 
 ```csharp
-using HarmonyLib;
-using MegaCrit.Sts2.Core.Models;
-
-[HarmonyPatch(typeof(ModelDb), nameof(ModelDb.Init))]
-public class ModifierRegistrationPatch
-{
-    [HarmonyPostfix]
-    public static void Postfix()
-    {
-        if (!ModelDb.Contains(typeof(EndlessModifier)))
-        {
-            ModelDb.Inject(typeof(EndlessModifier));
-            MainFile.Logger.Info("EndlessModifier registered to ModelDb");
-        }
-    }
-}
-
-[HarmonyPatch(typeof(ModelDb), nameof(ModelDb.GoodModifiers), MethodType.Getter)]
-public class GoodModifiersPatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(ref IReadOnlyList<ModifierModel> __result)
-    {
-        var list = __result.ToList();
-        if (!list.Any(m => m is EndlessModifier))
-        {
-            list.Add(ModelDb.Modifier<EndlessModifier>());
-            __result = list;
-        }
-    }
-}
-```
-
-**注意**：BaseLib 会自动处理 `SavedProperty` 的注册，无需手动注入到 `SavedPropertiesTypeCache`。
-
-## Modifier 本地化
-
-本地化文件格式（`modifiers.json`）：
-
-```json
-{
-  "MYMOD-ENDLESS.title": "无尽",
-  "MYMOD-ENDLESS.description": "爬塔无止境，直至死亡。",
-  "MYMOD-ENDLESS.neow_title": "无尽模式",
-  "MYMOD-ENDLESS.neow_description": "获得 10 点最大生命。爬塔无止境，直至死亡。"
-}
+// EndlessModifier -> YUWANCARD-ENDLESS
+// HardcoreModifier -> YUWANCARD-HARDCORE
 ```
 
 ## 完整示例：无尽模式
 
-以下是一个完整的无尽模式 Modifier 实现（基于项目实际代码）：
-
 ```csharp
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Events;
-using MegaCrit.Sts2.Core.Models.Powers;
-using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 
-public class EndlessModifier : ModifierModel
+namespace YuWanCard.Modifiers;
+
+public class EndlessModifier : YuWanModifierModel
 {
-    public const string ModifierId = "YUWANCARD-ENDLESS";
-
-    private const float BaseHpMultiplierPerLoop = 0.20f;
-    private const float BossHpMultiplierBonus = 0.10f;
-    private const int BaseStrengthPerLoop = 1;
-    private const int BossExtraStrengthPerLoop = 1;
-    private const float HpGrowthExponent = 1.1f;
-
     [SavedProperty]
     public int YuWanCard_EndlessLoopCount { get; set; } = 0;
 
@@ -176,42 +56,7 @@ public class EndlessModifier : ModifierModel
     [SavedProperty]
     public bool YuWanCard_HasStarted { get; set; } = false;
 
-    public override LocString Title => new("modifiers", ModifierId + ".title");
-    public override LocString Description => new("modifiers", ModifierId + ".description");
-    public override LocString NeowOptionTitle => new("modifiers", ModifierId + ".neow_title");
-    public override LocString NeowOptionDescription => new("modifiers", ModifierId + ".neow_description");
-
-    public override string IconPath => "res://YuWanCard/images/modifiers/endless.png";
-
     public int EffectiveLoopCount => Math.Max(0, YuWanCard_EndlessLoopCount);
-
-    private float CalculateHpMultiplier(bool isBoss)
-    {
-        if (EffectiveLoopCount <= 0) return 1f;
-        
-        float baseMultiplier = 1f + (BaseHpMultiplierPerLoop * (float)Math.Pow(EffectiveLoopCount, HpGrowthExponent));
-        
-        if (isBoss)
-        {
-            baseMultiplier += BossHpMultiplierBonus * EffectiveLoopCount;
-        }
-        
-        return baseMultiplier;
-    }
-
-    private int CalculateStrengthBonus(bool isBoss)
-    {
-        if (EffectiveLoopCount <= 0) return 0;
-        
-        int bonus = BaseStrengthPerLoop * EffectiveLoopCount;
-        
-        if (isBoss)
-        {
-            bonus += BossExtraStrengthPerLoop * (EffectiveLoopCount / 2);
-        }
-        
-        return bonus;
-    }
 
     public override Func<Task>? GenerateNeowOption(EventModel eventModel)
     {
@@ -225,7 +70,6 @@ public class EndlessModifier : ModifierModel
     private async Task ActivateEndlessMode(Player player, Rng rng)
     {
         MainFile.Logger.Info("Endless mode activated!");
-
         YuWanCard_HasStarted = true;
 
         if (LocalContext.IsMe(player))
@@ -272,23 +116,6 @@ public class EndlessModifier : ModifierModel
         await ApplyDifficultyScaling(creature, isBoss);
     }
 
-    private async Task ApplyDifficultyScaling(Creature creature, bool isBoss)
-    {
-        float hpMultiplier = CalculateHpMultiplier(isBoss);
-        int strengthBonus = CalculateStrengthBonus(isBoss);
-
-        int newMaxHp = (int)(creature.MaxHp * hpMultiplier);
-        await CreatureCmd.SetMaxHp(creature, newMaxHp);
-        await CreatureCmd.Heal(creature, newMaxHp - creature.CurrentHp, playAnim: false);
-
-        if (strengthBonus > 0)
-        {
-            await PowerCmd.Apply<StrengthPower>(creature, (decimal)strengthBonus, null, null);
-        }
-
-        MainFile.Logger.Info($"Applied endless difficulty to {creature.ModelId} (Boss: {isBoss}): HP x{hpMultiplier:F2}, Strength +{strengthBonus}");
-    }
-
     public override bool ShouldAllowAncient(Player player, AncientEventModel ancient)
     {
         if (ancient is Neow && EffectiveLoopCount > 0)
@@ -298,50 +125,96 @@ public class EndlessModifier : ModifierModel
         return true;
     }
 
-    public override void AfterRunCreated(RunState runState)
+    protected override void AfterRunCreated(RunState runState)
     {
-        MainFile.Logger.Info($"Endless modifier initialized. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
+        MainFile.Logger.Info($"Endless modifier initialized. Loop: {YuWanCard_EndlessLoopCount}");
     }
 
-    public override void AfterRunLoaded(RunState runState)
+    protected override void AfterRunLoaded(RunState runState)
     {
-        MainFile.Logger.Info($"Endless modifier loaded. Loop: {YuWanCard_EndlessLoopCount}, TotalActs: {YuWanCard_TotalActsCleared}");
-    }
-
-    public void IncrementLoopCount()
-    {
-        YuWanCard_EndlessLoopCount++;
-        YuWanCard_TotalActsCleared++;
-        MainFile.Logger.Info($"Endless loop incremented. Now at loop {YuWanCard_EndlessLoopCount}, total acts: {YuWanCard_TotalActsCleared}");
-    }
-
-    public void IncrementActCount()
-    {
-        YuWanCard_TotalActsCleared++;
-    }
-
-    public static EndlessModifier? GetEndlessModifier(RunState runState)
-    {
-        foreach (var modifier in runState.Modifiers)
-        {
-            if (modifier is EndlessModifier endlessModifier)
-            {
-                return endlessModifier;
-            }
-        }
-        return null;
-    }
-
-    public static bool IsEndlessMode(RunState runState)
-    {
-        return GetEndlessModifier(runState) != null;
+        MainFile.Logger.Info($"Endless modifier loaded. Loop: {YuWanCard_EndlessLoopCount}");
     }
 }
 ```
 
-**功能特性**：
-- **难度递增**：每完成一次循环，敌人生命值和力量增加
-- **BOSS 加成**：BOSS 敌人获得额外的生命值和力量加成
-- **Neow 事件限制**：第一次循环后禁止 Neow 事件
-- **持久化**：使用 SavedProperty 保存循环次数和章节进度
-- **日志记录**：详细的日志输出用于调试
+## 常用钩子方法
+
+| 方法 | 说明 |
+|------|------|
+| `GenerateNeowOption(EventModel)` | 生成 Neow 选项 |
+| `AfterRoomEntered(AbstractRoom)` | 进入房间后 |
+| `AfterCreatureAddedToCombat(Creature)` | 生物加入战斗后 |
+| `ShouldAllowAncient(Player, AncientEventModel)` | 是否允许先古之民 |
+| `AfterRunCreated(RunState)` | 运行创建后 |
+| `AfterRunLoaded(RunState)` | 运行加载后 |
+| `AfterCombatVictory(CombatState)` | 战斗胜利后 |
+| `AfterCombatDefeat(CombatState)` | 战斗失败后 |
+| `ModifyPlayerMaxHp(decimal, Player)` | 修改玩家最大生命值 |
+| `ModifyGoldGained(decimal, Player)` | 修改获得金币 |
+
+## SavedProperty 持久化
+
+使用 `[SavedProperty]` 标记需要保存到存档的属性：
+
+```csharp
+[SavedProperty]
+public int YuWanCard_EndlessLoopCount { get; set; } = 0;
+
+[SavedProperty]
+public bool YuWanCard_HasStarted { get; set; } = false;
+```
+
+**重要**：属性命名建议使用模组前缀（如 `YuWanCard_`），避免与其他模组冲突。
+
+## 本地化
+
+修改器本地化文件位于 `localization/{lang}/modifiers.json`：
+
+```json
+{
+  "YUWANCARD-ENDLESS.title": "无尽模式",
+  "YUWANCARD-ENDLESS.description": "击败所有章节后，重新开始循环，敌人变得更强。",
+  "YUWANCARD-ENDLESS.neow_title": "无尽模式",
+  "YUWANCARD-ENDLESS.neow_description": "开始无尽循环，获得 [gold]10[/gold] 最大生命值。"
+}
+```
+
+## 图标资源
+
+修改器图标路径自动生成：
+
+```
+res://YuWanCard/images/modifiers/{snake_case_name}.png
+```
+
+例如 `EndlessModifier` 的图标路径为：
+```
+res://YuWanCard/images/modifiers/endless.png
+```
+
+## 获取修改器实例
+
+```csharp
+// 获取特定类型的修改器
+var endlessModifier = YuWanModifierModel.GetModifier<EndlessModifier>();
+
+// 检查是否启用了无尽模式
+bool isEndless = EndlessModifier.IsEndlessMode(runState);
+```
+
+## 修改器注册
+
+修改器在构造函数中自动注册到静态列表：
+
+```csharp
+protected YuWanModifierModel()
+{
+    _registeredModifiers.Add(this);
+}
+```
+
+可以通过 `RegisteredModifiers` 属性访问所有已注册的修改器：
+
+```csharp
+var allModifiers = YuWanModifierModel.RegisteredModifiers;
+```

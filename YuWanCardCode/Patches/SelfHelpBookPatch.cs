@@ -1,4 +1,3 @@
-using BaseLib.Utils;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -111,7 +110,7 @@ public class SelfHelpBookPatch
             return;
         }
 
-        var availablePool = new WeightedList<EnchantmentOptionDef>();
+        var availablePool = new YuWanCard.Core.Utils.WeightedList<EnchantmentOptionDef>();
 
         foreach (var optionDef in _enchantmentPool)
         {

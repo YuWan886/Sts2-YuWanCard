@@ -1,4 +1,4 @@
-using BaseLib.Abstracts;
+using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Events;
@@ -9,7 +9,7 @@ using YuWanCard.Cards;
 
 namespace YuWanCard.Events;
 
-public sealed class HorizonEvent : CustomEventModel
+public sealed class HorizonEvent : YuWanEventModel
 {
     public override ActModel[] Acts => [];
 

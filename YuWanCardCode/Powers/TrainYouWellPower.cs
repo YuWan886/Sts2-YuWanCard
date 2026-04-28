@@ -1,7 +1,7 @@
-using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Cards;
+using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Powers;
 
-public class TrainYouWellPower : CustomTemporaryPowerModelWrapper<TiaoJiao, StrengthPower>;
+public class TrainYouWellPower : YuWanTemporaryPowerModelWrapper<TiaoJiao, StrengthPower>;

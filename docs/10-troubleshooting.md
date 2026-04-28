@@ -2,182 +2,294 @@
 
 ## 常见问题
 
-### 1. 卡牌不显示
+### Q: 如何添加新的卡牌池？
 
-**原因**：卡牌未正确注册到卡牌池
-
-**解决方案**：
-- 确保设置了 `showInCardLibrary: true`
-- 确保设置了 `autoAdd: true`
-- 确保使用了正确的 `PoolAttribute`
-- 检查卡牌池类型是否正确
+继承 `CustomCardPoolModel`：
 
 ```csharp
-[Pool(typeof(ColorlessCardPool))]
-public class MyCard : CustomCardModel
+using MegaCrit.Sts2.Core.Models.CardPools;
+
+public class MyCardPool : CustomCardPoolModel
 {
-    public MyCard() : base(
-        baseCost: 1,
-        type: CardType.Attack,
-        rarity: CardRarity.Common,
-        target: TargetType.Enemy,
-        showInCardLibrary: true,
-        autoAdd: true
-    )
+    public override string Title => "my_pool";
+    public override bool IsShared => false;
+    public override bool IsColorless => false;
+    
+    protected override CardModel[] GenerateAllCards() => 
+    [
+        ModelDb.Card<MyCard1>(),
+        ModelDb.Card<MyCard2>()
+    ];
+}
+```
+
+### Q: 如何让卡牌仅在多人模式出现？
+
+```csharp
+public override CardMultiplayerConstraint MultiplayerConstraint 
+    => CardMultiplayerConstraint.MultiplayerOnly;
+```
+
+### Q: 如何正确处理金币修改？
+
+使用 `GoldModificationGuard` 避免递归调用：
+
+```csharp
+private GoldModificationGuard? _goldGuard;
+
+private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
+    () => Owner,
+    amount => Math.Floor(amount * 0.5m),
+    async amount => await PlayerCmd.LoseGold(amount, Owner!)
+);
+
+public override bool ShouldGainGold(decimal amount, Player player)
+{
+    return GoldGuard.ShouldGainGold(amount, player);
+}
+
+public override async Task AfterGoldGained(Player player)
+{
+    await GoldGuard.AfterGoldGained(player);
+}
+```
+
+### Q: 如何检测游戏版本？
+
+```csharp
+using YuWanCard.Utils;
+
+var version = GameVersionCompat.GameVersion;
+```
+
+### Q: 如何添加先古之民对话？
+
+本地化键格式：
+- 首次访问：`{ModId}-{AncientId}.talk.firstvisitEver.0-0.ancient`
+- 角色对话：`{ModId}-{AncientId}.talk.{CharacterId}.{index}-{line}.ancient`
+- 通用对话：`{ModId}-{AncientId}.talk.ANY.{index}-{line}.ancient`
+
+### Q: 如何使用 CommonActions？
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 卡牌攻击
+var attackCmd = CommonActions.CardAttack(this, cardPlay, hitCount: 1);
+await choiceContext.RunCommand(attackCmd);
+
+// 卡牌格挡
+var blockAmount = await CommonActions.CardBlock(this, cardPlay);
+
+// 施加能力
+await CommonActions.Apply<StrengthPower>(choiceContext, target, this, 2m);
+```
+
+### Q: 如何创建自定义 DynamicVar？
+
+继承 `DynamicVar` 类：
+
+```csharp
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+
+public class MyCustomVar : DynamicVar
+{
+    public MyCustomVar(decimal baseValue) : base("MyCustomVar", baseValue) { }
+    
+    public override string FormatValue(decimal value, string? format = null)
     {
+        return format switch
+        {
+            "percent" => $"{value * 100}%",
+            "time" => $"{value}次",
+            _ => value.ToString()
+        };
     }
 }
 ```
 
-### 2. 角色不显示
+---
 
-**原因**：视觉场景未正确配置
+## 构建问题
 
-**解决方案**：
-- 确保设置了正确的 `CustomVisualPath`
-- 或者在 `res://scenes/creature_visuals/` 目录下创建对应名称的场景文件
-- 检查场景中是否包含必要的节点：`Visuals`、`Bounds`、`IntentPos`、`CenterPos`、`OrbPos`、`TalkPos`
+### 构建失败：找不到游戏路径
 
-### 3. 配置不生效
-
-**原因**：配置属性未正确设置
+**问题**：构建时提示找不到 Slay the Spire 2 安装路径。
 
 **解决方案**：
-- 确保配置属性是**静态属性**（`static`）
-- 确保配置属性有 `get` 和 `set` 访问器
-- 确保在 `SetupConfigUI` 方法中正确添加了配置选项
+1. 确保游戏已通过 Steam 安装
+2. 创建 `local.props` 文件指定游戏路径：
 
-### 4. Harmony 补丁失败
-
-**原因**：目标方法不存在或签名不匹配
-
-**解决方案**：
-- 检查补丁代码是否正确
-- 确保目标方法存在
-- 使用 `MainFile.Logger` 输出调试信息
-
-### 5. 自定义视觉不加载
-
-**原因**：场景文件或路径问题
-
-**解决方案**：
-- 确保场景文件存在且路径正确
-- 检查场景中是否包含必要的节点
-- 确保 `.pck` 文件正确导出
-
-### 6. 卡牌池不显示
-
-**原因**：卡牌池未正确注册
-
-**解决方案**：
-- 确保正确设置了 `IsShared` 属性
-- 角色卡牌池需要通过角色的 `CardPool` 属性引用
-- 共享卡牌池会自动注册到 `ModelDb.AllSharedCardPools`
-
-### 7. 配置文件不保存
-
-**原因**：权限或路径问题
-
-**解决方案**：
-- 确保模组有写入权限
-- 检查文件路径是否正确
-
-### 8. PoolAttribute 错误
-
-**原因**：池类型不匹配
-
-**解决方案**：
-- 确保所有自定义模型都使用了 `PoolAttribute`
-- 确保池类型与模型类型匹配
-
-### 9. SavedProperty 不保存
-
-**原因**：属性未正确标记或命名冲突
-
-**解决方案**：
-- 确保属性使用了 `[SavedProperty]` 特性
-- 确保属性是公共的，且有 `get` 和 `set` 访问器
-- BaseLib 会自动处理 SavedProperty 的注册
-- 建议为属性名添加前缀以避免命名冲突
-
-### 10. Modifier 不生效
-
-**原因**：未正确注册到 ModelDb
-
-**解决方案**：
-- 确保 Modifier 已通过 Harmony 补丁注册到 `ModelDb`
-- 确保 Modifier 已添加到 `GoodModifiers` 列表
-- 参考 [自定义 Modifier](04-custom-modifier.md) 中的注册代码
-
-## 日志
-
-查看游戏日志来排查问题。
-
-**游戏日志位置**：
-- Windows: `C:\Users\[用户名]\AppData\Roaming\SlayTheSpire2\logs\godot.log`
-- macOS: `~/Library/Application Support/SlayTheSpire2/logs/godot.log`
-
-**日志级别**：
-- `Info`：重要操作（初始化、保存、加载）
-- `Debug`：详细调试信息
-- `Warn`：警告信息
-- `Error`：错误信息
-
-### BaseLib 日志窗口
-
-BaseLib 提供了一个内置的日志窗口，方便实时查看游戏日志。
-
-**打开日志窗口**：
-1. **控制台命令**：在游戏内按 `~` 键打开控制台，输入 `showlog` 命令
-2. **启动时自动打开**：在 BaseLib 配置中启用"启动时打开日志窗口"选项
-
-**日志窗口功能**：
-- 实时显示游戏日志
-- 自动滚动到最新日志
-- 不同日志级别使用不同颜色显示：
-  - **红色**：ERROR、FATAL、EXCEPTION
-  - **黄色**：WARN、WARNING
-  - **蓝色**：DEBUG、TRACE、VERYDEBUG
-- 可配置日志行数限制（默认 256 行，可在配置中调整）
-
-**配置日志窗口**：
-
-```csharp
-// 在你的模组配置中添加
-[ConfigSection("日志设置")]
-public static bool OpenLogWindowOnStartup { get; set; } = false;
-
-[ConfigSlider(128, 2048, 64, labelFormat: "{0:0}")]
-public static double LimitedLogSize { get; set; } = 256;
+```xml
+<Project>
+    <PropertyGroup>
+        <Sts2Path>Path\To\SteamLibrary\steamapps\common\Slay the Spire 2</Sts2Path>
+    </PropertyGroup>
+</Project>
 ```
 
-**通过代码打开日志窗口**：
+### 构建失败：缺少 DLL 引用
+
+**问题**：构建时提示找不到 `sts2.dll` 或其他游戏 DLL。
+
+**解决方案**：
+1. 确保游戏已正确安装
+2. 检查 `Sts2DataDir` 路径是否正确
+3. 在 `local.props` 中指定数据目录：
+
+```xml
+<Sts2DataDir>$(Sts2Path)\data_sts2_windows_x86_64</Sts2DataDir>
+```
+
+### PCK 打包失败
+
+**问题**：发布时 .pck 文件打包失败。
+
+**解决方案**：
+1. 确保已配置 `GodotPath`
+2. 检查 Godot 可执行文件路径是否正确：
+
+```xml
+<GodotPath>Path\To\MegaDot_v4.5.1-stable_mono_win64.exe</GodotPath>
+```
+
+---
+
+## 运行时问题
+
+### 模组未加载
+
+**问题**：游戏启动后模组未加载。
+
+**解决方案**：
+1. 检查模组是否正确放置在 `mods/YuWanCard/` 目录
+2. 确保包含以下文件：
+   - `YuWanCard.dll`
+   - `YuWanCard.json`
+   - `YuWanCard.pck`（如果有资源）
+3. 查看日志文件：`%AppData%\SlayTheSpire2\logs\godot.log`
+
+### 本地化不显示
+
+**问题**：卡牌或能力显示为键名而非本地化文本。
+
+**解决方案**：
+1. 检查本地化文件路径：`YuWanCard/localization/{lang}/`
+2. 确保本地化键格式正确：
+   - 卡牌：`YUWANCARD-{CardId}.title`
+   - 能力：`YUWANCARD-{PowerId}.title`
+3. 检查 JSON 文件语法是否正确
+
+### 能力赋予玩家后崩溃
+
+**问题**：赋予玩家随机能力时游戏崩溃。
+
+**解决方案**：
+1. 使用 `PowerSafetyUtils.IsSafePower()` 检查能力安全性
+2. 排除模组自定义能力：
 
 ```csharp
-using BaseLib.Patches.Features;
-
-// 在代码中打开日志窗口
-OpenLogWindow.OpenWindow();
+private bool IsSafePower(PowerModel power)
+{
+    if (power is YuWanPowerModel) return false;
+    return PowerSafetyUtils.IsSafePower(power);
+}
 ```
+
+### SavedProperty 警告
+
+**问题**：日志中出现 SavedProperty 命名警告。
+
+**解决方案**：
+使用模组前缀命名属性：
+
+```csharp
+// 正确
+[SavedProperty]
+public int YuWanCard_MyValue { get; set; }
+
+// 会产生警告
+[SavedProperty]
+public int MyValue { get; set; }
+```
+
+---
 
 ## 调试技巧
 
-1. **使用日志**：使用 `MainFile.Logger.Debug()` 输出详细调试信息
+### 查看日志
 
-2. **检查 ID 映射**：检查卡牌 ID 和名称映射
+日志位置：`%AppData%\SlayTheSpire2\logs\godot.log`
 
-3. **测试模组**：在游戏中运行一局，查看模组功能是否正常
+```csharp
+// 添加调试日志
+MainFile.Logger.Debug($"Debug info: {value}");
+MainFile.Logger.Info($"Important info: {value}");
+MainFile.Logger.Warn($"Warning: {value}");
+MainFile.Logger.Error($"Error: {value}");
+```
 
-4. **检查 Harmony 补丁**：确认补丁是否正确应用
+### 断点调试
 
-5. **验证文件路径**：确保所有资源路径都是正确的
+1. 在 Visual Studio 或 VS Code 中打开项目
+2. 设置断点
+3. 使用 "附加到进程" 附加到游戏进程
+4. 触发断点进行调试
 
-6. **检查依赖项**：确保 BaseLib 已正确引用
+### 检查模型注册
 
-7. **检查 PoolAttribute**：确保池类型与模型类型匹配
+```csharp
+// 检查卡牌是否注册
+var card = ModelDb.Card<MyCard>();
+if (card == null)
+{
+    MainFile.Logger.Warn("Card not registered!");
+}
 
-8. **检查本地化**：确保本地化键正确
+// 检查遗物是否注册
+var relic = ModelDb.Relic<MyRelic>();
+```
 
-9. **检查多人游戏**：使用 `LocalContext.IsMe(player)` 检查是否为本地玩家
+---
 
-10. **检查空值**：检查 `Owner`、`CombatState` 等是否为 null
+## 性能问题
+
+### 卡牌描述加载慢
+
+**问题**：卡牌描述加载缓慢。
+
+**解决方案**：
+1. 减少描述文本中的复杂 BBCode
+2. 避免在描述中使用过多占位符
+3. 使用 `smartDescription` 提供简短描述
+
+### 战斗卡顿
+
+**问题**：战斗中出现卡顿。
+
+**解决方案**：
+1. 缓存频繁访问的数据
+2. 避免在每帧执行的代码中进行复杂计算
+3. 使用异步方法避免阻塞主线程
+
+---
+
+## 兼容性问题
+
+### 与其他模组冲突
+
+**问题**：与其他模组同时使用时出现问题。
+
+**解决方案**：
+1. 检查是否有相同的 ID 冲突
+2. 使用唯一的模组前缀
+3. 检查 Harmony 补丁是否有冲突
+
+### 游戏更新后模组失效
+
+**问题**：游戏更新后模组无法正常工作。
+
+**解决方案**：
+1. 检查游戏 API 是否有变化
+2. 更新项目引用的游戏 DLL
+3. 查看日志了解具体错误信息

@@ -3,6 +3,8 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Rooms;
@@ -16,6 +18,22 @@ namespace YuWanCard.Patches;
 public class PigScalePatch
 {
     private static readonly Dictionary<uint, int> _initialMaxHpMap = new();
+
+#if STS2_BETA
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(Hook), "AfterPlayerTurnStart", typeof(ICombatState), typeof(PlayerChoiceContext), typeof(Player))]
+    static void OnPlayerTurnStart(ICombatState combatState, PlayerChoiceContext choiceContext, Player player)
+#else
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(Hook), "AfterPlayerTurnStart", typeof(CombatState), typeof(PlayerChoiceContext), typeof(Player))]
+    static void OnPlayerTurnStart(CombatState combatState, PlayerChoiceContext choiceContext, Player player)
+#endif
+    {
+        if (player.Character is Pig && player.Creature != null && NCombatRoom.Instance != null)
+        {
+            UpdateScale(player.Creature);
+        }
+    }
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Hook), "BeforeCombatStart", typeof(IRunState), typeof(CombatState))]
@@ -46,6 +64,16 @@ public class PigScalePatch
                     _initialMaxHpMap.Remove(player.Creature.CombatId.Value);
                 }
             }
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(CreatureCmd), "SetCurrentHp", typeof(Creature), typeof(decimal))]
+    static void OnHpChanged(Creature creature, decimal amount)
+    {
+        if (creature.Player != null && creature.Player.Character is Pig && NCombatRoom.Instance != null)
+        {
+            UpdateScale(creature);
         }
     }
 

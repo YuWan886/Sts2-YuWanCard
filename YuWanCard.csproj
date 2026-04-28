@@ -1,6 +1,5 @@
 <Project Sdk="Godot.NET.Sdk/4.5.1" InitialTargets="CheckDependencyPaths">
     <Import Project=".\Sts2PathDiscovery.props"/>
-    <Import Project=".\GenerateBaseLibVersion.targets"/>
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Version>0.4.6</Version>
@@ -15,7 +14,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <NoWarn>$(NoWarn);MSB3270;CS0436;CS9057</NoWarn>
+        <NoWarn>$(NoWarn);MSB3270;CS0436;CS9057;STS001;STS003</NoWarn>
     </PropertyGroup>
 
     <ItemGroup Condition="Exists('$(Sts2DataDir)')">
@@ -82,20 +81,6 @@
         <Copy SourceFiles="README.md" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
     </Target>
 
-    <Target Name="CopyBaseLibToModsFolder" AfterTargets="PostBuildEvent" Condition="'$(CopyBaseLib)' != 'false'">
-        <ItemGroup>
-            <BaseLibContentFiles Include="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\Content\*" Exclude="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\Content\*.props" />
-            <BaseLibDllFiles Include="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\lib\**\*.dll" />
-        </ItemGroup>
-        <PropertyGroup>
-            <_ContentCount>@(BaseLibContentFiles->Count())</_ContentCount>
-            <_DllCount>@(BaseLibDllFiles->Count())</_DllCount>
-        </PropertyGroup>
-        <Message Text="Copying BaseLib: $(_ContentCount) content files, $(_DllCount) dll files" Importance="high" Condition="'$(_ContentCount)' != '0'" />
-        <Copy SourceFiles="@(BaseLibContentFiles)" DestinationFolder="$(ModsPath)BaseLib/" Condition="'$(_ContentCount)' != '0'" />
-        <Copy SourceFiles="@(BaseLibDllFiles)" DestinationFolder="$(ModsPath)BaseLib/" Condition="'$(_DllCount)' != '0'" />
-    </Target>
-
     <Target Name="CopyQuickPck" AfterTargets="PackPck" Condition="Exists('$(PckPackerOutputPath)') And '$(PckPackerSkipped)' != 'true'">
         <Message Text="Copying quick .pck to mods folder." Importance="high" />
         <Copy SourceFiles="$(PckPackerOutputPath)" DestinationFolder="$(ModsPath)/$(MSBuildProjectName)" />
@@ -111,5 +96,15 @@
         <Exec Command="&quot;$(GodotPath)&quot; --headless --export-pack &quot;BasicExport&quot; &quot;$(ModsPath)$(MSBuildProjectName)/$(MSBuildProjectName).pck&quot;"
               EnvironmentVariables="IsInnerGodotExport=true;MSBUILDDISABLENODEREUSE=1"
               IgnoreExitCode="true" />
+    </Target>
+
+    <Target Name="CopyBaseLibToModsFolder" AfterTargets="PostBuildEvent" Condition="'$(CopyBaseLib)' != 'false'">
+        <ItemGroup>
+            <BaseLibContentFiles Include="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\Content\**\*" Exclude="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\Content\*.props" />
+            <BaseLibDllFiles Include="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\lib\**\*.dll" />
+        </ItemGroup>
+        <Message Text="Copying BaseLib files to mods folder" Importance="high" />
+        <Copy SourceFiles="@(BaseLibContentFiles)" DestinationFolder="$(ModsPath)BaseLib\" />
+        <Copy SourceFiles="@(BaseLibDllFiles)" DestinationFolder="$(ModsPath)BaseLib\" />
     </Target>
 </Project>

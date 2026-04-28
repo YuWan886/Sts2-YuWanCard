@@ -1,4 +1,4 @@
-using BaseLib.Utils;
+using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -22,6 +22,7 @@ public class PigDemonForm : YuWanCardModel
         target: TargetType.Self)
     {
         WithPower<PigDemonFormPower>(1);
+        WithVar("StrengthGain", 0, upgrade: 1);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<StrengthPower>()));
     }
 

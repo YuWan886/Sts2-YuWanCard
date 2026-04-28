@@ -159,7 +159,6 @@ Can use all card.
 
 [quote][b]Note:[/b] This mod is developed using AI, there may be errors.[/quote]
 
-[b]Requires: [url=https://github.com/Alchyr/BaseLib-StS2/releases]BaseLib[/url][/b] 
 [b]GitHub repository: [url=https://github.com/YuWan886/Sts2-YuWanCard]YuWan886/Sts2-YuWanCard[/url][/b]
 
 ---
@@ -317,5 +316,4 @@ Can use all card.
 
 [quote][b]注意：[/b] 本模组使用 AI 开发，可能存在错误。[/quote]
 
-[b]前置需求： [url=https://github.com/Alchyr/BaseLib-StS2/releases]BaseLib[/url][/b] 
 [b]GitHub 仓库：[url=https://github.com/YuWan886/Sts2-YuWanCard]YuWan886/Sts2-YuWanCard[/url][/b]

@@ -1,370 +1,351 @@
 # 最佳实践
 
-## 命名约定
-
-- 类名：使用 PascalCase
-- 方法名：使用 PascalCase
-- 属性名：使用 PascalCase
-- 字段名：使用 camelCase 或 _camelCase
-- 命名空间：使用 PascalCase，通常以模组名称开头
-
-## 组织代码
-
-- 将不同类型的内容放在不同的文件夹中
-- 使用命名空间来组织代码
-- 保持代码简洁明了
-- 使用部分类（partial classes）来组织大型类
-
-## 调试
-
-使用 BaseLib 的日志系统：
-
-```csharp
-using BaseLib;
-
-MainFile.Logger.Info("Mod initialized");
-MainFile.Logger.Warn("Something might be wrong");
-MainFile.Logger.Error("An error occurred");
-MainFile.Logger.Debug("Detailed debug information");
-```
-
-**日志级别**：
-- `Info`：重要操作（初始化、保存、加载）
-- `Debug`：详细调试信息（进度计算、卡牌过滤）
-- `Warn`：警告信息（卡牌未找到、配置缺失）
-- `Error`：错误信息（异常捕获）
-
-**游戏日志位置**：
-- Windows: `C:\Users\[用户名]\AppData\Roaming\SlayTheSpire2\logs\godot.log`
-- macOS: `~/Library/Application Support/SlayTheSpire2/logs/godot.log`
-
-## 性能
-
-- 避免在游戏循环中做 heavy 操作
-- 使用对象池来减少 GC
-- 合理使用 Harmony 补丁
-- 使用缓存来减少重复计算
-- 延迟加载资源和初始化
-
 ## 代码规范
 
-- 使用 XML 文档注释（///）为公共 API 添加说明
-- 遵循 C# 编码规范
-- 保持方法简洁，每个方法只做一件事
-- 使用有意义的变量和方法名
+### 命名约定
+
+| 类型 | 约定 | 示例 |
+|------|------|------|
+| 公共成员 | PascalCase | `public int MaxHealth` |
+| 私有成员 | camelCase | `private int currentCount` |
+| 常量 | PascalCase 或全大写 | `public const int MaxValue = 100` |
+| 事件处理器 | `On` 前缀 | `OnTurnStart` |
+
+### 注释规范
+
+- 使用 XML 文档注释（`///`）为公共 API 添加说明
+- 保持代码简洁，避免不必要的注释
 - 注释应简洁明了，避免复杂的逻辑描述
+- 代码应自解释，注释仅用于说明"为什么"而非"做什么"
+
+### 文件组织
+
+- 每个类一个文件，文件名与类名一致
+- 使用 `#region` 组织大型类
+- 成员顺序：常量 → 字段 → 属性 → 构造函数 → 方法 → 事件
+
+---
+
+## 日志记录
+
+使用 `MainFile.Logger` 进行日志记录：
+
+```csharp
+// Info：重要操作（初始化、保存、加载）
+MainFile.Logger.Info("Endless mode activated!");
+
+// Debug：详细调试信息（进度计算、卡牌过滤）
+MainFile.Logger.Debug($"Processing card: {card.Id}");
+
+// Warn：警告信息（卡牌未找到、配置缺失）
+MainFile.Logger.Warn($"Card not found: {cardId}");
+
+// Error：错误信息（异常捕获）
+MainFile.Logger.Error($"Failed to apply power: {ex.Message}");
+```
+
+**日志位置**：`%AppData%\SlayTheSpire2\logs\godot.log`
+
+---
 
 ## 本地化
 
-- 使用游戏的本地化系统
-- 为所有用户可见的文本提供本地化支持
-- 遵循游戏的本地化命名约定
+### 本地化文件结构
 
-**本地化文件格式**：
+```
+YuWanCard/localization/
+├── zhs/               # 简体中文
+│   ├── cards.json
+│   ├── powers.json
+│   ├── relics.json
+│   ├── ancients.json
+│   ├── modifiers.json
+│   └── events.json
+└── eng/               # 英文
+    ├── cards.json
+    ├── powers.json
+    └── ...
+```
+
+### 本地化键格式
+
+| 类型 | 键格式 |
+|------|--------|
+| 卡牌标题 | `YUWANCARD-{CardId}.title` |
+| 卡牌描述 | `YUWANCARD-{CardId}.description` |
+| 能力标题 | `YUWANCARD-{PowerId}.title` |
+| 能力描述 | `YUWANCARD-{PowerId}.description` |
+| 遗物标题 | `YUWANCARD-{RelicId}.title` |
+| 遗物描述 | `YUWANCARD-{RelicId}.description` |
+
+### 描述文本最佳实践
+
 ```json
 {
-  "MODID-CARD_ID.title": "卡牌名称",
-  "MODID-CARD_ID.description": "卡牌描述，支持 {DynamicVar:diff()} 等动态变量",
-  "MODID-POWER_ID.title": "能力名称",
-  "MODID-POWER_ID.description": "能力描述",
-  "MODID-POWER_ID.smartDescription": "能力智能描述"
+  "YUWANCARD-PIG_STRIKE.description": "造成 {Damage:diff()} 点伤害。",
+  "YUWANCARD-PIG_DOUBT.description": "每回合获得 {PigDoubtPower:diff()} 个随机的 [gold]能力[/gold]。",
+  "YUWANCARD-PIG_SLEEP.description": "结束你的回合\n获得 {Block:diff()} 点 [gold]格挡[/gold]\n恢复 {Heal:diff()} 点生命"
 }
 ```
 
-**本地化键命名规则**：
-- 卡牌：`{ModId}-{CardId}.title` / `.description`
-- 能力：`{ModId}-{PowerId}.title` / `.description` / `.smartDescription`
-- 遗物：`{ModId}-{RelicId}.title` / `.description` / `.flavor`
-- 先古之民：`{ModId}-{AncientId}.title` / `.epithet` / `.pages.{PageName}.description`
-- Modifier：`{ModifierId}.title` / `.description` / `.neow_title` / `.neow_description`
-- ModId 和 CardId/PowerId 使用大写，用连字符分隔
+---
 
-**描述中的动态变量**：
-- `{Damage:diff()}` - 显示伤害值
-- `{Block:diff()}` - 显示格挡值
-- `{Heal:diff()}` - 显示治疗值
-- `{Energy:diff()}` - 显示能量值
-- `{Energy:energyIcons()}` - 显示能量图标
-- `{PowerName:diff()}` - 显示能力层数
-- `{IfUpgraded:show:升级后文本|升级前文本}` - 根据是否升级显示不同文本
+## 卡牌设计
 
-**颜色标签**：
-- `[gold]文本[/gold]` - 金色文本
-- `[red]文本[/red]` - 红色文本
-- `[blue]文本[/blue]` - 蓝色文本
+### 基类选择
 
-## 安全性
+| 基类 | 适用场景 |
+|------|----------|
+| `YuWanCardModel` | 推荐使用，自动 ID 和路径生成 |
+| `CustomCardModel` | 需要更多控制时使用 |
 
-- 使用 IL 分析避免赋予怪物专属能力
-- 检查 `Owner` 是否为 null
-- 使用 `LocalContext.IsMe(player)` 检查是否为本地玩家
+### 卡牌实现模板
 
-## SavedProperty 最佳实践
+```csharp
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models.CardPools;
 
-- 为所有 SavedProperty 属性添加前缀（如 `MyMod_`）以避免命名冲突
-- 使用 `GetProperties` 检查器会自动检测继承的属性
-- 属性必须是公共的且有 `get` 和 `set` 访问器
-- 避免在 SavedProperty 中使用复杂类型，优先使用基本类型
+namespace YuWanCard.Cards;
 
-## CommonActions 最佳实践
+[Pool(typeof(SharedCardPool))]
+public class MyCard : YuWanCardModel
+{
+    public MyCard() : base(
+        baseCost: 1,
+        type: CardType.Attack,
+        rarity: CardRarity.Common,
+        target: TargetType.AnyEnemy)
+    {
+        WithDamage(6);
+        WithTags(CardTag.Strike);
+    }
 
-- 使用 `CommonActions.CardAttack` 时，确保卡牌包含 `DamageVar` 或 `CalculatedDamageVar`
-- `CalculatedDamageVar` 优先于 `DamageVar`，适用于动态伤害计算
-- 正确设置 `TargetType`，避免使用不支持的目标类型
-- 使用 `hitCount` 参数处理多次攻击
-- 避免在多人游戏中执行仅限本地的操作
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (cardPlay.Target != null)
+        {
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+                .FromCard(this)
+                .Targeting(cardPlay.Target)
+                .WithHitFx("vfx/vfx_attack_slash")
+                .Execute(choiceContext);
+        }
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(3m);
+    }
+}
+```
+
+---
+
+## 能力设计
+
+### 能力安全性检查
+
+赋予玩家随机能力时必须检查安全性：
+
+```csharp
+private bool IsSafePower(PowerModel power)
+{
+    // 排除模组自定义能力
+    if (power is YuWanPowerModel)
+        return false;
+    
+    // 使用 IL 分析检查安全性
+    return PowerSafetyUtils.IsSafePower(power);
+}
+```
+
+**不安全的能力特征**：
+- 包含怪物专属逻辑
+- 调用 `MonsterModel` 类型转换
+- 未正确处理 `dealer` 参数的空值检查
+
+---
+
+## 遗物设计
+
+### 存档属性
+
+使用 `[SavedProperty]` 标记需要持久化的属性：
+
+```csharp
+[SavedProperty]
+public int YuWanCard_EndlessLoopCount { get; set; } = 0;
+
+[SavedProperty]
+public bool YuWanCard_HasStarted { get; set; } = false;
+```
+
+**重要**：属性命名建议使用模组前缀（如 `YuWanCard_`），否则会产生警告。
+
+### 金币修改保护
+
+使用 `GoldModificationGuard` 避免递归调用：
+
+```csharp
+private GoldModificationGuard? _goldGuard;
+
+private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
+    () => Owner,
+    amount => Math.Floor(amount * 0.5m),
+    async amount => await PlayerCmd.LoseGold(amount, Owner!)
+);
+
+public override bool ShouldGainGold(decimal amount, Player player)
+{
+    return GoldGuard.ShouldGainGold(amount, player);
+}
+
+public override async Task AfterGoldGained(Player player)
+{
+    await GoldGuard.AfterGoldGained(player);
+}
+```
+
+---
+
+## Harmony 补丁
+
+### 补丁类型
+
+| 类型 | 说明 | 使用场景 |
+|------|------|----------|
+| `[HarmonyPrefix]` | 方法执行前 | 阻止原方法、修改参数 |
+| `[HarmonyPostfix]` | 方法执行后 | 修改返回值、添加副作用 |
+| `[HarmonyTranspiler]` | IL 代码修改 | 深度修改方法逻辑 |
+
+### 补丁实现模板
+
+```csharp
+using HarmonyLib;
+using MegaCrit.Sts2.Core.Models.Events;
+
+namespace YuWanCard.Patches;
+
+[HarmonyPatch(typeof(Neow))]
+class MyNeowPatch
+{
+    [HarmonyPostfix]
+    [HarmonyPatch("GenerateInitialOptions")]
+    static void AddCustomOption(Neow __instance, ref IReadOnlyList<EventOption> __result)
+    {
+        var options = __result.ToList();
+        options.Add(new EventOption(
+            __instance,
+            async () => {
+                // 选项效果
+                await RelicCmd.Obtain<MyRelic>(__instance.Owner);
+            },
+            new LocString("events", "MY_OPTION.title"),
+            new LocString("events", "MY_OPTION.description")
+        ));
+        __result = options;
+    }
+}
+```
+
+### 反射调用私有方法
+
+```csharp
+var doneMethod = typeof(AncientEventModel).GetMethod("Done", 
+    BindingFlags.NonPublic | BindingFlags.Instance);
+doneMethod?.Invoke(ancientEvent, null);
+```
+
+---
+
+## 性能优化
+
+### 缓存结果
+
+对于频繁调用的方法，缓存结果：
+
+```csharp
+private static readonly ConcurrentDictionary<Type, bool> SafetyCache = new();
+
+public static bool IsSafePower(PowerModel power)
+{
+    var powerType = power.GetType();
+    if (SafetyCache.TryGetValue(powerType, out var isSafe))
+    {
+        return isSafe;
+    }
+    
+    bool result = AnalyzePowerSafety(powerType);
+    SafetyCache[powerType] = result;
+    return result;
+}
+```
+
+### 避免频繁的字符串操作
+
+使用 `StringBuilder` 或字符串插值：
+
+```csharp
+// 推荐
+var message = $"Processing card: {card.Id}";
+
+// 避免
+var message = "Processing card: " + card.Id;
+```
+
+---
+
+## 错误处理
+
+### 异常捕获
+
+```csharp
+try
+{
+    await RiskyOperation();
+}
+catch (Exception ex)
+{
+    MainFile.Logger.Error($"Operation failed: {ex.Message}");
+    // 可选：恢复或回滚
+}
+```
+
+### 空值检查
+
+```csharp
+// 使用模式匹配
+if (cardPlay.Target is Creature target)
+{
+    await Attack(target);
+}
+
+// 使用 null 条件运算符
+await cardPlay.Target?.ApplyPower(power);
+```
+
+---
 
 ## 多人游戏
 
-Slay the Spire 2 支持多人合作模式，模组开发时需要特别注意多人同步问题。
-
-### CardMultiplayerConstraint
-
-使用 `CardMultiplayerConstraint` 标记卡牌的多人游戏限制：
+### 多人游戏限制
 
 ```csharp
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+// 仅限多人模式的卡牌
+public override CardMultiplayerConstraint MultiplayerConstraint 
+    => CardMultiplayerConstraint.MultiplayerOnly;
 
-[Pool(typeof(ColorlessCardPool))]
-public class MyMultiplayerCard : CustomCardModel
+// 仅限单人模式的卡牌
+public override CardMultiplayerConstraint MultiplayerConstraint 
+    => CardMultiplayerConstraint.SingleplayerOnly;
+```
+
+### 玩家身份检查
+
+```csharp
+if (LocalContext.IsMe(player))
 {
-    public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
-
-    public MyMultiplayerCard() : base(
-        baseCost: 1,
-        type: CardType.Skill,
-        rarity: CardRarity.Uncommon,
-        target: TargetType.AnyAlly
-    )
-    {
-    }
+    // 只对本地玩家执行
+    await CreatureCmd.GainMaxHp(player.Creature, 10m);
 }
 ```
-
-**CardMultiplayerConstraint 枚举值**：
-- `CardMultiplayerConstraint.None`：无限制（默认值）
-- `CardMultiplayerConstraint.MultiplayerOnly`：仅限多人游戏，单人模式不会出现
-
-### LocalContext.IsMe
-
-使用 `LocalContext.IsMe(player)` 检查是否为本地玩家，避免在多人游戏中执行重复操作：
-
-```csharp
-using MegaCrit.Sts2.Core.Context;
-
-public override async Task AfterObtained()
-{
-    await base.AfterObtained();
-
-    if (LocalContext.IsMe(Owner))
-    {
-        await CreatureCmd.GainMaxHp(Owner.Creature, 10m);
-    }
-}
-```
-
-**重要说明**：
-- 在 Modifier 的 `GenerateNeowOption` 中，效果会对所有玩家触发
-- 使用 `LocalContext.IsMe` 可以确保效果只对本地玩家执行一次
-- 对于全局效果（如敌人增强），不需要检查 `IsMe`
-
-### 获取队友
-
-使用 `CombatState.GetTeammatesOf(creature)` 获取队友列表：
-
-```csharp
-using MegaCrit.Sts2.Core.Entities.Creatures;
-
-public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-{
-    IEnumerable<Creature> teammates = from c in CombatState!.GetTeammatesOf(Owner.Creature)
-                                      where c != null && c.IsAlive && c.IsPlayer
-                                      select c;
-
-    foreach (Creature teammate in teammates)
-    {
-        await PlayerCmd.GainEnergy(1, teammate.Player!);
-    }
-}
-```
-
-**注意**：
-- `GetTeammatesOf` 返回包括自己在内的所有队友
-- 使用 `where c != Owner.Creature` 排除自己
-- 检查 `c.IsAlive` 确保队友存活
-
-### 目标类型
-
-多人游戏相关的 `TargetType`：
-
-| TargetType | 说明 |
-|------------|------|
-| `TargetType.Self` | 自身 |
-| `TargetType.AllAllies` | 所有队友（包括自己） |
-| `TargetType.AnyAlly` | 任意队友（包括自己） |
-| `TargetType.AnyPlayer` | 任意玩家（可用于选择死亡玩家） |
-
-### 玩家选择同步
-
-在多人游戏中，当需要玩家做出选择时，需要使用 `PlayerChoiceSynchronizer` 进行同步：
-
-```csharp
-using MegaCrit.Sts2.Core.Runs;
-using MegaCrit.Sts2.Core.Context;
-
-private async Task<Creature?> SelectDeadPlayer(PlayerChoiceContext choiceContext, List<Creature> deadPlayers)
-{
-    uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(Owner);
-    await choiceContext.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
-
-    int selectedIndex;
-    if (LocalContext.IsMe(Owner))
-    {
-        selectedIndex = await ShowDeadPlayerSelection(deadPlayers);
-        RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(
-            Owner,
-            choiceId,
-            PlayerChoiceResult.FromIndex(selectedIndex)
-        );
-    }
-    else
-    {
-        selectedIndex = (await RunManager.Instance.PlayerChoiceSynchronizer.WaitForRemoteChoice(Owner, choiceId)).AsIndex();
-    }
-
-    await choiceContext.SignalPlayerChoiceEnded();
-
-    if (selectedIndex < 0 || selectedIndex >= deadPlayers.Count)
-    {
-        return null;
-    }
-
-    return deadPlayers[selectedIndex];
-}
-```
-
-**同步流程**：
-1. 使用 `ReserveChoiceId` 预留选择 ID
-2. 使用 `SignalPlayerChoiceBegun` 通知选择开始
-3. 本地玩家：执行选择逻辑，使用 `SyncLocalChoice` 同步结果
-4. 远程玩家：使用 `WaitForRemoteChoice` 等待远程选择结果
-5. 使用 `SignalPlayerChoiceEnded` 通知选择结束
-
-### CardMultiplayerConstraint 属性
-
-在获取卡牌池时，需要传入 `CardMultiplayerConstraint` 参数：
-
-```csharp
-var availableCards = ModelDb.CardPool<ColorlessCardPool>()
-    .GetUnlockedCards(Owner.UnlockState, Owner.RunState.CardMultiplayerConstraint);
-```
-
-这确保了：
-- 单人模式：不返回 `MultiplayerOnly` 的卡牌
-- 多人模式：返回所有卡牌
-
-### 多人卡牌设计建议
-
-1. **仅限多人的卡牌**：使用 `CardMultiplayerConstraint.MultiplayerOnly`
-2. **影响队友的卡牌**：使用 `TargetType.AllAllies` 或 `TargetType.AnyAlly`
-3. **需要玩家选择的卡牌**：使用 `PlayerChoiceSynchronizer` 同步
-4. **效果只执行一次**：使用 `LocalContext.IsMe` 检查
-5. **全局效果**：不需要检查 `IsMe`，会自动同步
-
-## 模组互操作 (ModInterop)
-
-### 创建软依赖
-
-使用 `ModInterop` 创建对其他模组的软依赖：
-
-```csharp
-using BaseLib.Utils.ModInterop;
-
-[ModInterop("OtherModId")]
-public class OtherModInterop : InteropClassWrapper
-{
-    [InteropTarget]
-    public static Type? OtherModCardType { get; set; }
-
-    public static CardModel? GetOtherModCard()
-    {
-        if (OtherModCardType == null) return null;
-        return Activator.CreateInstance(OtherModCardType) as CardModel;
-    }
-}
-```
-
-### 检查依赖状态
-
-```csharp
-// 检查目标模组是否加载
-if (OtherModInterop.IsLoaded)
-{
-    var card = OtherModInterop.GetOtherModCard();
-    // 使用 card...
-}
-```
-
-### 最佳实践
-
-1. **始终检查 null**：使用互操作目标前检查是否为 null
-2. **使用 IsLoaded**：检查目标模组是否已加载
-3. **提供降级方案**：目标模组不存在时提供替代功能
-4. **文档说明**：在模组说明中标注可选依赖
-
-## IL 补丁最佳实践
-
-### 使用 InstructionPatcher
-
-推荐使用 BaseLib 提供的 `InstructionPatcher` 简化 Transpiler：
-
-```csharp
-using BaseLib.Utils.Patching;
-using HarmonyLib;
-
-[HarmonyTranspiler]
-public static IEnumerable<CodeInstruction> MyTranspiler(IEnumerable<CodeInstruction> instructions)
-{
-    var patcher = new InstructionPatcher(instructions);
-
-    while (patcher.Find(new IMatcher[]
-    {
-        InstructionMatcher.OpCode(OpCodes.Call, oldMethod)
-    }))
-    {
-        patcher.GetLabels(out var labels);
-        patcher.Replace(new CodeInstruction(OpCodes.Call, newMethod).WithLabels(labels));
-    }
-
-    return patcher;
-}
-```
-
-### 保留标签
-
-修改指令时务必保留标签，否则可能导致跳转错误：
-
-```csharp
-patcher.GetLabels(out var labels);
-patcher.Replace(new CodeInstruction(...).WithLabels(labels));
-```
-
-### 调试 IL 补丁
-
-1. **使用日志输出指令**：
-```csharp
-foreach (var instr in instructions)
-{
-    MainFile.Logger.Debug($"{instr.opcode} {instr.operand}");
-}
-```
-
-2. **使用 dnSpy 或 ILSpy**：查看原始方法的 IL 代码
-
-3. **逐步调试**：先匹配再修改，确认位置正确
-
-### 常见问题
-
-1. **标签丢失**：使用 `GetLabels` 保留标签
-2. **匹配失败**：检查操作码和操作数是否正确
-3. **堆栈不平衡**：确保指令序列的堆栈操作正确

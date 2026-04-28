@@ -1,7 +1,7 @@
-using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Cards;
+using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Powers;
 
-public class PigChargePower : CustomTemporaryPowerModelWrapper<PigCharge, StrengthPower>;
+public class PigChargePower : YuWanTemporaryPowerModelWrapper<PigCharge, StrengthPower>;

@@ -1,11 +1,10 @@
 using System.Text.RegularExpressions;
-using BaseLib.Abstracts;
-using BaseLib.Hooks;
 using Godot;
+using MegaCrit.Sts2.Core.Models;
 
-namespace YuWanCard.Powers;
+namespace YuWanCard.Core.Abstracts;
 
-public abstract partial class YuWanPowerModel : CustomPowerModel
+public abstract partial class YuWanPowerModel : PowerModel, IYuWanContent
 {
     private static readonly Regex CamelCaseRegex = MyRegex();
     private const string DefaultIconPath = "res://YuWanCard/images/powers/pig_doubt_power.png";
@@ -14,22 +13,15 @@ public abstract partial class YuWanPowerModel : CustomPowerModel
 
     protected virtual string IconBasePath => $"res://YuWanCard/images/powers/{PowerId}.png";
 
-    public override string? CustomPackedIconPath => GetIconPath();
-    public override string? CustomBigIconPath => GetIconPath();
+    public virtual string? CustomPackedIconPath => GetIconPath();
+    public virtual string? CustomBigIconPath => GetIconPath();
 
     private string? GetIconPath()
     {
         var iconPath = IconBasePath;
         if (ResourceLoader.Exists(iconPath))
-        {
             return iconPath;
-        }
         return DefaultIconPath;
-    }
-
-    public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegments(HealthBarForecastContext context)
-    {
-        return [];
     }
 
     public static string GeneratePowerId<T>() where T : class

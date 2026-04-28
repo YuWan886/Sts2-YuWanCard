@@ -1,3 +1,4 @@
+using YuWanCard.Core.Abstracts;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;

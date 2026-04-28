@@ -1,4 +1,4 @@
-using BaseLib.Utils;
+using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Relics;

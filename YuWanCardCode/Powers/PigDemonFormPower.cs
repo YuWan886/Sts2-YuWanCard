@@ -1,3 +1,4 @@
+using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;

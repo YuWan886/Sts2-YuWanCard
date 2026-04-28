@@ -1,68 +1,64 @@
-using BaseLib.Abstracts;
+using Godot;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
-using Godot;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using YuWanCard.Cards;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Characters;
 
-public class Pig : PlaceholderCharacterModel
+public class Pig : CharacterModel, IYuWanCharacter
 {
-    public override string PlaceholderID => "ironclad";
-    
-    public override string CustomVisualPath => "res://YuWanCard/scenes/characters/pig.tscn";
+    private const string PigVisualsPath = "res://YuWanCard/scenes/characters/pig.tscn";
 
-    public override string CustomEnergyCounterPath => "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
-    
+    string? IYuWanCharacter.CustomVisualPath => PigVisualsPath;
+    string? IYuWanCharacter.CustomEnergyCounterPath => "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
+
+    NCreatureVisuals? IYuWanCharacter.CreateCustomVisuals()
+    {
+        return NodeFactory.CreateFromScene<NCreatureVisuals>(PigVisualsPath);
+    }
+
     public override Color NameColor => new("FA8072");
-
     public override Color EnergyLabelOutlineColor => new("773726");
-    
     public override CharacterGender Gender => CharacterGender.Neutral;
-    
     public override int StartingHp => 80;
-    
+    public override int StartingGold => 99;
+
+    public override float AttackAnimDelay => 0.15f;
+    public override float CastAnimDelay => 0.25f;
+
+    protected override CharacterModel? UnlocksAfterRunAs => null;
+
     public override CardPoolModel CardPool => ModelDb.CardPool<PigCardPool>();
-    
     public override RelicPoolModel RelicPool => ModelDb.RelicPool<PigRelicPool>();
-    
     public override PotionPoolModel PotionPool => ModelDb.PotionPool<PigPotionPool>();
-    
+
     public override string CharacterTransitionSfx => "event:/sfx/ui/wipe_ironclad";
-    
-    public override string? CustomCharacterSelectIconPath 
+
+    string? IYuWanCharacter.CustomCharacterSelectIconPath
         => "res://YuWanCard/images/characters/char_select_pig.png";
-    
-    public override string CustomIconPath 
+    string? IYuWanCharacter.CustomIconPath
         => "res://YuWanCard/scenes/ui/character_icons/pig_icon.tscn";
-    
-    public override string? CustomIconTexturePath 
+    string? IYuWanCharacter.CustomIconTexturePath
         => "res://YuWanCard/images/characters/character_icon_pig.png";
-    
-    public override string CustomCharacterSelectBg 
+    string? IYuWanCharacter.CustomCharacterSelectBg
         => "res://YuWanCard/scenes/characters/char_select_bg_pig.tscn";
-    
-    public override string CustomMerchantAnimPath 
+    string? IYuWanCharacter.CustomMerchantAnimPath
         => "res://YuWanCard/scenes/characters/pig_merchant.tscn";
-    
-    public override string CustomRestSiteAnimPath 
+    string? IYuWanCharacter.CustomRestSiteAnimPath
         => "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
-    
-    public override string CustomArmPointingTexturePath 
+    string? IYuWanCharacter.CustomArmPointingTexturePath
         => "res://YuWanCard/images/characters/multiplayer_hand/pig_point.png";
-    
-    public override string CustomArmRockTexturePath 
+    string? IYuWanCharacter.CustomArmRockTexturePath
         => "res://images/ui/hands/multiplayer_hand_defect_rock.png";
-    
-    public override string CustomArmPaperTexturePath 
+    string? IYuWanCharacter.CustomArmPaperTexturePath
         => "res://images/ui/hands/multiplayer_hand_defect_paper.png";
-    
-    public override string CustomArmScissorsTexturePath 
+    string? IYuWanCharacter.CustomArmScissorsTexturePath
         => "res://images/ui/hands/multiplayer_hand_defect_scissors.png";
-    
+
     public override IEnumerable<CardModel> StartingDeck =>
     [
         ModelDb.Card<PigStrike>(),
@@ -77,10 +73,10 @@ public class Pig : PlaceholderCharacterModel
         ModelDb.Card<PigFriends>(),
         ModelDb.Card<PigShelter>()
     ];
-    
+
     public override IReadOnlyList<RelicModel> StartingRelics => [ModelDb.Relic<PigCarrot>()];
-    
-    public override List<string> GetArchitectAttackVfx() => 
+
+    public override List<string> GetArchitectAttackVfx() =>
     [
         "vfx/vfx_attack_slash",
         "vfx/vfx_bite",
@@ -90,10 +86,10 @@ public class Pig : PlaceholderCharacterModel
         "vfx/vfx_thrash",
         "vfx/vfx_starry_impact"
     ];
-    
-    public override CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller)
+
+    CreatureAnimator? IYuWanCharacter.SetupCustomAnimationStates(MegaSprite controller)
     {
-        var animator = SetupAnimationState(controller, 
+        var animator = IYuWanCharacter.SetupAnimationState(controller,
             idleName: "idle_loop",
             deadName: "die",
             deadLoop: false,

@@ -1,3 +1,4 @@
+using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;

@@ -1,15 +1,26 @@
-[gd_scene load_steps=2 format=3 uid="uid://cs3a5onikvhi4"]
+[gd_scene load_steps=6 format=3 uid="uid://cs3a5onikvhi4"]
 
+[ext_resource type="Script" uid="uid://dh4d0sqk21k6" path="res://src/Core/Nodes/Combat/NEnergyCounter.cs" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://dukfrvbothorf" path="res://YuWanCard/images/characters/pig_enery_counter.png" id="1_85qf2"]
+[ext_resource type="PackedScene" uid="uid://7y75kcsi1xdw" path="res://scenes/vfx/energy/ironclad/ironclad_energy_vfx_back.tscn" id="2_vfxback"]
+[ext_resource type="PackedScene" uid="uid://dvsi8v1mbnt3q" path="res://scenes/vfx/energy/ironclad/ironclad_energy_vfx_front.tscn" id="3_vfxfront"]
+[ext_resource type="FontVariation" uid="uid://bg85h22rkxs6g" path="res://themes/kreon_bold_shared.tres" id="4_font"]
+[ext_resource type="Script" uid="uid://dtfio45agppyj" path="res://addons/mega_text/MegaLabel.cs" id="5_megalabel"]
 
-[node name="TestEnergyCounter" type="Control"]
+[sub_resource type="FontVariation" id="FontVariation_pig"]
+base_font = ExtResource("4_font")
+spacing_glyph = 2
+
+[node name="PigEnergyCounter" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 128.0
 offset_bottom = 128.0
+pivot_offset = Vector2(64, 64)
+script = ExtResource("1_script")
 metadata/_edit_lock_ = true
 
-[node name="EnergyVfxBack" type="Node2D" parent="."]
+[node name="EnergyVfxBack" parent="." instance=ExtResource("2_vfxback")]
 unique_name_in_owner = true
 position = Vector2(64, 64)
 
@@ -38,7 +49,7 @@ grow_vertical = 2
 texture = ExtResource("1_85qf2")
 expand_mode = 1
 
-[node name="EnergyVfxFront" type="Node2D" parent="."]
+[node name="EnergyVfxFront" parent="." instance=ExtResource("3_vfxfront")]
 unique_name_in_owner = true
 position = Vector2(64, 64)
 
@@ -53,14 +64,18 @@ offset_right = -16.0
 offset_bottom = 29.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(1, 0.9647059, 0.8862745, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.1882353)
+theme_override_colors/font_color = Color(1, 0.964706, 0.886275, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.188235)
 theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.8, 1)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 2
 theme_override_constants/outline_size = 16
 theme_override_constants/shadow_outline_size = 16
+theme_override_fonts/font = SubResource("FontVariation_pig")
 theme_override_font_sizes/font_size = 36
 text = "3/3"
 horizontal_alignment = 1
 vertical_alignment = 1
+script = ExtResource("5_megalabel")
+MinFontSize = 32
+MaxFontSize = 36
