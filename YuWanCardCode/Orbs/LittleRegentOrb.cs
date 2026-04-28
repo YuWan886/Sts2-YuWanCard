@@ -2,27 +2,22 @@ using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models;
+using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Orbs;
 
-public class LittleRegentOrb : OrbModel, IYuWanContent
+public class LittleRegentOrb : YuWanOrbModel
 {
     public override Color DarkenedColor => new Color("FFD700");
 
     public override decimal PassiveVal => 3m;
     public override decimal EvokeVal => 6m;
 
-    public virtual string? CustomIconPath => "res://images/ui/top_panel/character_icon_regent.png";
+    public override string? CustomIconPath => "res://YuWanCard/images/card_portraits/little_regent.png";
+    
+    public override string? CustomSpritePath => "res://scenes/orbs/orb_visuals/plasma_orb.tscn";
 
     protected override string ChannelSfx => "event:/sfx/characters/defect/defect_plasma_channel";
-
-    public virtual Node2D? CreateCustomSprite()
-    {
-        var scene = ResourceLoader.Load<PackedScene>("res://scenes/orbs/orb_visuals/plasma_orb.tscn");
-        if (scene == null) return null;
-        return scene.Instantiate<Node2D>(PackedScene.GenEditState.Disabled);
-    }
 
     public override async Task BeforeTurnEndOrbTrigger(PlayerChoiceContext choiceContext)
     {
