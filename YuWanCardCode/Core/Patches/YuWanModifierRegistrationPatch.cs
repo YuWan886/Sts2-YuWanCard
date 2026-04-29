@@ -1,8 +1,9 @@
 using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
+using YuWanCard;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(ModelDb), nameof(ModelDb.Init))]
 public class YuWanModifierRegistrationPatch

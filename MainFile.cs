@@ -3,6 +3,7 @@ using System.Reflection.Emit;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
@@ -26,7 +27,6 @@ public partial class MainFile : Node
     private static bool s_configRegistered;
     private static bool s_ritsuConfigRegistered;
 
-    // Cache the dynamically created adapter type (created once, used for registration)
     private static Type? s_dynamicAdapterType;
     private static object? s_dynamicAdapterInstance;
 
@@ -43,7 +43,6 @@ public partial class MainFile : Node
         AutoSlayCharacterPatch.ApplyPatch(harmony);
         AutoSlayOptionsPatch.ApplyPatch(harmony);
 
-        // Register all models with [Pool] attribute before ModelDb initializes
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
 
         Config = new YuWanCardConfig();
@@ -61,37 +60,66 @@ public partial class MainFile : Node
 
     private static void RegisterConfig()
     {
-        // Immediate registration is no longer needed — registration always happens
-        // via deferred path (NMainMenu._Ready → TryDeferredConfigRegister)
+
     }
 
     public static void TryDeferredConfigRegister()
     {
         if (s_configRegistered || Config == null) return;
 
-        // Prefer STS2-RitsuLib's native settings when available
-        if (TryRegisterRitsuLibConfig())
+        bool baseLibAvailable = IsBaseLibAvailable();
+        bool ritsuLibAvailable = IsRitsuLibAvailable();
+
+        if (baseLibAvailable)
         {
-            s_configRegistered = true;
-            return;
+            if (TryRegisterBaseLibConfig())
+                return;
         }
 
-        // Fall back to BaseLib
+        if (ritsuLibAvailable)
+        {
+            if (TryRegisterRitsuLibConfig())
+                return;
+        }
+    }
+
+    private static bool IsBaseLibAvailable()
+    {
+        return ResolveTypeAcrossAssemblies("BaseLib.Config.SimpleModConfig") != null
+            || Type.GetType("BaseLib.Config.SimpleModConfig, BaseLib") != null;
+    }
+
+    private static bool IsRitsuLibAvailable()
+    {
+        return ResolveTypeAcrossAssemblies("STS2RitsuLib.RitsuLibFramework") != null;
+    }
+
+    private static bool TryRegisterBaseLibConfig()
+    {
         try
         {
             var adapter = CreateDynamicConfigAdapter();
-            if (adapter == null) return;
+            if (adapter == null) return false;
 
             var registryType = Type.GetType("BaseLib.Config.ModConfigRegistry, BaseLib");
             var registerMethod = registryType?.GetMethod("Register");
             registerMethod?.Invoke(null, [ModId, adapter]);
 
+            var eventInfo = adapter.GetType().GetEvent("ConfigChanged");
+            if (eventInfo != null)
+            {
+                var handler = new EventHandler(OnConfigChanged);
+                eventInfo.AddEventHandler(adapter, handler);
+            }
+
             s_configRegistered = true;
             Logger.Info("Registered config via BaseLib (dynamic adapter)");
+            return true;
         }
         catch (Exception ex)
         {
             Logger.Warn($"Failed to register config with BaseLib: {ex.Message}");
+            return false;
         }
     }
 
@@ -101,7 +129,7 @@ public partial class MainFile : Node
 
         try
         {
-            // Scan all loaded assemblies for RitsuLib types (AssemblyLoadContext-safe)
+
             var ritsuFrameworkType = ResolveTypeAcrossAssemblies("STS2RitsuLib.RitsuLibFramework");
             if (ritsuFrameworkType == null) return false;
 
@@ -117,7 +145,6 @@ public partial class MainFile : Node
                 return false;
             }
 
-            // Build attribute constructors
             var pageCtor = pageAttrType.GetConstructor([typeof(string), typeof(string)]);
             if (pageCtor == null) return false;
 
@@ -127,13 +154,11 @@ public partial class MainFile : Node
             var toggleCtor = toggleAttrType.GetConstructor([typeof(string), typeof(string)]);
             if (toggleCtor == null) return false;
 
-            // Resolve named property info for attribute labels
             var labelProp = toggleAttrType.GetProperty("Label");
             var descProp = toggleAttrType.GetProperty("Description");
             var titleProp = pageAttrType.GetProperty("Title");
             var modDisplayProp = pageAttrType.GetProperty("ModDisplayName");
 
-            // Define dynamic assembly and type
             var asmName = new AssemblyName("YuWanCard.DynamicRitsuConfig");
             var asmBuilder = AssemblyBuilder.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
             var modBuilder = asmBuilder.DefineDynamicModule("RitsuModule");
@@ -243,7 +268,6 @@ public partial class MainFile : Node
             var dynamicType = typeBuilder.CreateType();
             if (dynamicType == null) return false;
 
-            // Copy default values from YuWanCardConfig to the dynamic type's static properties
             if (Config != null)
             {
                 SetDynamicAdapterProperty(dynamicType, "EnableDeathEffect", YuWanCardConfig.EnableDeathEffect);
@@ -252,8 +276,6 @@ public partial class MainFile : Node
                 SetDynamicAdapterProperty(dynamicType, "EnableAutoSlay", YuWanCardConfig.EnableAutoSlay);
             }
 
-            // Use non-generic overload RegisterModSettingsReflectionProviderAndTryRegister(Type)
-            // to avoid generic-method resolution issues across AssemblyLoadContext boundaries
             var registerMethod = ritsuFrameworkType.GetMethod(
                 "RegisterModSettingsReflectionProviderAndTryRegister",
                 [typeof(Type)]);
@@ -261,6 +283,8 @@ public partial class MainFile : Node
 
             var pagesRegistered = (int?)registerMethod.Invoke(null, [dynamicType]);
             Logger.Info($"Registered {pagesRegistered ?? 0} config page(s) via STS2-RitsuLib (dynamic reflection provider)");
+
+            SyncRitsuLibConfigToYuWanCardConfig(ritsuFrameworkType);
 
             s_ritsuConfigRegistered = true;
             return true;
@@ -370,15 +394,18 @@ public partial class MainFile : Node
             s_dynamicAdapterType = typeBuilder.CreateType();
             if (s_dynamicAdapterType == null) return null;
 
-            // Create instance (namespace in type name satisfies ModConfig's path requirement)
-            s_dynamicAdapterInstance = Activator.CreateInstance(s_dynamicAdapterType);
-            if (s_dynamicAdapterInstance == null) return null;
-
-            // Copy current config values to the adapter
             SetAdapterProperty("EnableDeathEffect", YuWanCardConfig.EnableDeathEffect);
             SetAdapterProperty("BypassModelDbHashCheck", YuWanCardConfig.BypassModelDbHashCheck);
             SetAdapterProperty("EnableAutoUpdateCheck", YuWanCardConfig.EnableAutoUpdateCheck);
             SetAdapterProperty("EnableAutoSlay", YuWanCardConfig.EnableAutoSlay);
+
+            s_dynamicAdapterInstance = Activator.CreateInstance(s_dynamicAdapterType);
+            if (s_dynamicAdapterInstance == null) return null;
+
+            YuWanCardConfig.EnableDeathEffect = GetAdapterBool("EnableDeathEffect");
+            YuWanCardConfig.BypassModelDbHashCheck = GetAdapterBool("BypassModelDbHashCheck");
+            YuWanCardConfig.EnableAutoUpdateCheck = GetAdapterBool("EnableAutoUpdateCheck");
+            YuWanCardConfig.EnableAutoSlay = GetAdapterBool("EnableAutoSlay");
 
             return s_dynamicAdapterInstance;
         }
@@ -398,11 +425,15 @@ public partial class MainFile : Node
         catch { /* best-effort sync */ }
     }
 
-    /// <summary>
-    /// Scans all loaded assemblies for a type by its full name.
-    /// Used instead of Type.GetType("..., AssemblyName") because the game
-    /// loads mods via AssemblyLoadContext, which breaks assembly-qualified resolution.
-    /// </summary>
+    private static bool GetAdapterBool(string name)
+    {
+        try
+        {
+            return (bool)s_dynamicAdapterType!.GetProperty(name)!.GetValue(null)!;
+        }
+        catch { return false; }
+    }
+
     private static Type? ResolveTypeAcrossAssemblies(string fullName)
     {
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -421,10 +452,6 @@ public partial class MainFile : Node
         return null;
     }
 
-    /// <summary>
-    /// Sets a static property on a dynamically created type by name.
-    /// Used to copy YuWanCardConfig default values to the dynamic RitsuLib config provider.
-    /// </summary>
     private static void SetDynamicAdapterProperty(Type dynamicType, string name, bool value)
     {
         try
@@ -434,8 +461,72 @@ public partial class MainFile : Node
         catch { /* best-effort sync */ }
     }
 
+    private static void SyncRitsuLibConfigToYuWanCardConfig(Type ritsuFrameworkType)
+    {
+        try
+        {
+            var getDataStoreMethod = ritsuFrameworkType.GetMethod("GetDataStore");
+            var dataStore = getDataStoreMethod?.Invoke(null, [ModId]);
+            if (dataStore == null) return;
+
+            // Force-load all global-scoped entries from disk
+            var initGlobalMethod = dataStore.GetType().GetMethod("InitializeGlobal");
+            initGlobalMethod?.Invoke(dataStore, null);
+
+            // Resolve the private ReflectionBindingBox<bool> type used as the store model
+            var ritsuAsm = ritsuFrameworkType.Assembly;
+            var mirrorSourceType = ritsuAsm.GetType("STS2RitsuLib.Settings.RuntimeReflectionMirrorSource");
+            var boxOpenType = mirrorSourceType?.GetNestedType("ReflectionBindingBox`1",
+                System.Reflection.BindingFlags.NonPublic);
+            var boxBoolType = boxOpenType?.MakeGenericType(typeof(bool));
+            if (boxBoolType == null) return;
+
+            // Build the generic Get<T> method: store.Get<ReflectionBindingBox<bool>>(key)
+            var getMethod = dataStore.GetType().GetMethod("Get", [typeof(string)]);
+            var getTypedMethod = getMethod?.MakeGenericMethod(boxBoolType);
+            if (getTypedMethod == null) return;
+
+            var valueProp = boxBoolType.GetProperty("Value");
+            if (valueProp == null) return;
+
+            var keys = new[] {
+                "EnableDeathEffect",
+                "BypassModelDbHashCheck",
+                "EnableAutoUpdateCheck",
+                "EnableAutoSlay",
+            };
+
+            foreach (var propName in keys)
+            {
+                var dataKey = $"reflect::YuWanCard.Config.YuWanCardRitsuConfigProvider.{propName}";
+                try
+                {
+                    var box = getTypedMethod.Invoke(dataStore, [dataKey]);
+                    if (box != null)
+                    {
+                        var savedValue = (bool)valueProp.GetValue(box)!;
+                        typeof(YuWanCardConfig).GetProperty(propName)?.SetValue(null, savedValue);
+                    }
+                }
+                catch
+                {
+                    // Key may not exist yet (first run); the default set before registration is correct
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn($"Failed to sync RitsuLib config to YuWanCardConfig: {ex.Message}");
+        }
+    }
+
     private static void OnConfigChanged(object? sender, EventArgs e)
     {
+        if (s_dynamicAdapterType == null) return;
+        YuWanCardConfig.EnableDeathEffect = GetAdapterBool("EnableDeathEffect");
+        YuWanCardConfig.BypassModelDbHashCheck = GetAdapterBool("BypassModelDbHashCheck");
+        YuWanCardConfig.EnableAutoUpdateCheck = GetAdapterBool("EnableAutoUpdateCheck");
+        YuWanCardConfig.EnableAutoSlay = GetAdapterBool("EnableAutoSlay");
     }
 
     private static void PreloadAssets()
@@ -490,6 +581,15 @@ public partial class MainFile : Node
 public static class NMainMenu_ConfigRegisterPatch
 {
     public static void Postfix()
+    {
+        MainFile.TryDeferredConfigRegister();
+    }
+}
+
+[HarmonyPatch(typeof(NGame), nameof(NGame._Ready))]
+public static class NGame_Ready_ConfigPreloadPatch
+{
+    public static void Prefix()
     {
         MainFile.TryDeferredConfigRegister();
     }

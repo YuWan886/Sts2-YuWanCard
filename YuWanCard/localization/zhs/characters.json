@@ -94,5 +94,20 @@
   "PIG_PIG.talk.YUWANCARD-PIG.2-0.next": "开心",
   "PIG_PIG.talk.YUWANCARD-PIG.2-1.char": "哇！都是猪喜欢的！谢谢猪猪前辈！\n[i][font_size=22]猪开心地摇着尾巴。[/font_size][/i]",
   "PIG_PIG.talk.YUWANCARD-PIG.2-1.next": "继续",
-  "PIG_PIG.talk.YUWANCARD-PIG.2-2.ancient": "去吧！让所有人都知道猪猪的力量！哼哼！"
+  "PIG_PIG.talk.YUWANCARD-PIG.2-2.ancient": "去吧！让所有人都知道猪猪的力量！哼哼！",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.ancient": "你站在这里，却像哪里都不在。你在找什么？金子？胡萝卜？还是一扇打不开的门？",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.next": "回答",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-1r.char": "猪……在等好吃的。等到好吃的之前，猪哪儿都不去。",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-1r.next": "继续",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-2r.ancient": "门？你从来不需要。你只是害怕\"推开了却发现里面是空的\"。",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-0r.ancient": "你又回来。塔对你来说像食槽——你吃不完，是因为不想吃完。",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-0r.next": "继续",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-1r.char": "食槽很好。空了不好。空了意味着……没得吃了。",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-1r.next": "继续",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-2r.ancient": "愚蠢。你若不吃完，就永远尝不到下一道菜。",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-0r.ancient": "那就站着吧。塔会替你记住：你来过，很多次，却什么也没吃。",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-0r.next": "继续",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-1r.char": "吃了什么……会让猪不再等吗？\n[i][font_size=22]猪困惑地歪了歪头。[/font_size][/i]",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-1r.next": "继续",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-2r.ancient": "会。所以别吃。继续饿着——饥饿是你唯一可靠的指南针。"
 }

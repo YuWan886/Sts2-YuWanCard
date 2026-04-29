@@ -8,7 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
-using MegaCrit.Sts2.Core.Saves.Runs;
+
 using MegaCrit.Sts2.Core.TestSupport;
 using YuWanCard.Characters;
 using YuWanCard.GameActions;
@@ -23,7 +23,6 @@ public class BugPig : YuWanCardModel
     private const int ErrorDamageBonus = 3;
     private const int ErrorDamageBonusUpgraded = 5;
 
-    [SavedProperty]
     private int YuWanCard_CalculatedDamageBonus { get; set; } = -1;
 
     public BugPig() : base(

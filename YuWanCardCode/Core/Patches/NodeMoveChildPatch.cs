@@ -1,7 +1,8 @@
 using Godot;
 using HarmonyLib;
+using YuWanCard;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(Node), "MoveChild")]
 public static class NodeMoveChildPatch

@@ -2,8 +2,9 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Encounters;
 using MegaCrit.Sts2.Core.Saves;
+using YuWanCard;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(SaveUtil), nameof(SaveUtil.EncounterOrDeprecated))]
 public static class SaveUtilPatch

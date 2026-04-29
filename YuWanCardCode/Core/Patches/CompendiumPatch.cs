@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
 using YuWanCard.Core.Patches;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 /// <summary>
 /// Adds custom character card pool filters to the Compendium (card library).

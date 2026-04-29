@@ -1,6 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 /// <summary>
 /// Provides max hand size calculation. 

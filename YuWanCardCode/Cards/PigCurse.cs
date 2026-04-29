@@ -22,7 +22,7 @@ public class PigCurse : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        WithKeyword(CardKeyword.Retain);
+        AddKeyword(CardKeyword.Retain);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

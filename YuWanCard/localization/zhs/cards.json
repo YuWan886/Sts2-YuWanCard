@@ -202,7 +202,7 @@
   "YUWANCARD-PIG_MAKE_FOOD.description": "选择{ExhaustCount}张手牌消耗，随机获得{ExhaustCount}张食物猪卡牌。",
   "YUWANCARD-PIG_MAKE_FOOD.selectionScreenPrompt": "选择要消耗的手牌",
   "YUWANCARD-ZHU_GE_PIG.title": "诸葛猪",
-  "YUWANCARD-ZHU_GE_PIG.decription": "每回合开始时，获得{ZhuGePigPower}层[gold]预见[/gold]。\n[gold]预见[/gold]：可以查看[gold]抽牌堆[/gold]顶部的牌，并可以选择任意数量的卡牌放入[gold]弃牌堆[/gold]。",
+  "YUWANCARD-ZHU_GE_PIG.description": "每回合开始时，获得{ZhuGePigPower}层[gold]预见[/gold]。\n[gold]预见[/gold]：可以查看[gold]抽牌堆[/gold]顶部的牌，并可以选择任意数量的卡牌放入[gold]弃牌堆[/gold]。",
   "YUWANCARD-PIG_CLIMB_TOWER.title": "猪爬塔",
   "YUWANCARD-PIG_CLIMB_TOWER.description": "造成{PigClimbTowerDamage}点伤害。获得{PigClimbTowerBlock}点[gold]格挡[/gold]。\n（数值等于当前层数）",
   "YUWANCARD-PIG_SWAP.title": "猪互换",

@@ -19,15 +19,10 @@ public class PigScalePatch
 {
     private static readonly Dictionary<uint, int> _initialMaxHpMap = new();
 
-#if STS2_BETA
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Hook), "AfterPlayerTurnStart", typeof(ICombatState), typeof(PlayerChoiceContext), typeof(Player))]
-    static void OnPlayerTurnStart(ICombatState combatState, PlayerChoiceContext choiceContext, Player player)
-#else
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Hook), "AfterPlayerTurnStart", typeof(CombatState), typeof(PlayerChoiceContext), typeof(Player))]
     static void OnPlayerTurnStart(CombatState combatState, PlayerChoiceContext choiceContext, Player player)
-#endif
+
     {
         if (player.Character is Pig && player.Creature != null && NCombatRoom.Instance != null)
         {
@@ -88,8 +83,8 @@ public class PigScalePatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(Creature), "LoseHpInternal", typeof(decimal), typeof(ValueProp))]
-    static void OnLoseHpInternal(Creature __instance)
+    [HarmonyPatch(typeof(Creature), "set_CurrentHp")]
+    static void OnCurrentHpSet(Creature __instance)
     {
         if (__instance.Player != null && __instance.Player.Character is Pig && NCombatRoom.Instance != null)
         {
