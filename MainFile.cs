@@ -190,6 +190,7 @@ public partial class MainFile : Node
                 ("BypassModelDbHashCheck", "bypass_modeldb_check", "跳过哈希检查", "多人模式下跳过ModelDb哈希校验"),
                 ("EnableAutoUpdateCheck", "enable_auto_update", "自动检查更新", "启动时自动检查模组更新"),
                 ("EnableAutoSlay", "enable_auto_slay", "自动爬塔", "自动进行角色选择并开始爬塔"),
+                ("EnableSevenCursesRing", "enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒"),
             };
 
             // Build optional [ModSettingsBinding(Source = Global)] if types available
@@ -274,6 +275,7 @@ public partial class MainFile : Node
                 SetDynamicAdapterProperty(dynamicType, "BypassModelDbHashCheck", YuWanCardConfig.BypassModelDbHashCheck);
                 SetDynamicAdapterProperty(dynamicType, "EnableAutoUpdateCheck", YuWanCardConfig.EnableAutoUpdateCheck);
                 SetDynamicAdapterProperty(dynamicType, "EnableAutoSlay", YuWanCardConfig.EnableAutoSlay);
+                SetDynamicAdapterProperty(dynamicType, "EnableSevenCursesRing", YuWanCardConfig.EnableSevenCursesRing);
             }
 
             var registerMethod = ritsuFrameworkType.GetMethod(
@@ -332,6 +334,7 @@ public partial class MainFile : Node
                 ("BypassModelDbHashCheck", "多人游戏设置"),
                 ("EnableAutoUpdateCheck", "更新设置"),
                 ("EnableAutoSlay", "自动爬塔设置"),
+                ("EnableSevenCursesRing", "游戏设置"),
             };
 
             var propBuilders = new List<(PropertyBuilder Prop, FieldBuilder Field)>();
@@ -398,6 +401,7 @@ public partial class MainFile : Node
             SetAdapterProperty("BypassModelDbHashCheck", YuWanCardConfig.BypassModelDbHashCheck);
             SetAdapterProperty("EnableAutoUpdateCheck", YuWanCardConfig.EnableAutoUpdateCheck);
             SetAdapterProperty("EnableAutoSlay", YuWanCardConfig.EnableAutoSlay);
+            SetAdapterProperty("EnableSevenCursesRing", YuWanCardConfig.EnableSevenCursesRing);
 
             s_dynamicAdapterInstance = Activator.CreateInstance(s_dynamicAdapterType);
             if (s_dynamicAdapterInstance == null) return null;
@@ -406,6 +410,7 @@ public partial class MainFile : Node
             YuWanCardConfig.BypassModelDbHashCheck = GetAdapterBool("BypassModelDbHashCheck");
             YuWanCardConfig.EnableAutoUpdateCheck = GetAdapterBool("EnableAutoUpdateCheck");
             YuWanCardConfig.EnableAutoSlay = GetAdapterBool("EnableAutoSlay");
+            YuWanCardConfig.EnableSevenCursesRing = GetAdapterBool("EnableSevenCursesRing");
 
             return s_dynamicAdapterInstance;
         }
@@ -494,6 +499,7 @@ public partial class MainFile : Node
                 "BypassModelDbHashCheck",
                 "EnableAutoUpdateCheck",
                 "EnableAutoSlay",
+                "EnableSevenCursesRing",
             };
 
             foreach (var propName in keys)
@@ -527,6 +533,7 @@ public partial class MainFile : Node
         YuWanCardConfig.BypassModelDbHashCheck = GetAdapterBool("BypassModelDbHashCheck");
         YuWanCardConfig.EnableAutoUpdateCheck = GetAdapterBool("EnableAutoUpdateCheck");
         YuWanCardConfig.EnableAutoSlay = GetAdapterBool("EnableAutoSlay");
+        YuWanCardConfig.EnableSevenCursesRing = GetAdapterBool("EnableSevenCursesRing");
     }
 
     private static void PreloadAssets()

@@ -8,5 +8,11 @@ public abstract class YuWanOrbModel : OrbModel, IYuWanContent
     public virtual string? CustomIconPath => null;
     public virtual string? CustomSpritePath => null;
 
-    public virtual Node2D? CreateCustomSprite() => null;
+    public virtual Node2D? CreateCustomSprite()
+    {
+        if (CustomSpritePath is not string path)
+            return null;
+        var scene = GD.Load<PackedScene>(path);
+        return scene.Instantiate<Node2D>();
+    }
 }

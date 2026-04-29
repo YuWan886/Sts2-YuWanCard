@@ -13,9 +13,11 @@ public class LittleRegentOrb : YuWanOrbModel
     public override decimal PassiveVal => 3m;
     public override decimal EvokeVal => 6m;
 
-    public override string? CustomIconPath => "res://YuWanCard/images/card_portraits/little_regent.png";
-    
+    public override string? CustomIconPath => "res://images/ui/top_panel/character_icon_regent.png";
+
     public override string? CustomSpritePath => "res://scenes/orbs/orb_visuals/plasma_orb.tscn";
+
+
 
     protected override string ChannelSfx => "event:/sfx/characters/defect/defect_plasma_channel";
 

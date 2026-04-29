@@ -166,7 +166,7 @@ public class PigMinionPower : YuWanPowerModel
             if (player == null || player.Creature == null || player.Creature.IsDead) continue;
             if (CombatManager.Instance?.IsEnding != false) return;
 
-            int buffType = rng.NextInt(5);
+            int buffType = rng.NextInt(4);
             var creature = player.Creature;
             switch (buffType)
             {
@@ -181,9 +181,6 @@ public class PigMinionPower : YuWanPowerModel
                     break;
                 case 3:
                     await CreatureCmd.Heal(creature, 1);
-                    break;
-                case 4:
-                    await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), 1, player);
                     break;
             }
         }

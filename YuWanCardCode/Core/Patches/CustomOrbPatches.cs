@@ -35,6 +35,7 @@ public static class CustomOrbPatches
         }
     }
 
+    [HarmonyPriority(Priority.First)]
     [HarmonyPatch(typeof(OrbModel), nameof(OrbModel.CreateSprite))]
     static class CreateSpritePatch
     {

@@ -64,7 +64,8 @@ public class PigMakeFood : YuWanCardModel
 
         for (int i = 0; i < foodCount; i++)
         {
-            var foodCard = CardUtils.CreateRandomFoodPigCard(Owner);
+            var canonicalCard = CardUtils.GetRandomFoodPigCardCanonical(Owner);
+            var foodCard = CombatState.CreateCard(canonicalCard, Owner);
             await CardPileCmd.AddGeneratedCardToCombat(foodCard, PileType.Hand, addedByPlayer: true);
         }
     }

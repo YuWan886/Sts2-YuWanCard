@@ -17,6 +17,8 @@ public abstract partial class YuWanMonsterModel : MonsterModel, IYuWanContent
 
     public virtual string? CustomVisualPath => $"{VisualsBasePath}.tscn";
 
+    protected override string VisualsPath => CustomVisualPath ?? base.VisualsPath;
+
     public virtual string? CustomAttackSfx => null;
     public virtual string? CustomCastSfx => null;
     public virtual string? CustomDeathSfx => null;

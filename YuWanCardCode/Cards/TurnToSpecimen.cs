@@ -73,14 +73,11 @@ public class TurnToSpecimen : YuWanCardModel
                     // 停止动画
                     if (creatureNode.HasSpineAnimation)
                     {
-                        try
+                        var hasIdle = creatureNode.Visuals.SpineBody?.HasAnimation("idle") ?? false;
+                        if (hasIdle)
                         {
                             creatureNode.SpineAnimation.SetAnimation("idle", loop: false, 0);
                             creatureNode.SpineAnimation.SetTimeScale(0f);
-                        }
-                        catch (Exception)
-                        {
-                            // 部分敌人没有 "idle" 动画（如某些特殊 Spine 骨骼），跳过动画控制
                         }
                     }
 
@@ -94,14 +91,11 @@ public class TurnToSpecimen : YuWanCardModel
                     {
                         if (creatureNode.HasSpineAnimation)
                         {
-                            try
+                            var hasIdle = creatureNode.Visuals.SpineBody?.HasAnimation("idle") ?? false;
+                            if (hasIdle)
                             {
                                 creatureNode.SpineAnimation.SetTimeScale(1f);
                                 creatureNode.SpineAnimation.SetAnimation("idle", loop: true, 0);
-                            }
-                            catch (Exception)
-                            {
-                                // 部分敌人没有 "idle" 动画，跳过恢复
                             }
                         }
                     }));

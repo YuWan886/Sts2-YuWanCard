@@ -217,6 +217,7 @@ static class CustomOrbIconPath
     }
 }
 
+[HarmonyPriority(Priority.First)]
 [HarmonyPatch(typeof(OrbModel), nameof(OrbModel.CreateSprite))]
 static class CustomOrbCreateSprite
 {

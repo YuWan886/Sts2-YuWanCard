@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
+using YuWanCard.Config;
 using YuWanCard.Relics;
 using YuWanCard.Utils;
 
@@ -24,6 +25,11 @@ class NeowSevenCursesPatch
     static void AddSevenCursesOption(Neow __instance, ref IReadOnlyList<EventOption> __result)
     {
         if (__instance.Owner == null)
+        {
+            return;
+        }
+
+        if (!YuWanCardConfig.EnableSevenCursesRing)
         {
             return;
         }
