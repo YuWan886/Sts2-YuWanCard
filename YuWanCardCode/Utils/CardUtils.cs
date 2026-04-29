@@ -18,12 +18,17 @@ public static class CardUtils
         ModelDb.Card<PigBlueberryCake>
     ];
 
-    public static CardModel CreateRandomFoodPigCard(Player player)
+    public static CardModel GetRandomFoodPigCardCanonical(Player player)
     {
         var factory = FoodPigCardFactories
             .OrderBy(_ => player.RunState.Rng.CombatCardGeneration.NextFloat())
             .First();
-        return player.RunState.CreateCard(factory(), player);
+        return factory();
+    }
+
+    public static CardModel CreateRandomFoodPigCard(Player player)
+    {
+        return player.RunState.CreateCard(GetRandomFoodPigCardCanonical(player), player);
     }
 
     public static bool HasDamageVariable(CardModel? card)

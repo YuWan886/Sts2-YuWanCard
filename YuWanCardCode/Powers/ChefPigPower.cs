@@ -30,6 +30,8 @@ public class ChefPigPower : YuWanPowerModel
 
         if (transformableCards.Count == 0) return;
 
+        if (player.Creature.CombatState == null) return;
+
         Flash();
 
         int count = Math.Min(Amount, transformableCards.Count);
@@ -67,8 +69,9 @@ public class ChefPigPower : YuWanPowerModel
             if (selectedCards.Count == 0) break;
 
             selectedCardSet.Add(selectedCards[0]);
-            var foodCard = CardUtils.CreateRandomFoodPigCard(player);
-            transformations.Add(new CardTransformation(selectedCards[0], foodCard));
+            var canonicalFoodCard = CardUtils.GetRandomFoodPigCardCanonical(player);
+            var combatCard = player.Creature.CombatState.CreateCard(canonicalFoodCard, player);
+            transformations.Add(new CardTransformation(selectedCards[0], combatCard));
         }
 
         if (transformations.Count > 0)

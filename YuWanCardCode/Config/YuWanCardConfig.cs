@@ -2,7 +2,7 @@ using BaseLib.Config;
 
 namespace YuWanCard.Config;
 
-public class YuWanCardConfig : SimpleModConfig
+public class YuWanCardConfig : FallbackSimpleModConfig
 {
     [ConfigSection("显示设置")]
     [ConfigHoverTip]

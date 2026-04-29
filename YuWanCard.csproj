@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Alchyr.Sts2.BaseLib" Version="3.0.9" PrivateAssets="All" />
+        <!-- <PackageReference Include="Alchyr.Sts2.BaseLib" Version="3.0.9" PrivateAssets="All" /> -->
         <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="All" />
         <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="*" />
         <PackageReference Include="BSchneppe.StS2.PckPacker" Version="0.1.1" PrivateAssets="All" />
@@ -98,13 +98,4 @@
               IgnoreExitCode="true" />
     </Target>
 
-    <Target Name="CopyBaseLibToModsFolder" AfterTargets="PostBuildEvent" Condition="'$(CopyBaseLib)' != 'false'">
-        <ItemGroup>
-            <BaseLibContentFiles Include="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\Content\**\*" Exclude="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\Content\*.props" />
-            <BaseLibDllFiles Include="$(MSBuildProjectDirectory)\packages\alchyr.sts2.baselib\*\lib\**\*.dll" />
-        </ItemGroup>
-        <Message Text="Copying BaseLib files to mods folder" Importance="high" />
-        <Copy SourceFiles="@(BaseLibContentFiles)" DestinationFolder="$(ModsPath)BaseLib\" />
-        <Copy SourceFiles="@(BaseLibDllFiles)" DestinationFolder="$(ModsPath)BaseLib\" />
-    </Target>
 </Project>
