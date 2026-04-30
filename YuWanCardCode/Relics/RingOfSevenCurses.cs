@@ -67,7 +67,8 @@ public class RingOfSevenCurses : YuWanRelicModel
         var availableCurses = ModelDb.CardPool<CurseCardPool>()
             .GetUnlockedCards(Owner.UnlockState, Owner.RunState.CardMultiplayerConstraint)
             .Where(c => !CurseBlacklist.Contains(c.GetType()))
-            .ToHashSet();
+            .OrderBy(c => c.Id.Entry)
+            .ToList();
         if (availableCurses.Count == 0)
         {
             return;

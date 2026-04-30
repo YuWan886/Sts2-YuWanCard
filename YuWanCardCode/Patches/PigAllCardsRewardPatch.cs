@@ -55,7 +55,8 @@ public class PigAllCardsRewardPatch
         }
         else
         {
-            HashSet<CardRarity> allRarities = possibleCards.Select(c => c.Rarity).ToHashSet();
+            // OrderBy before ToHashSet ensures deterministic insertion order for consistent iteration
+            var allRarities = possibleCards.Select(c => c.Rarity).Distinct().OrderBy(r => (int)r).ToHashSet();
             selectedRarity = (CardRarity?)RollForRarityMethod.Invoke(
                 null,
                 [player, options.RarityOdds, options.Source, allRarities, options.Flags.HasFlag(CardCreationFlags.ForceRarityOddsChange)]
