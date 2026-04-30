@@ -27,7 +27,6 @@ public class Heartsteel : YuWanRelicModel
 
     public override bool ShowCounter => true;
 
-    public override string FlashSfx => "";
 
     public override int DisplayAmount => TriggerCount;
 

@@ -1,4 +1,5 @@
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Utils;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -62,6 +63,7 @@ public class TriplePlay : YuWanRelicModel
         if (_consecutiveCount == 3)
         {
             Flash();
+            AudioUtils.Play("res://YuWanCard/sounds/vfx/33.mp3");
             _consecutiveCount = 0;
             return playCount + 1;
         }
