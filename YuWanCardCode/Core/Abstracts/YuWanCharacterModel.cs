@@ -2,6 +2,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YuWanCard.Core.Patches.UI;
 
@@ -9,6 +10,7 @@ namespace YuWanCard.Core.Abstracts;
 
 public abstract class YuWanCharacterModel : CharacterModel, IYuWanCharacter
 {
+    public virtual IReadOnlyList<RelicModel> MultiplayerStartingRelics => [];
     public virtual string? CustomIconTexturePath => null;
     public virtual string? CustomCharacterSelectIconPath => null;
     public virtual string? CustomEnergyCounterPath => null;
@@ -33,6 +35,7 @@ public abstract class YuWanCharacterModel : CharacterModel, IYuWanCharacter
 
     public virtual CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller) => null;
 
+    IReadOnlyList<RelicModel> IYuWanCharacter.MultiplayerStartingRelics => MultiplayerStartingRelics;
     string? IYuWanCharacter.CustomIconTexturePath => CustomIconTexturePath;
     string? IYuWanCharacter.CustomCharacterSelectIconPath => CustomCharacterSelectIconPath;
     string? IYuWanCharacter.CustomEnergyCounterPath => CustomEnergyCounterPath;

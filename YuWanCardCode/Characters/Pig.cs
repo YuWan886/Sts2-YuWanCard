@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YuWanCard.Cards;
 using YuWanCard.Relics;
@@ -12,6 +13,8 @@ namespace YuWanCard.Characters;
 public class Pig : CharacterModel, IYuWanCharacter
 {
     private const string PigVisualsPath = "res://YuWanCard/scenes/characters/pig.tscn";
+
+    IReadOnlyList<RelicModel> IYuWanCharacter.MultiplayerStartingRelics => [ModelDb.Relic<PigRoastPork>()];
 
     string? IYuWanCharacter.CustomVisualPath => PigVisualsPath;
     string? IYuWanCharacter.CustomEnergyCounterPath => "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
