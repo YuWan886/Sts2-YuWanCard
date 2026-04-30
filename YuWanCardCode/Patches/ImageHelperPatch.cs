@@ -1,8 +1,12 @@
+using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Assets;
+using MegaCrit.Sts2.Core.Entities.RestSite;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
+using YuWanCard.RestSite;
 
 namespace YuWanCard.Patches;
 
@@ -21,38 +25,29 @@ public static class ImageHelperPatch
         return true;
     }
 
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(ImageHelper.GetImagePath))]
-    public static void GetImagePathPostfix(string innerPath, ref string __result)
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(ImageHelper.GetRoomIconOutlinePath))]
+    public static bool GetRoomIconOutlinePathPrefix(MapPointType mapPointType, RoomType roomType, ModelId? modelId, ref string? __result)
     {
-        if (innerPath == "events/blacksmith.png")
-        {
-            __result = "res://YuWanCard/images/events/blacksmith.png";
-            return;
-        }
-
-        if (innerPath == "ui/rest_site/option_roast_pork.png")
-        {
-            __result = "res://YuWanCard/images/ui/rest_site/option_roast_pork.png";
-            return;
-        }
-
-        if (innerPath == "ui/top_panel/character_icon_yuwancard-pig_outline.png")
-        {
-            __result = "res://YuWanCard/images/characters/character_icon_pig.png";
-            return;
-        }
-
-        if (innerPath == "ui/run_history/yuwancard-pig_pig_outline.png")
+        if (modelId != null && modelId.Entry == "YUWANCARD-PIG_PIG")
         {
             __result = "res://YuWanCard/images/ancients/pig_pig.png";
-            return;
+            return false;
         }
+        return true;
+    }
+}
 
-        if (innerPath == "packed/map/ancients/ancient_node_yuwancard-pig_pig_outline.png")
+[HarmonyPatch(typeof(RestSiteOption), "Icon", MethodType.Getter)]
+static class RestSiteOptionIconPatch
+{
+    static bool Prefix(RestSiteOption __instance, ref Texture2D __result)
+    {
+        if (__instance is IYuWanRestSiteOption y && y.CustomIconPath != null)
         {
-            __result = "res://YuWanCard/images/ancients/pig_pig.png";
-            return;
+            __result = PreloadManager.Cache.GetTexture2D(y.CustomIconPath);
+            return false;
         }
+        return true;
     }
 }

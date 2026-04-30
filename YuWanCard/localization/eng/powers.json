@@ -84,5 +84,8 @@
   "YUWANCARD-PIG_INVERT_POWER.smartDescription": "Swap your draw pile with your discard pile, and swap your used energy with remaining energy. Removed at end of turn.",
   "YUWANCARD-PIG_DEMON_FORM_POWER.title": "Demon Form",
   "YUWANCARD-PIG_DEMON_FORM_POWER.description": "At the start of your turn, gain Strength.",
-  "YUWANCARD-PIG_DEMON_FORM_POWER.smartDescription": "At the start of your turn, gain {Amount:mul(StrengthGain)} [gold]Strength[/gold]."
+  "YUWANCARD-PIG_DEMON_FORM_POWER.smartDescription": "At the start of your turn, gain {Amount:mul(StrengthGain)} [gold]Strength[/gold].",
+  "YUWANCARD-CALL_COMPANIONS_POWER.title": "Call Companions",
+  "YUWANCARD-CALL_COMPANIONS_POWER.description": "A summoned virtual player is fighting for you.",
+  "YUWANCARD-CALL_COMPANIONS_POWER.smartDescription": "Summoned a \"virtual\" player with a random registered character. The virtual player is AI-controlled. Lasts for this combat only."
 }

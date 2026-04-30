@@ -78,5 +78,8 @@
   "YUWANCARD-ZHU_GE_PIG_POWER.selectionScreenPrompt": "选择要丢弃的牌",
   "YUWANCARD-PIG_DEMON_FORM_POWER.title": "恶魔形态",
   "YUWANCARD-PIG_DEMON_FORM_POWER.description": "在你的回合开始时，获得力量。",
-  "YUWANCARD-PIG_DEMON_FORM_POWER.smartDescription": "在你的回合开始时，获得{StrengthGain}点[gold]力量[/gold]。"
+  "YUWANCARD-PIG_DEMON_FORM_POWER.smartDescription": "在你的回合开始时，获得{StrengthGain}点[gold]力量[/gold]。",
+  "YUWANCARD-CALL_COMPANIONS_POWER.title": "呼朋引伴",
+  "YUWANCARD-CALL_COMPANIONS_POWER.description": "召唤的虚拟玩家正在为你而战。",
+  "YUWANCARD-CALL_COMPANIONS_POWER.smartDescription": "召唤1名\"虚拟\"玩家。该虚拟玩家由AI控制。"
 }

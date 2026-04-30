@@ -207,5 +207,7 @@
   "YUWANCARD-PIG_SWAP.title": "Pig Swap",
   "YUWANCARD-PIG_SWAP.description": "Swap draw pile and discard pile. Swap used energy and remaining energy.",
   "YUWANCARD-PIG_DEMON_FORM.title": "Demon Form",
-  "YUWANCARD-PIG_DEMON_FORM.description": "Gain {PigDemonFormPower:diff()} [gold]Demon Form[/gold]."
+  "YUWANCARD-PIG_DEMON_FORM.description": "Gain {PigDemonFormPower:diff()} [gold]Demon Form[/gold].",
+  "YUWANCARD-CALL_COMPANIONS.title": "Call Companions",
+  "YUWANCARD-CALL_COMPANIONS.description": "[gold]Exhaust[/gold]. NL Summon a \"virtual\" player with a random registered character. NL The virtual player is AI-controlled. NL Lasts for this combat only."
 }

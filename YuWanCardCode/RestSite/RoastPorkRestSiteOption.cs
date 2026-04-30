@@ -10,9 +10,9 @@ using YuWanCard.Cards;
 
 namespace YuWanCard.RestSite;
 
-public sealed class RoastPorkRestSiteOption(Player owner) : RestSiteOption(owner)
+public sealed class RoastPorkRestSiteOption(Player owner) : RestSiteOption(owner), IYuWanRestSiteOption
 {
-    private static readonly string CustomIconPath = "res://YuWanCard/images/ui/rest_site/option_roast_pork.png";
+    string? IYuWanRestSiteOption.CustomIconPath => "res://YuWanCard/images/ui/rest_site/option_roast_pork.png";
 
     public static bool WasRoastPorkSelected { get; private set; }
 
@@ -23,7 +23,7 @@ public sealed class RoastPorkRestSiteOption(Player owner) : RestSiteOption(owner
 
     public override string OptionId => "ROAST_PORK";
 
-    public override IEnumerable<string> AssetPaths => [CustomIconPath];
+    public override IEnumerable<string> AssetPaths => [((IYuWanRestSiteOption)this).CustomIconPath!];
 
     public override LocString Description
     {

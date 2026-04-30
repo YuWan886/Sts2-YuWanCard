@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Core.Abstracts;
 
@@ -13,6 +14,29 @@ public abstract class YuWanEventModel : EventModel, IYuWanContent
     public virtual string? CustomInitialPortraitPath => null;
     public virtual string? CustomBackgroundScenePath => null;
     public virtual string? CustomVfxPath => null;
+
+    public override IEnumerable<string> GetAssetPaths(IRunState runState)
+    {
+        var paths = base.GetAssetPaths(runState).ToList();
+
+        if (CustomInitialPortraitPath != null)
+        {
+            var defaultPath = ImageHelper.GetImagePath("events/" + Id.Entry.ToLowerInvariant() + ".png");
+            var index = paths.IndexOf(defaultPath);
+            if (index >= 0)
+                paths[index] = CustomInitialPortraitPath;
+        }
+
+        if (CustomBackgroundScenePath != null)
+        {
+            var defaultPath = SceneHelper.GetScenePath("events/background_scenes/" + Id.Entry.ToLowerInvariant());
+            var index = paths.IndexOf(defaultPath);
+            if (index >= 0)
+                paths[index] = CustomBackgroundScenePath;
+        }
+
+        return paths;
+    }
 
     protected EventOption Option(Func<Task>? onChosen, LocString title, LocString description,
         params IHoverTip[] tips)

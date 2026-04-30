@@ -44,6 +44,8 @@ public class Pig : CharacterModel, IYuWanCharacter
         => "res://YuWanCard/scenes/ui/character_icons/pig_icon.tscn";
     string? IYuWanCharacter.CustomIconTexturePath
         => "res://YuWanCard/images/characters/character_icon_pig.png";
+    string? IYuWanCharacter.CustomIconOutlineTexturePath
+        => "res://YuWanCard/images/characters/character_icon_pig.png";
     string? IYuWanCharacter.CustomCharacterSelectBg
         => "res://YuWanCard/scenes/characters/char_select_bg_pig.tscn";
     string? IYuWanCharacter.CustomMerchantAnimPath

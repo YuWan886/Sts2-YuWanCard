@@ -123,7 +123,10 @@ public static class PetManager
         var ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
         if (ownerNode == null) return;
 
-        var pets = owner.Pets.ToList();
+        // Skip companion creatures — they manage their own positioning
+        var pets = owner.Pets
+            .Where(p => p.Monster is not CompanionPlaceholderModel)
+            .ToList();
         int petCount = pets.Count;
 
         float baseOffsetX = ownerNode.Hitbox.Size.X * 0.5f + (isDefected ? 250f : 130f);
@@ -175,7 +178,7 @@ public static class PetManager
         var ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
         if (petNode == null || ownerNode == null) return;
 
-        float scale = 0.5f + upgradeLevel * 0.15f;
+        float scale = 1.0f + upgradeLevel * 0.15f;
         petNode.SetDefaultScaleTo(scale, 0f);
 
         PositionAllPets(owner, isDefected);
