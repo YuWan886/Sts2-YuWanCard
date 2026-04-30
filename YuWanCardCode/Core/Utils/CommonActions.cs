@@ -2,6 +2,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 
@@ -42,5 +43,28 @@ public static class CommonActions
         where T : PowerModel
     {
         return await PowerCmd.Apply<T>(target, amount, card.Owner.Creature, card);
+    }
+
+    public static async Task Apply<T>(PlayerChoiceContext context, IEnumerable<Creature> targets, CardModel card, bool applyToEach = false)
+        where T : PowerModel
+    {
+        decimal amount = card.DynamicVars.Count;
+        foreach (var target in targets)
+        {
+            await PowerCmd.Apply<T>(target, amount, card.Owner.Creature, card);
+        }
+    }
+
+    public static async Task<T?> ApplySelf<T>(PlayerChoiceContext context, CardModel card, decimal amount = 1)
+        where T : PowerModel
+    {
+        return await PowerCmd.Apply<T>(card.Owner.Creature, amount, card.Owner.Creature, card);
+    }
+
+    public static async Task Draw(CardModel card, PlayerChoiceContext context)
+    {
+        int amount = card.DynamicVars.Cards.IntValue;
+        if (amount <= 0) amount = 1;
+        await CardPileCmd.Draw(context, amount, card.Owner);
     }
 }

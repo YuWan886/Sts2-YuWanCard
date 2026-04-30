@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -34,10 +35,15 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
     protected virtual string FrameBasePath => $"res://YuWanCard/images/card_frames/{CardId}";
 
     public override string PortraitPath => GetPortraitPath();
-    public virtual string? CustomPortraitPath => GetPortraitPath();
+    public virtual string? CustomPortraitPath => null;
 
     private string GetPortraitPath()
     {
+        // First check if subclass provides a custom portrait path
+        if (CustomPortraitPath != null)
+            return CustomPortraitPath;
+        
+        // Otherwise, use the default path based on CardId
         string portraitPath = $"{PortraitBasePath}.png";
         return ResourceLoader.Exists(portraitPath) ? portraitPath : TestPortraitPath;
     }
@@ -103,6 +109,15 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
     protected YuWanCardModel WithDamage(int baseVal, int upgrade = 0)
     {
         _constructedDynamicVars.Add(new DamageVar(baseVal, ValueProp.Move).WithUpgrade(upgrade));
+        return this;
+    }
+
+    protected YuWanCardModel WithCalculatedDamage(ValueProp props, Func<CardModel, Creature?, decimal> multiplierCalc, int baseVal = 0, int extraVal = 0, int baseUpgrade = 0, int extraUpgrade = 0)
+    {
+        _constructedDynamicVars.Add(new CalculationBaseVar(baseVal).WithUpgrade(baseUpgrade));
+        _constructedDynamicVars.Add(new ExtraDamageVar(extraVal).WithUpgrade(extraUpgrade));
+        var calculatedVar = new CalculatedDamageVar(props).WithMultiplier(multiplierCalc);
+        _constructedDynamicVars.Add(calculatedVar);
         return this;
     }
 
@@ -235,4 +250,9 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
 
     [GeneratedRegex(@"([a-z])([A-Z])", RegexOptions.Compiled)]
     private static partial Regex MyRegex();
+}
+
+public interface ITranscendenceCard
+{
+    CardModel GetTranscendenceTransformedCard();
 }

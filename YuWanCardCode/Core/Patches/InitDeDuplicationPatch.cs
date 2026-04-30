@@ -20,8 +20,7 @@ static class InitDeDuplicationPatch
     [HarmonyPriority(Priority.First)]
     static bool SafeInit()
     {
-        var contentById = ContentByIdField?.GetValue(null) as IDictionary<ModelId, AbstractModel>;
-        if (contentById == null) return true;
+        if (ContentByIdField?.GetValue(null) is not IDictionary<ModelId, AbstractModel> contentById) return true;
 
         var allTypes = ModelDb.AllAbstractModelSubtypes;
         int created = 0, skipped = 0;
@@ -63,7 +62,7 @@ static class InitDeDuplicationPatch
     /// </summary>
     private static void RunPostInitLogic()
     {
-        // 1. YuWanCard: Register modifiers
+        // 1. Register modifiers
         foreach (var modifier in Modifiers.YuWanModifierModel.RegisteredModifiers)
         {
             var modifierType = modifier.GetType();
@@ -73,9 +72,34 @@ static class InitDeDuplicationPatch
             }
         }
 
-        // 2. YuWanCard: Register Pig character with ModelDbCharactersPatch
-        // Use the canonical instance already created during Init, not a new one.
-        var pig = ModelDb.Character<Characters.Pig>();
-        ModelDbCharactersPatch.Register(pig);
+        // 2. Auto-register all characters that implement IYuWanCharacter
+        AutoRegisterCharacters();
+    }
+
+    /// <summary>
+    /// Automatically registers all character models that implement IYuWanCharacter.
+    /// This eliminates the need for manual registration in each mod.
+    /// </summary>
+    private static void AutoRegisterCharacters()
+    {
+        var characterTypes = ModelDb.AllAbstractModelSubtypes
+            .Where(t => typeof(IYuWanCharacter).IsAssignableFrom(t) && !t.IsAbstract);
+
+        foreach (var characterType in characterTypes)
+        {
+            try
+            {
+                var character = ModelDb.GetById<CharacterModel>(ModelDb.GetId(characterType));
+                if (character != null)
+                {
+                    ModelDbCharactersPatch.Register(character);
+                    MainFile.Logger.Info($"Auto-registered character: {characterType.Name}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MainFile.Logger.Error($"Failed to auto-register character {characterType.Name}: {ex.Message}");
+            }
+        }
     }
 }

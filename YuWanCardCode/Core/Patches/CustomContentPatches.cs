@@ -7,10 +7,26 @@ namespace YuWanCard.Core.Patches;
 
 // --- Card custom portrait / frame ---
 
+[HarmonyPriority(Priority.First)]
 [HarmonyPatch(typeof(CardModel), "PortraitPngPath", MethodType.Getter)]
 static class CustomCardPortraitPngPath
 {
     static bool Prefix(CardModel __instance, ref string? __result)
+    {
+        if (__instance is YuWanCardModel c && c.CustomPortraitPath != null)
+        {
+            __result = c.CustomPortraitPath;
+            return false;
+        }
+        return true;
+    }
+}
+
+[HarmonyPriority(Priority.First)]
+[HarmonyPatch(typeof(CardModel), nameof(CardModel.PortraitPath), MethodType.Getter)]
+static class CustomCardPortraitPath
+{
+    static bool Prefix(CardModel __instance, ref string __result)
     {
         if (__instance is YuWanCard.Core.Abstracts.YuWanCardModel c && c.CustomPortraitPath != null)
         {

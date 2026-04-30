@@ -1,6 +1,5 @@
 using Godot;
 using MegaCrit.Sts2.Core.Models;
-using YuWanCard.Core;
 using YuWanCard.Core.Patches;
 
 namespace YuWanCard.Core.Abstracts;
@@ -13,9 +12,9 @@ public abstract class YuWanCardPoolModel : CardPoolModel, IYuWanContent
 
     public virtual Color ShaderColor => new("FFFFFF");
 
-    public float H => ShaderColor.H;
-    public float S => ShaderColor.S;
-    public float V => ShaderColor.V;
+    public virtual float H => ShaderColor.H;
+    public virtual float S => ShaderColor.S;
+    public virtual float V => ShaderColor.V;
 
     public virtual bool IsShared => false;
 
