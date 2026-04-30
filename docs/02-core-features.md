@@ -435,20 +435,38 @@ public class PigEvent : EventModel
 
 ---
 
-## 宝珠系统
+## 充能球系统
 
-### 自定义宝珠
+### 基类：YuWanOrbModel
+
+项目使用 `YuWanOrbModel` 作为所有充能球的基类，支持自动模型注册和自定义资源路径：
 
 ```csharp
+using Godot;
 using MegaCrit.Sts2.Core.Entities.Orbs;
+using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Orbs;
 
-public class PigOrb : CustomOrbModel
+public class LittleRegentOrb : YuWanOrbModel
 {
     public override Color DarkenedColor => new Color("FFD700");
     public override decimal PassiveVal => 3m;
     public override decimal EvokeVal => 6m;
+
+    public override string? CustomIconPath =>
+        "res://YuWanCard/images/orbs/little_regent.png";
+
+    public override string? CustomSpritePath =>
+        "res://scenes/orbs/orb_visuals/plasma_orb.tscn";
+
+    protected override string ChannelSfx =>
+        "event:/sfx/characters/defect/defect_plasma_channel";
+
+    public override async Task BeforeTurnEndOrbTrigger(PlayerChoiceContext choiceContext)
+    {
+        await Passive(choiceContext, null);
+    }
 
     public override async Task Passive(PlayerChoiceContext choiceContext, Creature? target)
     {
@@ -463,6 +481,31 @@ public class PigOrb : CustomOrbModel
     }
 }
 ```
+
+### 自定义资源路径
+
+| 属性 | 说明 |
+|------|------|
+| `CustomIconPath` | 充能球图标的 Godot 资源路径 |
+| `CustomSpritePath` | 自定义精灵场景的 Godot 资源路径（可选） |
+
+### 充能球注册
+
+继承 `YuWanOrbModel` 的充能球会自动通过 `ContentRegistry.AddModel` 注册。此外，项目通过 Harmony Patch 将自定义充能球注入到 `ModelDb.Orbs` 列表中，使其可被游戏识别：
+
+```csharp
+[HarmonyPatch(typeof(ModelDb), nameof(ModelDb.Orbs), MethodType.Getter)]
+static class CustomOrbsListPatch
+{
+    [HarmonyPostfix]
+    static IEnumerable<OrbModel> AddCustomOrbs(IEnumerable<OrbModel> __result)
+    {
+        return __result.Append(ModelDb.Orb<Orbs.LittleRegentOrb>());
+    }
+}
+```
+
+所有自定义充能球会自动出现在游戏的充能球数据库中，无需额外手动注册。
 
 ---
 
@@ -491,20 +534,115 @@ public class PigRestSiteOption : RestSiteOption
 
 ## 药水系统
 
-### 自定义药水
+### 基类：YuWanPotionModel
+
+项目使用 `YuWanPotionModel` 作为所有药水的基类，支持自动模型注册和自定义资源路径：
 
 ```csharp
 using MegaCrit.Sts2.Core.Entities.Potions;
+using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Potions;
 
-public class PigPotion : CustomPotionModel
+public class PigPotion : YuWanPotionModel
 {
     public override PotionRarity Rarity => PotionRarity.Common;
-    
+
+    public override string? CustomPackedImagePath =>
+        "res://YuWanCard/images/potions/pig_potion.png";
+
+    public override string? CustomPackedOutlinePath =>
+        "res://YuWanCard/images/potions/pig_potion_outline.png";
+
     public override async Task OnUse(PlayerChoiceContext choiceContext, Creature? target)
     {
         await PowerCmd.Apply<StrengthPower>(choiceContext.Player, 2, choiceContext.Player, null);
     }
 }
 ```
+
+### 自定义资源路径
+
+| 属性 | 说明 |
+|------|------|
+| `CustomPackedImagePath` | 药水主图标的 Godot 资源路径 |
+| `CustomPackedOutlinePath` | 药水描边图的 Godot 资源路径（可选） |
+
+使用 `YuWanPotionModel` 后，药水模型会自动通过 `ContentRegistry.AddModel` 注册，无需手动处理。
+
+---
+
+## Mod 联动（Interop）
+
+项目提供了一套基于 Harmony Transpiler 的模组间互操作（Interop）框架，允许在**编译时不依赖外部模组 DLL** 的情况下，运行时动态调用其他模组的 API。
+
+### 核心原理
+
+1. 在本模组中定义"存根类"（Stub），包含与目标模组 API 签名相同的空实现方法
+2. 使用 `[ModInterop]` 和 `[InteropTarget]` 特性标记目标模组和成员
+3. 模组初始化时，`ModInteropProcessor` 扫描所有存根类
+4. 若目标模组已加载，通过 Harmony Transpiler 将存根方法体替换为对目标模组的直接 IL 调用
+5. 若目标模组未加载，保留空实现作为 fallback，不报错也不产生副作用
+
+### 定义存根类
+
+```csharp
+using YuWanCard.Core.Interop;
+
+namespace YuWanCard.Config.Interop;
+
+[ModInterop("BaseLib")]  // 目标模组 ID
+public static class BaseLibConfigInterop
+{
+    // 替换为 BaseLib.Config.ModConfigRegistry.Register 的调用
+    [InteropTarget("BaseLib.Config.ModConfigRegistry", "Register")]
+    public static void Register(string modId, object config)
+    {
+        // Fallback：目标模组未加载时不执行任何操作
+    }
+}
+```
+
+### 特性说明
+
+| 特性 | 用途 |
+|------|------|
+| `[ModInterop(string modId, string? type)]` | 标记存根类，指定目标模组 ID 和默认类型上下文 |
+| `[InteropTarget(string? type, string? name)]` | 标记存根成员，指定目标类型和成员名 |
+
+`[InteropTarget]` 的参数规则：
+- 提供 `type` 和 `name`：调用指定类型的指定成员
+- 仅提供 `name`：沿用外层 `[ModInterop]` 指定的默认类型上下文
+
+### 初始化处理
+
+在模组初始化时调用 `ModInteropProcessor.Process`：
+
+```csharp
+public override void Initialize()
+{
+    ModInteropProcessor.Process(Harmony, typeof(MyMod).Assembly);
+}
+```
+
+### 配置系统兼容层
+
+项目已内置对以下模组的配置兼容：
+
+| 模组 | 存根类 | 功能 |
+|------|--------|------|
+| BaseLib | `BaseLibConfigInterop` | 将本模组配置注册到 BaseLib 的设置界面 |
+| STS2RitsuLib | `RitsuLibConfigInterop` | 将本模组配置注册到 RitsuLib 的设置界面，并同步数据存储 |
+
+### 包装器类
+
+当需要持有目标模组的实例对象时，可继承 `InteropClassWrapper`：
+
+```csharp
+public abstract class InteropClassWrapper
+{
+    public object Value = null!;
+}
+```
+
+在存根类中定义嵌套类继承 `InteropClassWrapper`，`ModInteropProcessor` 会自动处理实例化与字段注入。

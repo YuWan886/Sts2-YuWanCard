@@ -196,6 +196,30 @@ public static class PetManager
         {
             await PowerCmd.Apply<StrengthPower>(pig, bonusStrength, owner, null);
         }
+
+        UpdatePigMinionScale(pig, owner);
+    }
+
+    private static void UpdatePigMinionScale(Creature pig, Creature? owner = null)
+    {
+        if (pig == null || owner == null) return;
+
+        var pigNode = NCombatRoom.Instance?.GetCreatureNode(pig);
+        if (pigNode == null) return;
+
+        var pigMonster = pig.Monster as PigMinion;
+        if (pigMonster == null) return;
+
+        int ownerMaxHp = owner.MaxHp;
+        int baseHp = ownerMaxHp / 5;
+        if (baseHp < 1) baseHp = 1;
+
+        int bonusHp = pig.MaxHp - baseHp;
+        int upgradeLevel = bonusHp / 5;
+        if (upgradeLevel < 0) upgradeLevel = 0;
+
+        float scale = 0.5f + upgradeLevel * 0.15f;
+        pigNode.SetDefaultScaleTo(scale, 0f);
     }
 
     public static async Task KillPet(Creature pet, bool animate = false)

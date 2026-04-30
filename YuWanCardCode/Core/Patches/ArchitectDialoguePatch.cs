@@ -8,6 +8,11 @@ namespace YuWanCard.Core.Patches;
 [HarmonyPatch]
 public static class ArchitectDialoguePatch
 {
+    static bool Prepare()
+    {
+        return !OperatingSystem.IsAndroid();
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(TheArchitect), nameof(TheArchitect.DefineDialogues))]
     static void AddPigDialogue(ref AncientDialogueSet __result)

@@ -22,13 +22,12 @@ public class PigDemonForm : YuWanCardModel
         target: TargetType.Self)
     {
         WithPower<PigDemonFormPower>(1);
-        WithVar("StrengthGain", 0, upgrade: 1);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<StrengthPower>()));
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars["StrengthGain"].UpgradeValueBy(1m);
+        EnergyCost.UpgradeBy(-1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

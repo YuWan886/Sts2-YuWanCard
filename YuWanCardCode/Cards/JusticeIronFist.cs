@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.CardPools;
-using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 
 namespace YuWanCard.Cards;
 
@@ -18,6 +17,7 @@ public class JusticeIronFist : YuWanCardModel
         target: TargetType.AnyEnemy)
     {
         WithDamage(20);
+        WithKeywords(CardKeyword.Exhaust);
         WithTip(new TooltipSource(_ => HoverTipFactory.Static(StaticHoverTip.Stun)));
     }
 

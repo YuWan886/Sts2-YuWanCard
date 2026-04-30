@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Config;
+using YuWanCard.Core.Interop;
 using YuWanCard.Multiplayer;
 using YuWanCard.Patches;
 using YuWanCard.Utils;
@@ -31,10 +32,20 @@ public partial class MainFile : Node
     public static void Initialize()
     {
         Harmony harmony = new(ModId);
-        harmony.PatchAll(Assembly.GetExecutingAssembly());
+        try
+        {
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"PatchAll failed: {ex.Message}");
+        }
+
         EndlessModePatch.ApplyMapPointTypeCountsPatches(harmony);
         AutoSlayCharacterPatch.ApplyPatch(harmony);
         AutoSlayOptionsPatch.ApplyPatch(harmony);
+
+        ModInteropProcessor.Process(harmony, Assembly.GetExecutingAssembly());
 
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
 

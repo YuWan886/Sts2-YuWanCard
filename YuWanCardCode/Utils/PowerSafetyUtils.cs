@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Exceptions;
 using YuWanCard.Powers;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Models.Powers.Mocks;
 
 namespace YuWanCard.Utils;
 
@@ -29,6 +30,20 @@ public static class PowerSafetyUtils
         ModelDb.Power<RampartPower>,
         ModelDb.Power<GalvanicPower>,
         ModelDb.Power<EscapeArtistPower>,
+        
+        // Mock Powers
+        ModelDb.Power<MockCloneCardsOnPlayPower>,
+        ModelDb.Power<MockFreeCardsPower>,
+        ModelDb.Power<MockGainBlockOnAttackPower>,
+        ModelDb.Power<MockInvincibleOnDeathPower>,
+        ModelDb.Power<MockModifyEnergyCostPower>,
+        ModelDb.Power<MockModifyStarCostPower>,
+        ModelDb.Power<MockPreventDeathPower>,
+        ModelDb.Power<MockRemoveDrawnCardsFromCombatPower>,
+        ModelDb.Power<MockResetCombatOnShufflePower>,
+        ModelDb.Power<MockRevivePower>,
+        ModelDb.Power<MockTemporaryStrengthLossPower>,
+
         ModelDb.Power<PigDefectionPower>,
         ModelDb.Power<PigFriendsPower>
     };

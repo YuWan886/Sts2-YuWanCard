@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using YuWanCard.Core;
 
 namespace YuWanCard.Core.Abstracts;
 

@@ -235,3 +235,43 @@ static class CustomOrbCreateSprite
         return true;
     }
 }
+
+[HarmonyPatch(typeof(ModelDb), nameof(ModelDb.Orbs), MethodType.Getter)]
+static class CustomOrbsListPatch
+{
+    [HarmonyPostfix]
+    static IEnumerable<OrbModel> AddCustomOrbs(IEnumerable<OrbModel> __result)
+    {
+        return __result.Append(ModelDb.Orb<Orbs.LittleRegentOrb>());
+    }
+}
+
+// --- Potion custom image ---
+
+[HarmonyPatch(typeof(PotionModel), "PackedImagePath", MethodType.Getter)]
+static class CustomPotionPackedImagePath
+{
+    static bool Prefix(PotionModel __instance, ref string __result)
+    {
+        if (__instance is YuWanCard.Core.Abstracts.YuWanPotionModel p && p.CustomPackedImagePath != null)
+        {
+            __result = p.CustomPackedImagePath;
+            return false;
+        }
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(PotionModel), "PackedOutlinePath", MethodType.Getter)]
+static class CustomPotionPackedOutlinePath
+{
+    static bool Prefix(PotionModel __instance, ref string? __result)
+    {
+        if (__instance is YuWanCard.Core.Abstracts.YuWanPotionModel p && p.CustomPackedOutlinePath != null)
+        {
+            __result = p.CustomPackedOutlinePath;
+            return false;
+        }
+        return true;
+    }
+}

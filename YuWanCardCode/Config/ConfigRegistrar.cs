@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Reflection.Emit;
+using YuWanCard.Config.Interop;
 
 namespace YuWanCard;
 
@@ -53,13 +54,12 @@ internal static class ConfigRegistrar
 
     private static bool IsBaseLibAvailable()
     {
-        return ResolveTypeAcrossAssemblies("BaseLib.Config.SimpleModConfig") != null
-            || Type.GetType("BaseLib.Config.SimpleModConfig, BaseLib") != null;
+        return ResolveTypeAcrossAssemblies("BaseLib.Config.SimpleModConfig") != null;
     }
 
     private static bool IsRitsuLibAvailable()
     {
-        return ResolveTypeAcrossAssemblies("STS2RitsuLib.RitsuLibFramework") != null;
+        return ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsPageAttribute") != null;
     }
 
     private static bool TryRegisterBaseLib()
@@ -69,17 +69,14 @@ internal static class ConfigRegistrar
             var adapter = CreateDynamicAdapter();
             if (adapter == null) return false;
 
-            var registryType = Type.GetType("BaseLib.Config.ModConfigRegistry, BaseLib");
-            registryType?.GetMethod("Register")?.Invoke(null, [ModId, adapter]);
+            BaseLibConfigInterop.Register(ModId, adapter);
 
             var eventInfo = adapter.GetType().GetEvent("ConfigChanged");
             if (eventInfo != null)
-            {
                 eventInfo.AddEventHandler(adapter, new EventHandler(OnConfigChanged));
-            }
 
             s_registered = true;
-            MainFile.Logger.Info("Registered config via BaseLib (dynamic adapter)");
+            MainFile.Logger.Info("Registered config via BaseLib (ModInterop)");
             return true;
         }
         catch (Exception ex)
@@ -95,9 +92,6 @@ internal static class ConfigRegistrar
 
         try
         {
-            var ritsuFrameworkType = ResolveTypeAcrossAssemblies("STS2RitsuLib.RitsuLibFramework");
-            if (ritsuFrameworkType == null) return false;
-
             var pageAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsPageAttribute");
             var sectionAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsSectionAttribute");
             var toggleAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsToggleAttribute");
@@ -105,114 +99,10 @@ internal static class ConfigRegistrar
             var bindingSourceType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsReflectionBindingSource");
 
             if (pageAttrType == null || sectionAttrType == null || toggleAttrType == null)
-            {
-                MainFile.Logger.Debug("STS2-RitsuLib detected but config attribute types not found");
                 return false;
-            }
 
-            var pageCtor = pageAttrType.GetConstructor([typeof(string), typeof(string)]);
-            if (pageCtor == null) return false;
-
-            var sectionCtor = sectionAttrType.GetConstructor([typeof(string)]);
-            if (sectionCtor == null) return false;
-
-            var toggleCtor = toggleAttrType.GetConstructor([typeof(string), typeof(string)]);
-            if (toggleCtor == null) return false;
-
-            var labelProp = toggleAttrType.GetProperty("Label");
-            var descProp = toggleAttrType.GetProperty("Description");
-            var titleProp = pageAttrType.GetProperty("Title");
-            var modDisplayProp = pageAttrType.GetProperty("ModDisplayName");
-
-            var asmName = new AssemblyName("YuWanCard.DynamicRitsuConfig");
-            var asmBuilder = AssemblyBuilder.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
-            var modBuilder = asmBuilder.DefineDynamicModule("RitsuModule");
-            var typeBuilder = modBuilder.DefineType(
-                "YuWanCard.Config.YuWanCardRitsuConfigProvider",
-                TypeAttributes.Public | TypeAttributes.Class);
-
-            if (titleProp != null && modDisplayProp != null)
-                typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
-                    pageCtor, [ModId, "yuwan_card"],
-                    [titleProp, modDisplayProp],
-                    ["YuWanCard 设置", "YuWanCard"]));
-            else
-                typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(pageCtor, [ModId, "yuwan_card"]));
-
-            var sectionTitleProp = sectionAttrType.GetProperty("Title");
-            if (sectionTitleProp != null)
-                typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
-                    sectionCtor, ["display"],
-                    [sectionTitleProp], ["显示"]));
-            else
-                typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(sectionCtor, ["display"]));
-
-            CustomAttributeBuilder? bindingAttrBuilder = null;
-            if (bindingAttrType != null && bindingSourceType != null)
-            {
-                var bindingCtor = bindingAttrType.GetConstructor(Type.EmptyTypes);
-                if (bindingCtor != null)
-                {
-                    var globalVal = Enum.Parse(bindingSourceType, "Global");
-                    bindingAttrBuilder = new CustomAttributeBuilder(
-                        bindingCtor,
-                        Array.Empty<object>(),
-                        [bindingAttrType.GetProperty("Source")!],
-                        [globalVal]);
-                }
-            }
-
-            foreach (var (propName, toggleId, label, description) in RitsuConfigProps)
-            {
-                var field = typeBuilder.DefineField(
-                    $"<{propName}>k__BackingField",
-                    typeof(bool),
-                    FieldAttributes.Private | FieldAttributes.Static);
-
-                var prop = typeBuilder.DefineProperty(
-                    propName,
-                    PropertyAttributes.None,
-                    typeof(bool),
-                    null);
-
-                if (labelProp != null && description != null && descProp != null)
-                    prop.SetCustomAttribute(new CustomAttributeBuilder(
-                        toggleCtor, [toggleId, "display"],
-                        [labelProp, descProp],
-                        [label, description]));
-                else if (labelProp != null)
-                    prop.SetCustomAttribute(new CustomAttributeBuilder(
-                        toggleCtor, [toggleId, "display"],
-                        [labelProp], [label]));
-                else
-                    prop.SetCustomAttribute(new CustomAttributeBuilder(toggleCtor, [toggleId, "display"]));
-
-                if (bindingAttrBuilder != null)
-                    prop.SetCustomAttribute(bindingAttrBuilder);
-
-                var getter = typeBuilder.DefineMethod(
-                    $"get_{propName}",
-                    MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
-                    typeof(bool),
-                    Type.EmptyTypes);
-                var getIL = getter.GetILGenerator();
-                getIL.Emit(OpCodes.Ldsfld, field);
-                getIL.Emit(OpCodes.Ret);
-                prop.SetGetMethod(getter);
-
-                var setter = typeBuilder.DefineMethod(
-                    $"set_{propName}",
-                    MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
-                    null,
-                    [typeof(bool)]);
-                var setIL = setter.GetILGenerator();
-                setIL.Emit(OpCodes.Ldarg_0);
-                setIL.Emit(OpCodes.Stsfld, field);
-                setIL.Emit(OpCodes.Ret);
-                prop.SetSetMethod(setter);
-            }
-
-            var dynamicType = typeBuilder.CreateType();
+            var dynamicType = CreateRitsuConfigType(pageAttrType, sectionAttrType, toggleAttrType,
+                bindingAttrType, bindingSourceType);
             if (dynamicType == null) return false;
 
             if (MainFile.Config != null)
@@ -221,15 +111,10 @@ internal static class ConfigRegistrar
                     SetDynamicProperty(dynamicType, key, GetConfigValue(key));
             }
 
-            var registerMethod = ritsuFrameworkType.GetMethod(
-                "RegisterModSettingsReflectionProviderAndTryRegister",
-                [typeof(Type)]);
-            if (registerMethod == null) return false;
+            var pagesRegistered = RitsuLibConfigInterop.RegisterModSettings(dynamicType);
+            MainFile.Logger.Info($"Registered {pagesRegistered ?? 0} config page(s) via STS2-RitsuLib (ModInterop)");
 
-            var pagesRegistered = (int?)registerMethod.Invoke(null, [dynamicType]);
-            MainFile.Logger.Info($"Registered {pagesRegistered ?? 0} config page(s) via STS2-RitsuLib (dynamic reflection provider)");
-
-            SyncRitsuLibToConfig(ritsuFrameworkType);
+            SyncRitsuLibToConfig();
 
             s_ritsuRegistered = true;
             return true;
@@ -241,6 +126,8 @@ internal static class ConfigRegistrar
         }
     }
 
+    // ── dynamic adapter for BaseLib ────────────────────────
+
     private static object? CreateDynamicAdapter()
     {
         try
@@ -248,16 +135,15 @@ internal static class ConfigRegistrar
             if (s_dynamicAdapterType != null && s_dynamicAdapterInstance != null)
                 return s_dynamicAdapterInstance;
 
-            var simpleModConfigType = Type.GetType("BaseLib.Config.SimpleModConfig, BaseLib");
-            var sectionAttrType = Type.GetType("BaseLib.Config.ConfigSectionAttribute, BaseLib");
-            var hoverTipAttrType = Type.GetType("BaseLib.Config.ConfigHoverTipAttribute, BaseLib");
+            var simpleModConfigType = ResolveTypeAcrossAssemblies("BaseLib.Config.SimpleModConfig");
+            var sectionAttrType = ResolveTypeAcrossAssemblies("BaseLib.Config.ConfigSectionAttribute");
+            var hoverTipAttrType = ResolveTypeAcrossAssemblies("BaseLib.Config.ConfigHoverTipAttribute");
 
             if (simpleModConfigType == null || sectionAttrType == null)
                 return null;
 
             var sectionCtor = sectionAttrType.GetConstructor([typeof(string)]);
-            var hoverTipCtor = hoverTipAttrType?
-                .GetConstructor(Type.EmptyTypes)
+            var hoverTipCtor = hoverTipAttrType?.GetConstructor(Type.EmptyTypes)
                 ?? hoverTipAttrType?.GetConstructor([typeof(bool)]);
 
             var asmName = new AssemblyName("YuWanCard.DynamicConfig");
@@ -275,28 +161,23 @@ internal static class ConfigRegistrar
                     typeof(bool),
                     FieldAttributes.Private | FieldAttributes.Static);
 
-                var prop = typeBuilder.DefineProperty(
-                    name,
-                    PropertyAttributes.None,
-                    typeof(bool),
-                    null);
+                var prop = typeBuilder.DefineProperty(name, PropertyAttributes.None, typeof(bool), null);
 
                 if (sectionCtor != null)
                     prop.SetCustomAttribute(new CustomAttributeBuilder(sectionCtor, [section]));
 
                 if (hoverTipCtor != null)
                 {
-                    var hoverArgs = hoverTipCtor.GetParameters().Length == 0
+                    var args = hoverTipCtor.GetParameters().Length == 0
                         ? Array.Empty<object>()
                         : [true];
-                    prop.SetCustomAttribute(new CustomAttributeBuilder(hoverTipCtor, hoverArgs));
+                    prop.SetCustomAttribute(new CustomAttributeBuilder(hoverTipCtor, args));
                 }
 
                 var getter = typeBuilder.DefineMethod(
                     $"get_{name}",
                     MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
-                    typeof(bool),
-                    Type.EmptyTypes);
+                    typeof(bool), Type.EmptyTypes);
                 var getIL = getter.GetILGenerator();
                 getIL.Emit(OpCodes.Ldsfld, field);
                 getIL.Emit(OpCodes.Ret);
@@ -305,8 +186,7 @@ internal static class ConfigRegistrar
                 var setter = typeBuilder.DefineMethod(
                     $"set_{name}",
                     MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
-                    null,
-                    [typeof(bool)]);
+                    null, [typeof(bool)]);
                 var setIL = setter.GetILGenerator();
                 setIL.Emit(OpCodes.Ldarg_0);
                 setIL.Emit(OpCodes.Stsfld, field);
@@ -335,18 +215,133 @@ internal static class ConfigRegistrar
         }
     }
 
-    private static void SyncRitsuLibToConfig(Type ritsuFrameworkType)
+    // ── dynamic provider for RitsuLib ─────────────────────
+
+    private static Type? CreateRitsuConfigType(
+        Type pageAttrType, Type sectionAttrType, Type toggleAttrType,
+        Type? bindingAttrType, Type? bindingSourceType)
     {
         try
         {
-            var getDataStoreMethod = ritsuFrameworkType.GetMethod("GetDataStore");
-            var dataStore = getDataStoreMethod?.Invoke(null, [ModId]);
+            var pageCtor = pageAttrType.GetConstructor([typeof(string), typeof(string)]);
+            if (pageCtor == null) return null;
+
+            var sectionCtor = sectionAttrType.GetConstructor([typeof(string)]);
+
+            var toggleCtor = toggleAttrType.GetConstructor([typeof(string), typeof(string)]);
+            if (toggleCtor == null) return null;
+
+            var labelProp = toggleAttrType.GetProperty("Label");
+            var descProp = toggleAttrType.GetProperty("Description");
+            var titleProp = pageAttrType.GetProperty("Title");
+            var modDisplayProp = pageAttrType.GetProperty("ModDisplayName");
+
+            var asmName = new AssemblyName("YuWanCard.DynamicRitsuConfig");
+            var asmBuilder = AssemblyBuilder.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
+            var modBuilder = asmBuilder.DefineDynamicModule("RitsuModule");
+            var typeBuilder = modBuilder.DefineType(
+                "YuWanCard.Config.YuWanCardRitsuConfigProvider",
+                TypeAttributes.Public | TypeAttributes.Class);
+
+            if (titleProp != null && modDisplayProp != null)
+                typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
+                    pageCtor, [ModId, "yuwan_card"],
+                    [titleProp, modDisplayProp],
+                    ["YuWanCard 设置", "YuWanCard"]));
+            else
+                typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(pageCtor, [ModId, "yuwan_card"]));
+
+            var sectionTitleProp = sectionAttrType.GetProperty("Title");
+            if (sectionCtor != null)
+            {
+                if (sectionTitleProp != null)
+                    typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
+                        sectionCtor, ["display"],
+                        [sectionTitleProp], ["显示"]));
+                else
+                    typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(sectionCtor, ["display"]));
+            }
+
+            CustomAttributeBuilder? bindingAttrBuilder = null;
+            if (bindingAttrType != null && bindingSourceType != null)
+            {
+                var bindingCtor = bindingAttrType.GetConstructor(Type.EmptyTypes);
+                if (bindingCtor != null)
+                {
+                    var globalVal = Enum.Parse(bindingSourceType, "Global");
+                    bindingAttrBuilder = new CustomAttributeBuilder(
+                        bindingCtor, Array.Empty<object>(),
+                        [bindingAttrType.GetProperty("Source")!],
+                        [globalVal]);
+                }
+            }
+
+            foreach (var (propName, toggleId, label, description) in RitsuConfigProps)
+            {
+                var field = typeBuilder.DefineField(
+                    $"<{propName}>k__BackingField",
+                    typeof(bool),
+                    FieldAttributes.Private | FieldAttributes.Static);
+
+                var prop = typeBuilder.DefineProperty(propName, PropertyAttributes.None, typeof(bool), null);
+
+                if (labelProp != null && description != null && descProp != null)
+                    prop.SetCustomAttribute(new CustomAttributeBuilder(
+                        toggleCtor, [toggleId, "display"],
+                        [labelProp, descProp],
+                        [label, description]));
+                else if (labelProp != null)
+                    prop.SetCustomAttribute(new CustomAttributeBuilder(
+                        toggleCtor, [toggleId, "display"],
+                        [labelProp], [label]));
+                else
+                    prop.SetCustomAttribute(new CustomAttributeBuilder(toggleCtor, [toggleId, "display"]));
+
+                if (bindingAttrBuilder != null)
+                    prop.SetCustomAttribute(bindingAttrBuilder);
+
+                var getter = typeBuilder.DefineMethod(
+                    $"get_{propName}",
+                    MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
+                    typeof(bool), Type.EmptyTypes);
+                var getIL = getter.GetILGenerator();
+                getIL.Emit(OpCodes.Ldsfld, field);
+                getIL.Emit(OpCodes.Ret);
+                prop.SetGetMethod(getter);
+
+                var setter = typeBuilder.DefineMethod(
+                    $"set_{propName}",
+                    MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
+                    null, [typeof(bool)]);
+                var setIL = setter.GetILGenerator();
+                setIL.Emit(OpCodes.Ldarg_0);
+                setIL.Emit(OpCodes.Stsfld, field);
+                setIL.Emit(OpCodes.Ret);
+                prop.SetSetMethod(setter);
+            }
+
+            return typeBuilder.CreateType();
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"Failed to create dynamic Ritsu config type: {ex.Message}");
+            return null;
+        }
+    }
+
+    // ── sync ─────────────────────────────────────────────
+
+    private static void SyncRitsuLibToConfig()
+    {
+        try
+        {
+            var dataStore = RitsuLibConfigInterop.GetDataStore(ModId);
             if (dataStore == null) return;
 
             var initGlobalMethod = dataStore.GetType().GetMethod("InitializeGlobal");
             initGlobalMethod?.Invoke(dataStore, null);
 
-            var ritsuAsm = ritsuFrameworkType.Assembly;
+            var ritsuAsm = dataStore.GetType().Assembly;
             var mirrorSourceType = ritsuAsm.GetType("STS2RitsuLib.Settings.RuntimeReflectionMirrorSource");
             var boxOpenType = mirrorSourceType?.GetNestedType("ReflectionBindingBox`1",
                 BindingFlags.NonPublic);
@@ -374,7 +369,7 @@ internal static class ConfigRegistrar
                 }
                 catch
                 {
-                    // Key may not exist yet (first run); default is correct
+                    // Key may not exist yet (first run)
                 }
             }
         }
@@ -391,10 +386,12 @@ internal static class ConfigRegistrar
             SetConfigValue(key, GetAdapterBool(key));
     }
 
+    // ── helpers ─────────────────────────────────────────
+
     private static void SetAdapterProperty(string name, bool value)
     {
         try { s_dynamicAdapterType?.GetProperty(name)?.SetValue(null, value); }
-        catch { /* best-effort */ }
+        catch { }
     }
 
     private static bool GetAdapterBool(string name)
@@ -406,7 +403,7 @@ internal static class ConfigRegistrar
     private static void SetDynamicProperty(Type dynamicType, string name, bool value)
     {
         try { dynamicType.GetProperty(name)?.SetValue(null, value); }
-        catch { /* best-effort */ }
+        catch { }
     }
 
     private static bool GetConfigValue(string name)
@@ -428,10 +425,7 @@ internal static class ConfigRegistrar
                 var type = assembly.GetType(fullName, false);
                 if (type != null) return type;
             }
-            catch
-            {
-                // Some assemblies (dynamic emit, reflection-only) may throw
-            }
+            catch { }
         }
         return null;
     }
