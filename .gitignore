@@ -22,3 +22,5 @@ assets/
 AGENTS.md
 CLAUDE.md
 .claude/
+addons/
+test*.*

@@ -230,7 +230,7 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
 
     // --- Upgrade handling ---
 
-    protected void ConstructedUpgrade()
+    public void ConstructedUpgrade()
     {
         foreach (var (keyword, upgradeType) in _upgradeKeywords)
         {
