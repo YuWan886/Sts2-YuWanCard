@@ -32,7 +32,7 @@ public partial class MainFile : Node
     public static void Initialize()
     {
         Harmony harmony = new(ModId);
-        SafePatchAll(harmony, Assembly.GetExecutingAssembly());
+        PatchAll(harmony, Assembly.GetExecutingAssembly());
 
         try { EndlessModePatch.ApplyMapPointTypeCountsPatches(harmony); }
         catch (Exception ex) { Logger.Warn($"EndlessMode patch failed (may be mobile): {ex.Message}"); }
@@ -45,6 +45,9 @@ public partial class MainFile : Node
 
         try { ModInteropProcessor.Process(harmony, Assembly.GetExecutingAssembly()); }
         catch (Exception ex) { Logger.Warn($"ModInterop processing failed (may be mobile): {ex.Message}"); }
+
+        try { Core.Patches.ArchitectLoadDialogueNullGuard.ApplyPatch(harmony); }
+        catch (Exception ex) { Logger.Warn($"ArchitectLoadDialogueNullGuard failed (may be mobile): {ex.Message}"); }
 
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
 
@@ -61,19 +64,15 @@ public partial class MainFile : Node
         Logger.Info("YuWanCard initialized");
     }
 
-    private static void SafePatchAll(Harmony harmony, Assembly assembly)
+    private static void PatchAll(Harmony harmony, Assembly assembly)
     {
-        foreach (var type in assembly.GetTypes())
+        try
         {
-            try
-            {
-                var processor = harmony.CreateClassProcessor(type);
-                processor.Patch();
-            }
-            catch (Exception ex)
-            {
-                Logger.Warn($"Harmony patch failed for {type.Name} (may be mobile): {ex.Message}");
-            }
+            harmony.PatchAll(assembly);
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn($"PatchAll failed (may be mobile): {ex.Message}");
         }
     }
 
