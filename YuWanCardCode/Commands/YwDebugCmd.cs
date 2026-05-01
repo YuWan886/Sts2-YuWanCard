@@ -2,11 +2,14 @@ using System.Reflection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.DevConsole;
 using MegaCrit.Sts2.Core.DevConsole.ConsoleCommands;
+using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 
@@ -34,9 +37,9 @@ public class YwDebugCmd : AbstractConsoleCmd
 
     public override string CmdName => "yw";
 
-    public override string Args => "[sinpigrelics|regenerateancient]";
+    public override string Args => "[sinpigrelics|regenerateancient|refreshshop]";
 
-    public override string Description => "YuWanCard debug commands. 'yw sinpigrelics' - obtain all 7 sin pig relics. 'yw regenerateancient' - regenerate current ancient options";
+    public override string Description => "YuWanCard debug commands. 'yw sinpigrelics' - obtain all 7 sin pig relics. 'yw regenerateancient' - regenerate current ancient options. 'yw refreshshop' - reroll all shop items";
 
     public override bool IsNetworked => true;
 
@@ -44,7 +47,7 @@ public class YwDebugCmd : AbstractConsoleCmd
     {
         if (args.Length < 1)
         {
-            return new CmdResult(false, "Usage: yw <sinpigrelics|regenerateancient>");
+            return new CmdResult(false, "Usage: yw <sinpigrelics|regenerateancient|refreshshop>");
         }
 
         if (issuingPlayer == null)
@@ -64,7 +67,12 @@ public class YwDebugCmd : AbstractConsoleCmd
             return RegenerateAncientOptions(issuingPlayer);
         }
 
-        return new CmdResult(false, $"Unknown subcommand: {subCmd}. Use 'yw sinpigrelics' or 'yw regenerateancient'.");
+        if (subCmd == "refreshshop")
+        {
+            return RefreshShop(issuingPlayer);
+        }
+
+        return new CmdResult(false, $"Unknown subcommand: {subCmd}. Use 'yw sinpigrelics', 'yw regenerateancient', or 'yw refreshshop'.");
     }
 
     private CmdResult GrantAllPigs(Player player)
@@ -152,13 +160,50 @@ public class YwDebugCmd : AbstractConsoleCmd
         }
     }
 
+    private CmdResult RefreshShop(Player player)
+    {
+        var nMerchantRoom = NMerchantRoom.Instance;
+        if (nMerchantRoom == null)
+        {
+            return new CmdResult(false, "Not in a merchant room!");
+        }
+
+        var nInventory = nMerchantRoom.Inventory;
+        var oldInventory = nInventory.Inventory;
+        if (oldInventory == null)
+        {
+            return new CmdResult(false, "No inventory to refresh!");
+        }
+
+        try
+        {
+            var newInventory = MerchantInventory.CreateForNormalMerchant(player);
+
+            typeof(MerchantRoom).GetProperty("Inventory", BindingFlags.Instance | BindingFlags.Public)
+                ?.SetValue(nMerchantRoom.Room, newInventory);
+
+            typeof(NMerchantInventory).GetProperty("Inventory", BindingFlags.Instance | BindingFlags.Public)
+                ?.SetValue(nInventory, null);
+
+            nInventory.Initialize(newInventory, MerchantRoom.Dialogue);
+
+            MainFile.Logger.Info("YwDebugCmd: Shop refreshed successfully");
+            return new CmdResult(true, "Shop refreshed!");
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"YwDebugCmd: Failed to refresh shop - {ex.Message}");
+            return new CmdResult(false, $"Failed to refresh shop: {ex.Message}");
+        }
+    }
+
     public override CompletionResult GetArgumentCompletions(Player? player, string[] args)
     {
         if (args.Length == 0 || (args.Length == 1 && string.IsNullOrWhiteSpace(args[0])))
         {
             return new CompletionResult
             {
-                Candidates = ["sinpigrelics", "regenerateancient"],
+                Candidates = ["sinpigrelics", "regenerateancient", "refreshshop"],
                 Type = CompletionType.Subcommand,
                 ArgumentContext = CmdName
             };
@@ -177,7 +222,11 @@ public class YwDebugCmd : AbstractConsoleCmd
             {
                 candidates.Add("regenerateancient");
             }
-            
+            if ("refreshshop".StartsWith(partial))
+            {
+                candidates.Add("refreshshop");
+            }
+
             if (candidates.Count > 0)
             {
                 return CompleteArgument(candidates, [], partial, CompletionType.Subcommand);

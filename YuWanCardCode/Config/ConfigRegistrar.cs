@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Reflection.Emit;
-using YuWanCard.Config.Interop;
 
 namespace YuWanCard;
 
@@ -45,7 +44,7 @@ internal static class ConfigRegistrar
     {
         if (s_registered || MainFile.Config == null) return;
 
-        if (IsBaseLibAvailable() && TryRegisterBaseLib())
+        if (IsBaseLibAvailable() && TryRegisterBaseLibDirect())
             return;
 
         if (IsRitsuLibAvailable())
@@ -62,21 +61,36 @@ internal static class ConfigRegistrar
         return ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsPageAttribute") != null;
     }
 
-    private static bool TryRegisterBaseLib()
+    private static bool TryRegisterBaseLibDirect()
     {
         try
         {
             var adapter = CreateDynamicAdapter();
             if (adapter == null) return false;
 
-            BaseLibConfigInterop.Register(ModId, adapter);
+            var registryType = ResolveTypeAcrossAssemblies("BaseLib.Config.ModConfigRegistry");
+            var modConfigType = ResolveTypeAcrossAssemblies("BaseLib.Config.ModConfig");
+            if (registryType == null || modConfigType == null)
+            {
+                MainFile.Logger.Warn("BaseLib ModConfigRegistry or ModConfig type not found");
+                return false;
+            }
+
+            var registerMethod = registryType.GetMethod("Register", [typeof(string), modConfigType]);
+            if (registerMethod == null)
+            {
+                MainFile.Logger.Warn("BaseLib ModConfigRegistry.Register method not found");
+                return false;
+            }
+
+            registerMethod.Invoke(null, [ModId, adapter]);
 
             var eventInfo = adapter.GetType().GetEvent("ConfigChanged");
             if (eventInfo != null)
                 eventInfo.AddEventHandler(adapter, new EventHandler(OnConfigChanged));
 
             s_registered = true;
-            MainFile.Logger.Info("Registered config via BaseLib (ModInterop)");
+            MainFile.Logger.Info("Registered config via BaseLib (direct reflection)");
             return true;
         }
         catch (Exception ex)
@@ -111,8 +125,23 @@ internal static class ConfigRegistrar
                     SetDynamicProperty(dynamicType, key, GetConfigValue(key));
             }
 
-            var pagesRegistered = RitsuLibConfigInterop.RegisterModSettings(dynamicType);
-            MainFile.Logger.Info($"Registered {pagesRegistered ?? 0} config page(s) via STS2-RitsuLib (ModInterop)");
+            var frameworkType = ResolveTypeAcrossAssemblies("STS2RitsuLib.RitsuLibFramework");
+            if (frameworkType == null)
+            {
+                MainFile.Logger.Warn("STS2RitsuLib.RitsuLibFramework type not found");
+                return false;
+            }
+
+            var registerMethod = frameworkType.GetMethod("RegisterModSettingsReflectionProviderAndTryRegister",
+                BindingFlags.Public | BindingFlags.Static, null, [typeof(Type)], null);
+            if (registerMethod == null)
+            {
+                MainFile.Logger.Warn("RitsuLibFramework.RegisterModSettingsReflectionProviderAndTryRegister method not found");
+                return false;
+            }
+
+            var pagesRegistered = registerMethod.Invoke(null, [dynamicType]) as int?;
+            MainFile.Logger.Info($"Registered {pagesRegistered ?? 0} config page(s) via STS2-RitsuLib (direct reflection)");
 
             SyncRitsuLibToConfig();
 
@@ -335,7 +364,14 @@ internal static class ConfigRegistrar
     {
         try
         {
-            var dataStore = RitsuLibConfigInterop.GetDataStore(ModId);
+            var frameworkType = ResolveTypeAcrossAssemblies("STS2RitsuLib.RitsuLibFramework");
+            if (frameworkType == null) return;
+
+            var getDataStoreMethod = frameworkType.GetMethod("GetDataStore",
+                BindingFlags.Public | BindingFlags.Static, null, [typeof(string)], null);
+            if (getDataStoreMethod == null) return;
+
+            var dataStore = getDataStoreMethod.Invoke(null, [ModId]);
             if (dataStore == null) return;
 
             var initGlobalMethod = dataStore.GetType().GetMethod("InitializeGlobal");
