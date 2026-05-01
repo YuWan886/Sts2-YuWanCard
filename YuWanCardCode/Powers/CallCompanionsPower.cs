@@ -16,6 +16,7 @@ using MegaCrit.Sts2.Core.Random;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Monsters;
 using YuWanCard.Utils;
+using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Powers;
 
@@ -132,7 +133,7 @@ public class CallCompanionsPower : YuWanPowerModel
         await CombatManager.Instance.AfterCreatureAdded(_companionCreature);
 
         // Set companion HP to character's starting HP
-        await CreatureCmd.SetMaxAndCurrentHp(_companionCreature, _character.StartingHp);
+        await CreatureCompat.SetMaxAndCurrentHp(_companionCreature, _character.StartingHp);
 
         // Ensure health bar is visible on the creature node
         var companionNode = NCombatRoom.Instance?.GetCreatureNode(_companionCreature);

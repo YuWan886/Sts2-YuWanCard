@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YuWanCard.Monsters;
 using YuWanCard.Powers;
+using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Utils;
 
@@ -95,7 +96,7 @@ public static class PetManager
         owner.Creature.CombatState.AddCreature(defectedCreature);
         owner.PlayerCombatState?.AddPetInternal(defectedCreature);
 
-        await CreatureCmd.SetMaxHp(defectedCreature, maxHp);
+        await CreatureCompat.SetMaxHp(defectedCreature, maxHp);
         if (currentHp > 0)
         {
             await CreatureCmd.SetCurrentHp(defectedCreature, Math.Min(currentHp, maxHp));
@@ -192,7 +193,7 @@ public static class PetManager
         int bonusStrength = levels;
 
         int newMaxHp = pig.MaxHp + bonusHp;
-        await CreatureCmd.SetMaxHp(pig, newMaxHp);
+        await CreatureCompat.SetMaxHp(pig, newMaxHp);
         await CreatureCmd.SetCurrentHp(pig, Math.Min(pig.CurrentHp + bonusHp, newMaxHp));
 
         if (bonusStrength > 0 && owner != null)
@@ -274,7 +275,7 @@ public static class PetManager
         }
         else
         {
-            await CreatureCmd.SetMaxAndCurrentHp(pig, pigHp);
+            await CreatureCompat.SetMaxAndCurrentHp(pig, pigHp);
             await PowerCmd.Apply<PigMinionPower>(pig, 1, null, null);
         }
 

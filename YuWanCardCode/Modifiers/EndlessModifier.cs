@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Modifiers;
 
@@ -124,7 +125,7 @@ public class EndlessModifier : YuWanModifierModel
         int strengthBonus = CalculateStrengthBonus(isBoss);
 
         int newMaxHp = (int)(creature.MaxHp * hpMultiplier);
-        await CreatureCmd.SetMaxHp(creature, newMaxHp);
+        await CreatureCompat.SetMaxHp(creature, newMaxHp);
         await CreatureCmd.Heal(creature, newMaxHp - creature.CurrentHp, playAnim: false);
 
         if (strengthBonus > 0)

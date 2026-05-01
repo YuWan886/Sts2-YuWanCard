@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using Godot;
 using MegaCrit.Sts2.addons.mega_text;
@@ -92,7 +93,7 @@ public static class NodeFactory
         if (targetType == typeof(NEnergyCounter))
             return ConvertToNEnergyCounter(source);
         if (targetType == typeof(NMerchantCharacter))
-            return ConvertToSimple<Node2D, NMerchantCharacter>(source);
+            return ConvertToMerchantCharacter(source);
         if (targetType == typeof(NRestSiteCharacter))
             return ConvertToSimple<Node2D, NRestSiteCharacter>(source);
 
@@ -118,6 +119,27 @@ public static class NodeFactory
         }
 
         TransferChildren(source, target);
+        source.QueueFree();
+        return target;
+    }
+
+    private static NMerchantCharacter ConvertToMerchantCharacter(Node source)
+    {
+        var target = new NMerchantCharacter { Name = source.Name };
+
+        if (source is CanvasItem srcCI)
+        {
+            target.Visible = srcCI.Visible;
+            target.Modulate = srcCI.Modulate;
+            target.SelfModulate = srcCI.SelfModulate;
+        }
+
+        if (source is Node2D src2D)
+        {
+            target.Position = src2D.Position;
+        }
+
+        TransferChildrenFiltered(source, target, child => child is not AnimatedSprite2D);
         source.QueueFree();
         return target;
     }
@@ -353,6 +375,24 @@ public static class NodeFactory
             target.AddChild(child);
             child.Owner = target;
             SetOwnerRecursive(target, child);
+        }
+    }
+
+    private static void TransferChildrenFiltered(Node source, Node target, Func<Node, bool> predicate)
+    {
+        foreach (var child in source.GetChildren())
+        {
+            source.RemoveChild(child);
+            if (predicate(child))
+            {
+                target.AddChild(child);
+                child.Owner = target;
+                SetOwnerRecursive(target, child);
+            }
+            else
+            {
+                child.QueueFree();
+            }
         }
     }
 
