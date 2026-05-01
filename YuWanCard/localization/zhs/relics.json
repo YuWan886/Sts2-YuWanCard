@@ -71,6 +71,9 @@
   "YUWANCARD-BLACK_FLASH.description": "打出带有名字中带有\"打击\"的牌时，有10%概率造成2.5倍伤害。",
   "YUWANCARD-BLACK_FLASH.flavor": "那一瞬间的闪光，足以致命。",
   "YUWANCARD-PIG_RUSH_FORWARD.title": "猪突猛进",
-  "YUWANCARD-PIG_RUSH_FORWARD.description": "每场战斗中，你第一次用卡牌对敌人造成伤害时，减少敌人等量于伤害的最大生命值。",
-  "YUWANCARD-PIG_RUSH_FORWARD.flavor": "一往无前，势不可挡。"
+  "YUWANCARD-PIG_RUSH_FORWARD.description": "你对敌人造成伤害时会减少敌人等量于造成伤害的最大生命值。",
+  "YUWANCARD-PIG_RUSH_FORWARD.flavor": "一往无前，势不可挡。",
+  "YUWANCARD-PIG_DEMON_FORM.title": "恶魔形态",
+  "YUWANCARD-PIG_DEMON_FORM.description": "在你的回合开始时，获得{StrengthPower:diff()}点[gold]力量[/gold]。",
+  "YUWANCARD-PIG_DEMON_FORM.flavor": "EMO!!!"
 }

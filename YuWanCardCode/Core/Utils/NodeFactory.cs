@@ -139,7 +139,7 @@ public static class NodeFactory
             target.Position = src2D.Position;
         }
 
-        TransferChildrenFiltered(source, target, child => child is not AnimatedSprite2D);
+        TransferChildrenFiltered(source, target, child => child is AnimatedSprite2D or Sprite2D);
         source.QueueFree();
         return target;
     }

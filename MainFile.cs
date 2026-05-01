@@ -32,20 +32,19 @@ public partial class MainFile : Node
     public static void Initialize()
     {
         Harmony harmony = new(ModId);
-        try
-        {
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-        }
-        catch (Exception ex)
-        {
-            Logger.Error($"PatchAll failed: {ex.Message}");
-        }
+        SafePatchAll(harmony, Assembly.GetExecutingAssembly());
 
-        EndlessModePatch.ApplyMapPointTypeCountsPatches(harmony);
-        AutoSlayCharacterPatch.ApplyPatch(harmony);
-        AutoSlayOptionsPatch.ApplyPatch(harmony);
+        try { EndlessModePatch.ApplyMapPointTypeCountsPatches(harmony); }
+        catch (Exception ex) { Logger.Warn($"EndlessMode patch failed (may be mobile): {ex.Message}"); }
 
-        ModInteropProcessor.Process(harmony, Assembly.GetExecutingAssembly());
+        try { Core.Patches.AutoSlayCharacterPatch.ApplyPatch(harmony); }
+        catch (Exception ex) { Logger.Warn($"AutoSlayCharacter patch failed (may be mobile): {ex.Message}"); }
+
+        try { Core.Patches.AutoSlayOptionsPatch.ApplyPatch(harmony); }
+        catch (Exception ex) { Logger.Warn($"AutoSlayOptions patch failed (may be mobile): {ex.Message}"); }
+
+        try { ModInteropProcessor.Process(harmony, Assembly.GetExecutingAssembly()); }
+        catch (Exception ex) { Logger.Warn($"ModInterop processing failed (may be mobile): {ex.Message}"); }
 
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
 
@@ -60,6 +59,22 @@ public partial class MainFile : Node
         PreloadAssets();
 
         Logger.Info("YuWanCard initialized");
+    }
+
+    private static void SafePatchAll(Harmony harmony, Assembly assembly)
+    {
+        foreach (var type in assembly.GetTypes())
+        {
+            try
+            {
+                var processor = harmony.CreateClassProcessor(type);
+                processor.Patch();
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn($"Harmony patch failed for {type.Name} (may be mobile): {ex.Message}");
+            }
+        }
     }
 
     private static void RegisterConfig()

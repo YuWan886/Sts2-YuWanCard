@@ -175,12 +175,22 @@ public class EndlessModePatch
 
     public static void ApplyMapPointTypeCountsPatches(Harmony harmony)
     {
-        var postfixMethod = AccessTools.Method(typeof(EndlessModePatch), nameof(MapPointTypeCountsPostfix));
-        harmony.Patch(
-            AccessTools.Constructor(typeof(MapPointTypeCounts), [typeof(int), typeof(int)]),
-            postfix: new HarmonyMethod(postfixMethod)
-        );
-        MainFile.Logger.Info("Endless mode: Applied patch to MapPointTypeCounts(int, int) constructor");
+        try
+        {
+            var postfixMethod = AccessTools.Method(typeof(EndlessModePatch), nameof(MapPointTypeCountsPostfix));
+            var ctor = AccessTools.Constructor(typeof(MapPointTypeCounts), [typeof(int), typeof(int)]);
+            if (ctor == null)
+            {
+                MainFile.Logger.Warn("Endless mode: MapPointTypeCounts(int, int) constructor not found, skipping patch");
+                return;
+            }
+            harmony.Patch(ctor, postfix: new HarmonyMethod(postfixMethod));
+            MainFile.Logger.Info("Endless mode: Applied patch to MapPointTypeCounts(int, int) constructor");
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"Endless mode: Failed to apply MapPointTypeCounts patch (may be Android/mobile): {ex.Message}");
+        }
     }
 
     private static void MapPointTypeCountsPostfix(MapPointTypeCounts __instance, int unknownCount, int restCount)

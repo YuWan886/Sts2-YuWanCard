@@ -1,3 +1,4 @@
+using System.Reflection;
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -59,25 +60,29 @@ public class PigPig : YuWanAncientModel
 
     private string FirstVisit => $"{Id.Entry}.talk.firstvisitEver.0-0.ancient";
     
+    // Use reflection to set init-only properties — avoids modreq(IsExternalInit) JIT crash on Android/Mono
+    private static readonly PropertyInfo? _adsFirstVisitProp = typeof(AncientDialogueSet).GetProperty("FirstVisitEverDialogue");
+    private static readonly PropertyInfo? _adsCharDialoguesProp = typeof(AncientDialogueSet).GetProperty("CharacterDialogues");
+    private static readonly PropertyInfo? _adsAgnosticProp = typeof(AncientDialogueSet).GetProperty("AgnosticDialogues");
+
     protected override AncientDialogueSet DefineDialogues()
     {
         var sfxPath = AncientDialogueUtil.SfxPath(FirstVisit);
         var firstVisit = new AncientDialogue(sfxPath);
 
         var characterDialogues = new Dictionary<string, IReadOnlyList<AncientDialogue>>();
-        
+
         foreach (var character in ModelDb.AllCharacters)
         {
             var baseKey = AncientDialogueUtil.BaseLocKey(Id.Entry, character.Id.Entry);
             characterDialogues[character.Id.Entry] = AncientDialogueUtil.GetDialoguesForKey("ancients", baseKey);
         }
-        
-        return new AncientDialogueSet
-        {
-            FirstVisitEverDialogue = firstVisit,
-            CharacterDialogues = characterDialogues,
-            AgnosticDialogues = AncientDialogueUtil.GetDialoguesForKey("ancients", AncientDialogueUtil.BaseLocKey(Id.Entry, "ANY"))
-        };
+
+        var set = (AncientDialogueSet)Activator.CreateInstance(typeof(AncientDialogueSet))!;
+        _adsFirstVisitProp?.SetValue(set, firstVisit);
+        _adsCharDialoguesProp?.SetValue(set, characterDialogues);
+        _adsAgnosticProp?.SetValue(set, AncientDialogueUtil.GetDialoguesForKey("ancients", AncientDialogueUtil.BaseLocKey(Id.Entry, "ANY")));
+        return set;
     }
 
     protected override OptionPools MakeOptionPools => new(

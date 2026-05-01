@@ -72,5 +72,8 @@
   "YUWANCARD-BLACK_FLASH.flavor": "In that fleeting flash, death strikes.",
   "YUWANCARD-PIG_RUSH_FORWARD.title": "Pig Rush Forward",
   "YUWANCARD-PIG_RUSH_FORWARD.description": "In each combat, the first time you deal damage to an enemy with a card, reduce that enemy's max HP by the damage dealt.",
-  "YUWANCARD-PIG_RUSH_FORWARD.flavor": "Charge forward, unstoppable."
+  "YUWANCARD-PIG_RUSH_FORWARD.flavor": "Charge forward, unstoppable.",
+  "YUWANCARD-PIG_DEMON_FORM.title": "Demon Form",
+  "YUWANCARD-PIG_DEMON_FORM.description": "At the start of your turn, gain {StrengthPower:diff()} [gold]Strength[/gold]. Transform before each combat.",
+  "YUWANCARD-PIG_DEMON_FORM.flavor": "Awaken the demon's power."
 }
