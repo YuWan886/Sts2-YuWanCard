@@ -14,8 +14,8 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class BlackFlash : YuWanRelicModel
 {
-    private bool _triggeredThisAttack = false;
-    private Creature? _targetCreature = null;
+    private CardModel? _empoweredAttack;
+    private bool _hasEmittedVfx;
 
     public override RelicRarity Rarity => RelicRarity.Uncommon;
 
@@ -23,47 +23,57 @@ public class BlackFlash : YuWanRelicModel
     {
     }
 
+    public override Task BeforeCardPlayed(CardPlay cardPlay)
+    {
+        if (Owner == null) return Task.CompletedTask;
+        if (cardPlay.Card.Owner != Owner) return Task.CompletedTask;
+        if (!cardPlay.Card.Tags.Contains(CardTag.Strike)) return Task.CompletedTask;
+        if (cardPlay.Target == null || cardPlay.Target.Side != CombatSide.Enemy) return Task.CompletedTask;
+
+        if (Owner.RunState.Rng.Niche.NextFloat() < 0.1f)
+        {
+            _empoweredAttack = cardPlay.Card;
+            MainFile.Logger.Info($"BlackFlash triggered on {cardPlay.Card.Title}, dealing 2.5x damage");
+        }
+
+        return Task.CompletedTask;
+    }
+
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        _triggeredThisAttack = false;
-        _targetCreature = null;
-
+        if (!props.IsPoweredAttack()) return 1m;
         if (dealer != Owner?.Creature) return 1m;
         if (cardSource == null) return 1m;
-        if (!cardSource.Tags.Contains(CardTag.Strike)) return 1m;
-        if (Owner == null) return 1m;
-        if (target == null || target.Side != CombatSide.Enemy) return 1m;
-
-        if (Owner.RunState.Rng.Niche.NextFloat() >= 0.1f) return 1m;
-
-        _triggeredThisAttack = true;
-        _targetCreature = target;
-
-        MainFile.Logger.Info($"BlackFlash triggered on {cardSource.Title}, dealing 2.5x damage");
+        if (_empoweredAttack == null) return 1m;
+        if (cardSource != _empoweredAttack) return 1m;
 
         return 2.5m;
     }
 
     public override Task AfterDamageGiven(PlayerChoiceContext choiceContext, Creature? dealer, DamageResult result, ValueProp props, Creature target, CardModel? cardSource)
     {
-        if (!_triggeredThisAttack) return Task.CompletedTask;
         if (dealer != Owner?.Creature) return Task.CompletedTask;
         if (result.TotalDamage <= 0) return Task.CompletedTask;
+        if (cardSource == null) return Task.CompletedTask;
+        if (cardSource != _empoweredAttack) return Task.CompletedTask;
+        if (_hasEmittedVfx) return Task.CompletedTask;
 
-        _triggeredThisAttack = false;
+        _hasEmittedVfx = true;
 
         Flash();
+        VfxUtils.PlayAtCreature("res://YuWanCard/scenes/vfx/vfx_black_flash.tscn", target);
 
-        if (_targetCreature != null)
-        {
-            VfxUtils.PlayAtCreature("res://YuWanCard/scenes/vfx/vfx_black_flash.tscn", _targetCreature);
-        }
-        else
-        {
-            VfxUtils.PlayCentered("res://YuWanCard/scenes/vfx/vfx_black_flash.tscn");
-        }
+        return Task.CompletedTask;
+    }
 
-        _targetCreature = null;
+    public override Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
+    {
+        _hasEmittedVfx = false;
+
+        if (cardPlay.Card == _empoweredAttack)
+        {
+            _empoweredAttack = null;
+        }
 
         return Task.CompletedTask;
     }
