@@ -187,7 +187,7 @@ public partial class ShoppingCartPopup : Control, IScreenContext
 
     private void RefreshItems()
     {
-        if (!IsInstanceValid(this))
+        if (_isClosed || !IsInstanceValid(this))
             return;
 
         foreach (var control in _itemControls)
@@ -250,9 +250,13 @@ public partial class ShoppingCartPopup : Control, IScreenContext
 
     public void Close()
     {
+        UnsubscribeEvents();
         NModalContainer.Instance?.Clear();
         SfxCmd.Play("event:/sfx/ui/ui_button_click");
+        _isClosed = true;
     }
+
+    private bool _isClosed;
 
     public async Task<bool> TryPurchaseItem(int index)
     {
@@ -270,11 +274,11 @@ public partial class ShoppingCartPopup : Control, IScreenContext
             return false;
         }
 
+        Close();
         var success = await ShoppingCartManager.PurchaseItem(index, _player);
         if (success)
         {
             SfxCmd.Play("event:/sfx/npcs/merchant/merchant_thank_yous");
-            RefreshItems();
         }
         else
         {
@@ -302,6 +306,8 @@ public partial class ShoppingCartPopup : Control, IScreenContext
             return;
         }
 
+        Close();
+
         int purchasedCount = 0;
         for (int i = data.Count - 1; i >= 0; i--)
         {
@@ -312,7 +318,6 @@ public partial class ShoppingCartPopup : Control, IScreenContext
         if (purchasedCount > 0)
         {
             SfxCmd.Play("event:/sfx/npcs/merchant/merchant_thank_yous");
-            RefreshItems();
         }
         else
         {

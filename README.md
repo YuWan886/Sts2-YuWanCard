@@ -247,6 +247,7 @@
 2. 解压到游戏目录下的 `mods` 文件夹中
 3. 游戏日志在 `%AppData%\SlayTheSpire2\logs\` 文件夹中
 4. 安装 [RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib) 或者 [BaseLib](https://github.com/Alchyr/BaseLib-StS2)，就能看到猪猪的配置界面，这是**可选**的。
+5. [**点我看常见问题解答**](https://docs.qq.com/doc/DUXhoZXhKVURZR1ph)
 
 ## 交流
 

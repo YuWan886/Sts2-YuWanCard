@@ -222,8 +222,11 @@ public static class ShoppingCartManager
 
         var mutableRelic = relicModel.ToMutable();
 
-        await RelicCmd.Obtain(mutableRelic, player);
         await PlayerCmd.LoseGold(item.Price, player, MegaCrit.Sts2.Core.Entities.Gold.GoldLossType.Spent);
+        player.RunState.CurrentMapPointHistoryEntry?.GetEntry(player.NetId).BoughtRelics.Add(mutableRelic.Id);
+        await RelicCmd.Obtain(mutableRelic, player);
+        RunManager.Instance.RewardSynchronizer.SyncLocalGoldLost(item.Price);
+        RunManager.Instance.RewardSynchronizer.SyncLocalObtainedRelic(mutableRelic);
 
         MainFile.Logger.Info($"ShoppingCartManager: Purchased relic {item.ItemId} for {item.Price} gold");
         return true;

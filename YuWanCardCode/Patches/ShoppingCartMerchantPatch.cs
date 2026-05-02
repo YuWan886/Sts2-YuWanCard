@@ -106,6 +106,8 @@ public static class NMerchantSlot_ShoppingCartPatch
         if (added)
         {
             ClearAfterPurchase(entry);
+            var rug = YuWanReflectionHelper.GetPrivateField<NMerchantInventory>(slot, "_merchantRug");
+            YuWanReflectionHelper.CallPrivateMethod(entry, "RestockAfterPurchase", (object?)rug?.Inventory!);
             UpdateVisual(slot);
             SfxCmd.Play("event:/sfx/ui/ui_card_reward_open");
         }
