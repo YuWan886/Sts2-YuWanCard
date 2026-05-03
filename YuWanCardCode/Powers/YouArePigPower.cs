@@ -24,6 +24,7 @@ public class YouArePigPower : YuWanPowerModel
     private NCreatureVisuals? _pigVisuals;
     private NCreatureVisuals? _originalVisuals;
     private NCreature? _creatureNode;
+    private Godot.Node2D? _originalBody;
 
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
@@ -40,14 +41,21 @@ public class YouArePigPower : YuWanPowerModel
             return;
         }
 
-        _originalVisuals.Visible = false;
+        _originalBody = _originalVisuals.GetCurrentBody();
 
-        _creatureNode.AddChild(_pigVisuals);
-
-        if (Owner.Side == CombatSide.Enemy)
+        if (_pigVisuals.Bounds != null)
         {
-            _pigVisuals.Scale = new Godot.Vector2(-_pigVisuals.Scale.X, _pigVisuals.Scale.Y);
+            _pigVisuals.Bounds.Size = Godot.Vector2.Zero;
+            _pigVisuals.Bounds.MouseFilter = Godot.Control.MouseFilterEnum.Ignore;
         }
+
+        _pigVisuals.Position = Godot.Vector2.Zero;
+        _originalVisuals.AddChild(_pigVisuals);
+
+        _pigVisuals.Scale = new Godot.Vector2(-Math.Abs(_pigVisuals.Scale.X), _pigVisuals.Scale.Y);
+
+        if (_originalBody != null)
+            _originalBody.Visible = false;
 
         Flash();
 
@@ -56,18 +64,19 @@ public class YouArePigPower : YuWanPowerModel
 
     public override async Task AfterRemoved(Creature oldOwner)
     {
-        if (_originalVisuals != null)
+        if (_originalBody != null && Godot.GodotObject.IsInstanceValid(_originalBody))
         {
-            _originalVisuals.Visible = true;
+            _originalBody.Visible = true;
         }
 
-        if (_pigVisuals != null)
+        if (_pigVisuals != null && Godot.GodotObject.IsInstanceValid(_pigVisuals))
         {
             _pigVisuals.QueueFree();
             _pigVisuals = null;
         }
 
         _originalVisuals = null;
+        _originalBody = null;
         _creatureNode = null;
 
         await Task.CompletedTask;

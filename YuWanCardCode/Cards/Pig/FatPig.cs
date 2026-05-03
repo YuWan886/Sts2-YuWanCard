@@ -13,7 +13,7 @@ public class FatPig : YuWanCardModel
     public FatPig() : base(
         baseCost: 2,
         type: CardType.Skill,
-        rarity: CardRarity.Rare,
+        rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
         WithBlock(15);
