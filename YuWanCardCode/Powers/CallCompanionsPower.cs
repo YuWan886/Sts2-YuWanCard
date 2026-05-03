@@ -16,7 +16,6 @@ using MegaCrit.Sts2.Core.Random;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Monsters;
 using YuWanCard.Utils;
-using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Powers;
 
@@ -218,7 +217,6 @@ public class CallCompanionsPower : YuWanPowerModel
     private async Task ExecuteCompanionTurn(
         PlayerChoiceContext choiceContext, Player player, CombatState combatState)
     {
-        var handPile = PileType.Hand.GetPile(player);
         var state = AnalyzeState(player, combatState);
         var enemyCache = CacheEnemies(combatState);
 
@@ -235,7 +233,11 @@ public class CallCompanionsPower : YuWanPowerModel
             _hand.Remove(card);
 
             int cardCost = card.EnergyCost?.GetResolved() ?? 999;
-            if (cardCost > _energy) continue;
+            if (cardCost > _energy)
+            {
+                _discard.Add(card);
+                continue;
+            }
 
             int playerEnergy = player.PlayerCombatState?.Energy ?? 0;
             if (player.PlayerCombatState != null)
@@ -243,7 +245,10 @@ public class CallCompanionsPower : YuWanPowerModel
 
             try
             {
-                handPile.AddInternal(card);
+                if (!combatState.ContainsCard(card))
+                    combatState.AddCard(card, player);
+
+                await CardPileCmd.Add(card, PileType.Hand, CardPilePosition.Top, source: this, skipVisuals: true);
                 await card.SpendResources();
                 _energy = player.PlayerCombatState!.Energy;
                 player.PlayerCombatState.Energy = playerEnergy;
