@@ -258,7 +258,13 @@ static class CustomOrbsListPatch
     [HarmonyPostfix]
     static IEnumerable<OrbModel> AddCustomOrbs(IEnumerable<OrbModel> __result)
     {
-        return __result.Append(ModelDb.Orb<Orbs.LittleRegentOrb>());
+        foreach (var orbType in ContentRegistry.OrbTypes)
+        {
+            var orb = ModelDb.GetById<OrbModel>(ModelDb.GetId(orbType));
+            if (orb != null)
+                __result = __result.Append(orb);
+        }
+        return __result;
     }
 }
 

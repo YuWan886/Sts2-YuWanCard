@@ -9,6 +9,9 @@ using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Config;
 using YuWanCard.Core.Interop;
+using YuWanCard.Core.Lifecycle;
+using YuWanCard.Core.Patching;
+using YuWanCard.Core.Registration;
 using YuWanCard.Multiplayer;
 using YuWanCard.Patches;
 using YuWanCard.Utils;
@@ -20,7 +23,8 @@ public partial class MainFile : Node
 {
     public const string ModId = "YuWanCard";
 
-    public static MegaCrit.Sts2.Core.Logging.Logger Logger { get; } = new(ModId, MegaCrit.Sts2.Core.Logging.LogType.Generic);
+    public static MegaCrit.Sts2.Core.Logging.Logger Logger { get; } =
+        new(ModId, MegaCrit.Sts2.Core.Logging.LogType.Generic);
 
     public static YuWanCardConfig? Config { get; private set; }
 
@@ -31,28 +35,36 @@ public partial class MainFile : Node
 
     public static void Initialize()
     {
-        Harmony harmony = new(ModId);
-        PatchAll(harmony, Assembly.GetExecutingAssembly());
+        ModLifecycle.Publish(ModLifecyclePhase.Initializing);
 
-        try { EndlessModePatch.ApplyMapPointTypeCountsPatches(harmony); }
-        catch (Exception ex) { Logger.Warn($"EndlessMode patch failed (may be mobile): {ex.Message}"); }
+        var patcher = new ModPatcher(ModId);
 
-        try { Core.Patches.AutoSlayCharacterPatch.ApplyPatch(harmony); }
-        catch (Exception ex) { Logger.Warn($"AutoSlayCharacter patch failed (may be mobile): {ex.Message}"); }
+        // Phase 1: Bulk Harmony patches (auto-discovered via [HarmonyPatch] attributes)
+        patcher.ApplySingle(
+            h => h.PatchAll(Assembly.GetExecutingAssembly()), "BulkPatchAll");
 
-        try { Core.Patches.AutoSlayOptionsPatch.ApplyPatch(harmony); }
-        catch (Exception ex) { Logger.Warn($"AutoSlayOptions patch failed (may be mobile): {ex.Message}"); }
+        ModLifecycle.Publish(ModLifecyclePhase.PatchesApplied);
 
-        try { ModInteropProcessor.Process(harmony, Assembly.GetExecutingAssembly()); }
-        catch (Exception ex) { Logger.Warn($"ModInterop processing failed (may be mobile): {ex.Message}"); }
+        // Phase 2: Platform-conditional patches (wrapped to survive mobile)
+        patcher.ApplySingle(
+            h => EndlessModePatch.ApplyMapPointTypeCountsPatches(h), "EndlessMode");
+        patcher.ApplySingle(
+            h => Core.Patches.AutoSlayCharacterPatch.ApplyPatch(h), "AutoSlayCharacter");
+        patcher.ApplySingle(
+            h => Core.Patches.AutoSlayOptionsPatch.ApplyPatch(h), "AutoSlayOptions");
+        patcher.ApplySingle(
+            h => ModInteropProcessor.Process(h, Assembly.GetExecutingAssembly()), "ModInterop");
+        patcher.ApplySingle(
+            h => Core.Patches.ArchitectLoadDialogueNullGuard.ApplyPatch(h), "ArchitectDialogueNullGuard");
 
-        try { Core.Patches.ArchitectLoadDialogueNullGuard.ApplyPatch(harmony); }
-        catch (Exception ex) { Logger.Warn($"ArchitectLoadDialogueNullGuard failed (may be mobile): {ex.Message}"); }
-
+        // Phase 3: Content discovery — scan for [Pool] and registration attributes
+        ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
+        ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 
+        // Phase 4: Config, scene conversions, multiplayer, assets
         Config = new YuWanCardConfig();
-        RegisterConfig();
+        ConfigRegistrar.TryDeferredRegister();
 
         NodeFactory.Init();
         RegisterSceneConversions();
@@ -61,24 +73,16 @@ public partial class MainFile : Node
 
         PreloadAssets();
 
+        ModLifecycle.Publish(ModLifecyclePhase.Initialized);
         Logger.Info("YuWanCard initialized");
     }
 
-    private static void PatchAll(Harmony harmony, Assembly assembly)
+    private static void RegisterSceneConversions()
     {
-        try
-        {
-            harmony.PatchAll(assembly);
-        }
-        catch (Exception ex)
-        {
-            Logger.Warn($"PatchAll failed (may be mobile): {ex.Message}");
-        }
-    }
-
-    private static void RegisterConfig()
-    {
-        ConfigRegistrar.TryDeferredRegister();
+        NodeFactory.RegisterSceneType<NCreatureVisuals>(PigVisualsPath);
+        NodeFactory.RegisterSceneType<NMerchantCharacter>(PigMerchantPath);
+        NodeFactory.RegisterSceneType<NEnergyCounter>(PigEnergyCounterPath);
+        NodeFactory.RegisterSceneType<NRestSiteCharacter>(PigRestSitePath);
     }
 
     private static void PreloadAssets()
@@ -97,14 +101,6 @@ public partial class MainFile : Node
             "res://YuWanCard/images/characters/character_icon_pig.png",
             "res://YuWanCard/images/powers/pig_doubt_power.png"
         );
-    }
-
-    private static void RegisterSceneConversions()
-    {
-        NodeFactory.RegisterSceneType<NCreatureVisuals>(PigVisualsPath);
-        NodeFactory.RegisterSceneType<NMerchantCharacter>(PigMerchantPath);
-        NodeFactory.RegisterSceneType<NEnergyCounter>(PigEnergyCounterPath);
-        NodeFactory.RegisterSceneType<NRestSiteCharacter>(PigRestSitePath);
     }
 
     private static void PreloadTextures(params string[] texturePaths)

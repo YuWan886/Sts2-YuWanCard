@@ -18,6 +18,13 @@ public static class CustomEventRegistry
 
     public static void Register(EventModel eventModel)
     {
+        if (ContentRegistry.IsFrozen)
+        {
+            MainFile.Logger.Warn(
+                $"CustomEventRegistry: Register called after freeze for {eventModel.GetType().Name}");
+            return;
+        }
+
         if (eventModel is not YuWanEventModel yuWanEvent)
         {
             SharedEvents.Add(eventModel);

@@ -16,10 +16,18 @@ public static class CustomAncientRegistry
     public static readonly List<AncientEventModel> CustomAncients = [];
 
     /// <summary>
-    /// Called from YuWanAncientModel constructor.
+    /// Called from YuWanAncientModel constructor or [RegisterAncient] attribute processing.
+    /// After ContentRegistry is frozen, logs a warning and skips.
     /// </summary>
     public static void Register(AncientEventModel ancient)
     {
+        if (ContentRegistry.IsFrozen)
+        {
+            MainFile.Logger.Warn(
+                $"CustomAncientRegistry: Register called after freeze for {ancient.GetType().Name}");
+            return;
+        }
+
         if (!CustomAncients.Contains(ancient))
             CustomAncients.Add(ancient);
     }

@@ -2,13 +2,15 @@ using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Exceptions;
+using YuWanCard.Core.Lifecycle;
+using YuWanCard.Core.Registration;
 
 namespace YuWanCard.Core.Patches;
 
 /// <summary>
 /// Replaces ModelDb.Init with a version that gracefully handles duplicate types.
-/// Also explicitly runs all post-Init logic that would normally run as Harmony postfixes,
-/// since returning false from this Prefix skips them.
+/// Also performs canonical instance registration (events, ancients, orbs, characters)
+/// using type sets collected by ContentRegistry.RegisterAll, then freezes registrations.
 /// </summary>
 [HarmonyPatch(typeof(ModelDb), nameof(ModelDb.Init))]
 static class InitDeDuplicationPatch
@@ -39,6 +41,8 @@ static class InitDeDuplicationPatch
                 var value = (AbstractModel)Activator.CreateInstance(type)!;
                 contentById[id] = value;
                 created++;
+
+                RegisterCanonicalInstance(type, value);
             }
             catch (TargetInvocationException ex)
                 when (ex.InnerException is DuplicateModelException)
@@ -50,19 +54,33 @@ static class InitDeDuplicationPatch
         MainFile.Logger.Info(
             $"Init: {allTypes.Length} types, {created} created, {skipped} skipped");
 
-        // Manually run post-Init logic that other Harmony postfixes would have done.
         RunPostInitLogic();
 
-        return false; // skip original Init
+        ContentRegistry.Freeze();
+        ModLifecycle.Publish(ModLifecyclePhase.ContentFrozen);
+        ModLifecycle.Publish(ModLifecyclePhase.ModelDbReady);
+
+        return false;
     }
 
     /// <summary>
-    /// Replicates essential post-Init logic from YuWanCard patches
-    /// that would normally run as Harmony postfixes on ModelDb.Init.
+    /// Registers a canonical instance with the appropriate system based on
+    /// registration attributes collected during ContentRegistry.RegisterAll.
     /// </summary>
+    private static void RegisterCanonicalInstance(Type type, AbstractModel instance)
+    {
+        if (ContentRegistry.EventTypes.Contains(type) && instance is EventModel eventModel)
+            CustomEventRegistry.Register(eventModel);
+
+        if (ContentRegistry.AncientTypes.Contains(type) && instance is AncientEventModel ancient)
+            CustomAncientRegistry.Register(ancient);
+
+        if (ContentRegistry.CharacterTypes.Contains(type) && instance is CharacterModel character)
+            ModelDbCharactersPatch.Register(character);
+    }
+
     private static void RunPostInitLogic()
     {
-        // 1. Register modifiers
         foreach (var modifier in Modifiers.YuWanModifierModel.RegisteredModifiers)
         {
             var modifierType = modifier.GetType();
@@ -72,18 +90,18 @@ static class InitDeDuplicationPatch
             }
         }
 
-        // 2. Auto-register all characters that implement IYuWanCharacter
         AutoRegisterCharacters();
     }
 
     /// <summary>
-    /// Automatically registers all character models that implement IYuWanCharacter.
-    /// This eliminates the need for manual registration in each mod.
+    /// Auto-registers characters implementing IYuWanCharacter that don't
+    /// have an explicit [RegisterCharacter] attribute.
     /// </summary>
     private static void AutoRegisterCharacters()
     {
         var characterTypes = ModelDb.AllAbstractModelSubtypes
-            .Where(t => typeof(IYuWanCharacter).IsAssignableFrom(t) && !t.IsAbstract);
+            .Where(t => typeof(IYuWanCharacter).IsAssignableFrom(t) && !t.IsAbstract &&
+                        !ContentRegistry.CharacterTypes.Contains(t));
 
         foreach (var characterType in characterTypes)
         {

@@ -6,6 +6,7 @@ using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Orbs;
 
+[RegisterOrb]
 public class LittleRegentOrb : YuWanOrbModel
 {
     public override Color DarkenedColor => new Color("FFD700");
