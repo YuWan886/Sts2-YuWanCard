@@ -199,6 +199,8 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
             _hoverTips.Add(_ => HoverTipFactory.FromCard(ModelDb.GetById<CardModel>(ModelDb.GetId(t))));
         else if (t.IsAssignableTo(typeof(PotionModel)))
             _hoverTips.Add(_ => HoverTipFactory.FromPotion(ModelDb.GetById<PotionModel>(ModelDb.GetId(t))));
+        else if (t.IsAssignableTo(typeof(EnchantmentModel)))
+            _hoverTips.Add(_ => ModelDb.GetById<EnchantmentModel>(ModelDb.GetId(t)).HoverTip);
         return this;
     }
 
