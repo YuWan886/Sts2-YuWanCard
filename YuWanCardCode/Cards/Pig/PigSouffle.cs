@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -20,6 +21,7 @@ public class PigSouffle : YuWanCardModel
         WithVars(new EnergyVar(2));
         WithPower<DexterityPower>(1);
         WithKeywords(CardKeyword.Exhaust);
+        WithTags(YuWanTags.FoodPig);
     }
 
     protected override void OnUpgrade()

@@ -1,7 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using YuWanCard.Cards;
 
 namespace YuWanCard.Utils;
 
@@ -9,21 +8,26 @@ public static class CardUtils
 {
     private static readonly string[] DamageVarNames = ["Damage", "CalculatedDamage", "OstyDamage", "ExtraDamage"];
 
-    public static readonly List<Func<CardModel>> FoodPigCardFactories =
-    [
-        ModelDb.Card<PigChop>,
-        ModelDb.Card<PigPudding>,
-        ModelDb.Card<TiramisuPig>,
-        ModelDb.Card<PigSouffle>,
-        ModelDb.Card<PigBlueberryCake>
-    ];
+    private static List<CardModel>? _foodPigCards;
+    private static List<CardModel> FoodPigCards
+    {
+        get
+        {
+            if (_foodPigCards == null)
+            {
+                _foodPigCards = ModelDb.AllCards
+                    .Where(c => c.Tags.Contains(YuWanTags.FoodPig))
+                    .ToList();
+            }
+            return _foodPigCards;
+        }
+    }
 
     public static CardModel GetRandomFoodPigCardCanonical(Player player)
     {
-        var factory = FoodPigCardFactories
+        return FoodPigCards
             .OrderBy(_ => player.RunState.Rng.CombatCardGeneration.NextFloat())
             .First();
-        return factory();
     }
 
     public static CardModel CreateRandomFoodPigCard(Player player)

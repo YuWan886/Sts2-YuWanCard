@@ -3,8 +3,8 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -18,6 +18,7 @@ public class PigPudding : YuWanCardModel
         target: TargetType.Self)
     {
         WithKeywords(CardKeyword.Exhaust);
+        WithTags(YuWanTags.FoodPig);
     }
 
     protected override void OnUpgrade()

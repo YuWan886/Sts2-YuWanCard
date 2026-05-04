@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -19,6 +20,7 @@ public class PigBlueberryCake : YuWanCardModel
         WithPower<StrengthPower>(2);
         WithPower<ArtifactPower>(1);
         WithKeywords(CardKeyword.Exhaust);
+        WithTags(YuWanTags.FoodPig);
     }
 
     protected override void OnUpgrade()

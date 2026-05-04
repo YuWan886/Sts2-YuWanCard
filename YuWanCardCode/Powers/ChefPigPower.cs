@@ -18,7 +18,7 @@ public class ChefPigPower : YuWanPowerModel
 
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("PigChefPower", 1m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("ChefPigPower", 1m)];
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
