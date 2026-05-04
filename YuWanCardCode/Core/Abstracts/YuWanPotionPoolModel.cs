@@ -1,5 +1,4 @@
 using MegaCrit.Sts2.Core.Models;
-using YuWanCard.Core;
 using YuWanCard.Core.Patches;
 
 namespace YuWanCard.Core.Abstracts;

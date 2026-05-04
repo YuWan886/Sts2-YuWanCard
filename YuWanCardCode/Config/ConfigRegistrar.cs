@@ -20,6 +20,7 @@ internal static class ConfigRegistrar
         "EnableAutoUpdateCheck",
         "EnableAutoSlay",
         "EnableSevenCursesRing",
+        "EnableWhatIfRelics",
     ];
 
     private static readonly (string Name, string Section)[] BaseLibConfigProps =
@@ -29,6 +30,7 @@ internal static class ConfigRegistrar
         ("EnableAutoUpdateCheck", "更新设置"),
         ("EnableAutoSlay", "自动爬塔设置"),
         ("EnableSevenCursesRing", "游戏设置"),
+        ("EnableWhatIfRelics", "游戏设置"),
     ];
 
     private static readonly (string PropertyName, string ToggleId, string Label, string? Description)[] RitsuConfigProps =
@@ -38,6 +40,7 @@ internal static class ConfigRegistrar
         ("EnableAutoUpdateCheck", "enable_auto_update", "自动检查更新", "启动时自动检查模组更新"),
         ("EnableAutoSlay", "enable_auto_slay", "自动爬塔", "自动进行角色选择并开始爬塔"),
         ("EnableSevenCursesRing", "enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒"),
+        ("EnableWhatIfRelics", "enable_what_if_relics", "假如只有遗物", "在Neow处可选择假如只有系列遗物"),
     ];
 
     public static void TryDeferredRegister()

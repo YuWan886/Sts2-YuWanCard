@@ -1,8 +1,6 @@
 using System.Text.RegularExpressions;
 using Godot;
 using MegaCrit.Sts2.Core.Models;
-using YuWanCard.Core;
-using YuWanCard.Core.Registration;
 
 namespace YuWanCard.Core.Abstracts;
 

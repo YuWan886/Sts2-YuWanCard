@@ -24,5 +24,9 @@ public class YuWanCardConfig : FallbackSimpleModConfig
     [ConfigHoverTip]
     public static bool EnableSevenCursesRing { get; set; } = true;
 
+    [ConfigSection("游戏设置")]
+    [ConfigHoverTip]
+    public static bool EnableWhatIfRelics { get; set; } = true;
+
     public YuWanCardConfig() : base() { }
 }

@@ -33,6 +33,7 @@ public static class ContentRegistry
     internal static readonly HashSet<Type> SingletonTypes = [];
     internal static readonly HashSet<Type> CharacterTypes = [];
     internal static readonly HashSet<Type> EventTypes = [];
+    internal static readonly HashSet<Type> RelicPoolTypes = [];
 
     public static bool IsFrozen
     {
@@ -124,6 +125,14 @@ public static class ContentRegistry
                 !type.HasAttribute<RegisterEventAttribute>())
             {
                 EventTypes.Add(type);
+                attrCount++;
+            }
+
+            // Auto-detect custom relic pools (extend RelicPoolModel + implement IYuWanContent)
+            if (typeof(RelicPoolModel).IsAssignableFrom(type) &&
+                typeof(IYuWanContent).IsAssignableFrom(type))
+            {
+                RelicPoolTypes.Add(type);
                 attrCount++;
             }
         }

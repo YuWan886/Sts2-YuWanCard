@@ -77,6 +77,9 @@ static class InitDeDuplicationPatch
 
         if (ContentRegistry.CharacterTypes.Contains(type) && instance is CharacterModel character)
             ModelDbCharactersPatch.Register(character);
+
+        if (ContentRegistry.RelicPoolTypes.Contains(type) && instance is RelicPoolModel relicPool)
+            CustomRelicPoolRegistry.Register(relicPool);
     }
 
     private static void RunPostInitLogic()

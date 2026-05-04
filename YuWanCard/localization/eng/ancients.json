@@ -95,5 +95,6 @@
   "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.char": "Architect, here I come!",
   "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.next": "Continue",
   "THE_ARCHITECT.talk.YUWANCARD-PIG.0-1r.ancient": "Oink oink oink...",
-  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-attack": "Pig Attack!"
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-attack": "Pig Attack!",
+  "YUWANCARD-WHAT_IF_MENU.description": "Choose a 'What If' relic..."
 }
