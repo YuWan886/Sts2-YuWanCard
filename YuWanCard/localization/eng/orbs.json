@@ -1,5 +1,8 @@
 {
   "YUWANCARD-LITTLE_REGENT_ORB.title": "Little Regent",
   "YUWANCARD-LITTLE_REGENT_ORB.description": "Orb: Gain [gold]Forge[/gold].",
-  "YUWANCARD-LITTLE_REGENT_ORB.smartDescription": "[gold]Passive: [/gold]At the end of turn, gain [blue]{Passive}[/blue] [gold]Forge[/gold].\n[gold]Evoke: [/gold]Gain [blue]{Evoke}[/blue] [gold]Forge[/gold]."
+  "YUWANCARD-LITTLE_REGENT_ORB.smartDescription": "[gold]Passive: [/gold]At the end of turn, gain [blue]{Passive}[/blue] [gold]Forge[/gold].\n[gold]Evoke: [/gold]Gain [blue]{Evoke}[/blue] [gold]Forge[/gold].",
+  "YUWANCARD-SNAKE_BITE_ORB.title": "Snake Bite",
+  "YUWANCARD-SNAKE_BITE_ORB.description": "Orb: Apply [gold]Poison[/gold] to a random enemy.",
+  "YUWANCARD-SNAKE_BITE_ORB.smartDescription": "[gold]Passive: [/gold]At the end of turn, apply [blue]{Passive}[/blue] [gold]Poison[/gold] to a random enemy.\n[gold]Evoke: [/gold]Apply [blue]{Evoke}[/blue] [gold]Poison[/gold] to a random enemy."
 }

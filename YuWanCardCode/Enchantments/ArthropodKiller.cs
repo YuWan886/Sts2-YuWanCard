@@ -10,6 +10,7 @@ namespace YuWanCard.Enchantments;
 public sealed class ArthropodKiller : YuWanEnchantmentModel
 {
     public override bool ShowAmount => true;
+    public override bool IsStackable => false;
 
     private decimal _storedDamage;
     private bool _shouldBypassBlock;

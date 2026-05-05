@@ -129,6 +129,8 @@
   "YUWANCARD-PIG_DEFECTION.description": "Has a chance to convert a random enemy to your team.",
   "YUWANCARD-LITTLE_REGENT.title": "Little Regent",
   "YUWANCARD-LITTLE_REGENT.description": "Generate 1 [gold]Little Regent[/gold] Orb.",
+  "YUWANCARD-LITTLE_SNAKE_BITE.title": "Little Snake Bite",
+  "YUWANCARD-LITTLE_SNAKE_BITE.description": "Gain 1 [gold]Snake Bite[/gold] Orb. [keyword]Retain[/keyword].\nUpgrade: Gain 2.",
   "YUWANCARD-PIG_SLAM.title": "Pig Slam",
   "YUWANCARD-PIG_SLAM.description": "Deal {Damage:diff()} damage. Gain {StrengthPower:diff()} [gold]Strength[/gold].",
   "YUWANCARD-PIG_ROAR.title": "Pig Roar",
@@ -216,5 +218,7 @@
   "YUWANCARD-SMALL_BEN_PIG.title": "Lil Ben Pig",
   "YUWANCARD-SMALL_BEN_PIG.description": "Gain {DexterityPower:diff()} [gold]Dexterity[/gold] this turn.\nAdd a [gold]Big Ben Pig[/gold] to your discard pile.\nExhaust.",
   "YUWANCARD-BIG_BEN_PIG.title": "Big Ben Pig",
-  "YUWANCARD-BIG_BEN_PIG.description": "Gain {StrengthPower:diff()} [gold]Strength[/gold] this turn.\nAdd a [gold]Lil Ben Pig[/gold] to your [gold]draw pile[/gold]."
+  "YUWANCARD-BIG_BEN_PIG.description": "Gain {StrengthPower:diff()} [gold]Strength[/gold] this turn.\nAdd a [gold]Lil Ben Pig[/gold] to your [gold]draw pile[/gold].",
+  "YUWANCARD-STONE_SWORD.title": "Stone Sword",
+  "YUWANCARD-STONE_SWORD.description": "After defeating {Elites} Elite enemies, transform into [gold]Power[/gold] relic."
 }

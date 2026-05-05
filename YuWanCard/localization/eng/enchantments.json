@@ -6,5 +6,9 @@
   "YUWANCARD-VENOMOUS.title": "Venomous",
   "YUWANCARD-VENOMOUS.description": "Attacks apply [blue]3[/blue] [gold]Poison[/gold] to enemies.",
   "YUWANCARD-LOYAL.title": "Loyal",
-  "YUWANCARD-LOYAL.description": "When this card is not in hand, automatically play it at the start of each turn."
+  "YUWANCARD-LOYAL.description": "When this card is not in hand, automatically play it at the start of each turn.",
+  "YUWANCARD-BITE.title": "Bite",
+  "YUWANCARD-BITE.description": "On play, apply [blue]{Poison}[/blue] [gold]Poison[/gold] to target.",
+  "YUWANCARD-SNAKE.title": "Snake",
+  "YUWANCARD-SNAKE.description": "Each time this card is played, add [blue]{Cards}[/blue] [gold]Snakebite[/gold] to your hand."
 }

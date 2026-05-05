@@ -11,6 +11,7 @@ namespace YuWanCard.Enchantments;
 public sealed class SweepingBlade : YuWanEnchantmentModel
 {
     public override bool ShowAmount => true;
+    public override bool IsStackable => false;
 
     public override bool CanEnchant(CardModel card)
     {

@@ -97,6 +97,24 @@ public class SelfHelpBookPatch
             DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description",
             AvailabilityCheck: p => PlayerHasCardsForEnchant<Loyal>(p),
             CardFilter: _ => true
+        ),
+        new(
+            typeof(Bite),
+            Weight: 1,
+            OptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.BITE",
+            LockedOptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.BITE_LOCKED",
+            DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.BITE.description",
+            AvailabilityCheck: p => PlayerHasCardsForEnchant<Bite>(p),
+            CardFilter: _ => true
+        ),
+        new(
+            typeof(Snake),
+            Weight: 1,
+            OptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SNAKE",
+            LockedOptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.SNAKE_LOCKED",
+            DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.SNAKE.description",
+            AvailabilityCheck: p => PlayerHasCardsForEnchant<Snake>(p),
+            CardFilter: _ => true
         )
     ];
 
@@ -110,7 +128,7 @@ public class SelfHelpBookPatch
             return;
         }
 
-        var availablePool = new YuWanCard.Core.Utils.WeightedList<EnchantmentOptionDef>();
+        var availablePool = new WeightedList<EnchantmentOptionDef>();
 
         foreach (var optionDef in _enchantmentPool)
         {
