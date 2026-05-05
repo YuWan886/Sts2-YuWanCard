@@ -3,13 +3,11 @@
 [ext_resource type="SpineSkeletonDataResource" uid="uid://desb515e3wcdo" path="res://YuWanCard/animations/pig/pig_skeleton_data_resource.tres" id="1_p4le1"]
 [ext_resource type="AudioStream" uid="uid://dxcc74cxo2rs5" path="res://YuWanCard/sounds/characters/pig_hurt.mp3" id="2_hurt"]
 [ext_resource type="AudioStream" uid="uid://7m0okygv2w17" path="res://YuWanCard/sounds/characters/pig_die.mp3" id="3_die"]
-[ext_resource type="Script" path="res://YuWanCard/scripts/characters/spine_skin_setter.gd" id="4_skin"]
+[ext_resource type="Script" uid="uid://bodwh5p76ay5c" path="res://YuWanCard/scripts/characters/spine_skin_setter.gd" id="4_skin"]
 
 [node name="PigMinionVisuals" type="Node2D"]
 
 [node name="Visuals" type="SpineSprite" parent="."]
-script = ExtResource("4_skin")
-initial_skin = "normal"
 skeleton_data_res = ExtResource("1_p4le1")
 preview_skin = "normal"
 preview_animation = "idle_loop"
@@ -18,6 +16,7 @@ preview_time = 0.0
 unique_name_in_owner = true
 position = Vector2(-2, -27)
 scale = Vector2(0.5, 0.5)
+script = ExtResource("4_skin")
 
 [node name="Bounds" type="Control" parent="."]
 unique_name_in_owner = true
@@ -31,19 +30,19 @@ mouse_filter = 2
 
 [node name="CenterPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1, -126)
+position = Vector2(3, -81)
 
 [node name="IntentPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -168)
+position = Vector2(0, -145)
 
 [node name="OrbPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -100)
+position = Vector2(0, -134)
 
 [node name="TalkPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(101, -126)
+position = Vector2(82, -107)
 
 [node name="HurtSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_hurt")

@@ -154,7 +154,7 @@
   "YUWANCARD-PIG_VAMPIRIC.title": "猪吸血",
   "YUWANCARD-PIG_VAMPIRIC.description": "你在本回合内，每打出一张攻击牌，恢复1点生命值。\n持续{PigVampiricPower:diff()}回合。",
   "YUWANCARD-PIG_COIN.title": "你个猪币",
-  "YUWANCARD-PIG_COIN.description": "你在本回合内，每打出1张卡牌，获得{PigCoinPower:diff()}金币。",
+  "YUWANCARD-PIG_COIN.description": "你在本回合内，每打出1张卡牌，获得2金币。\n持续{PigCoinPower:diff()}回合。",
   "YUWANCARD-PIG_BURGER.title": "猪堡",
   "YUWANCARD-PIG_BURGER.description": "在战斗结束时，恢复{PigBurgerPower:diff()}点生命值。",
   "YUWANCARD-KILLING_INTENT.title": "杀意",

@@ -1,34 +1,21 @@
-[gd_scene load_steps=3 format=3 uid="uid://bbjjco06isjev"]
+[gd_scene load_steps=4 format=3 uid="uid://bbjjco06isjev"]
 
+[ext_resource type="SpineSkeletonDataResource" uid="uid://desb515e3wcdo" path="res://YuWanCard/animations/pig/pig_skeleton_data_resource.tres" id="1_mnxdv"]
 [ext_resource type="Texture2D" uid="uid://srptda76db1q" path="res://YuWanCard/images/characters/pig.png" id="1_pig"]
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_pig"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("1_pig")
-}],
-"loop": true,
-"name": &"relaxed_loop",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("1_pig")
-}],
-"loop": false,
-"name": &"idle_loop",
-"speed": 5.0
-}]
+[ext_resource type="Script" uid="uid://bodwh5p76ay5c" path="res://YuWanCard/scripts/characters/spine_skin_setter.gd" id="2_tf4mu"]
 
 [node name="PigMerchant" type="Node2D"]
 
-[node name="Visuals" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -71.6)
-scale = Vector2(0.8, 0.8)
-sprite_frames = SubResource("SpriteFrames_pig")
-animation = &"relaxed_loop"
-autoplay = "relaxed_loop"
+[node name="Visuals" type="SpineSprite" parent="."]
+skeleton_data_res = ExtResource("1_mnxdv")
+preview_skin = "normal"
+preview_animation = "idle_loop"
+preview_frame = false
+preview_time = 0.0
+unique_name_in_owner = true
+position = Vector2(-9.999999, -42)
+scale = Vector2(0.99999994, 0.99999994)
+script = ExtResource("2_tf4mu")
 
 [node name="GlowEffect" type="PointLight2D" parent="."]
 position = Vector2(1.4000034, -63.599987)

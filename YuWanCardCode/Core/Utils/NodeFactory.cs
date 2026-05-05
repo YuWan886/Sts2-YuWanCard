@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using Godot;
 using MegaCrit.Sts2.addons.mega_text;
@@ -139,7 +138,7 @@ public static class NodeFactory
             target.Position = src2D.Position;
         }
 
-        TransferChildrenFiltered(source, target, child => child is AnimatedSprite2D or Sprite2D);
+        TransferChildrenFiltered(source, target, child => child is AnimatedSprite2D or Sprite2D || child.GetClass() == "SpineSprite");
         source.QueueFree();
         return target;
     }

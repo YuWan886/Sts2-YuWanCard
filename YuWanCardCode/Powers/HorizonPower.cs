@@ -22,7 +22,7 @@ public class HorizonPower : YuWanPowerModel
         }
 
         var reduction = Amount;
-        modifiedCost = System.Math.Max(0m, originalCost - reduction);
+        modifiedCost = Math.Max(0m, originalCost - reduction);
         return true;
     }
 }

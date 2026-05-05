@@ -16,7 +16,6 @@ preview_time = 0.0
 unique_name_in_owner = true
 position = Vector2(-10, -42)
 script = ExtResource("4_skin")
-initial_skin = "normal"
 
 [node name="Bounds" type="Control" parent="."]
 unique_name_in_owner = true
@@ -30,7 +29,7 @@ mouse_filter = 2
 
 [node name="IntentPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1, -202)
+position = Vector2(1, -255)
 
 [node name="CenterPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
@@ -38,11 +37,11 @@ position = Vector2(0, -138)
 
 [node name="OrbPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -100)
+position = Vector2(0, -236)
 
 [node name="TalkPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(121, -159)
+position = Vector2(144, -191)
 
 [node name="HurtSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_hurt")

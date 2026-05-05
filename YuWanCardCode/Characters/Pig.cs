@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YuWanCard.Cards;
 using YuWanCard.Relics;
@@ -40,6 +39,8 @@ public class Pig : CharacterModel, IYuWanCharacter
     public override PotionPoolModel PotionPool => ModelDb.PotionPool<PigPotionPool>();
 
     public override string CharacterTransitionSfx => "event:/sfx/ui/wipe_ironclad";
+
+    public override string CharacterSelectSfx => "res://YuWanCard/sounds/characters/pig_select.mp3";
 
     string? IYuWanCharacter.CustomCharacterSelectIconPath
         => "res://YuWanCard/images/characters/char_select_pig.png";

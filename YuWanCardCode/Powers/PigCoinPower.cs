@@ -16,6 +16,8 @@ public class PigCoinPower : YuWanPowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("PigCoinCount", 2m)];
 
+    private int PigCoinCount => DynamicVars["PigCoinCount"].IntValue;
+
     public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
         if (cardPlay.Card.Owner.Creature != Owner)
@@ -26,7 +28,7 @@ public class PigCoinPower : YuWanPowerModel
         var player = Owner.Player;
         if (player != null)
         {
-            await PlayerCmd.GainGold(2, player);
+            await PlayerCmd.GainGold(PigCoinCount, player);
         }
     }
 
