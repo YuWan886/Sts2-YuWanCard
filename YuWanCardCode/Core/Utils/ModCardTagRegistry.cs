@@ -1,6 +1,3 @@
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 
@@ -12,7 +9,7 @@ public sealed class ModCardTagRegistry
     private static readonly Dictionary<string, ModCardTagRegistry> Registries = new(StringComparer.OrdinalIgnoreCase);
     private static readonly Dictionary<string, CardTag> Definitions = new(StringComparer.OrdinalIgnoreCase);
     private static readonly Dictionary<CardTag, string> DefinitionsByCardTag = [];
-    private static readonly DynamicEnumValueMinter Minter = new();
+    private static readonly DynamicEnumValueMinter<CardTag> Minter = new();
 
     private readonly string _modId;
     private string? _freezeReason;
@@ -111,61 +108,6 @@ public sealed class ModCardTagRegistry
         if (!IsFrozen) return;
         throw new InvalidOperationException(
             $"Cannot {operation} after card tag registration has been frozen ({_freezeReason ?? "unknown"}).");
-    }
-}
-
-internal sealed class DynamicEnumValueMinter
-{
-    public const int DefaultReservedFloor = 0x4000_0000;
-
-    private readonly Dictionary<string, CardTag> _byId = new(StringComparer.OrdinalIgnoreCase);
-    private readonly Dictionary<CardTag, string> _byValue = [];
-    private readonly object _sync = new();
-
-    public int ReservedFloor { get; }
-
-    public DynamicEnumValueMinter() : this(DefaultReservedFloor) { }
-
-    public DynamicEnumValueMinter(int reservedFloor)
-    {
-        if (reservedFloor < 0)
-            throw new ArgumentOutOfRangeException(nameof(reservedFloor), "Reserved floor must be non-negative.");
-
-        ReservedFloor = reservedFloor;
-    }
-
-    public CardTag Mint(string id)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(id);
-        var normalized = id.Trim().ToUpperInvariant();
-
-        lock (_sync)
-        {
-            if (_byId.TryGetValue(normalized, out var existing))
-                return existing;
-
-            var value = Compute(normalized);
-
-            if (_byValue.TryGetValue(value, out var conflict))
-                throw new InvalidOperationException(
-                    $"DynamicEnumValueMinter hash collision: '{normalized}' and '{conflict}' both map to the same numeric value.");
-
-            _byId[normalized] = value;
-            _byValue[value] = normalized;
-            return value;
-        }
-    }
-
-    private CardTag Compute(string normalizedId)
-    {
-        var bytes = Encoding.UTF8.GetBytes(normalizedId);
-        var hashBytes = SHA256.HashData(bytes);
-        var hash = BitConverter.ToUInt32(hashBytes, 0);
-
-        var floor = (uint)ReservedFloor;
-        var range = int.MaxValue - floor + 1u;
-        var raw = unchecked((int)(floor + hash % range));
-        return Unsafe.As<int, CardTag>(ref raw);
     }
 }
 

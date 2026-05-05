@@ -30,7 +30,8 @@ public abstract class YuWanTemporaryPowerModel : YuWanPowerModel
 
     public override async Task BeforeApplied(Creature target, decimal amount, Creature? applier, CardModel? cardSource)
     {
-        await PowerCmd.Apply(InternallyAppliedPower, target, amount, applier, cardSource, true);
+        var mutablePower = InternallyAppliedPower.ToMutable();
+        await PowerCmd.Apply(mutablePower, target, amount, applier, cardSource, true);
     }
 
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -46,7 +47,8 @@ public abstract class YuWanTemporaryPowerModel : YuWanPowerModel
         }
 
         Flash();
-        await PowerCmd.Apply(InternallyAppliedPower, Owner, -Amount, Owner, null, true);
+        var mutablePower = InternallyAppliedPower.ToMutable();
+        await PowerCmd.Apply(mutablePower, Owner, -Amount, Owner, null, true);
         await PowerCmd.Remove(this);
     }
 }
@@ -64,7 +66,7 @@ public abstract class YuWanTemporaryPowerModelWrapper<TOrigin, TPower> : YuWanTe
     public override string? CustomPackedIconPath =>
         Amount >= 0 ? "res://YuWanCard/images/powers/pig_temp_up.png" : "res://YuWanCard/images/powers/pig_temp_down.png";
     public override string? CustomBigIconPath =>
-        Amount >= 0 ? "res://YuWanCard/images/powers/pig_temp_up_big.png" : "res://YuWanCard/images/powers/pig_temp_down_big.png";
+        Amount >= 0 ? "res://YuWanCard/images/powers/pig_temp_up.png" : "res://YuWanCard/images/powers/pig_temp_down.png";
 
     public override LocString Title => OriginModel switch
     {
@@ -73,5 +75,5 @@ public abstract class YuWanTemporaryPowerModelWrapper<TOrigin, TPower> : YuWanTe
     };
 
     public override LocString Description => new("powers",
-        Amount > 0 ? "YUWANCARD-TEMP_POWER.UP.description" : "YUWANCARD-TEMP_POWER.DOWN.description");
+        InternallyAppliedPower.Type == PowerType.Buff ? "YUWANCARD-TEMP_POWER.UP.description" : "YUWANCARD-TEMP_POWER.DOWN.description");
 }

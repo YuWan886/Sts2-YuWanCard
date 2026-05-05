@@ -7,7 +7,9 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
+using YuWanCard.Badges;
 using YuWanCard.Config;
+using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
 using YuWanCard.Core.Lifecycle;
 using YuWanCard.Core.Patching;
@@ -60,6 +62,7 @@ public partial class MainFile : Node
         // Phase 3: Content discovery — scan for [Pool] and registration attributes
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
+        CustomBadgeRegistry.Register((run, playerId) => new PigTycoonBadge(run, playerId));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 
         // Phase 4: Config, scene conversions, multiplayer, assets

@@ -1,0 +1,10 @@
+{
+  "PIG_TYCOON.bronzeTitle": "养猪新手",
+  "PIG_TYCOON.bronzeDescription": "获胜时累计获得50层猪朋猪友之力。",
+  "PIG_TYCOON.silverTitle": "养猪能手",
+  "PIG_TYCOON.silverDescription": "获胜时累计获得100层猪朋猪友之力。",
+  "PIG_TYCOON.goldTitle": "养猪大亨",
+  "PIG_TYCOON.goldDescription": "获胜时累计获得200层猪朋猪友之力。",
+  "PIG_TYCOON.title": "养猪大亨",
+  "PIG_TYCOON.description": "获胜时累计获得猪朋猪友之力达到一定层数。"
+}

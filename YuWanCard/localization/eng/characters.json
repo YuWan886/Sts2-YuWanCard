@@ -103,5 +103,20 @@
   "PIG_PIG.talk.YUWANCARD-PIG.2-0.next": "Happy",
   "PIG_PIG.talk.YUWANCARD-PIG.2-1.char": "Wow! All things pig likes! Thank you piggy senior!\n[i][font_size=22]Pig happily wags its tail.[/font_size][/i]",
   "PIG_PIG.talk.YUWANCARD-PIG.2-1.next": "Continue",
-  "PIG_PIG.talk.YUWANCARD-PIG.2-2.ancient": "Go! Let everyone know the power of pigs! Oink!"
+  "PIG_PIG.talk.YUWANCARD-PIG.2-2.ancient": "Go! Let everyone know the power of pigs! Oink!",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.ancient": "You stand here, yet seem to be nowhere. What are you looking for? Gold? Carrots? Or a door that won't open?",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-0r.next": "Answer",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-1r.char": "Pig... is waiting for delicious food. Before getting delicious food, pig goes nowhere.",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-1r.next": "Continue",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.0-2r.ancient": "Door? You never needed one. You're just afraid of \"pushing it open only to find nothing inside.\"",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-0r.ancient": "You're back again. The tower is like a feeding trough to you—you can't finish it because you don't want to.",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-0r.next": "Continue",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-1r.char": "The trough is good. Empty is bad. Empty means... nothing to eat.",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-1r.next": "Continue",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.1-2r.ancient": "Foolish. If you don't finish, you'll never taste the next dish.",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-0r.ancient": "Then stand there. The tower will remember for you: you came, many times, but ate nothing.",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-0r.next": "Continue",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-1r.char": "What did pig eat... that makes pig stop waiting?\n[i][font_size=22]Pig tilts its head in confusion.[/font_size][/i]",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-1r.next": "Continue",
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-2r.ancient": "It will. So don't eat. Keep starving—hunger is your only reliable compass."
 }

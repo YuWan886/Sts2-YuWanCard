@@ -208,5 +208,13 @@
   "YUWANCARD-PIG_SWAP.title": "猪互换",
   "YUWANCARD-PIG_SWAP.description": "交换[gold]抽牌堆[/gold]与[gold]弃牌堆[/gold]。\n当前能量(新)=最大能量-当前能量。",
   "YUWANCARD-CALL_COMPANIONS.title": "呼朋引伴",
-  "YUWANCARD-CALL_COMPANIONS.description": "召唤1名\"虚拟\"玩家。\n该虚拟玩家的操作由AI控制。"
+  "YUWANCARD-CALL_COMPANIONS.description": "召唤1名\"虚拟\"玩家。\n该虚拟玩家的操作由AI控制。",
+  "YUWANCARD-FPS.title": "FPS",
+  "YUWANCARD-FPS.description": "造成等同于当前FPS的伤害。",
+  "YUWANCARD-PIG_BLOCK.title": "猪格挡",
+  "YUWANCARD-PIG_BLOCK.description": "你[gold]手牌[/gold]中每有1张牌，就获得{Block:diff()}点[gold]格挡[/gold]。",
+  "YUWANCARD-SMALL_BEN_PIG.title": "小苯猪",
+  "YUWANCARD-SMALL_BEN_PIG.description": "在本回合内获得{DexterityPower:diff()}点[gold]敏捷[/gold]。\n将一张[gold]大苯猪[/gold]加入[gold]弃牌堆[/gold]。",
+  "YUWANCARD-BIG_BEN_PIG.title": "大苯猪",
+  "YUWANCARD-BIG_BEN_PIG.description": "在本回合内获得{StrengthPower:diff()}点[gold]力量[/gold]。\n将一张[gold]小苯猪[/gold]加入[gold]抽牌堆[/gold]。"
 }

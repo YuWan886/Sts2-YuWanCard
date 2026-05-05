@@ -101,5 +101,8 @@
   "YUWANCARD-WHAT_IF_WHISTLE.flavor": "优质卡组#003。",
   "YUWANCARD-WHAT_IF_STRIKE.title": "假如只有：打击",
   "YUWANCARD-WHAT_IF_STRIKE.description": "拾起时，将卡组中的所有卡牌变化：第一张变为[gold]地狱狂徒[/gold]，其余变为随机的[gold]打击[/gold]卡牌。\n卡牌奖励只有带有[gold]打击[/gold]标签的卡牌。",
-  "YUWANCARD-WHAT_IF_STRIKE.flavor": "优质卡组#004。"
+  "YUWANCARD-WHAT_IF_STRIKE.flavor": "优质卡组#004。",
+  "YUWANCARD-SMALL_DECK.title": "小卡组",
+  "YUWANCARD-SMALL_DECK.description": "进入第3阶段时，若[gold]卡组[/gold]中卡牌≤{DeckThreshold}张，boss不会是门酱；\n若>{DeckThreshold}张，boss必是门酱。",
+  "YUWANCARD-SMALL_DECK.flavor": "“再玩小卡组我就找人弄你。”"
 }

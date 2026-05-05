@@ -1,4 +1,5 @@
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Badges;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -29,13 +30,18 @@ public class PigFriendsPower : YuWanPowerModel
     {
         if (Owner.Player == null) return;
 
+        BadgeProgressTracker.AddProgress(Owner.Player.NetId, "PIG_TYCOON", Amount);
+
         await SummonPig();
     }
 
     public override async Task AfterPowerAmountChanged(PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
     {
         if (power != this) return;
-        
+
+        if (amount > 0 && Owner?.Player != null)
+            BadgeProgressTracker.AddProgress(Owner.Player.NetId, "PIG_TYCOON", (int)amount);
+
         if (_summonedPig == null || _summonedPig.IsDead)
         {
             await SummonPig();
@@ -50,7 +56,10 @@ public class PigFriendsPower : YuWanPowerModel
 
         Flash();
         await PetManager.UpgradePigMinion(_summonedPig, levelsGained, Owner);
-        PetManager.PositionPet(Owner, _summonedPig, newUpgradeLevel);
+        if (Owner != null)
+        {
+            PetManager.PositionPet(Owner, _summonedPig, newUpgradeLevel);
+        }
     }
 
     public override async Task AfterRemoved(Creature oldOwner)

@@ -40,7 +40,7 @@ internal static class ConfigRegistrar
         ("EnableAutoUpdateCheck", "enable_auto_update", "自动检查更新", "启动时自动检查模组更新"),
         ("EnableAutoSlay", "enable_auto_slay", "自动爬塔", "自动进行角色选择并开始爬塔"),
         ("EnableSevenCursesRing", "enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒"),
-        ("EnableWhatIfRelics", "enable_what_if_relics", "假如只有遗物", "在Neow处可选择假如只有系列遗物"),
+        ("EnableWhatIfRelics", "enable_what_if_relics", "假如遗物", "在Neow处可选择假如系列遗物"),
     ];
 
     public static void TryDeferredRegister()
