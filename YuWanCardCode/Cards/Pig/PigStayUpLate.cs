@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Characters;
+using YuWanCard.Relics;
 
 namespace YuWanCard.Cards;
 
@@ -30,7 +31,10 @@ public class PigStayUpLate : YuWanCardModel
         {
             decimal damage = DynamicVars.Damage.BaseValue;
             
-            if (IsLateNight())
+            bool isLateNight = IsLateNight();
+            bool isMultiplayer = TeammatePay.IsMultiplayerGame();
+
+            if (isLateNight && !isMultiplayer)
             {
                 damage *= 2;
                 await PowerCmd.Apply<WeakPower>(Owner.Creature, 1, Owner.Creature, this);

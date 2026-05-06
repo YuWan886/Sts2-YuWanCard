@@ -10,6 +10,8 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class Fps : YuWanCardModel
 {
+    public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.SingleplayerOnly;
+
     public Fps() : base(
         baseCost: 2,
         type: CardType.Attack,

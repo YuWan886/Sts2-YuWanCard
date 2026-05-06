@@ -10,6 +10,8 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class CallCompanions : YuWanCardModel
 {
+    public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.SingleplayerOnly;
+
     public CallCompanions() : base(
         baseCost: 3,
         type: CardType.Skill,
