@@ -29,7 +29,7 @@ public class PigClimbTower : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int floor = Owner.RunState.ActFloor;
+        int floor = Owner.RunState.TotalFloor;
         if (floor <= 0) return;
 
         if (cardPlay.Target != null)
@@ -52,7 +52,7 @@ public class PigClimbTowerDamageVar : DynamicVar
 
     public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
     {
-        int floor = card.Owner?.RunState.ActFloor ?? 0;
+        int floor = card.Owner?.RunState.TotalFloor ?? 0;
         BaseValue = floor;
         PreviewValue = floor;
     }
@@ -66,7 +66,7 @@ public class PigClimbTowerBlockVar : DynamicVar
 
     public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
     {
-        int floor = card.Owner?.RunState.ActFloor ?? 0;
+        int floor = card.Owner?.RunState.TotalFloor ?? 0;
         BaseValue = floor;
         PreviewValue = floor;
     }

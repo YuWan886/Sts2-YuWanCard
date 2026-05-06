@@ -220,5 +220,9 @@
   "YUWANCARD-BIG_BEN_PIG.title": "大苯猪",
   "YUWANCARD-BIG_BEN_PIG.description": "在本回合内获得{StrengthPower:diff()}点[gold]力量[/gold]。\n将一张[gold]小苯猪[/gold]加入[gold]抽牌堆[/gold]。",
   "YUWANCARD-STONE_SWORD.title": "石之剑",
-  "YUWANCARD-STONE_SWORD.description": "在击败{Elites}名精英敌人后，变化为一件[gold]强力[/gold]遗物。"
+  "YUWANCARD-STONE_SWORD.description": "在击败{Elites}名精英敌人后，变化为一件[gold]强力[/gold]遗物。",
+  "YUWANCARD-PIG_EXPLOSION.title": "猪爆炸",
+  "YUWANCARD-PIG_EXPLOSION.description": "在{Turns}回合结束后，对所有敌人造成{PigExplosionDamage:diff()}点伤害。",
+  "YUWANCARD-PIG_BIRTH.title": "猪猪生的",
+  "YUWANCARD-PIG_BIRTH.description": "抽{Cards:diff()}张牌，丢弃最多1张牌。"
 }

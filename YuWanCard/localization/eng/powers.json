@@ -91,5 +91,8 @@
   "YUWANCARD-TEMP_POWER.UP.description": "Gain a temporary buff this turn.",
   "YUWANCARD-TEMP_POWER.DOWN.description": "Receive a temporary debuff this turn.",
   "YUWANCARD-SMALL_BEN_PIG_POWER.smartDescription": "Gain {Amount} [gold]Dexterity[/gold] this turn.",
-  "YUWANCARD-BIG_BEN_PIG_POWER.smartDescription": "Gain {Amount} [gold]Strength[/gold] this turn."
+  "YUWANCARD-BIG_BEN_PIG_POWER.smartDescription": "Gain {Amount} [gold]Strength[/gold] this turn.",
+  "YUWANCARD-PIG_EXPLOSION_POWER.title": "Pig Explosion",
+  "YUWANCARD-PIG_EXPLOSION_POWER.description": "After {Amount} turns, deal {Damage} damage to all enemies.",
+  "YUWANCARD-PIG_EXPLOSION_POWER.smartDescription": "After {Amount} turns, deal {Damage} damage to all enemies."
 }
