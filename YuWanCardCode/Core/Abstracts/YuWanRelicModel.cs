@@ -10,7 +10,10 @@ public abstract partial class YuWanRelicModel : RelicModel, IYuWanContent
     private static readonly string DefaultIconPath = "res://YuWanCard/images/relics/pig_carrot.png";
 
     protected virtual string RelicId => CamelCaseRegex.Replace(GetType().Name, "$1_$2").ToLowerInvariant();
-    protected virtual string IconBasePath => $"res://YuWanCard/images/relics/{RelicId}";
+    
+    protected string ModResPath => AssetPathHelper.GetModResPathFromType(GetType());
+    
+    protected virtual string IconBasePath => $"{ModResPath}/images/relics/{RelicId}";
 
     private string GetIconPath(string path) => ResourceLoader.Exists(path) ? path : DefaultIconPath;
 

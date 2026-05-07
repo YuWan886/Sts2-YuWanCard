@@ -61,5 +61,13 @@
   "YUWANCARD-SUNKEN_STATUE_QUEST.pages.INITIAL.options.DIVE_INTO_WATER.title": "潜入水中",
   "YUWANCARD-SUNKEN_STATUE_QUEST.pages.INITIAL.options.DIVE_INTO_WATER.description": "获得[gold]{Gold}[/gold]金币。失去[red]{HpLoss}[/red]点生命值。",
   "YUWANCARD-SUNKEN_STATUE_QUEST.pages.GRAB_SWORD.description": "你伸手拿起了石之剑。它感觉很沉重，但一股神秘的力量涌入你的身体。\n\n一个任务开始了...",
-  "YUWANCARD-SUNKEN_STATUE_QUEST.pages.DIVE_INTO_WATER.description": "你潜入水中，找到了一些金币。冰冷的水让你感到寒意刺骨。"
+  "YUWANCARD-SUNKEN_STATUE_QUEST.pages.DIVE_INTO_WATER.description": "你潜入水中，找到了一些金币。冰冷的水让你感到寒意刺骨。",
+  "YUWANCARD-STATION_SORROW.title": "止站之殇",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.description": "[red]雷德王[/red]还有3个小时降临地球\n世界各大媒体平台将这条消息传唤的沸沸扬扬\n[sine][gold]他的到来，是救赎还是毁灭[/gold][/sine]\n我无从得知，众说纷纭\n[b]我只想先吃个汉堡吧[/b]",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.options.ADD_RED_KING.title": "雷德王还有3个小时降临地球",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.options.ADD_RED_KING.description": "获得1张[gold]雷德王[/gold]。",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.options.ADD_PIG_BURGER.title": "我只想先吃个汉堡吧",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.options.ADD_PIG_BURGER.description": "获得1张[gold]猪堡[/gold]。",
+  "YUWANCARD-STATION_SORROW.pages.RED_KING_ADDED.description": "一张闪烁着红色光芒的卡牌缓缓飘入你的手中。\n\n\"祂的到来，是救赎还是毁灭...\"",
+  "YUWANCARD-STATION_SORROW.pages.PIG_BURGER_ADDED.description": "一张散发着诱人香气的卡牌缓缓飘入你的手中。\n\n\"有时候，一个汉堡就是最好的答案。\""
 }

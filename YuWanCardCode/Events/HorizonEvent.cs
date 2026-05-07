@@ -13,8 +13,6 @@ public sealed class HorizonEvent : YuWanEventModel
 {
     public override ActModel[] Acts => [];
 
-    public override string? CustomInitialPortraitPath => "res://YuWanCard/images/events/horizon_event.png";
-
     public override bool IsAllowed(IRunState runState)
     {
         return runState.CurrentActIndex >= 2;

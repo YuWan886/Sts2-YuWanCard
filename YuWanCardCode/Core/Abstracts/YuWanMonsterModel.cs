@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
-using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Core.Abstracts;
 
@@ -13,7 +12,9 @@ public abstract partial class YuWanMonsterModel : MonsterModel, IYuWanContent
 
     protected virtual string MonsterId => CamelCaseRegex.Replace(GetType().Name, "$1_$2").ToLowerInvariant();
 
-    protected virtual string VisualsBasePath => $"res://YuWanCard/scenes/monsters/{MonsterId}_visuals";
+    protected string ModResPath => AssetPathHelper.GetModResPathFromType(GetType());
+
+    protected virtual string VisualsBasePath => $"{ModResPath}/scenes/monsters/{MonsterId}_visuals";
 
     public virtual string? CustomVisualPath => $"{VisualsBasePath}.tscn";
 
@@ -79,6 +80,7 @@ public abstract partial class YuWanMonsterModel : MonsterModel, IYuWanContent
     public static string GenerateVisualsPath<T>() where T : YuWanMonsterModel
     {
         var monsterId = GenerateMonsterId<T>();
-        return $"res://YuWanCard/scenes/monsters/{monsterId}_visuals.tscn";
+        var modResPath = AssetPathHelper.GetModResPathFromType(typeof(T));
+        return $"{modResPath}/scenes/monsters/{monsterId}_visuals.tscn";
     }
 }

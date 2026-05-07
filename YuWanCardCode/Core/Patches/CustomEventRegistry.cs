@@ -63,10 +63,14 @@ static class CustomEventInitialPortraitPatch
 {
     static bool Prefix(EventModel __instance, ref Texture2D __result)
     {
-        if (__instance is YuWanEventModel ev && ev.CustomInitialPortraitPath != null)
+        if (__instance is YuWanEventModel ev)
         {
-            __result = PreloadManager.Cache.GetTexture2D(ev.CustomInitialPortraitPath);
-            return false;
+            var imagePath = ev.GetYuWanEventImagePath();
+            if (imagePath != null)
+            {
+                __result = PreloadManager.Cache.GetTexture2D(imagePath);
+                return false;
+            }
         }
         return true;
     }

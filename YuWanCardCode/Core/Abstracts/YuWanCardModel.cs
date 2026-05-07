@@ -14,7 +14,7 @@ namespace YuWanCard.Core.Abstracts;
 public abstract partial class YuWanCardModel : CardModel, IYuWanContent
 {
     private static readonly Regex CamelCaseRegex = MyRegex();
-    private const string TestPortraitPath = "res://YuWanCard/images/card_portraits/you_are_pig.png";
+    private static readonly string DefaultPortraitPath = "res://YuWanCard/images/card_portraits/you_are_pig.png";
 
     private readonly List<CardKeyword> _cardKeywords = [];
     private readonly List<(CardKeyword, UpgradeType)> _upgradeKeywords = [];
@@ -31,21 +31,22 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
     }
 
     protected virtual string CardId => CamelCaseRegex.Replace(GetType().Name, "$1_$2").ToLowerInvariant();
-    protected virtual string PortraitBasePath => $"res://YuWanCard/images/card_portraits/{CardId}";
-    protected virtual string FrameBasePath => $"res://YuWanCard/images/card_frames/{CardId}";
+    
+    protected string ModResPath => AssetPathHelper.GetModResPathFromType(GetType());
+    
+    protected virtual string PortraitBasePath => $"{ModResPath}/images/card_portraits/{CardId}";
+    protected virtual string FrameBasePath => $"{ModResPath}/images/card_frames/{CardId}";
 
     public override string PortraitPath => GetPortraitPath();
     public virtual string? CustomPortraitPath => null;
 
     private string GetPortraitPath()
     {
-        // First check if subclass provides a custom portrait path
         if (CustomPortraitPath != null)
             return CustomPortraitPath;
         
-        // Otherwise, use the default path based on CardId
         string portraitPath = $"{PortraitBasePath}.png";
-        return ResourceLoader.Exists(portraitPath) ? portraitPath : TestPortraitPath;
+        return ResourceLoader.Exists(portraitPath) ? portraitPath : DefaultPortraitPath;
     }
 
     public virtual Texture2D? CustomFrame
@@ -59,8 +60,6 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
         }
     }
 
-    // --- Canonical overrides ---
-
     protected sealed override IEnumerable<DynamicVar> CanonicalVars => _constructedDynamicVars;
     public sealed override IEnumerable<CardKeyword> CanonicalKeywords => _cardKeywords;
     protected sealed override HashSet<CardTag> CanonicalTags => _constructedTags;
@@ -69,15 +68,11 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
         _hoverTips.Select(t => t(this))
             .Concat(_multiHoverTips.SelectMany(mt => mt(this)));
 
-    // --- Constructor ---
-
     protected YuWanCardModel(int baseCost, CardType type, CardRarity rarity, TargetType target,
         bool showInCardLibrary = true)
         : base(baseCost, type, rarity, target, showInCardLibrary)
     {
     }
-
-    // --- Chainable construction methods ---
 
     protected YuWanCardModel WithVars(params DynamicVar[] vars)
     {
@@ -229,8 +224,6 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
         CostUpgrade = amount;
         return this;
     }
-
-    // --- Upgrade handling ---
 
     public void ConstructedUpgrade()
     {

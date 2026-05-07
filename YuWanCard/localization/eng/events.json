@@ -61,5 +61,13 @@
   "YUWANCARD-SUNKEN_STATUE_QUEST.pages.INITIAL.options.DIVE_INTO_WATER.title": "Dive into the Water",
   "YUWANCARD-SUNKEN_STATUE_QUEST.pages.INITIAL.options.DIVE_INTO_WATER.description": "Gain [gold]{Gold}[/gold] Gold. Lose [red]{HpLoss}[/red] HP.",
   "YUWANCARD-SUNKEN_STATUE_QUEST.pages.GRAB_SWORD.description": "You reach out and grab the stone sword. It feels heavy, but a mysterious power flows into your body.\n\nA quest begins...",
-  "YUWANCARD-SUNKEN_STATUE_QUEST.pages.DIVE_INTO_WATER.description": "You dive into the water and find some gold coins. The cold water chills you to the bone."
+  "YUWANCARD-SUNKEN_STATUE_QUEST.pages.DIVE_INTO_WATER.description": "You dive into the water and find some gold coins. The cold water chills you to the bone.",
+  "YUWANCARD-STATION_SORROW.title": "Station Sorrow",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.description": "[red]Red King[/red] will descend upon Earth in 3 hours\nMedia platforms worldwide are buzzing with the news\n[gold]His arrival, salvation or destruction[/gold]\nI cannot tell, opinions vary\nI just want to eat a burger first",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.options.ADD_RED_KING.title": "Red King will descend upon Earth in 3 hours",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.options.ADD_RED_KING.description": "Obtain 1 [gold]Red King[/gold].",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.options.ADD_PIG_BURGER.title": "I just want to eat a burger first",
+  "YUWANCARD-STATION_SORROW.pages.INITIAL.options.ADD_PIG_BURGER.description": "Obtain 1 [gold]Pig Burger[/gold].",
+  "YUWANCARD-STATION_SORROW.pages.RED_KING_ADDED.description": "A card glowing with red light slowly floats into your hand.\n\n\"His arrival, salvation or destruction...\"",
+  "YUWANCARD-STATION_SORROW.pages.PIG_BURGER_ADDED.description": "A card with an enticing aroma slowly floats into your hand.\n\n\"Sometimes, a burger is the best answer.\""
 }

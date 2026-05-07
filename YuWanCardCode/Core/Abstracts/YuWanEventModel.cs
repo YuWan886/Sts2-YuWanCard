@@ -11,20 +11,52 @@ public abstract class YuWanEventModel : EventModel, IYuWanContent
 {
     public virtual ActModel[] Acts => [];
 
-    public virtual string? CustomInitialPortraitPath => null;
     public virtual string? CustomBackgroundScenePath => null;
     public virtual string? CustomVfxPath => null;
+
+    protected virtual string? CustomEventImagePath => null;
+
+    protected string ModResPath => AssetPathHelper.GetModResPathFromType(GetType());
+
+    private string? _cachedImagePath;
+
+    internal string? GetYuWanEventImagePath()
+    {
+        if (_cachedImagePath != null)
+            return _cachedImagePath;
+
+        if (CustomEventImagePath != null)
+        {
+            _cachedImagePath = CustomEventImagePath;
+            return _cachedImagePath;
+        }
+
+        var modId = AssetPathHelper.GetModIdFromType(GetType());
+        var prefix = $"{modId.ToUpperInvariant()}-";
+        
+        if (Id.Entry.StartsWith(prefix))
+        {
+            var fileName = Id.Entry
+                .Replace(prefix, "")
+                .ToLowerInvariant();
+            _cachedImagePath = $"{ModResPath}/images/events/{fileName}.png";
+            return _cachedImagePath;
+        }
+
+        return null;
+    }
 
     public override IEnumerable<string> GetAssetPaths(IRunState runState)
     {
         var paths = base.GetAssetPaths(runState).ToList();
 
-        if (CustomInitialPortraitPath != null)
+        var customImagePath = GetYuWanEventImagePath();
+        if (customImagePath != null)
         {
-            var defaultPath = ImageHelper.GetImagePath("events/" + Id.Entry.ToLowerInvariant() + ".png");
-            var index = paths.IndexOf(defaultPath);
-            if (index >= 0)
-                paths[index] = CustomInitialPortraitPath;
+            var defaultImagePath = ImageHelper.GetImagePath("events/" + Id.Entry.ToLowerInvariant() + ".png");
+            var imageIndex = paths.IndexOf(defaultImagePath);
+            if (imageIndex >= 0)
+                paths[imageIndex] = customImagePath;
         }
 
         if (CustomBackgroundScenePath != null)

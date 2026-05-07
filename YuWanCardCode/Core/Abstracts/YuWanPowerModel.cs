@@ -11,7 +11,9 @@ public abstract partial class YuWanPowerModel : PowerModel, IYuWanContent
 
     protected virtual string PowerId => CamelCaseRegex.Replace(GetType().Name, "$1_$2").ToLowerInvariant();
 
-    protected virtual string IconBasePath => $"res://YuWanCard/images/powers/{PowerId}.png";
+    protected string ModResPath => AssetPathHelper.GetModResPathFromType(GetType());
+
+    protected virtual string IconBasePath => $"{ModResPath}/images/powers/{PowerId}.png";
 
     public virtual string? CustomPackedIconPath => GetIconPath();
     public virtual string? CustomBigIconPath => GetIconPath();
@@ -32,7 +34,8 @@ public abstract partial class YuWanPowerModel : PowerModel, IYuWanContent
 
     public static string GenerateIconPath<T>() where T : class
     {
-        return $"res://YuWanCard/images/powers/{GeneratePowerId<T>()}.png";
+        var modResPath = AssetPathHelper.GetModResPathFromType(typeof(T));
+        return $"{modResPath}/images/powers/{GeneratePowerId<T>()}.png";
     }
 
     [GeneratedRegex(@"([a-z])([A-Z])", RegexOptions.Compiled)]
