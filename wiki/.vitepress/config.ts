@@ -156,10 +156,26 @@ export default defineConfig({
 
   base: '/Sts2-YuWanCard/',
 
-  // Rewrite raw image/asset paths in markdown to include base prefix
+  // Prefix raw image/asset paths with base for GitHub Pages deployment
   transformHtml(code) {
     return code.replace(/(src|href|content)="\/(images|assets)\//g, `$1="/Sts2-YuWanCard/$2/`)
   },
 
-  cleanUrls: true
+  vite: {
+    plugins: [{
+      name: 'fix-asset-paths',
+      enforce: 'post',
+      transformIndexHtml(html) {
+        return html.replace(/(src|href|content)="\/(images|assets)\//g, `$1="/Sts2-YuWanCard/$2/`)
+      }
+    }]
+  },
+
+  cleanUrls: true,
+
+  markdown: {
+    image: {
+      lazyLoading: true
+    }
+  }
 })
