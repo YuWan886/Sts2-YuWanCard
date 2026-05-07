@@ -1,0 +1,8 @@
+node_modules
+public/
+.vitepress/dist/
+.vitepress/public/
+.vitepress/cache/
+# Generated wiki pages — these are regenerated from source by tools/generate-wiki.mjs
+zhs/
+eng/

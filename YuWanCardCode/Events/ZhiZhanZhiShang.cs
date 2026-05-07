@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Events;
 
-public sealed class StationSorrow : YuWanEventModel
+public sealed class ZhiZhanZhiShang : YuWanEventModel
 {
     public override ActModel[] Acts => [];
 

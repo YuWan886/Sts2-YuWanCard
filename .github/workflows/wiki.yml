@@ -1,0 +1,48 @@
+name: Deploy Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'YuWanCardCode/**'
+      - 'YuWanCard/localization/**'
+      - 'YuWanCard/images/**'
+      - 'tools/generate-wiki.mjs'
+      - 'tools/wiki-gen/**'
+      - 'wiki/**'
+      - '.github/workflows/wiki.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: wiki/package-lock.json
+
+      - name: Install dependencies
+        run: cd wiki && npm ci
+
+      - name: Generate wiki content
+        run: node tools/generate-wiki.mjs
+
+      - name: Build VitePress
+        run: cd wiki && npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: wiki/.vitepress/dist
+          publish_branch: gh-pages
+          force_orphan: true
+          enable_jekyll: false
+          commit_message: 'docs: update wiki [skip ci]'

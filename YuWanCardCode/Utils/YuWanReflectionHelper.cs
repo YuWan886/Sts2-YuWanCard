@@ -6,6 +6,7 @@ public static class YuWanReflectionHelper
 {
     private const BindingFlags MethodFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
     private const BindingFlags FieldFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+    private const BindingFlags PropertyFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
     private static MethodInfo? FindMethodInHierarchy(Type type, string methodName)
     {
@@ -33,7 +34,7 @@ public static class YuWanReflectionHelper
     {
         for (var t = type; t != null; t = t.BaseType)
         {
-            var prop = t.GetProperty(propertyName, FieldFlags);
+            var prop = t.GetProperty(propertyName, PropertyFlags);
             if (prop != null)
                 return prop;
         }
