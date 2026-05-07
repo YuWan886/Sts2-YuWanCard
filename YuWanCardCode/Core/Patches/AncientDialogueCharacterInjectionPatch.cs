@@ -6,18 +6,18 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace YuWanCard.Core.Patches;
 
+/// <summary>
+/// Injects localization-defined ancient dialogues for IYuWanCharacter
+/// characters into any AncientDialogueSet before PopulateLocKeys runs.
+/// Mirrors RitsuLib's AncientDialoguePopulateLocKeysPatch approach.
+/// </summary>
 [HarmonyPatch]
-public static class ArchitectDialoguePatch
+public static class AncientDialogueCharacterInjectionPatch
 {
-    private const string ArchitectEntry = "THE_ARCHITECT";
-
     [HarmonyPrefix]
     [HarmonyPatch(typeof(AncientDialogueSet), nameof(AncientDialogueSet.PopulateLocKeys))]
     static void Prefix(AncientDialogueSet __instance, string ancientEntry)
     {
-        if (ancientEntry != ArchitectEntry)
-            return;
-
         foreach (var character in ModelDb.AllCharacters)
         {
             if (character is not IYuWanCharacter)
@@ -27,7 +27,7 @@ public static class ArchitectDialoguePatch
             if (__instance.CharacterDialogues.ContainsKey(characterId))
                 continue;
 
-            var dialogues = AncientDialogueUtil.GetDialoguesForKey("ancients", $"{ArchitectEntry}.talk.{characterId}.");
+            var dialogues = AncientDialogueUtil.GetDialoguesForKey("ancients", $"{ancientEntry}.talk.{characterId}.");
             if (dialogues.Count > 0)
                 __instance.CharacterDialogues[characterId] = dialogues;
         }
@@ -36,23 +36,17 @@ public static class ArchitectDialoguePatch
 
 /// <summary>
 /// Prevents NPE in TheArchitect.WinRun when no valid dialogue is found.
-/// Applied manually (not via [HarmonyPatch]) for Android DMD safety.
+/// Uses [HarmonyPatch] for auto-application; the try/catch in stub
+/// creation handles runtime failures on IL2CPP platforms.
 /// </summary>
+[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Models.Events.TheArchitect), "LoadDialogue")]
 public static class ArchitectLoadDialogueNullGuard
 {
     private static readonly FieldInfo? DialogueField =
         typeof(MegaCrit.Sts2.Core.Models.Events.TheArchitect).GetField("_dialogue",
             BindingFlags.Instance | BindingFlags.NonPublic);
 
-    public static void ApplyPatch(Harmony harmony)
-    {
-        var target = AccessTools.Method(typeof(MegaCrit.Sts2.Core.Models.Events.TheArchitect), "LoadDialogue");
-        if (target == null) return;
-
-        var postfix = AccessTools.Method(typeof(ArchitectLoadDialogueNullGuard), nameof(Postfix));
-        harmony.Patch(target, postfix: new HarmonyMethod(postfix));
-    }
-
+    [HarmonyPostfix]
     static void Postfix(object __instance)
     {
         if (DialogueField == null || DialogueField.GetValue(__instance) != null)

@@ -224,5 +224,6 @@
   "YUWANCARD-PIG_EXPLOSION.title": "猪爆炸",
   "YUWANCARD-PIG_EXPLOSION.description": "在{Turns}回合结束后，对所有敌人造成{PigExplosionDamage:diff()}点伤害。",
   "YUWANCARD-PIG_BIRTH.title": "猪猪生的",
-  "YUWANCARD-PIG_BIRTH.description": "抽{Cards:diff()}张牌，丢弃最多1张牌。"
+  "YUWANCARD-PIG_BIRTH.description": "抽{Cards:diff()}张牌，丢弃最多1张牌。",
+  "YUWANCARD-PIG_BIRTH.selectionScreenPrompt": "选择要丢弃的手牌"
 }

@@ -5,7 +5,6 @@ namespace YuWanCard.Core.Patching;
 /// <summary>
 /// Owns a Harmony instance with named patch registration, application,
 /// and rollback. Critical failures trigger full unpatch.
-/// Inspired by RitsuLib's ModPatcher system.
 /// </summary>
 public class ModPatcher
 {

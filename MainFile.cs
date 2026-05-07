@@ -56,8 +56,6 @@ public partial class MainFile : Node
             h => Core.Patches.AutoSlayOptionsPatch.ApplyPatch(h), "AutoSlayOptions");
         patcher.ApplySingle(
             h => ModInteropProcessor.Process(h, Assembly.GetExecutingAssembly()), "ModInterop");
-        patcher.ApplySingle(
-            h => Core.Patches.ArchitectLoadDialogueNullGuard.ApplyPatch(h), "ArchitectDialogueNullGuard");
 
         // Phase 3: Content discovery — scan for [Pool] and registration attributes
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);

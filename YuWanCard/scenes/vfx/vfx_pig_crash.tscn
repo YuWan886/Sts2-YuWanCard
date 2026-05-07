@@ -1,0 +1,82 @@
+[gd_scene load_steps=13 format=3 uid="uid://buej5b17houdf"]
+
+[ext_resource type="Texture2D" uid="uid://dfnjvlle1404y" path="res://YuWanCard/images/vfx/pig_crash.png" id="1_dmo0a"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5tinr"]
+atlas = ExtResource("1_dmo0a")
+region = Rect2(0, 0, 418, 418)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jws2i"]
+atlas = ExtResource("1_dmo0a")
+region = Rect2(418, 0, 418, 418)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s6dcb"]
+atlas = ExtResource("1_dmo0a")
+region = Rect2(836, 0, 418, 418)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k4dcu"]
+atlas = ExtResource("1_dmo0a")
+region = Rect2(0, 418, 418, 418)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oa67s"]
+atlas = ExtResource("1_dmo0a")
+region = Rect2(418, 418, 418, 418)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yqfd8"]
+atlas = ExtResource("1_dmo0a")
+region = Rect2(836, 418, 418, 418)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wbb0n"]
+atlas = ExtResource("1_dmo0a")
+region = Rect2(0, 836, 418, 418)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1nbhn"]
+atlas = ExtResource("1_dmo0a")
+region = Rect2(418, 836, 418, 418)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p5udy"]
+atlas = ExtResource("1_dmo0a")
+region = Rect2(836, 836, 418, 418)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_k1cg3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5tinr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jws2i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s6dcb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k4dcu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oa67s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yqfd8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wbb0n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1nbhn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p5udy")
+}],
+"loop": false,
+"name": &"default",
+"speed": 9.0
+}]
+
+[node name="VfxPigCrash" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_k1cg3")
+autoplay = "default"
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="queue_free"]

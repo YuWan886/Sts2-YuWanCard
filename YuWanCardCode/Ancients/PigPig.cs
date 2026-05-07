@@ -35,7 +35,7 @@ public class PigPig : YuWanAncientModel
     }
 
     public override bool IsValidForAct(ActModel act) =>
-        act.Id == ModelDb.Act<Hive>().Id || act.Id == ModelDb.Act<Glory>().Id;
+        act.Id == ModelDb.Act<Hive>().Id;
 
     public override bool ShouldForceSpawn(ActModel act, AncientEventModel? rngChosenAncient) => false;
 

@@ -40,7 +40,7 @@ public class BlackHole : YuWanCardModel
         }
 
         var prefs = new CardSelectorPrefs(
-            new LocString("cards", "YUWANCARD-BLACK_HOLE.selectionScreenPrompt"),
+            new LocString("cards", $"{Id.Entry}.selectionScreenPrompt"),
             0,
             handCards.Count
         );

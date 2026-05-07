@@ -33,7 +33,7 @@ public class PigBirth : YuWanCardModel
         if (hand.Cards.Count > 0)
         {
             var prefs = new CardSelectorPrefs(
-                new LocString("gameplay_ui", "CHOOSE_CARD_DISCARD_HEADER"),
+                new LocString("cards", $"{Id.Entry}.selectionScreenPrompt"),
                 0,
                 1
             );

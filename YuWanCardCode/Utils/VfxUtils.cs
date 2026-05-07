@@ -102,7 +102,7 @@ public static class VfxUtils
         return effect;
     }
 
-    public static Control? PlayAtCreature(string scenePath, Creature creature)
+    public static Node2D? PlayAtCreature(string scenePath, Creature creature)
     {
         if (creature == null)
         {
@@ -117,7 +117,7 @@ public static class VfxUtils
             return null;
         }
 
-        var globalPos = creatureNode.GlobalPosition;
+        var globalPos = creatureNode.GetBottomOfHitbox();
 
         var scene = GetOrLoadScene(scenePath);
         if (scene == null)
@@ -132,20 +132,51 @@ public static class VfxUtils
             return null;
         }
 
-        var effect = scene.Instantiate<Control>(PackedScene.GenEditState.Disabled);
-        if (effect == null)
+        var instance = scene.Instantiate(PackedScene.GenEditState.Disabled);
+        if (instance == null)
         {
             MainFile.Logger.Error($"VfxUtils: Failed to instantiate effect from: {scenePath}");
             return null;
         }
 
-        vfxContainer.AddChildSafely(effect);
+        vfxContainer.AddChildSafely(instance);
 
-        var containerGlobalPos = vfxContainer.GlobalPosition;
-        effect.Position = globalPos - containerGlobalPos - effect.Size * 0.5f;
+        if (instance is Control control)
+        {
+            control.GlobalPosition = globalPos;
+            control.Position -= new Vector2(control.Size.X * 0.5f, control.Size.Y);
+        }
+        else if (instance is Node2D node2D)
+        {
+            var animatedSprite = node2D.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+            if (animatedSprite != null && animatedSprite.SpriteFrames != null)
+            {
+                var texture = animatedSprite.SpriteFrames.GetFrameTexture("default", 0);
+                if (texture != null)
+                {
+                    node2D.GlobalPosition = globalPos;
+                    node2D.GlobalPosition -= new Vector2(0, texture.GetHeight() * 0.5f);
+                }
+            }
+        }
+
+        if (instance is Node node)
+        {
+            var animatedSprite = node.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+            if (animatedSprite != null && animatedSprite.SpriteFrames != null)
+            {
+                var animNames = animatedSprite.SpriteFrames.GetAnimationNames();
+                if (animNames.Length > 0)
+                {
+                    animatedSprite.Play(animNames[0]);
+                    animatedSprite.Connect(AnimatedSprite2D.SignalName.AnimationFinished, 
+                        Callable.From(() => node.QueueFree()));
+                }
+            }
+        }
 
         MainFile.Logger.Debug($"VfxUtils: Played effect at creature position {globalPos}: {scenePath}");
-        return effect;
+        return instance as Node2D;
     }
 
     public static (Control? effect, AudioStreamPlayer? audioPlayer) PlayWithSound(string scenePath, string soundPath)
