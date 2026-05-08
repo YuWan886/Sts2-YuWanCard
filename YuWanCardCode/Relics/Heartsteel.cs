@@ -18,7 +18,7 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class Heartsteel : YuWanRelicModel
 {
-    private Dictionary<ModelId, EnemyDamageTracker> EnemyTrackers { get; set; } = new();
+    private Dictionary<ModelId, EnemyDamageTracker>? enemyTrackers;
 
     [SavedProperty]
     private int TriggerCount { get; set; }
@@ -45,21 +45,27 @@ public class Heartsteel : YuWanRelicModel
 
     public override Task BeforeCombatStart()
     {
-        EnemyTrackers.Clear();
+        GetEnemyTrackers().Clear();
+        _hasTriggeredThisDamage = false;
         return Task.CompletedTask;
     }
 
     public override async Task AfterCombatVictory(CombatRoom room)
     {
         await base.AfterCombatVictory(room);
-        EnemyTrackers.Clear();
+        GetEnemyTrackers().Clear();
     }
 
     public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (player != Owner) return Task.CompletedTask;
 
-        foreach (var tracker in EnemyTrackers.Values)
+        if (enemyTrackers == null)
+        {
+            return Task.CompletedTask;
+        }
+
+        foreach (var tracker in enemyTrackers.Values)
         {
             tracker.DamageThisTurn = 0m;
             tracker.PendingDamage = 0m;
@@ -77,11 +83,12 @@ public class Heartsteel : YuWanRelicModel
         if (Owner == null) return 0m;
         if (amount <= 0) return 0m;
 
+        var trackers = GetEnemyTrackers();
         var enemyId = target.ModelId;
-        if (!EnemyTrackers.TryGetValue(enemyId, out EnemyDamageTracker? tracker))
+        if (!trackers.TryGetValue(enemyId, out EnemyDamageTracker? tracker))
         {
             tracker = new EnemyDamageTracker();
-            EnemyTrackers[enemyId] = tracker;
+            trackers[enemyId] = tracker;
         }
 
         if (tracker.HasTriggered) return 0m;
@@ -100,11 +107,12 @@ public class Heartsteel : YuWanRelicModel
         if (result.TotalDamage <= 0) return;
         if (_hasTriggeredThisDamage) return;
 
+        var trackers = GetEnemyTrackers();
         var enemyId = target.ModelId;
-        if (!EnemyTrackers.TryGetValue(enemyId, out EnemyDamageTracker? tracker))
+        if (!trackers.TryGetValue(enemyId, out EnemyDamageTracker? tracker))
         {
             tracker = new EnemyDamageTracker();
-            EnemyTrackers[enemyId] = tracker;
+            trackers[enemyId] = tracker;
         }
 
         if (tracker.HasTriggered) return;
@@ -142,6 +150,11 @@ public class Heartsteel : YuWanRelicModel
         await CreatureCmd.GainMaxHp(Owner.Creature, maxHpGain);
 
         MainFile.Logger.Info($"Heartsteel triggered: {bonusDamage} bonus damage, +{maxHpGain} max HP, TriggerCount: {TriggerCount}");
+    }
+
+    private Dictionary<ModelId, EnemyDamageTracker> GetEnemyTrackers()
+    {
+        return enemyTrackers ??= new Dictionary<ModelId, EnemyDamageTracker>();
     }
 
     private class EnemyDamageTracker
