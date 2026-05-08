@@ -3,6 +3,12 @@ import { defineConfig } from 'vitepress'
 const SITE_URL = 'https://yuwan886.github.io'
 const OG_IMAGE = '/images/characters/pig.png'
 const GITHUB_REPO = 'https://github.com/YuWan886/Sts2-YuWanCard'
+const GITHUB_RELEASES = 'https://github.com/YuWan886/Sts2-YuWanCard/releases/latest'
+const NEXUS_MODS = 'https://www.nexusmods.com/slaythespire2/mods/149'
+const BACKUP_DOWNLOAD = 'https://pan.quark.cn/s/734161e964f3'
+const FAQ_URL = 'https://docs.qq.com/doc/DUXhoZXhKVURZR1ph'
+const QQ_GROUP_URL = 'https://qm.qq.com/q/ohYkDqbe7K'
+const DISCORD_URL = 'https://discord.gg/tJT3a95Y8y'
 
 const sharedThemeConfig = {
   search: {
@@ -24,7 +30,8 @@ const sharedThemeConfig = {
   },
 
   socialLinks: [
-    { icon: 'github' as const, link: GITHUB_REPO }
+    { icon: 'github' as const, link: GITHUB_REPO },
+    { icon: 'discord' as const, link: DISCORD_URL }
   ],
 
   footer: {
@@ -80,7 +87,23 @@ export default defineConfig({
           { text: '首页', link: '/zhs/' },
           { text: '卡牌', link: '/zhs/cards/' },
           { text: '遗物', link: '/zhs/relics/' },
-          { text: '能力', link: '/zhs/powers/' }
+          { text: '能力', link: '/zhs/powers/' },
+          {
+            text: '下载',
+            items: [
+              { text: 'GitHub Release', link: GITHUB_RELEASES },
+              { text: 'NexusMods', link: NEXUS_MODS },
+              { text: '备用下载', link: BACKUP_DOWNLOAD }
+            ]
+          },
+          { text: '常见问题解答', link: FAQ_URL },
+          {
+            text: '社交',
+            items: [
+              { text: 'QQ 群', link: QQ_GROUP_URL },
+              { text: 'Discord', link: DISCORD_URL }
+            ]
+          }
         ],
         sidebar: [
           {
@@ -123,7 +146,23 @@ export default defineConfig({
           { text: 'Home', link: '/eng/' },
           { text: 'Cards', link: '/eng/cards/' },
           { text: 'Relics', link: '/eng/relics/' },
-          { text: 'Powers', link: '/eng/powers/' }
+          { text: 'Powers', link: '/eng/powers/' },
+          {
+            text: 'Download',
+            items: [
+              { text: 'GitHub Release', link: GITHUB_RELEASES },
+              { text: 'NexusMods', link: NEXUS_MODS },
+              { text: 'Backup Download', link: BACKUP_DOWNLOAD }
+            ]
+          },
+          { text: 'FAQ', link: FAQ_URL },
+          {
+            text: 'Social',
+            items: [
+              { text: 'QQ Group', link: QQ_GROUP_URL },
+              { text: 'Discord', link: DISCORD_URL }
+            ]
+          }
         ],
         sidebar: [
           {

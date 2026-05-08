@@ -242,12 +242,12 @@ export function typeBadge(cardType) {
 
 export const CATEGORY_NAMES = {
   zhs: {
-    pig: '猪卡牌', colorless: '无色卡牌', token: '衍生牌', quest: '任务',
-    event: '事件卡牌', regent: '储君卡牌'
+    pig: '猪猪', colorless: '无色', token: '衍生', quest: '任务',
+    event: '事件', regent: '储君'
   },
   eng: {
-    pig: 'Pig Cards', colorless: 'Colorless', token: 'Tokens', quest: 'Quests',
-    event: 'Event Cards', regent: 'Regent Cards'
+    pig: 'Pig', colorless: 'Colorless', token: 'Token', quest: 'Quest',
+    event: 'Event', regent: 'Regent'
   }
 }
 
@@ -255,7 +255,12 @@ export const CATEGORY_NAMES = {
 
 export function jsonldEntity(entity, loc, lang) {
   const title = loc.title || entity.className
-  const desc = stripBBCode(loc.description || loc.smartDescription || '').substring(0, 300)
+  const descSource = entity.type === 'orb'
+    ? (loc.smartDescription || loc.description || '')
+    : entity.type === 'ancient'
+      ? (loc.description || loc.initialDescription || loc.pageDescriptions?.[0]?.text || '')
+      : (loc.description || loc.smartDescription || '')
+  const desc = stripBBCode(descSource).substring(0, 300)
   const typeMap = {
     card: 'Card', relic: 'Relic', power: 'Power',
     enchantment: 'Enchantment', orb: 'Orb', monster: 'Monster',

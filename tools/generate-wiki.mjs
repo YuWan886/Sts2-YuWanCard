@@ -81,6 +81,35 @@ function parseAllEntities() {
   return entities
 }
 
+function resolveCardTipTargets(entities) {
+  const classToEntity = new Map()
+  for (const entity of entities) {
+    if (!entity.className) continue
+    if (!classToEntity.has(entity.className)) classToEntity.set(entity.className, entity)
+  }
+
+  for (const entity of entities) {
+    if (entity.type !== 'card') continue
+    const refs = entity.tipRefs || []
+    const targets = []
+    const seen = new Set()
+
+    for (const className of refs) {
+      if (seen.has(className)) continue
+      seen.add(className)
+
+      const target = classToEntity.get(className)
+      if (target) {
+        targets.push({ className, id: target.id, type: target.type })
+      } else {
+        targets.push({ className })
+      }
+    }
+
+    entity.tipTargets = targets
+  }
+}
+
 function generatePages(entities, localeLookup) {
   const TYPE_CONFIG = [
     { type: 'card', single: 'card', multi: 'cards', genDetail: generateCardMd, genList: 'cardList', typeNames: { zhs: '卡牌', eng: 'Cards' } },
@@ -129,6 +158,7 @@ function main() {
   // Step 1: Parse
   console.log('Parsing C# source files...')
   const entities = parseAllEntities()
+  resolveCardTipTargets(entities)
   console.log(`\nTotal entities parsed: ${entities.length}`)
 
   // Step 2: Localization

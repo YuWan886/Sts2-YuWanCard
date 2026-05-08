@@ -24,7 +24,7 @@ public class StoneSword : YuWanCardModel
         target: TargetType.None)
     {
         WithTip(typeof(SwordOfStone));
-        WithVar("Elites", 5);
+        WithVar("Elites", 3);
         WithKeywords(CardKeyword.Unplayable);
     }
 

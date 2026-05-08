@@ -4,7 +4,7 @@
     <!-- Filter bar -->
     <SearchFilterBar
       v-if="filterGroups.length"
-      :filter-groups="filterGroups"
+      :filter-groups="filterGroupsWithState"
       :sort-options="sortOptions"
       :sort-value="activeSort"
       :view-mode="viewMode"
@@ -12,6 +12,7 @@
       :filtered-count="filteredItems.length"
       :total-count="items.length"
       :clear-label="t('clear')"
+      :all-label="t('all')"
       :sort-label="t('sort')"
       :results-label="t('results')"
       :grid-title="t('grid_view')"
@@ -109,9 +110,8 @@ const viewMode = ref('grid')
 const activeFilters = ref({})
 
 function onFilterChange(groupKey, chipKey) {
-  if (activeFilters.value[groupKey] === chipKey) {
+  if (!chipKey) {
     delete activeFilters.value[groupKey]
-    // Trigger reactivity
     activeFilters.value = { ...activeFilters.value }
   } else {
     activeFilters.value = { ...activeFilters.value, [groupKey]: chipKey }
@@ -132,6 +132,7 @@ function typeBadge(t) { return t ? `rarity-badge type-${t.toLowerCase()}` : '' }
 // I18n labels
 const labels = computed(() => ({
   clear: props.lang === 'zhs' ? '清除' : 'Clear',
+  all: props.lang === 'zhs' ? '全部' : 'All',
   sort: props.lang === 'zhs' ? '排序' : 'Sort',
   results: props.lang === 'zhs' ? '个' : '',
   grid_view: props.lang === 'zhs' ? '画廊视图' : 'Grid view',

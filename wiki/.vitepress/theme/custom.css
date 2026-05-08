@@ -482,34 +482,13 @@ html.dark {
   color: var(--text-muted);
   text-transform: uppercase; letter-spacing: 0.5px;
 }
-.filter-divider { width: 1px; height: 22px; background: var(--border-default); margin: 0 2px; }
-
-.filter-chip {
-  padding: 3px 14px; border-radius: var(--radius-full);
-  border: 1px solid var(--border-default);
-  background: transparent; color: var(--text-secondary);
-  cursor: pointer; font-size: 0.78rem; font-weight: 500;
-  transition: all var(--transition-fast);
-  white-space: nowrap; user-select: none;
+.filter-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
-.filter-chip:hover {
-  border-color: var(--accent-gold);
-  color: var(--text-primary);
-}
-.filter-chip.active {
-  background: var(--accent-gold);
-  color: var(--text-inverse);
-  border-color: var(--accent-gold);
-  font-weight: 600;
-}
-.filter-chip.clear {
-  border-color: var(--accent-red);
-  color: var(--accent-red);
-  background: transparent;
-}
-.filter-chip.clear:hover {
-  background: var(--accent-red);
-  color: #fff;
+.filter-select {
+  min-width: 110px;
 }
 
 /* ---- TOOLBAR (sort, view toggle, count) ---- */
@@ -785,8 +764,8 @@ html.dark {
   .home-hero h1 { font-size: 2rem; }
 
   .filter-bar { padding: 10px; gap: 4px; }
-  .filter-divider { display: none; }
-  .filter-chip { padding: 3px 10px; font-size: 0.74rem; }
+  .filter-group { gap: 4px; }
+  .filter-select { min-width: 92px; }
 }
 
 @media (max-width: 480px) {
@@ -806,7 +785,7 @@ html.dark {
 }
 :focus:not(:focus-visible) { outline: none; }
 
-.filter-chip:focus-visible, .tb-btn:focus-visible {
+.tb-select:focus-visible, .tb-btn:focus-visible {
   outline: 2px solid var(--accent-gold);
   outline-offset: 1px;
 }
@@ -832,10 +811,8 @@ img[loading="lazy"]:is([src]) { animation: none; background: none; }
     padding: 10px 12px; gap: 4px;
   }
   .filter-bar::-webkit-scrollbar { display: none; }
-  .filter-chip {
-    flex-shrink: 0; padding: 4px 12px;
-    font-size: 0.76rem;
-  }
+  .filter-group { flex-shrink: 0; }
+  .filter-select { min-width: 88px; }
 }
 
 /* ---- Print styles ---- */

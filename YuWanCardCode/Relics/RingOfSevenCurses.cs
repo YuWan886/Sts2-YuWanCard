@@ -32,7 +32,7 @@ public class RingOfSevenCurses : YuWanRelicModel
 
     private GoldModificationGuard? _goldGuard;
 
-    public override RelicRarity Rarity => RelicRarity.Ancient;
+    public override RelicRarity Rarity => RelicRarity.Event;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(1)];
 
