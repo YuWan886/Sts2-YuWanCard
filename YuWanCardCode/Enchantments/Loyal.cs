@@ -82,7 +82,7 @@ public sealed class Loyal : YuWanEnchantmentModel
         await CardCmd.AutoPlay(choiceContext, Card, target, AutoPlayType.Default, skipXCapture: true, skipCardPileVisuals: true);
     }
 
-    private Creature? GetTargetForCard(CardModel card, CombatState? combatState)
+    private Creature? GetTargetForCard(CardModel card, ICombatState? combatState)
     {
         if (combatState == null || card.Owner == null)
         {

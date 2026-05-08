@@ -32,7 +32,7 @@ public class SnakeBiteOrb : YuWanOrbModel
         var enemy = Owner.RunState.Rng.CombatTargets.NextItem(CombatState.HittableEnemies);
         if (enemy != null)
         {
-            await PowerCmd.Apply<PoisonPower>(enemy, (int)PassiveVal, Owner.Creature, null);
+            await PowerCmd.Apply<PoisonPower>(new ThrowingPlayerChoiceContext(), enemy, (int)PassiveVal, Owner.Creature, null);
         }
     }
 
@@ -41,7 +41,7 @@ public class SnakeBiteOrb : YuWanOrbModel
         var enemy = Owner.RunState.Rng.CombatTargets.NextItem(CombatState.HittableEnemies);
         if (enemy != null)
         {
-            await PowerCmd.Apply<PoisonPower>(enemy, (int)EvokeVal, Owner.Creature, null);
+            await PowerCmd.Apply<PoisonPower>(new ThrowingPlayerChoiceContext(), enemy, (int)EvokeVal, Owner.Creature, null);
         }
         return new[] { Owner.Creature };
     }

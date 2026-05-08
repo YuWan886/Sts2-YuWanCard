@@ -14,103 +14,19 @@ using YuWanCard.Characters;
 
 namespace YuWanCard.Patches;
 
-[HarmonyPatch]
-public class PigScalePatch
+file static class PigScaleShared
 {
-    private static readonly Dictionary<uint, int> _initialMaxHpMap = new();
+    public static readonly Dictionary<uint, int> InitialMaxHpMap = new();
 
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Hook), "AfterPlayerTurnStart", typeof(CombatState), typeof(PlayerChoiceContext), typeof(Player))]
-    static void OnPlayerTurnStart(CombatState combatState, PlayerChoiceContext choiceContext, Player player)
-
-    {
-        if (player.Character is Pig && player.Creature != null && NCombatRoom.Instance != null)
-        {
-            UpdateScale(player.Creature);
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Hook), "BeforeCombatStart", typeof(IRunState), typeof(CombatState))]
-    static void OnCombatStart(IRunState runState, CombatState? combatState)
-    {
-        if (runState is RunState run && run.Players != null)
-        {
-            foreach (var player in run.Players)
-            {
-                if (player.Character is Pig pig && player.Creature != null && player.Creature.CombatId.HasValue)
-                {
-                    _initialMaxHpMap[player.Creature.CombatId.Value] = pig.StartingHp;
-                }
-            }
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Hook), "AfterCombatEnd", typeof(IRunState), typeof(CombatState), typeof(CombatRoom))]
-    static void OnCombatEnd(IRunState runState, CombatState combatState, CombatRoom room)
-    {
-        if (runState is RunState run && run.Players != null)
-        {
-            foreach (var player in run.Players)
-            {
-                if (player.Character is Pig && player.Creature != null && player.Creature.CombatId.HasValue)
-                {
-                    _initialMaxHpMap.Remove(player.Creature.CombatId.Value);
-                }
-            }
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(CreatureCmd), "SetCurrentHp", typeof(Creature), typeof(decimal))]
-    static void OnHpChanged(Creature creature, decimal amount)
-    {
-        if (creature.Player != null && creature.Player.Character is Pig && NCombatRoom.Instance != null)
-        {
-            UpdateScale(creature);
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Creature), "SetCurrentHpInternal", typeof(decimal))]
-    static void OnHpChangedInternal(Creature __instance)
-    {
-        if (__instance.Player != null && __instance.Player.Character is Pig && NCombatRoom.Instance != null)
-        {
-            UpdateScale(__instance);
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Creature), "set_CurrentHp")]
-    static void OnCurrentHpSet(Creature __instance)
-    {
-        if (__instance.Player != null && __instance.Player.Character is Pig && NCombatRoom.Instance != null)
-        {
-            UpdateScale(__instance);
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(CreatureCmd), "GainMaxHp", typeof(Creature), typeof(decimal))]
-    static void OnMaxHpChanged(Creature creature, decimal amount)
-    {
-        if (creature.Player != null && creature.Player.Character is Pig && NCombatRoom.Instance != null)
-        {
-            UpdateScale(creature);
-        }
-    }
-
-    private static void UpdateScale(Creature creature)
+    public static void UpdateScale(Creature creature)
     {
         if (creature == null || NCombatRoom.Instance == null || creature.Player == null || !creature.CombatId.HasValue)
             return;
 
-        if (!_initialMaxHpMap.TryGetValue(creature.CombatId.Value, out int initialMaxHp))
+        if (!InitialMaxHpMap.TryGetValue(creature.CombatId.Value, out int initialMaxHp))
         {
             initialMaxHp = ((Pig)creature.Player.Character).StartingHp;
-            _initialMaxHpMap[creature.CombatId.Value] = initialMaxHp;
+            InitialMaxHpMap[creature.CombatId.Value] = initialMaxHp;
         }
 
         float hpPercent = (float)creature.CurrentHp / initialMaxHp;
@@ -124,6 +40,109 @@ public class PigScalePatch
         else
         {
             GD.PrintErr($"[PigScale] WARNING: creatureNode is null!");
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Hook), "AfterPlayerTurnStart", typeof(ICombatState), typeof(PlayerChoiceContext), typeof(Player))]
+public static class PigScaleAfterPlayerTurnStartPatch
+{
+    [HarmonyPostfix]
+    static void Postfix(ICombatState combatState, PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player.Character is Pig && player.Creature != null && NCombatRoom.Instance != null)
+        {
+            PigScaleShared.UpdateScale(player.Creature);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Hook), "BeforeCombatStart", typeof(IRunState), typeof(ICombatState))]
+public static class PigScaleBeforeCombatStartPatch
+{
+    [HarmonyPostfix]
+    static void Postfix(IRunState runState, ICombatState? combatState)
+    {
+        if (runState is RunState run && run.Players != null)
+        {
+            foreach (var player in run.Players)
+            {
+                if (player.Character is Pig pig && player.Creature != null && player.Creature.CombatId.HasValue)
+                {
+                    PigScaleShared.InitialMaxHpMap[player.Creature.CombatId.Value] = pig.StartingHp;
+                }
+            }
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Hook), "AfterCombatEnd", typeof(IRunState), typeof(ICombatState), typeof(CombatRoom))]
+public static class PigScaleAfterCombatEndPatch
+{
+    [HarmonyPostfix]
+    static void Postfix(IRunState runState, ICombatState combatState, CombatRoom room)
+    {
+        if (runState is RunState run && run.Players != null)
+        {
+            foreach (var player in run.Players)
+            {
+                if (player.Character is Pig && player.Creature != null && player.Creature.CombatId.HasValue)
+                {
+                    PigScaleShared.InitialMaxHpMap.Remove(player.Creature.CombatId.Value);
+                }
+            }
+        }
+    }
+}
+
+[HarmonyPatch(typeof(CreatureCmd), "SetCurrentHp", typeof(Creature), typeof(decimal))]
+public static class PigScaleSetCurrentHpPatch
+{
+    [HarmonyPostfix]
+    static void Postfix(Creature creature, decimal amount)
+    {
+        if (creature.Player != null && creature.Player.Character is Pig && NCombatRoom.Instance != null)
+        {
+            PigScaleShared.UpdateScale(creature);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Creature), "SetCurrentHpInternal", typeof(decimal))]
+public static class PigScaleSetCurrentHpInternalPatch
+{
+    [HarmonyPostfix]
+    static void Postfix(Creature __instance)
+    {
+        if (__instance.Player != null && __instance.Player.Character is Pig && NCombatRoom.Instance != null)
+        {
+            PigScaleShared.UpdateScale(__instance);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Creature), "set_CurrentHp")]
+public static class PigScaleSetCurrentHpPropertyPatch
+{
+    [HarmonyPostfix]
+    static void Postfix(Creature __instance)
+    {
+        if (__instance.Player != null && __instance.Player.Character is Pig && NCombatRoom.Instance != null)
+        {
+            PigScaleShared.UpdateScale(__instance);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(CreatureCmd), "GainMaxHp", typeof(Creature), typeof(decimal))]
+public static class PigScaleGainMaxHpPatch
+{
+    [HarmonyPostfix]
+    static void Postfix(Creature creature, decimal amount)
+    {
+        if (creature.Player != null && creature.Player.Character is Pig && NCombatRoom.Instance != null)
+        {
+            PigScaleShared.UpdateScale(creature);
         }
     }
 }

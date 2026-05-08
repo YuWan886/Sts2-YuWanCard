@@ -28,6 +28,6 @@ public class GroupFriendForm : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<GroupFriendFormPower>(Owner.Creature, DynamicVars["GroupFriendFormPower"].IntValue, Owner.Creature, this);
+        await PowerCmd.Apply<GroupFriendFormPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["GroupFriendFormPower"].IntValue, Owner.Creature, this);
     }
 }

@@ -44,8 +44,7 @@ public class CallCompanionsPower : YuWanPowerModel
         _initialized = true;
 
         var player = Owner!.Player!;
-        var combatState = player.Creature.CombatState;
-        if (combatState == null) return;
+        if (player.Creature.CombatState is not CombatState combatState) return;
 
         var rng = player.RunState.Rng.Shuffle;
 
@@ -108,8 +107,7 @@ public class CallCompanionsPower : YuWanPowerModel
 
     private async Task SpawnCompanionCreature(Player player)
     {
-        var combatState = player.Creature.CombatState;
-        if (combatState == null) return;
+        if (player.Creature.CombatState is not CombatState combatState) return;
 
         // Register the character's visual scene so it converts to NCreatureVisuals
         var visualPath = _character.VisualsPath;
@@ -162,12 +160,11 @@ public class CallCompanionsPower : YuWanPowerModel
             - new Vector2(horizontalSpacing, verticalStagger);
     }
 
-    public override async Task BeforePlayPhaseStart(PlayerChoiceContext choiceContext, Player player)
+    public override async Task AfterAutoPrePlayPhaseEntered(PlayerChoiceContext choiceContext, Player player)
     {
         if (!_initialized || player.Creature != Owner) return;
 
-        var combatState = player.Creature.CombatState;
-        if (combatState == null) return;
+        if (player.Creature.CombatState is not CombatState combatState) return;
 
         _energy = _maxEnergy;
         DrawCards(5, player.RunState.Rng.Shuffle);

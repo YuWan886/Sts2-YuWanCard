@@ -9,23 +9,23 @@ namespace YuWanCard.Core.Badges;
 /// </summary>
 public static class CustomBadgeRegistry
 {
-    private static readonly List<Func<SerializableRun, ulong, Badge>> _factories = [];
+    private static readonly List<Func<SerializableRun, ulong, bool, Badge>> _factories = [];
 
-    public static IReadOnlyList<Func<SerializableRun, ulong, Badge>> Factories => _factories;
+    public static IReadOnlyList<Func<SerializableRun, ulong, bool, Badge>> Factories => _factories;
 
-    public static void Register(Func<SerializableRun, ulong, Badge> factory)
+    public static void Register(Func<SerializableRun, ulong, bool, Badge> factory)
     {
         _factories.Add(factory);
     }
 
-    public static List<Badge> CreateAll(SerializableRun run, ulong playerId)
+    public static List<Badge> CreateAll(SerializableRun run, ulong playerId, bool won)
     {
         var badges = new List<Badge>(_factories.Count);
         foreach (var factory in _factories)
         {
             try
             {
-                badges.Add(factory(run, playerId));
+                badges.Add(factory(run, playerId, won));
             }
             catch (Exception ex)
             {

@@ -2,6 +2,7 @@ using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Utils;
@@ -16,7 +17,7 @@ public class PigDoubtPower : YuWanPowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("PigDoubtPower", 1m)];
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
     {
         if (side == Owner.Side)
         {
@@ -36,7 +37,7 @@ public class PigDoubtPower : YuWanPowerModel
                     var mutablePower = randomPower.ToMutable();
                     if (mutablePower != null)
                     {
-                        await PowerCmd.Apply(mutablePower, Owner, 1, Owner, null);
+                        await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), mutablePower, Owner, 1, Owner, null);
                     }
                 }
 
@@ -54,7 +55,7 @@ public class PigDoubtPower : YuWanPowerModel
         if (rng == null) return null;
 
         var filteredPowers = ModelDb.AllPowers
-            .Where(p => !p.IsInstanced && IsSafePower(p) && IsValidPower(p) && p.Type == PowerType.Buff)
+            .Where(p => p.InstanceType == PowerInstanceType.None && IsSafePower(p) && IsValidPower(p) && p.Type == PowerType.Buff)
             .ToList();
 
         if (filteredPowers.Count == 0) return null;

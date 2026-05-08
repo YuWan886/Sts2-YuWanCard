@@ -38,6 +38,6 @@ public class GroupFriendFormPower : YuWanPowerModel
             CardCmd.Upgrade(newCard);
         }
 
-        await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Draw, addedByPlayer: true);
+        await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Draw, cardPlay.Card.Owner);
     }
 }

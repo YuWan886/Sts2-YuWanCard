@@ -35,7 +35,7 @@ public class PigSmash : YuWanCardModel
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);
 
-            await PowerCmd.Apply<VulnerablePower>(cardPlay.Target, DynamicVars["VulnerablePower"].IntValue, Owner.Creature, this);
+            await PowerCmd.Apply<VulnerablePower>(new ThrowingPlayerChoiceContext(),cardPlay.Target, DynamicVars["VulnerablePower"].IntValue, Owner.Creature, this);
         }
     }
 }

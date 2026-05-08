@@ -115,7 +115,7 @@ public class ReincarnatedEye : YuWanRelicModel
         else
         {
             // 手牌未满，直接加入手牌
-            var results = await CardPileCmd.AddGeneratedCardsToCombat([copiedCard], PileType.Hand, addedByPlayer: true);
+            var results = await CardPileCmd.AddGeneratedCardsToCombat([copiedCard], PileType.Hand, Owner);
 
             if (results.Count > 0 && results[0].success)
             {

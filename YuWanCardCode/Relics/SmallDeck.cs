@@ -37,28 +37,28 @@ public class SmallDeck : YuWanRelicModel
         int threshold = (int)DynamicVars["DeckThreshold"].BaseValue;
         var act = runState.Act;
 
-        if (deckSize <= threshold)
-        {
-            if (act.BossEncounter is DoormakerBoss)
-            {
-                var otherBoss = act.AllBossEncounters.FirstOrDefault(e => e is not DoormakerBoss);
-                if (otherBoss != null)
-                {
-                    MapCmd.SetBossEncounter(runState, otherBoss);
-                    Flash();
-                    MainFile.Logger.Info($"[SmallDeck] Deck <= {threshold}, replaced Doormaker with {otherBoss.Id.Entry}");
-                }
-            }
-        }
-        else
-        {
-            var doormaker = act.AllBossEncounters.FirstOrDefault(e => e is DoormakerBoss);
-            if (doormaker != null && act.BossEncounter is not DoormakerBoss)
-            {
-                MapCmd.SetBossEncounter(runState, doormaker);
-                Flash();
-                MainFile.Logger.Info($"[SmallDeck] Deck > {threshold}, forced boss to Doormaker");
-            }
-        }
+        //     if (deckSize <= threshold)
+        //     {
+        //         if (act.BossEncounter is DoormakerBoss)
+        //         {
+        //             var otherBoss = act.AllBossEncounters.FirstOrDefault(e => e is not DoormakerBoss);
+        //             if (otherBoss != null)
+        //             {
+        //                 MapCmd.SetBossEncounter(runState, otherBoss);
+        //                 Flash();
+        //                 MainFile.Logger.Info($"[SmallDeck] Deck <= {threshold}, replaced Doormaker with {otherBoss.Id.Entry}");
+        //             }
+        //         }
+        //     }
+        //     else
+        //     {
+        //         var doormaker = act.AllBossEncounters.FirstOrDefault(e => e is DoormakerBoss);
+        //         if (doormaker != null && act.BossEncounter is not DoormakerBoss)
+        //         {
+        //             MapCmd.SetBossEncounter(runState, doormaker);
+        //             Flash();
+        //             MainFile.Logger.Info($"[SmallDeck] Deck > {threshold}, forced boss to Doormaker");
+        //         }
+        //     }
     }
 }

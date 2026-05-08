@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Characters;
 using YuWanCard.Utils;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace YuWanCard.Relics;
 
@@ -30,7 +31,7 @@ public class PigCarrot : YuWanRelicModel
         if (room is CombatRoom)
         {
             Flash();
-            await PowerCmd.Apply<PlatingPower>(Owner.Creature, DynamicVars["PlatingPower"].BaseValue, Owner.Creature, null);
+            await PowerCmd.Apply<PlatingPower>(new ThrowingPlayerChoiceContext(),Owner.Creature, DynamicVars["PlatingPower"].BaseValue, Owner.Creature, null);
         }
     }
 

@@ -21,6 +21,7 @@ public struct TeammatePayRequestMessage : INetMessage, IPacketSerializable, IRun
     public bool ShouldBroadcast => false;
     public NetTransferMode Mode => NetTransferMode.Reliable;
     public LogLevel LogLevel => LogLevel.Debug;
+    public bool ShouldBuffer => false;
 
     RunLocation IRunLocationTargetedMessage.Location => Location;
 
@@ -66,6 +67,7 @@ public struct TeammatePayResponseMessage : INetMessage, IPacketSerializable, IRu
     public bool ShouldBroadcast => false;
     public NetTransferMode Mode => NetTransferMode.Reliable;
     public LogLevel LogLevel => LogLevel.Debug;
+    public bool ShouldBuffer => false;
 
     RunLocation IRunLocationTargetedMessage.Location => Location;
 
@@ -112,6 +114,7 @@ public struct TeammatePayGoldQueryMessage : INetMessage, IPacketSerializable, IR
     public bool ShouldBroadcast => false;
     public NetTransferMode Mode => NetTransferMode.Reliable;
     public LogLevel LogLevel => LogLevel.Debug;
+    public bool ShouldBuffer => false;
 
     RunLocation IRunLocationTargetedMessage.Location => Location;
 
@@ -137,6 +140,7 @@ public struct TeammatePayGoldResponseMessage : INetMessage, IPacketSerializable,
     public bool ShouldBroadcast => false;
     public NetTransferMode Mode => NetTransferMode.Reliable;
     public LogLevel LogLevel => LogLevel.Debug;
+    public bool ShouldBuffer => false;
 
     RunLocation IRunLocationTargetedMessage.Location => Location;
 

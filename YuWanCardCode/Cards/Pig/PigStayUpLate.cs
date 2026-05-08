@@ -37,7 +37,7 @@ public class PigStayUpLate : YuWanCardModel
             if (isLateNight && !isMultiplayer)
             {
                 damage *= 2;
-                await PowerCmd.Apply<WeakPower>(Owner.Creature, 1, Owner.Creature, this);
+                await PowerCmd.Apply<WeakPower>(new ThrowingPlayerChoiceContext(),Owner.Creature, 1, Owner.Creature, this);
                 MainFile.Logger.Info($"PigStayUpLate: Late night bonus! Damage doubled to {damage}, gained Weak");
             }
             

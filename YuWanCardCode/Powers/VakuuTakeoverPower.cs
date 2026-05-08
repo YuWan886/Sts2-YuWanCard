@@ -22,12 +22,11 @@ public class VakuuTakeoverPower : YuWanPowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Duration", 1m)];
 
-    public override async Task BeforePlayPhaseStart(PlayerChoiceContext choiceContext, Player player)
+    public override async Task AfterAutoPrePlayPhaseEntered(PlayerChoiceContext choiceContext, Player player)
     {
         if (player.Creature != Owner) return;
 
-        var combatState = player.Creature.CombatState;
-        if (combatState == null) return;
+        if (player.Creature.CombatState is not CombatState combatState) return;
 
         Flash();
 

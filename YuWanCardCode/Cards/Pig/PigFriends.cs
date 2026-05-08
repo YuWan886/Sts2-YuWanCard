@@ -24,7 +24,7 @@ public class PigFriends : YuWanCardModel
         EnergyCost.UpgradeBy(-1);
     }
 
-    protected override PileType GetResultPileType()
+    protected override PileType GetResultPileTypeForCardPlay()
     {
         return PileType.Discard;
     }
@@ -32,6 +32,6 @@ public class PigFriends : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<PigFriendsPower>(Owner.Creature, DynamicVars["PigFriendsPower"].IntValue, Owner.Creature, this);
+        await PowerCmd.Apply<PigFriendsPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["PigFriendsPower"].IntValue, Owner.Creature, this);
     }
 }

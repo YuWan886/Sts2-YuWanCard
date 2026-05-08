@@ -10,9 +10,9 @@ using YuWanCard.Utils;
 namespace YuWanCard.Cards;
 
 [Pool(typeof(PigCardPool))]
-public class BlackHole : YuWanCardModel
+public class PigBlackHole : YuWanCardModel
 {
-    public BlackHole() : base(
+    public PigBlackHole() : base(
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
@@ -58,7 +58,7 @@ public class BlackHole : YuWanCardModel
 
         if (cardsToExhaustCount > 0)
         {
-            PlayBlackHoleVfx(cardsToExhaustCount);
+            PlayPigBlackHoleVfx(cardsToExhaustCount);
         }
 
         foreach (var card in cardsToExhaust)
@@ -82,17 +82,17 @@ public class BlackHole : YuWanCardModel
         }
     }
 
-    private void PlayBlackHoleVfx(int cardCount)
+    private void PlayPigBlackHoleVfx(int cardCount)
     {
         try
         {
             var scenePath = "res://YuWanCard/scenes/vfx/vfx_black_hole.tscn";
             VfxUtils.PlayCentered(scenePath);
-            MainFile.Logger.Debug($"BlackHole: VFX spawned with {cardCount} cards");
+            MainFile.Logger.Debug($"PigBlackHole: VFX spawned with {cardCount} cards");
         }
         catch (System.Exception ex)
         {
-            MainFile.Logger.Error($"BlackHole: VFX error: {ex.Message}");
+            MainFile.Logger.Error($"PigBlackHole: VFX error: {ex.Message}");
         }
     }
 }

@@ -26,7 +26,7 @@ public class YuWanCardConfig : FallbackSimpleModConfig
 
     [ConfigSection("游戏设置")]
     [ConfigHoverTip]
-    public static bool EnableWhatIfRelics { get; set; } = true;
+    public static bool EnableWhatIfRelics { get; set; } = false;
 
     public YuWanCardConfig() : base() { }
 }

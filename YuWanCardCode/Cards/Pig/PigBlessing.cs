@@ -33,9 +33,9 @@ public class PigBlessing : YuWanCardModel
         var teammates = CombatState!.GetTeammatesOf(Owner.Creature);
         foreach (var teammate in teammates)
         {
-            await PowerCmd.Apply<StrengthPower>(teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
-            await PowerCmd.Apply<DexterityPower>(teammate, DynamicVars["DexterityPower"].IntValue, Owner.Creature, this);
-            await PowerCmd.Apply<RegenPower>(teammate, DynamicVars["RegenPower"].IntValue, Owner.Creature, this);
+            await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
+            await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), teammate, DynamicVars["DexterityPower"].IntValue, Owner.Creature, this);
+            await PowerCmd.Apply<RegenPower>(new ThrowingPlayerChoiceContext(), teammate, DynamicVars["RegenPower"].IntValue, Owner.Creature, this);
         }
     }
 }

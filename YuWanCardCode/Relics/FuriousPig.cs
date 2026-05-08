@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.RelicPools;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace YuWanCard.Relics;
 
@@ -28,7 +29,7 @@ public class FuriousPig : YuWanRelicModel
             return;
         }
         Flash();
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars.Strength.BaseValue, Owner.Creature, null);
-        await PowerCmd.Apply<FrailPower>(Owner.Creature, 1, Owner.Creature, null);
+        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars.Strength.BaseValue, Owner.Creature, null);
+        await PowerCmd.Apply<FrailPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, 1, Owner.Creature, null);
     }
 }

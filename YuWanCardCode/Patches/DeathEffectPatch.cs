@@ -13,7 +13,6 @@ namespace YuWanCard.Patches;
 /// <summary>
 /// 死亡特效系统 - 当猪角色击杀生物时播放猪死亡动画
 /// </summary>
-[HarmonyPatch]
 public static class DeathEffectPatch
 {
     private const string EffectScenePath = "res://YuWanCard/scenes/vfx/pig_death_effect.tscn";

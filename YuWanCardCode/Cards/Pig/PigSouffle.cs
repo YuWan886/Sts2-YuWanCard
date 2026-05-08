@@ -33,6 +33,6 @@ public class PigSouffle : YuWanCardModel
     {
         await PlayerCmd.GainEnergy(DynamicVars["Energy"].IntValue, Owner);
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<DexterityPower>(Owner.Creature, DynamicVars["DexterityPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(),Owner.Creature, DynamicVars["DexterityPower"].BaseValue, Owner.Creature, this);
     }
 }

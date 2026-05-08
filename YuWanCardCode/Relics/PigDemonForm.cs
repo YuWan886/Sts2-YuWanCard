@@ -11,6 +11,7 @@ using YuWanCard.Monsters;
 using YuWanCard.Powers;
 using YuWanCard.Utils;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace YuWanCard.Relics;
 
@@ -64,6 +65,6 @@ public class PigDemonForm : YuWanRelicModel
         }
 
         Flash();
-        await PowerCmd.Apply<PigDemonFormPower>(Owner.Creature, 1, Owner.Creature, null);
+        await PowerCmd.Apply<PigDemonFormPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, 1, Owner.Creature, null);
     }
 }

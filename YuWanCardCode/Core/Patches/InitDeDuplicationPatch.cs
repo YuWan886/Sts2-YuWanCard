@@ -16,7 +16,7 @@ namespace YuWanCard.Core.Patches;
 static class InitDeDuplicationPatch
 {
     private static readonly FieldInfo? ContentByIdField =
-        typeof(ModelDb).GetField("_contentById", BindingFlags.Static | BindingFlags.NonPublic);
+        typeof(ModelDb).GetField("_contentById", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
     [HarmonyPrefix]
     [HarmonyPriority(Priority.First)]
@@ -43,6 +43,10 @@ static class InitDeDuplicationPatch
                 created++;
 
                 RegisterCanonicalInstance(type, value);
+            }
+            catch (DuplicateModelException)
+            {
+                skipped++;
             }
             catch (TargetInvocationException ex)
                 when (ex.InnerException is DuplicateModelException)

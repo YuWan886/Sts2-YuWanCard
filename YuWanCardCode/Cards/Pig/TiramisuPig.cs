@@ -32,6 +32,6 @@ public class TiramisuPig : YuWanCardModel
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<RegenPower>(Owner.Creature, DynamicVars["RegenPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<RegenPower>(new ThrowingPlayerChoiceContext(),Owner.Creature, DynamicVars["RegenPower"].BaseValue, Owner.Creature, this);
     }
 }

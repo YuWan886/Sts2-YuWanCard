@@ -43,7 +43,7 @@ public class PigUnity : YuWanCardModel
         {
             foreach (var teammate in teammates.Where(t => t.IsAlive))
             {
-                await PowerCmd.Apply<StrengthPower>(teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
+                await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(),teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
             }
         }
     }

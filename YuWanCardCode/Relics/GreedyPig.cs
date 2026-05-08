@@ -83,7 +83,7 @@ public class GreedyPig : YuWanRelicModel
         }
         else
         {
-            _ = await CardPileCmd.AddGeneratedCardsToCombat([card], PileType.Hand, addedByPlayer: true);
+            _ = await CardPileCmd.AddGeneratedCardsToCombat([card], PileType.Hand, Owner);
         }
     }
 

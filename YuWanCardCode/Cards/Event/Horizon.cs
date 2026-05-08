@@ -27,6 +27,6 @@ public class Horizon : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<HorizonPower>(Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<HorizonPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, 1, Owner.Creature, this);
     }
 }

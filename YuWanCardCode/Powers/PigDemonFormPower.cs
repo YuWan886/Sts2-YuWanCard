@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YuWanCard.Monsters;
 using YuWanCard.Utils;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace YuWanCard.Powers;
 
@@ -25,12 +26,12 @@ public class PigDemonFormPower : YuWanPowerModel
 
     private int StrengthGain => DynamicVars["StrengthGain"].IntValue;
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
     {
         if (side != Owner.Side) return;
 
         Flash();
-        await PowerCmd.Apply<StrengthPower>(Owner, Amount * StrengthGain, Owner, null);
+        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner, Amount * StrengthGain, Owner, null);
     }
 
     public override async Task AfterRemoved(Creature oldOwner)

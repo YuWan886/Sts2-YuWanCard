@@ -41,6 +41,6 @@ public sealed class Venomous : YuWanEnchantmentModel
             return;
         }
 
-        await PowerCmd.Apply<PoisonPower>(target, 3, dealer, Card);
+        await PowerCmd.Apply<PoisonPower>(new ThrowingPlayerChoiceContext(), target, 3, dealer, Card);
     }
 }

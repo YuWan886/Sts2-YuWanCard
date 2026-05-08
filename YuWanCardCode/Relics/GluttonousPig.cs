@@ -41,7 +41,7 @@ public class GluttonousPig : YuWanRelicModel
         {
             return false;
         }
-        alternatives.Add(new CardRewardAlternative("EAT", OnEatCard, PostAlternateCardRewardAction.DismissScreenAndRemoveReward));
+        alternatives.Add(new CardRewardAlternative("EAT", OnEatCard, PostAlternateCardRewardAction.EndSelectionAndCompleteReward));
         return true;
     }
 
@@ -81,8 +81,8 @@ public class GluttonousPig : YuWanRelicModel
             HasAddedBuffThisCombat = true;
             Flash();
 
-            await PowerCmd.Apply<PlatingPower>(Owner.Creature, buffStacks, Owner.Creature, null);
-            await PowerCmd.Apply<StrengthPower>(Owner.Creature, buffStacks, Owner.Creature, null);
+            await PowerCmd.Apply<PlatingPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, buffStacks, Owner.Creature, null);
+            await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, buffStacks, Owner.Creature, null);
 
             MainFile.Logger.Info($"GluttonousPig: Applied {buffStacks} Plating and Strength (eaten {CardsEatenCount} cards)");
         }

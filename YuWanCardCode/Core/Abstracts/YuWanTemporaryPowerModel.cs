@@ -27,16 +27,16 @@ public abstract class YuWanTemporaryPowerModel : YuWanPowerModel
     public override async Task BeforeApplied(Creature target, decimal amount, Creature? applier, CardModel? cardSource)
     {
         var mutablePower = InternallyAppliedPower.ToMutable();
-        await PowerCmd.Apply(mutablePower, target, amount, applier, cardSource, true);
+        await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), mutablePower, target, amount, applier, cardSource, true);
     }
 
-    public override async Task AfterPowerAmountChanged(PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
+    public override async Task AfterPowerAmountChanged(PlayerChoiceContext choiceContext, PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
     {
         if (amount == Amount || power != this)
             return;
 
         var mutablePower = InternallyAppliedPower.ToMutable();
-        await PowerCmd.Apply(mutablePower, Owner, amount, applier, cardSource, true);
+        await PowerCmd.Apply(choiceContext, mutablePower, Owner, amount, applier, cardSource, true);
     }
 
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -53,7 +53,7 @@ public abstract class YuWanTemporaryPowerModel : YuWanPowerModel
 
         Flash();
         var mutablePower = InternallyAppliedPower.ToMutable();
-        await PowerCmd.Apply(mutablePower, Owner, -Amount, Owner, null, true);
+        await PowerCmd.Apply(choiceContext, mutablePower, Owner, -Amount, Owner, null, true);
         await PowerCmd.Remove(this);
     }
 }

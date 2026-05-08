@@ -11,9 +11,6 @@ using YuWanCard.Badges;
 using YuWanCard.Config;
 using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
-using YuWanCard.Core.Lifecycle;
-using YuWanCard.Core.Patching;
-using YuWanCard.Core.Registration;
 using YuWanCard.Multiplayer;
 using YuWanCard.Patches;
 using YuWanCard.Utils;
@@ -41,9 +38,9 @@ public partial class MainFile : Node
 
         var patcher = new ModPatcher(ModId);
 
-        // Phase 1: Bulk Harmony patches (auto-discovered via [HarmonyPatch] attributes)
+        // Phase 1: Apply [HarmonyPatch] classes safely (one bad patch won't block all others)
         patcher.ApplySingle(
-            h => h.PatchAll(Assembly.GetExecutingAssembly()), "BulkPatchAll");
+            h => ApplyHarmonyPatchesSafely(h, Assembly.GetExecutingAssembly()), "BulkPatchAll");
 
         ModLifecycle.Publish(ModLifecyclePhase.PatchesApplied);
 
@@ -60,7 +57,7 @@ public partial class MainFile : Node
         // Phase 3: Content discovery — scan for [Pool] and registration attributes
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
-        CustomBadgeRegistry.Register((run, playerId) => new PigTycoonBadge(run, playerId));
+        CustomBadgeRegistry.Register((run, playerId, won) => new PigTycoonBadge(run, playerId, won));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 
         // Phase 4: Config, scene conversions, multiplayer, assets
@@ -76,6 +73,30 @@ public partial class MainFile : Node
 
         ModLifecycle.Publish(ModLifecyclePhase.Initialized);
         Logger.Info("YuWanCard initialized");
+    }
+
+    private static void ApplyHarmonyPatchesSafely(Harmony harmony, Assembly assembly)
+    {
+        int applied = 0;
+        int failed = 0;
+
+        foreach (var type in Core.Registration.AssemblyScanner.GetLoadableTypes(assembly)
+                     .Where(t => t.GetCustomAttributes(typeof(HarmonyPatch), inherit: false).Length > 0)
+                     .OrderBy(t => t.FullName, StringComparer.Ordinal))
+        {
+            try
+            {
+                harmony.CreateClassProcessor(type).Patch();
+                applied++;
+            }
+            catch (Exception ex)
+            {
+                failed++;
+                Logger.Warn($"[Patcher] Failed patch class {type.FullName}: {ex.Message}");
+            }
+        }
+
+        Logger.Info($"[Patcher] Harmony patch classes applied={applied}, failed={failed}");
     }
 
     private static void RegisterSceneConversions()
@@ -143,4 +164,3 @@ public static class NGame_Ready_ConfigPreloadPatch
         ConfigRegistrar.TryDeferredRegister();
     }
 }
-

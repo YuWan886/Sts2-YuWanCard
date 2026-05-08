@@ -25,7 +25,7 @@ public sealed class Snake : YuWanEnchantmentModel
         for (int i = 0; i < Amount; i++)
         {
             var snakebiteCard = Card.CombatState!.CreateCard(snakebiteModel, Card.Owner);
-            await CardPileCmd.AddGeneratedCardToCombat(snakebiteCard, PileType.Hand, addedByPlayer: true);
+            await CardPileCmd.AddGeneratedCardToCombat(snakebiteCard, PileType.Hand, cardPlay.Card.Owner);
         }
     }
 }

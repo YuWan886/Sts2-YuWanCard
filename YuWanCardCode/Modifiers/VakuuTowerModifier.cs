@@ -200,8 +200,7 @@ public class VakuuTowerModifier : YuWanModifierModel
         try
         {
             var hand = PileType.Hand.GetPile(player);
-            var combatState = player.Creature.CombatState;
-            if (combatState == null)
+            if (player.Creature.CombatState is not CombatState combatState)
             {
                 MainFile.Logger.Warn("Vakuu: No combat state found!");
                 return;

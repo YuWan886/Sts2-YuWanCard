@@ -9,9 +9,9 @@ namespace YuWanCard.Core.Patches;
 public static class BadgePoolPatch
 {
     [HarmonyPostfix]
-    public static void CreateAllPostfix(SerializableRun run, ulong playerId, ref IReadOnlyCollection<Badge> __result)
+    public static void CreateAllPostfix(SerializableRun run, ulong playerId, bool won, ref IReadOnlyCollection<Badge> __result)
     {
-        var customBadges = CustomBadgeRegistry.CreateAll(run, playerId);
+        var customBadges = CustomBadgeRegistry.CreateAll(run, playerId, won);
         if (customBadges.Count == 0) return;
 
         var allBadges = new List<Badge>(__result);

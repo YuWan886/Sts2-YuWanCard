@@ -16,7 +16,7 @@ public class PigExplosionPower : YuWanPowerModel
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
-    public override bool IsInstanced => true;
+    public override PowerInstanceType InstanceType => PowerInstanceType.Instanced;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         [new DamageVar(20m, ValueProp.Unpowered)];

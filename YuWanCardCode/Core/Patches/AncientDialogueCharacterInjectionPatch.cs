@@ -11,11 +11,10 @@ namespace YuWanCard.Core.Patches;
 /// characters into any AncientDialogueSet before PopulateLocKeys runs.
 /// Mirrors RitsuLib's AncientDialoguePopulateLocKeysPatch approach.
 /// </summary>
-[HarmonyPatch]
+[HarmonyPatch(typeof(AncientDialogueSet), nameof(AncientDialogueSet.PopulateLocKeys))]
 public static class AncientDialogueCharacterInjectionPatch
 {
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(AncientDialogueSet), nameof(AncientDialogueSet.PopulateLocKeys))]
     static void Prefix(AncientDialogueSet __instance, string ancientEntry)
     {
         foreach (var character in ModelDb.AllCharacters)

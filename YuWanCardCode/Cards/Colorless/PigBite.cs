@@ -42,9 +42,9 @@ public class PigBite : YuWanCardModel
 
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
 
-        await PowerCmd.Apply<PoisonPower>(targetCreature, DynamicVars["PoisonPower"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<WeakPower>(targetCreature, DynamicVars["WeakPower"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<VulnerablePower>(targetCreature, DynamicVars["VulnerablePower"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<YouArePigPower>(targetCreature, DynamicVars["YouArePigPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<PoisonPower>(new ThrowingPlayerChoiceContext(), targetCreature, DynamicVars["PoisonPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<WeakPower>(new ThrowingPlayerChoiceContext(), targetCreature, DynamicVars["WeakPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<VulnerablePower>(new ThrowingPlayerChoiceContext(), targetCreature, DynamicVars["VulnerablePower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<YouArePigPower>(new ThrowingPlayerChoiceContext(), targetCreature, DynamicVars["YouArePigPower"].BaseValue, Owner.Creature, this);
     }
 }

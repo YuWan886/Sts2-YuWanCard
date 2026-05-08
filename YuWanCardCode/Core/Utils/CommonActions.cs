@@ -41,7 +41,7 @@ public static class CommonActions
     public static async Task<T?> Apply<T>(PlayerChoiceContext context, Creature target, CardModel card, decimal amount)
         where T : PowerModel
     {
-        return await PowerCmd.Apply<T>(target, amount, card.Owner.Creature, card);
+        return await PowerCmd.Apply<T>(context, target, amount, card.Owner.Creature, card);
     }
 
     public static async Task Apply<T>(PlayerChoiceContext context, IEnumerable<Creature> targets, CardModel card, bool applyToEach = false)
@@ -50,14 +50,14 @@ public static class CommonActions
         decimal amount = card.DynamicVars.Count;
         foreach (var target in targets)
         {
-            await PowerCmd.Apply<T>(target, amount, card.Owner.Creature, card);
+            await PowerCmd.Apply<T>(context, target, amount, card.Owner.Creature, card);
         }
     }
 
     public static async Task<T?> ApplySelf<T>(PlayerChoiceContext context, CardModel card, decimal amount = 1)
         where T : PowerModel
     {
-        return await PowerCmd.Apply<T>(card.Owner.Creature, amount, card.Owner.Creature, card);
+        return await PowerCmd.Apply<T>(context, card.Owner.Creature, amount, card.Owner.Creature, card);
     }
 
     public static async Task Draw(CardModel card, PlayerChoiceContext context)

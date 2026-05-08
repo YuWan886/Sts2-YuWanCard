@@ -4,7 +4,7 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 
 namespace YuWanCard.Core.Patches;
 
-[HarmonyPatch]
+[HarmonyPatch(typeof(SavedPropertiesTypeCache), nameof(SavedPropertiesTypeCache.GetNetIdForPropertyName))]
 public static class SavedPropertiesTypeCachePatch
 {
     private static readonly Dictionary<string, int> PropertyNameToNetIdMap;
@@ -19,7 +19,6 @@ public static class SavedPropertiesTypeCachePatch
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(SavedPropertiesTypeCache), nameof(SavedPropertiesTypeCache.GetNetIdForPropertyName))]
     public static bool GetNetIdForPropertyName(string propertyName, ref int __result)
     {
         if (!PropertyNameToNetIdMap.TryGetValue(propertyName, out int netId))

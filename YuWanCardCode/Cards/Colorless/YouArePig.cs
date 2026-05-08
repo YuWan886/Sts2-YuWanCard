@@ -41,9 +41,9 @@ public class YouArePig : YuWanCardModel
 
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
 
-        await PowerCmd.Apply<BufferPower>(targetCreature, DynamicVars["BufferPower"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<RegenPower>(targetCreature, DynamicVars["RegenPower"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<YouArePigPower>(targetCreature, DynamicVars["YouArePigPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<BufferPower>(new ThrowingPlayerChoiceContext(), targetCreature, DynamicVars["BufferPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<RegenPower>(new ThrowingPlayerChoiceContext(), targetCreature, DynamicVars["RegenPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<YouArePigPower>(new ThrowingPlayerChoiceContext(), targetCreature, DynamicVars["YouArePigPower"].BaseValue, Owner.Creature, this);
 
         var targetPlayer = targetCreature.Player;
         if (targetPlayer != null)

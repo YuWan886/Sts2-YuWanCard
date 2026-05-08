@@ -26,7 +26,7 @@ public class PigExplosion : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var power = await PowerCmd.Apply<PigExplosionPower>(Owner.Creature, DynamicVars["Turns"].BaseValue, Owner.Creature, this);
+        var power = await PowerCmd.Apply<PigExplosionPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["Turns"].BaseValue, Owner.Creature, this);
         if (power != null)
         {
             power.SetDamage(DynamicVars["PigExplosionDamage"].BaseValue);

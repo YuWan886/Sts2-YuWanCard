@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Utils;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace YuWanCard.Relics;
 
@@ -30,7 +31,7 @@ public class JealousPig : YuWanRelicModel
         return Task.CompletedTask;
     }
 
-    public override async Task AfterPowerAmountChanged(PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
+    public override async Task AfterPowerAmountChanged(PlayerChoiceContext choiceContext, PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
     {
         if (HasTriggeredThisCombat)
         {
@@ -74,7 +75,7 @@ public class JealousPig : YuWanRelicModel
         var powerCanonical = ModelDb.GetById<PowerModel>(power.Id);
         if (powerCanonical != null)
         {
-            await PowerCmd.Apply(powerCanonical.ToMutable(), Owner.Creature, amount, Owner.Creature, null);
+            await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), powerCanonical.ToMutable(), Owner.Creature, amount, Owner.Creature, null);
         }
     }
 
