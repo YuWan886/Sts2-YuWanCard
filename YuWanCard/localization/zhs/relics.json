@@ -80,7 +80,7 @@
   "YUWANCARD-WHAT_IF_ENTRY.description": "选择一个遗物，改变这场游戏的规则。",
   "YUWANCARD-WHAT_IF_SKIP.title": "跳过",
   "YUWANCARD-WHAT_IF_SKIP.description": "跳过选择。",
-  "YUWANCARD-WHAT_IF_CATEGORY.header": "假如只有遗物",
+  "YUWANCARD-WHAT_IF_CATEGORY.header": "“假如”遗物",
   "YUWANCARD-WHAT_IF_JACKPOT.title": "假如只有大奖",
   "YUWANCARD-WHAT_IF_JACKPOT.description": "拾起时，将卡组中的所有卡牌都变化为[gold]大奖[/gold]。\n卡牌奖励只有[gold]大奖[/gold]。",
   "YUWANCARD-WHAT_IF_JACKPOT.flavor": "优质卡组#002。",
