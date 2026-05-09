@@ -4,22 +4,23 @@
 
 ### Q: 如何添加新的卡牌池？
 
-继承 `CustomCardPoolModel`：
+继承 `YuWanCardPoolModel`：
 
 ```csharp
 using MegaCrit.Sts2.Core.Models.CardPools;
 
-public class MyCardPool : CustomCardPoolModel
+namespace YuWanCard.Characters;
+
+public class MyCardPool : YuWanCardPoolModel
 {
-    public override string Title => "my_pool";
+    public override string? BigEnergyIconPath =>
+        "res://YuWanCard/images/characters/my_energy_counter.png";
+    public override string? TextEnergyIconPath =>
+        "res://YuWanCard/images/characters/my_text_energy.png";
+    public override Color ShaderColor => new("FFD700");
     public override bool IsShared => false;
-    public override bool IsColorless => false;
-    
-    protected override CardModel[] GenerateAllCards() => 
-    [
-        ModelDb.Card<MyCard1>(),
-        ModelDb.Card<MyCard2>()
-    ];
+    public override Color DeckEntryCardColor => new("FAFAD2");
+    public override Color EnergyOutlineColor => new("773726");
 }
 ```
 
@@ -28,6 +29,13 @@ public class MyCardPool : CustomCardPoolModel
 ```csharp
 public override CardMultiplayerConstraint MultiplayerConstraint 
     => CardMultiplayerConstraint.MultiplayerOnly;
+```
+
+### Q: 如何让卡牌仅在单人模式出现？
+
+```csharp
+public override CardMultiplayerConstraint MultiplayerConstraint 
+    => CardMultiplayerConstraint.SingleplayerOnly;
 ```
 
 ### Q: 如何正确处理金币修改？
@@ -60,6 +68,22 @@ public override async Task AfterGoldGained(Player player)
 using YuWanCard.Utils;
 
 var version = GameVersionCompat.GameVersion;
+```
+
+### Q: 如何检测运行平台？
+
+```csharp
+using YuWanCard.Utils;
+
+if (RuntimePlatform.IsMobileLike)
+{
+    // Android/iOS 特殊处理
+}
+
+if (RuntimePlatform.SupportsDynamicCode)
+{
+    // 可使用 Reflection.Emit
+}
 ```
 
 ### Q: 如何添加先古之民对话？
@@ -105,6 +129,65 @@ public class MyCustomVar : DynamicVar
             _ => value.ToString()
         };
     }
+}
+```
+
+### Q: 如何在生命条上显示预测效果？
+
+重写 `GetHealthBarForecastSegments` 方法：
+
+```csharp
+using Godot;
+
+public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegments(HealthBarForecastContext context)
+{
+    if (Amount > 0)
+    {
+        yield return new HealthBarForecastSegment(
+            Amount,
+            new Color(0.5f, 0.2f, 0.8f),
+            HealthBarForecastDirection.FromRight
+        );
+    }
+}
+```
+
+### Q: 如何添加自定义卡牌标签？
+
+```csharp
+// 使用已有标签
+WithTags(YuWanTags.FoodPig);
+
+// 创建新标签
+public static readonly CardTag MyTag = ModCardTagRegistry.Create("my_tag");
+```
+
+### Q: 如何实现临时能力？
+
+```csharp
+// 简单方式：一行实现
+public class PigChargePower : YuWanTemporaryPowerModelWrapper<PigCharge, StrengthPower>;
+```
+
+### Q: 如何将内容注册到自定义池？
+
+```csharp
+// 在 ContentRegistered 阶段注册
+CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyCard));
+CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyOtherCard));
+```
+
+### Q: 如何指定自定义 ID？
+
+使用 `CustomIDAttribute` 覆盖默认的自动前缀生成：
+
+```csharp
+using YuWanCard.Core.Utils.Attributes;
+
+[CustomID("MYMOD-CUSTOM_ID")]
+public class MyCard : YuWanCardModel
+{
+    // 此卡牌的 ID 将是 "MYMOD-CUSTOM_ID"
 }
 ```
 
@@ -179,6 +262,7 @@ public class MyCustomVar : DynamicVar
    - 卡牌：`YUWANCARD-{CardId}.title`
    - 能力：`YUWANCARD-{PowerId}.title`
 3. 检查 JSON 文件语法是否正确
+4. Android 平台注意前缀回退问题
 
 ### 能力赋予玩家后崩溃
 

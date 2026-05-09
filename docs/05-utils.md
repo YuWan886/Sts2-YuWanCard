@@ -4,6 +4,21 @@
 
 ## Core/Utils 目录
 
+### AssetPathHelper
+
+统一的 `res://{ModId}/...` 资源路径解析：
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 获取模组资源路径
+var path = AssetPathHelper.GetModResPath("images/card_portraits/my_card.png");
+// 结果: res://YuWanCard/images/card_portraits/my_card.png
+
+// 从类型自动推导资源路径
+var pathFromType = AssetPathHelper.GetModResPathFromType(typeof(MyCard), "images/card_portraits");
+```
+
 ### CommonActions
 
 常用卡牌动作的快捷方法：
@@ -29,6 +44,22 @@ await CommonActions.Apply<StrengthPower>(choiceContext, target, this, 2m);
 | `CardAttack(CardModel, CardPlay, int)` | 创建攻击命令 |
 | `CardBlock(CardModel, CardPlay?)` | 获得格挡 |
 | `Apply<T>(PlayerChoiceContext, Creature, CardModel, decimal)` | 施加能力 |
+
+### NodeFactory
+
+Godot 场景加载和类型自动转换：
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 加载场景并自动转换类型
+var visuals = NodeFactory.LoadAndConvert<NCreatureVisuals>("res://scenes/character_visuals.tscn");
+
+// 自动转换已实例化的节点
+var converted = NodeFactory.TryAutoConvert(node);
+```
+
+支持将 `Node2D` 自动转换为 `NCreatureVisuals`、`NEnergyCounter`、`NMerchantCharacter`、`NRestSiteCharacter`，以及 `Label` → `MegaLabel`。
 
 ### WeightedList
 
@@ -61,7 +92,7 @@ var list = new WeightedList<WeightedItem>();
 list.Add(new WeightedItem { Weight = 10, Value = "test" });
 ```
 
-### SpireField
+### SpireField / SavedSpireField
 
 基于 `ConditionalWeakTable` 的实例数据存储，用于在不修改类的情况下添加额外数据：
 
@@ -122,7 +153,7 @@ var key3 = AncientDialogueUtil.GetGenericDialogueKey("pig_ancient", 0, 1);
 
 ### TooltipSource
 
-悬停提示源，用于卡牌的额外提示：
+悬停提示源包装器，用于卡牌的额外提示：
 
 ```csharp
 using YuWanCard.Core.Utils;
@@ -134,6 +165,45 @@ public override IEnumerable<TooltipSource> ExtraHoverTips
         yield return new TooltipSource(_ => HoverTipFactory.FromPower<MyPower>());
     }
 }
+```
+
+### ModCardTagRegistry
+
+自定义卡牌标签注册表：
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 创建新标签
+public static readonly CardTag MyTag = ModCardTagRegistry.Create("my_tag");
+
+// 在卡牌中使用
+WithTags(YuWanTags.FoodPig, YuWanTags.YuWan);
+```
+
+### DynamicEnumValueMinter
+
+SHA-256 哈希运行时枚举值创建（用于自定义 TargetType、CardTag 等）：
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 创建自定义枚举值
+var customValue = DynamicEnumValueMinter.MintValue("MyCustomEnumValue");
+```
+
+### CreatureCompat
+
+生物兼容性反射委托，避免 JIT 崩溃：
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 安全设置最大生命值
+CreatureCompat.SetMaxHp(creature, newMaxHp);
+
+// 安全设置最大和当前生命值
+CreatureCompat.SetMaxAndCurrentHp(creature, newMaxHp);
 ```
 
 ---
@@ -180,7 +250,7 @@ private bool IsSafePower(PowerModel power)
 ```csharp
 using YuWanCard.Utils;
 
-public class MyRelic : RelicModel
+public class MyRelic : YuWanRelicModel
 {
     private GoldModificationGuard? _goldGuard;
 
@@ -213,7 +283,27 @@ using YuWanCard.Utils;
 var version = GameVersionCompat.GameVersion;
 
 // 当前版本常量
-var currentVersion = GameVersionCompat.CurrentVersion;
+var currentVersion = GameVersionCompat.CurrentVersion; // 0.103.2
+```
+
+### RuntimePlatform
+
+运行时平台检测：
+
+```csharp
+using YuWanCard.Utils;
+
+// 检测移动平台
+if (RuntimePlatform.IsMobileLike)
+{
+    // Android/iOS 特殊处理
+}
+
+// 检测是否支持动态代码生成（emit/transpiler）
+if (RuntimePlatform.SupportsDynamicCode)
+{
+    // Reflection.Emit 安全使用
+}
 ```
 
 ### PetManager
@@ -250,7 +340,7 @@ ShoppingCartManager.RemoveItem(player, itemId);
 var cart = ShoppingCartManager.GetCart(player);
 ```
 
-### UpdateChecker
+### UpdateChecker / UpdatePopup
 
 模组更新检查器：
 
@@ -291,8 +381,8 @@ using YuWanCard.Utils;
 // 播放特效
 await VfxUtils.PlayEffect("vfx/vfx_attack_slash", target);
 
-// 创建自定义特效
-var effect = VfxUtils.CreateEffect("res://custom_vfx.tscn");
+// 创建猪坠机特效
+VfxUtils.CreatePigCrashEffect(target);
 ```
 
 ### NodeUtils
@@ -335,4 +425,59 @@ var field = YuWanReflectionHelper.GetPrivateField(obj, "fieldName");
 
 // 调用私有方法
 var result = YuWanReflectionHelper.InvokePrivateMethod(obj, "methodName", args);
+```
+
+### CreatureHeightUtils
+
+生物高度计算工具：
+
+```csharp
+using YuWanCard.Utils;
+
+// 获取生物高度
+var height = CreatureHeightUtils.GetHeight(creature);
+```
+
+### ArthropodUtils
+
+节肢动物相关工具：
+
+```csharp
+using YuWanCard.Utils;
+
+// 节肢动物相关操作
+ArthropodUtils.DoSomething();
+```
+
+### PigCardPoolUtils
+
+猪卡牌池工具：
+
+```csharp
+using YuWanCard.Utils;
+
+// 猪卡牌池相关操作
+PigCardPoolUtils.DoSomething();
+```
+
+### YuWanTags
+
+自定义卡牌标签常量：
+
+```csharp
+using YuWanCard.Utils;
+
+// 使用已有标签
+WithTags(YuWanTags.FoodPig, YuWanTags.YuWan);
+```
+
+### RainDarkEffectPatch
+
+雨暗效果处理：
+
+```csharp
+using YuWanCard.Utils;
+
+// 雨暗效果相关
+RainDarkEffectPatch.ApplyEffect();
 ```

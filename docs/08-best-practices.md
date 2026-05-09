@@ -78,6 +78,10 @@ YuWanCard/localization/
 | 遗物标题 | `YUWANCARD-{RelicId}.title` |
 | 遗物描述 | `YUWANCARD-{RelicId}.description` |
 
+### Android 本地化前缀回退
+
+`LocalizationPrefixFallbackPatch` 在 `LocTable.GetRawText` 抛出 `LocException` 时自动重试添加 `YUWANCARD-` 前缀的键查找，解决 Android 平台上前缀丢失的问题。
+
 ### 描述文本最佳实践
 
 ```json
@@ -96,8 +100,7 @@ YuWanCard/localization/
 
 | 基类 | 适用场景 |
 |------|----------|
-| `YuWanCardModel` | 推荐使用，自动 ID 和路径生成 |
-| `CustomCardModel` | 需要更多控制时使用 |
+| `YuWanCardModel` | 推荐使用，自动 ID 和路径生成，流式构建器 API |
 
 ### 卡牌实现模板
 
@@ -217,6 +220,7 @@ public override async Task AfterGoldGained(Player player)
 | `[HarmonyPrefix]` | 方法执行前 | 阻止原方法、修改参数 |
 | `[HarmonyPostfix]` | 方法执行后 | 修改返回值、添加副作用 |
 | `[HarmonyTranspiler]` | IL 代码修改 | 深度修改方法逻辑 |
+| `[HarmonyFinalizer]` | 异常处理 | 捕获异常并执行回退逻辑 |
 
 ### 补丁实现模板
 
@@ -251,9 +255,32 @@ class MyNeowPatch
 ### 反射调用私有方法
 
 ```csharp
-var doneMethod = typeof(AncientEventModel).GetMethod("Done", 
-    BindingFlags.NonPublic | BindingFlags.Instance);
-doneMethod?.Invoke(ancientEvent, null);
+// 使用 YuWanReflectionHelper
+var value = YuWanReflectionHelper.GetPrivateField<SomeType>(instance, "_fieldName");
+YuWanReflectionHelper.SetPrivateField(instance, "_fieldName", newValue);
+
+// 使用 AccessTools
+var fieldRef = AccessTools.FieldRefAccess<SomeType, string>("_someField");
+```
+
+---
+
+## 平台检测
+
+使用 `RuntimePlatform` 替代直接调用 `OS.HasFeature("mobile")`：
+
+```csharp
+// 检测移动平台
+if (RuntimePlatform.IsMobileLike)
+{
+    // Android/iOS 特殊处理
+}
+
+// 检测是否支持动态代码生成（emit/transpiler）
+if (RuntimePlatform.SupportsDynamicCode)
+{
+    // Reflection.Emit 安全使用
+}
 ```
 
 ---

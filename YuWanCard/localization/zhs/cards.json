@@ -227,5 +227,7 @@
   "YUWANCARD-PIG_BIRTH.description": "抽{Cards:diff()}张牌，丢弃最多1张牌。",
   "YUWANCARD-PIG_BIRTH.selectionScreenPrompt": "选择要丢弃的手牌",
   "YUWANCARD-RED_KING.title": "雷德王",
-  "YUWANCARD-RED_KING.description": "在{Combats}场战斗结束后，变化为1件随机的先古遗物。"
+  "YUWANCARD-RED_KING.description": "在{Combats}场战斗结束后，变化为1件随机的先古遗物。",
+  "YUWANCARD-GAMBLER.title": "坐杀博徒",
+  "YUWANCARD-GAMBLER.description": "获得 -{IfUpgraded:show:12|10}~{IfUpgraded:show:12|10} 点[gold]力量[/gold]。"
 }

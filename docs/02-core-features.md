@@ -86,20 +86,36 @@ public class PigStrike : YuWanCardModel
 | `Rare` | 稀有 | 15% |
 | `Special` | 特殊 | 特殊获取 |
 
-### 链式 API
+### 流式构建器 API
 
 `YuWanCardModel` 提供链式 API 来设置卡牌属性：
 
 ```csharp
 public MyCard() : base(...)
 {
-    WithDamage(6);                    // 设置伤害
-    WithBlock(5);                     // 设置格挡
-    WithHeal(3);                      // 设置治疗
-    WithMagicNumber(2);               // 设置魔法数字
-    WithTags(CardTag.Strike);         // 添加标签
-    WithMultiDamage(3);               // 设置多段伤害
-    WithPower<StrengthPower>(2);      // 设置能力层数
+    WithDamage(6);                              // 设置伤害
+    WithDamage(6, 3);                           // 设置伤害和升级值
+    WithBlock(5);                               // 设置格挡
+    WithBlock(5, 3);                            // 设置格挡和升级值
+    WithHeal(3);                                // 设置治疗
+    WithEnergy(1);                              // 设置能量
+    WithCards(3);                               // 设置卡牌数量
+    WithPower<StrengthPower>(2);                // 设置能力层数
+    WithPower<StrengthPower>("Venom", 3);       // 命名能力层数
+    WithVar("MyVar", 3, 1);                     // 通用变量
+    WithVars(var1, var2);                       // 多个变量
+    WithCalculatedDamage(props, calc);          // 计算伤害
+    WithTags(CardTag.Strike);                   // 添加标签
+    WithKeywords(CardKeyword.Ethereal);         // 添加关键字
+    WithKeyword(CardKeyword.Innate, UpgradeType.Add);    // 升级时添加关键字
+    WithKeyword(CardKeyword.Ethereal, UpgradeType.Remove); // 升级时移除关键字
+    WithTip(_ => HoverTipFactory.FromPower<MyPower>());   // 悬停提示
+    WithTip(new TooltipSource(...));             // TooltipSource 提示
+    WithTip(typeof(StrengthPower));              // 按类型自动提示
+    WithTip(CardKeyword.Strike);                 // 关键字提示
+    WithTips(...);                               // 多个提示
+    WithEnergyTip();                             // 能量提示
+    WithCostUpgradeBy(-1);                       // 升级时费用变化
 }
 ```
 
@@ -113,6 +129,30 @@ public MyCard() : base(...)
 | `OnExhausted()` | 消耗时调用 |
 | `OnRetained()` | 保留时调用 |
 | `CanPlay(PlayerChoiceContext, CardPlay)` | 是否可以打出 |
+
+### 自定义肖像和边框
+
+```csharp
+// 重写 CustomPortraitPath 使用自定义肖像
+public override string? CustomPortraitPath => "res://YuWanCard/images/card_portraits/my_card.png";
+
+// 重写 CustomFrame 使用自定义边框
+public override Texture2D? CustomFrame => ResourceLoader.Load<Texture2D>(
+    "res://YuWanCard/images/card_frames/my_frame.png");
+```
+
+默认根据 `CardId` 查找 `images/card_portraits/{CardId}.png` 和 `images/card_frames/{CardId}.png`，如果文件不存在则回退到默认肖像。
+
+### 超脱卡牌 (Transcendence)
+
+实现 `ITranscendenceCard` 接口：
+
+```csharp
+public class MyCard : YuWanCardModel, ITranscendenceCard
+{
+    public CardModel GetTranscendenceTransformedCard() => ModelDb.Card<MySuperCard>();
+}
+```
 
 ### 多人游戏限制
 
@@ -170,8 +210,10 @@ public class PigDoubtPower : YuWanPowerModel
 | 类型 | 说明 |
 |------|------|
 | `Counter` | 层数叠加 |
-| `Duration` | 持续时间 |
+| `Single` | 不叠加 |
 | `None` | 不叠加 |
+| `Intensity` | 强度叠加 |
+| `Duration` | 持续时间 |
 
 ### 常用钩子方法
 
@@ -185,6 +227,65 @@ public class PigDoubtPower : YuWanPowerModel
 | `OnAttacked(DamageInfo, Creature)` | 被攻击时触发 |
 | `AfterCardPlayed(Card)` | 打出卡牌后 |
 | `AfterCardDrawn(Card)` | 抽牌后 |
+
+### 临时能力
+
+使用 `YuWanTemporaryPowerModelWrapper` 一行实现：
+
+```csharp
+// 临时能力本体包装器（应用时转换为 InternalPower）
+public class PigChargePower : YuWanTemporaryPowerModelWrapper<PigCharge, StrengthPower>;
+```
+
+使用 `YuWanTemporaryPowerModel` 实现复杂逻辑：
+
+```csharp
+public class MyTempPower : YuWanTemporaryPowerModel
+{
+    public override PowerModel InternallyAppliedPower => ModelDb.Power<StrengthPower>();
+    
+    public override async Task BeforeApplied(Creature? applier, CardModel? cardSource)
+    {
+        await base.BeforeApplied(applier, cardSource);
+        // 自定义应用前逻辑
+    }
+}
+```
+
+### 生命条预测
+
+`YuWanPowerModel` 默认实现了 `IHealthBarForecastSource`，可在生命条上显示预测效果：
+
+```csharp
+using Godot;
+
+public class MyPoisonPower : YuWanPowerModel
+{
+    public override PowerType Type => PowerType.Debuff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegments(HealthBarForecastContext context)
+    {
+        if (context.Creature == Owner && Amount > 0)
+        {
+            yield return new HealthBarForecastSegment(
+                Amount,
+                new Color(0.5f, 0.2f, 0.8f),
+                HealthBarForecastDirection.FromRight,
+                Order: 0
+            );
+        }
+    }
+}
+```
+
+**使用毁灭条着色器**：
+```csharp
+var material = ShaderUtils.CreateDoomBarShaderMaterial(
+    ShaderUtils.CreateVanillaDoomBarGradientTexture()
+);
+yield return new HealthBarForecastSegment(Amount, color, direction, 0, material);
+```
 
 ---
 
@@ -202,6 +303,8 @@ namespace YuWanCard.Relics;
 public class PigCarrot : YuWanRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Common;
+
+    public PigCarrot() : base(autoAdd: true) { }  // autoAdd=true 自动注册
 
     public override async Task AfterPlayerTurnStart()
     {
@@ -221,6 +324,7 @@ public class PigCarrot : YuWanRelicModel
 | `Rare` | 稀有 | 15% |
 | `Ancient` | 先古之民 | 特殊获取 |
 | `Shop` | 商店 | 仅商店购买 |
+| `Starter` | 初始 | 角色自带 |
 
 ### 常用钩子方法
 
@@ -233,16 +337,35 @@ public class PigCarrot : YuWanRelicModel
 | `ModifyBlockMultiplicative(decimal, Player)` | 修改格挡倍率 |
 | `ModifyMaxEnergy(Player, decimal)` | 修改最大能量 |
 | `ModifyHandDraw(Player, int)` | 修改抽牌数 |
+| `ModifyRestSiteHealAmount(Player, decimal)` | 修改休息处回复 |
+| `TryModifyRewards(Rewards)` | 修改奖励 |
 | `ShouldGainGold(decimal, Player)` | 获得金币前 |
 | `AfterGoldGained(Player)` | 获得金币后 |
+
+### 遗物升级链
+
+```csharp
+// 基础遗物
+public class PigCarrot : YuWanRelicModel
+{
+    public PigCarrot() : base(true) { }
+    public override RelicModel? GetUpgradeReplacement() => ModelDb.Relic<GoldenCarrot>();
+}
+
+// 升级版遗物
+public class GoldenCarrot : YuWanRelicModel
+{
+    public GoldenCarrot() : base(false) { }  // autoAdd=false，不自动注册
+}
+```
 
 ---
 
 ## 角色系统
 
-### 基类：PlaceholderCharacterModel
+### 基类：YuWanCharacterModel
 
-项目使用 `PlaceholderCharacterModel` 作为角色基类，它使用 Ironclad 作为占位符视觉：
+项目使用 `YuWanCharacterModel` 或直接实现 `IYuWanCharacter` 接口作为角色基类：
 
 ```csharp
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -250,7 +373,7 @@ using MegaCrit.Sts2.Core.Models.CardPools;
 
 namespace YuWanCard.Characters;
 
-public class Pig : PlaceholderCharacterModel, IYuWanCharacter
+public class Pig : CharacterModel, IYuWanCharacter
 {
     public override string CharacterId => "pig";
     public override string Title => "pig";
@@ -271,19 +394,71 @@ public class Pig : PlaceholderCharacterModel, IYuWanCharacter
     }
 
     public override RelicModel StartingRelic => ModelDb.Relic<PigCarrot>();
+
+    // IYuWanCharacter 接口实现
+    string? IYuWanCharacter.CustomVisualPath => "res://YuWanCard/scenes/characters/pig.tscn";
+    string? IYuWanCharacter.CustomEnergyCounterPath => "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
+    string? IYuWanCharacter.CustomCharacterSelectIconPath => "res://YuWanCard/images/characters/char_select_pig.png";
+    string? IYuWanCharacter.CustomIconPath => "res://YuWanCard/scenes/ui/character_icons/pig_icon.tscn";
+    string? IYuWanCharacter.CustomMerchantAnimPath => "res://YuWanCard/scenes/characters/pig_merchant.tscn";
+    string? IYuWanCharacter.CustomRestSiteAnimPath => "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
 }
 ```
 
 ### IYuWanCharacter 接口
 
-实现此接口可自定义角色视觉资源：
+实现此接口可自定义角色视觉资源（20+ 个路径属性）：
 
 ```csharp
-public class Pig : PlaceholderCharacterModel, IYuWanCharacter
+public class Pig : CharacterModel, IYuWanCharacter
 {
-    public string? CustomVisualPath => "res://YuWanCard/scenes/pig_visual.tscn";
-    public string? CustomCharacterSelectIconPath => "res://YuWanCard/images/characters/pig_select.png";
-    public string? CustomIconPath => "res://YuWanCard/images/characters/pig_icon.png";
+    // 自定义视觉效果路径
+    string? IYuWanCharacter.CustomVisualPath => "res://YuWanCard/scenes/characters/pig.tscn";
+    string? IYuWanCharacter.CustomEnergyCounterPath => "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
+    string? IYuWanCharacter.CustomMerchantAnimPath => "res://YuWanCard/scenes/characters/pig_merchant.tscn";
+    string? IYuWanCharacter.CustomRestSiteAnimPath => "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
+    
+    // 角色选择界面
+    string? IYuWanCharacter.CustomCharacterSelectIconPath => "res://YuWanCard/images/characters/char_select_pig.png";
+    string? IYuWanCharacter.CustomCharacterSelectLockedIconPath => "res://YuWanCard/images/characters/char_select_pig.png";
+    string? IYuWanCharacter.CustomCharacterSelectBg => "res://YuWanCard/scenes/characters/char_select_bg_pig.tscn";
+    
+    // UI 图标
+    string? IYuWanCharacter.CustomIconPath => "res://YuWanCard/scenes/ui/character_icons/pig_icon.tscn";
+    string? IYuWanCharacter.CustomIconTexturePath => "res://YuWanCard/images/characters/character_icon_pig.png";
+    string? IYuWanCharacter.CustomIconOutlineTexturePath => "res://YuWanCard/images/characters/character_icon_pig.png";
+    
+    // 多人游戏手势
+    string? IYuWanCharacter.CustomArmPointingTexturePath => "res://YuWanCard/images/characters/multiplayer_hand/pig_point.png";
+    
+    // 音效
+    string? IYuWanCharacter.CustomAttackSfx => null;
+    string? IYuWanCharacter.CustomCastSfx => null;
+    string? IYuWanCharacter.CustomDeathSfx => null;
+    
+    // 动画
+    CreatureAnimator? IYuWanCharacter.SetupCustomAnimationStates(MegaSprite controller) { ... }
+}
+```
+
+**角色选择界面自动集成**：`CharacterSelectScreenPatch` 和 `CharacterSelectMonitor` 自动确保自定义角色按钮出现在角色选择屏幕上。
+
+---
+
+## 角色池设计
+
+```csharp
+[Pool(typeof(PigCardPool))]
+public class PigCardPool : YuWanCardPoolModel
+{
+    public override string? BigEnergyIconPath =>
+        "res://YuWanCard/images/characters/pig_enery_counter.png";
+    public override string? TextEnergyIconPath =>
+        "res://YuWanCard/images/characters/pig_text_enery.png";
+    public override Color ShaderColor => new("F5C48C");   // 卡牌边框 HSV 色调
+    public override bool IsShared => false;
+    public override Color DeckEntryCardColor => new("FAFAD2");
+    public override Color EnergyOutlineColor => new("773726");
 }
 ```
 
@@ -330,8 +505,12 @@ using MegaCrit.Sts2.Core.Models.Encounters;
 
 namespace YuWanCard.Encounters;
 
-public class PigEncounter : EncounterModel
+public class PigEncounter : YuWanEncounterModel
 {
+    public PigEncounter() : base(RoomType.Monster)
+    {
+    }
+
     public override string EncounterId => "pig_battle";
     
     public override List<EncounterMonster> Monsters => 
@@ -379,7 +558,7 @@ using MegaCrit.Sts2.Core.Entities.Ancients;
 
 namespace YuWanCard.Ancients;
 
-public class PigAncient : AncientModel
+public class PigAncient : YuWanAncientModel
 {
     public override string AncientId => "pig_ancient";
     
@@ -409,7 +588,7 @@ using MegaCrit.Sts2.Core.Entities.Events;
 
 namespace YuWanCard.Events;
 
-public class PigEvent : EventModel
+public class PigEvent : YuWanEventModel
 {
     public override string EventId => "pig_event";
     public override Act[] Acts => [Act.One];
@@ -437,31 +616,34 @@ public class PigEvent : EventModel
 
 ## 充能球系统
 
-### 基类：YuWanOrbModel
+### 基类：CustomOrbModel
 
-项目使用 `YuWanOrbModel` 作为所有充能球的基类，支持自动模型注册和自定义资源路径：
+项目使用 `CustomOrbModel` 作为所有充能球的基类（继承自 `YuWanOrbModel`）：
 
 ```csharp
 using Godot;
-using MegaCrit.Sts2.Core.Entities.Orbs;
-using YuWanCard.Core.Abstracts;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace YuWanCard.Orbs;
 
-public class LittleRegentOrb : YuWanOrbModel
+public class LittleRegentOrb : CustomOrbModel
 {
     public override Color DarkenedColor => new Color("FFD700");
     public override decimal PassiveVal => 3m;
     public override decimal EvokeVal => 6m;
 
-    public override string? CustomIconPath =>
-        "res://YuWanCard/images/orbs/little_regent.png";
+    public override string? CustomIconPath => "res://YuWanCard/images/orbs/little_regent.png";
 
-    public override string? CustomSpritePath =>
-        "res://scenes/orbs/orb_visuals/plasma_orb.tscn";
+    public override string? CustomChannelSfx => "event:/sfx/characters/defect/defect_plasma_channel";
 
-    protected override string ChannelSfx =>
-        "event:/sfx/characters/defect/defect_plasma_channel";
+    public override Node2D? CreateCustomSprite()
+    {
+        var scene = ResourceLoader.Load<PackedScene>("res://scenes/orbs/orb_visuals/plasma_orb.tscn");
+        if (scene == null) return null;
+        return scene.Instantiate<Node2D>(PackedScene.GenEditState.Disabled);
+    }
 
     public override async Task BeforeTurnEndOrbTrigger(PlayerChoiceContext choiceContext)
     {
@@ -487,25 +669,8 @@ public class LittleRegentOrb : YuWanOrbModel
 | 属性 | 说明 |
 |------|------|
 | `CustomIconPath` | 充能球图标的 Godot 资源路径 |
-| `CustomSpritePath` | 自定义精灵场景的 Godot 资源路径（可选） |
-
-### 充能球注册
-
-继承 `YuWanOrbModel` 的充能球会自动通过 `ContentRegistry.AddModel` 注册。此外，项目通过 Harmony Patch 将自定义充能球注入到 `ModelDb.Orbs` 列表中，使其可被游戏识别：
-
-```csharp
-[HarmonyPatch(typeof(ModelDb), nameof(ModelDb.Orbs), MethodType.Getter)]
-static class CustomOrbsListPatch
-{
-    [HarmonyPostfix]
-    static IEnumerable<OrbModel> AddCustomOrbs(IEnumerable<OrbModel> __result)
-    {
-        return __result.Append(ModelDb.Orb<Orbs.LittleRegentOrb>());
-    }
-}
-```
-
-所有自定义充能球会自动出现在游戏的充能球数据库中，无需额外手动注册。
+| `CustomChannelSfx` | 充能音效路径 |
+| `CreateCustomSprite()` | 创建自定义精灵场景 |
 
 ---
 

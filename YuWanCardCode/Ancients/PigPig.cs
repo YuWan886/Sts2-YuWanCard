@@ -101,8 +101,8 @@ public class PigPig : YuWanAncientModel
         var eventOptions = new List<EventOption>
         {
             RelicOption(selectedRelic),
-            new(this, ChooseRandomRelic, "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC"),
-            new(this, UpgradeCards, "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS")
+            new(this, ChooseRandomRelic, $"{Id.Entry}.pages.INITIAL.options.CHOOSE_RELIC"),
+            new(this, UpgradeCards, $"{Id.Entry}.pages.INITIAL.options.UPGRADE_CARDS")
         };
         
         return eventOptions;
@@ -110,7 +110,7 @@ public class PigPig : YuWanAncientModel
 
     private EventOption RelicOption(RelicModel relic)
     {
-        var optionKey = $"YUWANCARD-PIG_PIG.pages.INITIAL.options.{relic.Id.Entry.Replace("YUWANCARD-", "").ToUpperInvariant()}";
+        var optionKey = $"{Id.Entry}.pages.INITIAL.options.{relic.Id.Entry.Replace("YUWANCARD-", "").ToUpperInvariant()}";
         return EventOption.FromRelic(relic, this, () => ObtainRelic(relic), optionKey);
     }
 

@@ -102,6 +102,21 @@ protected override IEnumerable<DynamicVar> CanonicalVars =>
 }
 ```
 
+### 升级条件占位符
+
+使用 `{IfUpgraded:show:...|...}` 显示升级前后的不同文本：
+
+```json
+{
+  "YUWANCARD-MY_CARD.description": "造成 {Damage} 点伤害。{IfUpgraded:show:\n固有。|}"
+}
+```
+
+**效果**：
+- 未升级：造成 6 点伤害。
+- 升级后：造成 9 点伤害。
+固有。
+
 ---
 
 ## 格式化器

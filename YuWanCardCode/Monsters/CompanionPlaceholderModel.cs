@@ -17,7 +17,7 @@ public class CompanionPlaceholderModel : MonsterModel
     public override int MinInitialHp => PendingHp;
     public override int MaxInitialHp => PendingHp;
 
-    public override LocString Title => new("powers", "YUWANCARD-CALL_COMPANIONS_POWER.title");
+    public override LocString Title => new("powers", $"{Id.Entry}.title");
 
     protected override string VisualsPath => PendingVisualPath ?? base.VisualsPath;
 

@@ -171,7 +171,7 @@ public class RingOfSevenCurses : YuWanRelicModel
         }
 
         var list = new List<LocString>(currentExtraText);
-        var extraText = new LocString("relics", "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText");
+        var extraText = new LocString("relics", $"{Id.Entry}.additionalRestSiteHealText");
         decimal baseHeal = (decimal)player.Creature.MaxHp * 0.3m;
         decimal actualHeal = baseHeal * 0.5m;
         int actualHealInt = (int)actualHeal;

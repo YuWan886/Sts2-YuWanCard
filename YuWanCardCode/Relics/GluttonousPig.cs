@@ -41,14 +41,19 @@ public class GluttonousPig : YuWanRelicModel
         {
             return false;
         }
-        alternatives.Add(new CardRewardAlternative("EAT", OnEatCard, PostAlternateCardRewardAction.DismissScreenAndRemoveReward));
-        return true;
-    }
 
-    private async Task OnEatCard()
-    {
-        EatCard();
-        await Task.CompletedTask;
+        if (alternatives.Any(a => a.OptionId == "EAT"))
+        {
+            return false;
+        }
+
+        alternatives.Add(new CardRewardAlternative("EAT", () =>
+        {
+            foreach (var relic in player.Relics.OfType<GluttonousPig>())
+                relic.EatCard();
+            return Task.CompletedTask;
+        }, PostAlternateCardRewardAction.DismissScreenAndRemoveReward));
+        return true;
     }
 
     public override Task AfterRoomEntered(AbstractRoom room)

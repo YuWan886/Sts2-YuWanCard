@@ -176,6 +176,22 @@ var block = new CalculatedBlockVar(
 );
 ```
 
+### CalculationBaseVar
+
+计算基数变量：
+
+```csharp
+var baseVar = new CalculationBaseVar(6m);
+```
+
+### ExtraDamageVar
+
+额外伤害变量：
+
+```csharp
+var extraDamage = new ExtraDamageVar(3m);
+```
+
 ## CanonicalVars
 
 在能力或卡牌中定义规范变量，用于描述文本中的占位符：
@@ -318,6 +334,9 @@ if (DynamicVars.Damage.IsUpgraded)
 | `RepeatVar` | 重复次数变量 | `new RepeatVar(3m)` |
 | `CalculatedDamageVar` | 计算伤害 | `new CalculatedDamageVar(6m, 2m, 3m)` |
 | `CalculatedBlockVar` | 计算格挡 | `new CalculatedBlockVar(5m, 1m, 2m)` |
+| `CalculationBaseVar` | 计算基数 | `new CalculationBaseVar(6m)` |
+| `ExtraDamageVar` | 额外伤害变量 | `new ExtraDamageVar(3m)` |
 | `PersistVar` | 持续次数 | `new PersistVar(2m)` |
 | `RefundVar` | 能量返还 | `new RefundVar(1m)` |
 | `ExhaustiveVar` | 耗尽次数 | `new ExhaustiveVar(3m)` |
+| `DynamicVar` | 通用命名变量 | `new DynamicVar("MyVar", 1m)` |

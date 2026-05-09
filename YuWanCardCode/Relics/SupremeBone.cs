@@ -69,7 +69,7 @@ public class SupremeBone : YuWanRelicModel
 
         Flash();
 
-        var prompt = new LocString("relics", "YUWANCARD-SUPREME_BONE.selectionPrompt");
+        var prompt = new LocString("relics", $"{Id.Entry}.selectionPrompt");
         var selectedCards = (await CardSelectCmd.FromDeckGeneric(
             Owner,
             new CardSelectorPrefs(prompt, 2),

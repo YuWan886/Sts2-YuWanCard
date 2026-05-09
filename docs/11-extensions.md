@@ -1,96 +1,81 @@
 # 扩展功能
 
-## 自定义 ID 属性
+## 自定义 UI
 
-使用 `CustomIDAttribute` 覆盖默认的自动前缀生成：
-
-```csharp
-using YuWanCard.Core.Utils.Attributes;
-
-[CustomID("MYMOD-CUSTOM_ID")]
-public class MyCard : YuWanCardModel
-{
-    // 此卡牌的 ID 将是 "MYMOD-CUSTOM_ID"
-}
-```
-
-**用途**：
-- 与其他模组保持 ID 兼容
-- 迁移旧版本 ID
-- 特殊 ID 格式需求
-
----
-
-## 生命条预测
-
-在能力中实现 `IHealthBarForecastSource` 接口，可在生命条上显示预测效果：
+### 弹窗 UI
 
 ```csharp
-using MegaCrit.Sts2.Core.Entities.Powers;
 using Godot;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Runs;
 
-public class MyPoisonPower : YuWanPowerModel, IHealthBarForecastSource
+namespace YuWanCard.UI;
+
+public partial class MyPopup : Control, IScreenContext
 {
-    public override PowerType Type => PowerType.Debuff;
-    public override PowerStackType StackType => PowerStackType.Counter;
+    public Control? DefaultFocusedControl => null;
 
-    public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegments(HealthBarForecastContext context)
+    public static MyPopup? Create()
     {
-        if (context.Creature == Owner && Amount > 0)
-        {
-            yield return new HealthBarForecastSegment(
-                Amount,
-                new Color(0.5f, 0.2f, 0.8f),
-                HealthBarForecastDirection.FromRight,
-                Order: 0
-            );
-        }
+        var popup = new MyPopup();
+        popup.SetAnchorsPreset(LayoutPreset.FullRect);
+        popup.MouseFilter = MouseFilterEnum.Ignore;
+        popup.SetupUI();
+        return popup;
     }
+
+    private void SetupUI()
+    {
+        var mainPanel = new PanelContainer();
+        mainPanel.AnchorLeft = 0.5f;
+        mainPanel.AnchorRight = 0.5f;
+        mainPanel.OffsetLeft = -350f;
+        mainPanel.OffsetRight = 350f;
+
+        var styleBox = new StyleBoxFlat();
+        styleBox.BgColor = new Color(0.1f, 0.1f, 0.15f, 0.95f);
+        styleBox.BorderColor = new Color(0.4f, 0.35f, 0.25f);
+        styleBox.SetBorderWidthAll(3);
+        styleBox.SetCornerRadiusAll(10);
+        mainPanel.AddThemeStyleboxOverride("panel", styleBox);
+
+        AddChild(mainPanel);
+    }
+
+    public void Open()
+    {
+        NModalContainer.Instance?.Add(this, showBackstop: true);
+        SfxCmd.Play("event:/sfx/ui/ui_card_reward_open");
+    }
+
+    public void Close()
+    {
+        NModalContainer.Instance?.Clear();
+        SfxCmd.Play("event:/sfx/ui/ui_button_click");
+    }
+
+    private static string GetLocText(string key) => new LocString("settings_ui", key).GetRawText();
 }
 ```
 
-### HealthBarForecastSegment 参数
+### 角色选择监视器
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| `Amount` | `decimal` | 预测的 HP 变化量 |
-| `Color` | `Color` | 预测条颜色 |
-| `Direction` | `HealthBarForecastDirection` | 生长方向 |
-| `Order` | `int` | 渲染顺序 |
-| `OverlayMaterial` | `Material?` | 可选的覆盖材质 |
-
-### 生长方向
-
-| 值 | 说明 |
-|------|------|
-| `FromRight` | 从当前 HP 向内生长 |
-| `FromLeft` | 从空白向外生长 |
-
-### 毁灭条着色器
-
-使用毁灭条着色器创建特殊效果：
+`CharacterSelectMonitor` 是一个运行时轮询节点，自动发现场景中的 `NCharacterSelectScreen` 和 `NCardLibrary` 并注入自定义内容：
 
 ```csharp
-using YuWanCard.Core.Utils;
-
-var material = ShaderUtils.CreateDoomBarShaderMaterial(
-    ShaderUtils.CreateVanillaDoomBarGradientTexture()
-);
-
-yield return new HealthBarForecastSegment(
-    Amount,
-    color,
-    direction,
-    0,
-    material
-);
+// 在 MainFile.Initialize() 中安装
+CharacterSelectMonitor.TryInstall();
 ```
 
 ---
 
 ## 自定义游戏动作
 
-用于多人游戏同步的自定义游戏动作：
+用于多人游戏同步：
 
 ```csharp
 using MegaCrit.Sts2.Core.Commands;
@@ -201,205 +186,237 @@ public struct TeammatePayRequestMessage : INetMessage, IPacketSerializable, IRun
 
 ---
 
-## 自定义 UI
+## 视觉特效 (Vfx)
 
-使用 Godot Controls 创建自定义 UI：
+自定义视觉特效位于 `YuWanCardCode/Vfx/`：
 
 ```csharp
-using Godot;
-using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Context;
-using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Localization;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
-using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Utils;
 
-namespace YuWanCard.UI;
+// 使用 VfxUtils 创建特效
+VfxUtils.CreatePigCrashEffect(target);  // 猪坠机特效
+```
 
-public partial class MyPopup : Control, IScreenContext
+---
+
+## 徽章 (Badges)
+
+继承框架的 `CustomBadgeRegistry` 注册，在 `YuWanCardCode/Badges/` 中实现：
+
+```csharp
+// 在 MainFile.Initialize() 中注册
+CustomBadgeRegistry.Register(() => new PigTycoonBadge());
+```
+
+---
+
+## 自定义目标类型
+
+使用 `DynamicEnumValueMinter` 创建自定义目标类型：
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 创建自定义目标类型
+public static class CustomTargetType
 {
-    public Control? DefaultFocusedControl => null;
-
-    public static MyPopup? Create()
-    {
-        var popup = new MyPopup();
-        popup.SetAnchorsPreset(LayoutPreset.FullRect);
-        popup.MouseFilter = MouseFilterEnum.Ignore;
-        popup.SetupUI();
-        return popup;
-    }
-
-    private void SetupUI()
-    {
-        var mainPanel = new PanelContainer();
-        mainPanel.AnchorLeft = 0.5f;
-        mainPanel.AnchorRight = 0.5f;
-        mainPanel.OffsetLeft = -350f;
-        mainPanel.OffsetRight = 350f;
-
-        var styleBox = new StyleBoxFlat();
-        styleBox.BgColor = new Color(0.1f, 0.1f, 0.15f, 0.95f);
-        styleBox.BorderColor = new Color(0.4f, 0.35f, 0.25f);
-        styleBox.SetBorderWidthAll(3);
-        styleBox.SetCornerRadiusAll(10);
-        mainPanel.AddThemeStyleboxOverride("panel", styleBox);
-
-        AddChild(mainPanel);
-    }
-
-    public void Open()
-    {
-        NModalContainer.Instance?.Add(this, showBackstop: true);
-        SfxCmd.Play("event:/sfx/ui/ui_card_reward_open");
-    }
-
-    public void Close()
-    {
-        NModalContainer.Instance?.Clear();
-        SfxCmd.Play("event:/sfx/ui/ui_button_click");
-    }
-
-    private static string GetLocText(string key) => new LocString("settings_ui", key).GetRawText();
+    public static readonly TargetType Everyone = (TargetType)DynamicEnumValueMinter.MintValue("Everyone");
+    public static readonly TargetType Anyone = (TargetType)DynamicEnumValueMinter.MintValue("Anyone");
 }
 ```
 
 ---
 
-## 遗物升级系统
+## 自定义卡牌标签
 
-实现可升级的遗物：
+使用 `ModCardTagRegistry` 创建自定义卡牌标签：
 
 ```csharp
-using MegaCrit.Sts2.Core.Entities.Relics;
-using MegaCrit.Sts2.Core.Models.RelicPools;
-using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core.Utils;
 
-namespace YuWanCard.Relics;
+// 创建新标签
+public static readonly CardTag MyTag = ModCardTagRegistry.Create("my_tag");
 
-[Pool(typeof(SharedRelicPool))]
-public class UpgradableRelic : YuWanRelicModel
+// 在卡牌中使用
+WithTags(YuWanTags.FoodPig, YuWanTags.YuWan, MyTag);
+```
+
+---
+
+## 自定义 ID
+
+使用 `CustomIDAttribute` 覆盖默认的自动前缀生成：
+
+```csharp
+using YuWanCard.Core.Utils.Attributes;
+
+[CustomID("MYMOD-CUSTOM_ID")]
+public class MyCard : YuWanCardModel
 {
-    public override RelicRarity Rarity => RelicRarity.Uncommon;
+    // 此卡牌的 ID 将是 "MYMOD-CUSTOM_ID"
+}
+```
 
-    [SavedProperty]
-    public int YuWanCard_UpgradeLevel { get; set; } = 0;
+---
 
-    public int MaxUpgradeLevel => 3;
+## 自定义池内容映射
 
-    public bool CanUpgrade => YuWanCard_UpgradeLevel < MaxUpgradeLevel;
+将内容注册到自定义池：
 
-    public override async Task AfterCombatVictory()
+```csharp
+// 在 ContentRegistered 阶段注册
+CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyCard));
+CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyOtherCard));
+```
+
+---
+
+## 模组互操作（Interop）
+
+使用 `[ModInterop]` 特性实现与其他模组的互操作：
+
+```csharp
+using YuWanCard.Core.Interop;
+
+[ModInterop("BaseLib")]
+public static class BaseLibConfigInterop
+{
+    [InteropTarget("BaseLib.Config.ModConfigRegistry", "Register")]
+    public static void Register(string modId, object config)
     {
-        await base.AfterCombatVictory();
+        // Fallback：目标模组未加载时不执行任何操作
+    }
+}
+```
+
+在模组初始化时调用 `ModInteropProcessor.Process`：
+
+```csharp
+public override void Initialize()
+{
+    ModInteropProcessor.Process(Harmony, typeof(MyMod).Assembly);
+}
+```
+
+---
+
+## 自定义着色器
+
+使用 `ShaderUtils` 创建着色器：
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 创建毁灭条着色器材质
+var material = ShaderUtils.CreateDoomBarShaderMaterial(
+    ShaderUtils.CreateVanillaDoomBarGradientTexture()
+);
+```
+
+---
+
+## 自定义动画状态
+
+在角色中实现 `SetupCustomAnimationStates`：
+
+```csharp
+using MegaCrit.Sts2.Core.Entities.Creatures;
+
+public class Pig : CharacterModel, IYuWanCharacter
+{
+    CreatureAnimator? IYuWanCharacter.SetupCustomAnimationStates(MegaSprite controller)
+    {
+        var animator = new CreatureAnimator(controller);
         
-        if (CanUpgrade && SomeCondition())
+        // 添加自定义动画状态
+        animator.AddState("idle", "animation_idle");
+        animator.AddState("attack", "animation_attack");
+        animator.AddState("hit", "animation_hit");
+        
+        return animator;
+    }
+}
+```
+
+---
+
+## 自定义音效
+
+在角色中实现 `CustomAttackSfx`、`CustomCastSfx`、`CustomDeathSfx`：
+
+```csharp
+public class Pig : CharacterModel, IYuWanCharacter
+{
+    string? IYuWanCharacter.CustomAttackSfx => "event:/sfx/characters/pig/pig_attack";
+    string? IYuWanCharacter.CustomCastSfx => "event:/sfx/characters/pig/pig_cast";
+    string? IYuWanCharacter.CustomDeathSfx => "event:/sfx/characters/pig/pig_death";
+}
+```
+
+---
+
+## 自定义充能球精灵
+
+在充能球中实现 `CreateCustomSprite`：
+
+```csharp
+public class LittleRegentOrb : CustomOrbModel
+{
+    public override Node2D? CreateCustomSprite()
+    {
+        var scene = ResourceLoader.Load<PackedScene>("res://scenes/orbs/orb_visuals/plasma_orb.tscn");
+        if (scene == null) return null;
+        return scene.Instantiate<Node2D>(PackedScene.GenEditState.Disabled);
+    }
+}
+```
+
+---
+
+## 自定义休息站选项
+
+实现 `IYuWanRestSiteOption` 接口或继承 `RestSiteOption`：
+
+```csharp
+using MegaCrit.Sts2.Core.Entities.RestSite;
+
+namespace YuWanCard.RestSite;
+
+public sealed class RoastPorkRestSiteOption(Player owner) : RestSiteOption(owner)
+{
+    private static readonly string CustomIconPath = "res://YuWanCard/images/ui/rest_site/option_roast_pork.png";
+
+    public override string OptionId => "ROAST_PORK";
+
+    public override IEnumerable<string> AssetPaths => [CustomIconPath];
+
+    public override LocString Description
+    {
+        get
         {
-            YuWanCard_UpgradeLevel++;
-            Flash();
-            MainFile.Logger.Info($"Relic upgraded to level {YuWanCard_UpgradeLevel}");
+            LocString locString = new LocString("rest_site_ui", "OPTION_" + OptionId + ".description");
+            locString.Add("HpLoss", 3m);
+            locString.Add("CardCount", 1m);
+            return locString;
         }
     }
 
-    public override decimal ModifyDamageMultiplicative(decimal amount, Player player)
+    public override async Task<bool> OnSelect()
     {
-        return player == Owner ? amount * (1m + 0.1m * YuWanCard_UpgradeLevel) : amount;
-    }
-}
-```
+        await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), Owner.Creature, 3m, 
+            ValueProp.Unblockable | ValueProp.Unpowered, null, null);
 
----
+        var allPlayers = Owner.RunState.Players;
+        foreach (var player in allPlayers)
+        {
+            if (player != Owner && player.Creature.CurrentHp > 0)
+            {
+                var pigChopCard = Owner.RunState.CreateCard(ModelDb.Card<PigChop>(), player);
+                await CardPileCmd.Add(pigChopCard, PileType.Deck);
+            }
+        }
 
-## 自定义卡牌池
-
-创建自定义卡牌池：
-
-```csharp
-using MegaCrit.Sts2.Core.Models.CardPools;
-
-namespace YuWanCard.CardPools;
-
-public class PigCardPool : CustomCardPoolModel
-{
-    public override string Title => "pig_pool";
-    public override bool IsShared => false;
-    public override bool IsColorless => false;
-
-    protected override CardModel[] GenerateAllCards()
-    {
-        return YuWanCardModel.RegisteredCards
-            .Where(c => c is IYuWanCard)
-            .ToArray();
-    }
-}
-```
-
----
-
-## 自定义遭遇
-
-注册自定义遭遇：
-
-```csharp
-using MegaCrit.Sts2.Core.Models.Encounters;
-
-namespace YuWanCard.Encounters;
-
-public class PigEncounter : EncounterModel
-{
-    public override string EncounterId => "pig_battle";
-
-    public override List<EncounterMonster> Monsters =>
-    [
-        new EncounterMonster(typeof(PigMinion), 0, 0),
-    ];
-
-    public override EncounterType Type => EncounterType.Normal;
-    public override Act[] Acts => [Act.One];
-}
-```
-
----
-
-## 自定义事件
-
-创建自定义事件：
-
-```csharp
-using MegaCrit.Sts2.Core.Entities.Events;
-
-namespace YuWanCard.Events;
-
-public class PigEvent : EventModel
-{
-    public override string EventId => "pig_event";
-    public override Act[] Acts => [Act.One, Act.Two];
-
-    public override async Task<EventState> Initialize(Player player)
-    {
-        return new EventState(
-            "page_1",
-            new EventPage(
-                new LocString("events", "PIG_EVENT.page_1.description"),
-                [
-                    new EventOption(
-                        "option_1",
-                        async () => {
-                            await PlayerCmd.GainGold(50, player);
-                            return "page_2";
-                        },
-                        new LocString("events", "PIG_EVENT.page_1.option_1.title")
-                    ),
-                    new EventOption(
-                        "option_2",
-                        async () => {
-                            await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), player.Creature, 5m);
-                            return null;
-                        },
-                        new LocString("events", "PIG_EVENT.page_1.option_2.title")
-                    ),
-                ]
-            )
-        );
+        return true;
     }
 }
 ```

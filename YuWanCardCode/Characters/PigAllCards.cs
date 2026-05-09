@@ -9,8 +9,8 @@ namespace YuWanCard.Characters;
 
 public class PigAllCards : YuWanModifierModel
 {
-    public override LocString Title => new("modifiers", "YUWANCARD-PIG_ALL_CARDS.title");
-    public override LocString Description => new("modifiers", "YUWANCARD-PIG_ALL_CARDS.description");
+    public override LocString Title => new("modifiers", $"{Id.Entry}.title");
+    public override LocString Description => new("modifiers", $"{Id.Entry}.description");
 
     public override Func<Task>? GenerateNeowOption(EventModel eventModel) => () => Task.CompletedTask;
 

@@ -32,7 +32,7 @@ public class ZhuGePigPower : YuWanPowerModel
         if (topCards.Count == 0) return;
 
         var prefs = new CardSelectorPrefs(
-            new LocString("powers", "YUWANCARD-ZHU_GE_PIG_POWER.selectionScreenPrompt"),
+            new LocString("powers", $"{Id.Entry}.selectionScreenPrompt"),
             0,
             topCards.Count
         );

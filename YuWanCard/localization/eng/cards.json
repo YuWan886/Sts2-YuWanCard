@@ -226,5 +226,7 @@
   "YUWANCARD-PIG_BIRTH.title": "Pig Birth",
   "YUWANCARD-PIG_BIRTH.description": "Draw {Cards:diff()} cards, discard up to 1 card.",
   "YUWANCARD-RED_KING.title": "Red King",
-  "YUWANCARD-RED_KING.description": "After {Combats} combats, obtain a random Ancient relic."
+  "YUWANCARD-RED_KING.description": "After {Combats} combats, obtain a random Ancient relic.",
+  "YUWANCARD-GAMBLER.title": "Gambler",
+  "YUWANCARD-GAMBLER.description": "Gain -{IfUpgraded:show:12|10}~{IfUpgraded:show:12|10} [gold]Strength[/gold]."
 }
