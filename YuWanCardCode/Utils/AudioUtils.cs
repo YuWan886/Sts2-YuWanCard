@@ -1,6 +1,8 @@
 using Godot;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Saves;
 
 namespace YuWanCard.Utils;
 
@@ -8,7 +10,7 @@ public static class AudioUtils
 {
     private static readonly Dictionary<string, AudioStream> AudioCache = new();
 
-    public static void Play(string audioPath, string bus = "SFX")
+    public static void Play(string audioPath, string bus = "Master", float volume = 1f)
     {
         if (string.IsNullOrEmpty(audioPath))
         {
@@ -16,10 +18,10 @@ public static class AudioUtils
             return;
         }
 
-        var container = NCombatRoom.Instance?.CombatVfxContainer;
+        var container = GetPlaybackContainer();
         if (container == null)
         {
-            MainFile.Logger.Warn("AudioUtils: CombatVfxContainer not available");
+            MainFile.Logger.Warn("AudioUtils: No playback container available");
             return;
         }
 
@@ -35,10 +37,13 @@ public static class AudioUtils
             MainFile.Logger.Debug($"AudioUtils: Cached audio: {audioPath}");
         }
 
+        var effectiveVolume = Mathf.Max(0f, volume * GetSfxVolumeScale());
+
         var audioPlayer = new AudioStreamPlayer
         {
             Stream = audioStream,
-            Bus = bus
+            Bus = bus,
+            VolumeLinear = effectiveVolume
         };
 
         container.AddChildSafely(audioPlayer);
@@ -72,4 +77,24 @@ public static class AudioUtils
     }
 
     public static int CachedCount => AudioCache.Count;
+
+    private static float GetSfxVolumeScale()
+    {
+        return SaveManager.Instance?.SettingsSave?.VolumeSfx ?? 1f;
+    }
+
+    private static Node? GetPlaybackContainer()
+    {
+        if (NCombatRoom.Instance?.CombatVfxContainer is { } combatVfxContainer)
+        {
+            return combatVfxContainer;
+        }
+
+        if (NGame.Instance?.RootSceneContainer?.CurrentScene is { } currentScene)
+        {
+            return currentScene;
+        }
+
+        return NGame.Instance;
+    }
 }
