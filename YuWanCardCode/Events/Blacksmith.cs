@@ -56,7 +56,7 @@ public sealed class Blacksmith : YuWanEventModel
         var cardList = cardsToUpgrade.ToList();
         if (cardList.Count < 1)
         {
-            SetEventFinished(L10NLookup($"{Id.Entry}.cancelledDescription"));
+            SetEventFinished(L10NLookup($"{Id.Entry}.pages.CANCELLED.description"));
             return;
         }
 
@@ -65,7 +65,7 @@ public sealed class Blacksmith : YuWanEventModel
             CardCmd.Upgrade(card);
         }
 
-        SetEventFinished(L10NLookup($"{Id.Entry}.upgradedDescription"));
+        SetEventFinished(L10NLookup($"{Id.Entry}.pages.UPGRADED.description"));
     }
 
     private async Task FuseCards()
@@ -78,20 +78,20 @@ public sealed class Blacksmith : YuWanEventModel
 
             if (fusableCards.Count < 2)
             {
-                SetEventFinished(L10NLookup($"{Id.Entry}.noCardsDescription"));
+                SetEventFinished(L10NLookup($"{Id.Entry}.pages.NO_CARDS.description"));
                 return;
             }
 
             var cardsToFuse = await CardSelectCmd.FromDeckGeneric(
                 Owner!,
-                new CardSelectorPrefs(new LocString("events", $"{Id.Entry}.fusePromptDescription"), 2, 2),
+                new CardSelectorPrefs(new LocString("events", $"{Id.Entry}.pages.FUSE_PROMPT.description"), 2, 2),
                 c => CanFuse(c)
             );
 
             var cardList = cardsToFuse.ToList();
             if (cardList.Count < 2)
             {
-                SetEventFinished(L10NLookup($"{Id.Entry}.cancelledDescription"));
+                SetEventFinished(L10NLookup($"{Id.Entry}.pages.CANCELLED.description"));
                 return;
             }
 
@@ -113,7 +113,7 @@ public sealed class Blacksmith : YuWanEventModel
 
             if (availableCards.Count == 0)
                 {
-                    SetEventFinished(L10NLookup($"{Id.Entry}.fuseFailedDescription"));
+                    SetEventFinished(L10NLookup($"{Id.Entry}.pages.FUSE_FAILED.description"));
                     return;
                 }
 
@@ -125,12 +125,12 @@ public sealed class Blacksmith : YuWanEventModel
             {
                 CardCmd.PreviewCardPileAdd(addResult, 2f);
             }
-            SetEventFinished(L10NLookup($"{Id.Entry}.fusedDescription"));   
+            SetEventFinished(L10NLookup($"{Id.Entry}.pages.FUSED.description"));   
         }
         catch (Exception ex)
         {
             MainFile.Logger.Error($"[Blacksmith] FuseCards error: {ex.Message}");
-            SetEventFinished(L10NLookup($"{Id.Entry}.fuseFailedDescription"));
+            SetEventFinished(L10NLookup($"{Id.Entry}.pages.FUSE_FAILED.description"));
         }
     }
 
