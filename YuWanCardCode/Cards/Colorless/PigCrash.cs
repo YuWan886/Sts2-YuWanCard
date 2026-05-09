@@ -14,7 +14,7 @@ public class PigCrash : YuWanCardModel
     public PigCrash() : base(
         baseCost: 2,
         type: CardType.Skill,
-        rarity: CardRarity.Rare,
+        rarity: CardRarity.Uncommon,
         target: TargetType.AllEnemies)
     {
         WithDamage(14);

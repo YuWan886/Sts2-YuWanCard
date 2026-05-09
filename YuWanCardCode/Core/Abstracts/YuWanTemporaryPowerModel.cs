@@ -80,5 +80,5 @@ public abstract class YuWanTemporaryPowerModelWrapper<TOrigin, TPower> : YuWanTe
     };
 
     public override LocString Description => new("powers",
-        InternallyAppliedPower.Type == PowerType.Buff ? $"{Id.Entry}.upDescription" : $"{Id.Entry}.downDescription");
+        InternallyAppliedPower.Type == PowerType.Buff ? "YUWANCARD-TEMP_POWER.UP.description" : "YUWANCARD-TEMP_POWER.DOWN.description");
 }
