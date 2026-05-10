@@ -1,4 +1,5 @@
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Registration;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -16,6 +17,11 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class ReincarnatedEye : YuWanRelicModel
 {
+    static ReincarnatedEye()
+    {
+        SavedPropertyRegistration.RegisterType(typeof(ReincarnatedEye));
+    }
+
     [SavedProperty]
     private bool HasTriggeredThisCombat { get; set; }
 

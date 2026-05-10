@@ -1,4 +1,5 @@
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Registration;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.RelicPools;
@@ -11,6 +12,11 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class ShoppingCart : YuWanRelicModel
 {
+    static ShoppingCart()
+    {
+        SavedPropertyRegistration.RegisterType(typeof(ShoppingCart));
+    }
+
     private string _shoppingCartData = string.Empty;
     
     [SavedProperty]

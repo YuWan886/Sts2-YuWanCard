@@ -60,6 +60,7 @@ public partial class MainFile : Node
         // Phase 3: Content discovery — scan for [Pool] and registration attributes
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
+        SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
         CustomBadgeRegistry.Register((run, playerId) => new PigTycoonBadge(run, playerId));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 
@@ -143,4 +144,3 @@ public static class NGame_Ready_ConfigPreloadPatch
         ConfigRegistrar.TryDeferredRegister();
     }
 }
-
