@@ -27,3 +27,4 @@ test*.*
 .agents/
 wiki/node_modules/
 .codex/
+.kilo/

@@ -1,6 +1,0 @@
-{
-  "$schema": "https://app.kilo.ai/config.json",
-  "commit_message": {
-    "prompt": "### 格式要求\n\n提交信息应遵循以下格式：\n\n```\n<type>: <subject>\n\n<body>\n```\n\n### 示例\n\n```\nfeat: 添加新卡牌和功能，优化购物车逻辑\n\n- 添加猪想你、猪许愿、猪渡劫、护至身前卡牌\n- 修复购物车多人数据不同步的问题\n- 将猪角色的手势图修改为故障机器人的\n```\n\n### 提交类型 (type)\n\n- `feat`: 新功能\n- `fix`: 修复 bug\n- `docs`: 文档变更\n- `style`: 代码格式（不影响代码运行的变动）\n- `refactor`: 重构（既不是新增功能，也不是修改 bug 的代码变动）\n- `perf`: 性能优化\n- `test`: 测试相关\n- `chore`: 构建过程或辅助工具变动\n- `ci`: CI 配置相关\n- `revert`: 回滚提交\n\n### 主题行 (subject)\n\n- 简洁描述变更内容\n- 使用祈使语气、现在时态\n- 首字母小写\n- 结尾不加句号\n\n### 正文 (body)\n\n- 详细说明变更内容\n- 使用条目式列出主要变更\n- 解释为什么做这些变更（如果必要）\n- 保持简洁明了\n"
-  }
-}

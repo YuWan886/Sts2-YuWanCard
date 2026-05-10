@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Core.Extensions;
+using YuWanCard.Core.HandGlow;
 using TooltipSource = YuWanCard.Core.Utils.TooltipSource;
 
 namespace YuWanCard.Core.Abstracts;
@@ -22,6 +23,7 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
     private readonly List<Func<CardModel, IHoverTip>> _hoverTips = [];
     private readonly List<Func<CardModel, IEnumerable<IHoverTip>>> _multiHoverTips = [];
     private readonly HashSet<CardTag> _constructedTags = [];
+    private CardHandGlowRules _constructedHandGlowRules;
 
     protected enum UpgradeType
     {
@@ -59,6 +61,24 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
             return null;
         }
     }
+
+    /// <summary>
+    /// Override for card-specific gold glow logic when the stronger bonus line is active.
+    /// Prefer this over overriding the vanilla <c>ShouldGlowGoldInternal</c>.
+    /// </summary>
+    protected virtual bool ShouldGlowGoldInHand => false;
+
+    /// <summary>
+    /// Override for card-specific red glow logic when the hand should show a warning state.
+    /// Prefer this over overriding the vanilla <c>ShouldGlowRedInternal</c>.
+    /// </summary>
+    protected virtual bool ShouldGlowRedInHand => false;
+
+    protected sealed override bool ShouldGlowGoldInternal =>
+        ShouldGlowGoldInHand || _constructedHandGlowRules.MatchesGold(this);
+
+    protected sealed override bool ShouldGlowRedInternal =>
+        ShouldGlowRedInHand || _constructedHandGlowRules.MatchesRed(this);
 
     protected sealed override IEnumerable<DynamicVar> CanonicalVars => _constructedDynamicVars;
     public sealed override IEnumerable<CardKeyword> CanonicalKeywords => _cardKeywords;
@@ -215,6 +235,31 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
     {
         _hoverTips.Add(new(card => HoverTipFactory.ForEnergy(card)));
         return this;
+    }
+
+    /// <summary>
+    /// Adds declarative in-hand glow rules for this card instance. Multiple calls OR-merge both channels.
+    /// </summary>
+    protected YuWanCardModel WithHandGlow(CardHandGlowRules rules)
+    {
+        _constructedHandGlowRules = _constructedHandGlowRules.Or(rules);
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a gold in-hand glow rule for this card instance.
+    /// </summary>
+    protected YuWanCardModel WithHandGlowGold(Func<CardModel, bool> whenBonusActive)
+    {
+        return WithHandGlow(CardHandGlowRules.Gold(whenBonusActive));
+    }
+
+    /// <summary>
+    /// Adds a red in-hand glow rule for this card instance.
+    /// </summary>
+    protected YuWanCardModel WithHandGlowRed(Func<CardModel, bool> whenHandWarning)
+    {
+        return WithHandGlow(CardHandGlowRules.Red(whenHandWarning));
     }
 
     internal int? CostUpgrade;
