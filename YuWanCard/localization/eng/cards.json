@@ -145,6 +145,7 @@
   "YUWANCARD-PIG_PAYMENT.description": "Spend [gold]{Gold}[/gold] Gold. Gain {Energy:energyIcons()}.",
   "YUWANCARD-PIG_FISH_PIG.title": "Pig Fish Pig",
   "YUWANCARD-PIG_FISH_PIG.description": "Discard 1 card. Choose 1 card in your hand to upgrade.",
+  "YUWANCARD-PIG_FISH_PIG.discardSelectionScreenPrompt": "Choose 1 card from your hand to discard",
   "YUWANCARD-PIG_FISH_PIG.selectionScreenPrompt": "Choose 1 card in your hand to upgrade",
   "YUWANCARD-PIG_FRENZY.title": "Pig Frenzy",
   "YUWANCARD-PIG_FRENZY.description": "Deal {Repeat:diff()} instances of {Damage:diff()} damage to an enemy.",

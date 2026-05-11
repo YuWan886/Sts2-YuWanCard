@@ -11,6 +11,9 @@ namespace YuWanCard.Cards;
 [Pool(typeof(PigCardPool))]
 public class PigFishPig : YuWanCardModel
 {
+    private static readonly LocString DiscardSelectionScreenPrompt =
+        new("cards", "YUWANCARD-PIG_FISH_PIG.discardSelectionScreenPrompt");
+
     public PigFishPig() : base(
         baseCost: 1,
         type: CardType.Skill,
@@ -32,11 +35,7 @@ public class PigFishPig : YuWanCardModel
             return;
         }
 
-        var discardPrefs = new CardSelectorPrefs(
-            new LocString("cards", "YUWANCARD-PIG_BIRTH.selectionScreenPrompt"),
-            1,
-            1
-        );
+        var discardPrefs = new CardSelectorPrefs(DiscardSelectionScreenPrompt, 1, 1);
 
         var cardsToDiscard = await CardSelectCmd.FromHandForDiscard(
             choiceContext,

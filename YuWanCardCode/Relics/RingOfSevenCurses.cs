@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.RestSite;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.RelicPools;
@@ -145,6 +146,15 @@ public class RingOfSevenCurses : YuWanRelicModel
         if (room.RoomType == RoomType.Monster || room.RoomType == RoomType.Boss || room.RoomType == RoomType.Elite)
         {
             rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, room.RoomType), 3, player));
+        }
+
+        int bossVisits = Owner.RunState.MapPointHistory
+            .SelectMany(static entries => entries)
+            .Count(entry => entry.MapPointType == MapPointType.Boss);
+
+        if (room.RoomType == RoomType.Boss && Owner.RunState.CurrentActIndex == 0 && bossVisits == 1)
+        {
+            rewards.Add(new RelicReward(ModelDb.Relic<ThousandCurseScroll>().ToMutable(), player));
         }
 
         if (room.RoomType == RoomType.Monster && Owner.RunState.Rng.Niche.NextFloat() <= 0.7f)

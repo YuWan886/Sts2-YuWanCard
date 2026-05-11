@@ -68,6 +68,7 @@ public static class PigCardPoolUtils
 
     public static CardCreationOptions ModifyCardRewardOptions(Player player, CardCreationOptions options)
     {
+        if (options.Source != CardCreationSource.Encounter) return options;
         if (options.Flags.HasFlag(CardCreationFlags.NoCardPoolModifications)) return options;
 
         var originalCards = options.GetPossibleCards(player).ToList();
@@ -103,6 +104,11 @@ public static class PigCardPoolUtils
 
     public static bool TryNormalizePigCardRewardOptions(Player player, List<CardCreationResult> cardRewardOptions, CardCreationOptions creationOptions)
     {
+        if (creationOptions.Source != CardCreationSource.Encounter)
+        {
+            return false;
+        }
+
         if (cardRewardOptions.Count == 0)
         {
             return false;

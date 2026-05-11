@@ -9,7 +9,6 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YuWanCard.Monsters;
 using YuWanCard.Powers;
-using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Utils;
 

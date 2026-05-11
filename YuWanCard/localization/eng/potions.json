@@ -1,0 +1,5 @@
+{
+  "YUWANCARD-HEALING_POTION.title": "Healing Potion",
+  "YUWANCARD-HEALING_POTION.description": "The target heals [blue]5[/blue] HP at the start of each turn for the next [green]3[/green] turns.",
+  "YUWANCARD-HEALING_POTION.selectionScreenPrompt": "Choose a character to receive lingering healing"
+}

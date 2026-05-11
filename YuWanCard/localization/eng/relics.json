@@ -125,5 +125,11 @@
   "YUWANCARD-WHAT_IF_TEN_YEAR_BAMBOO.flavor": "Ten years of bamboo, unyielding resilience.",
   "YUWANCARD-SMALL_DECK.title": "Small Deck",
   "YUWANCARD-SMALL_DECK.description": "Upon entering Act 3, if your [gold]deck[/gold] has {DeckThreshold} or fewer cards, the boss will not be the Doormaker; if more than {DeckThreshold} cards, the boss will be the Doormaker.",
-  "YUWANCARD-SMALL_DECK.flavor": "\"If you play small deck again, I'll find someone to deal with you.\""
+  "YUWANCARD-SMALL_DECK.flavor": "\"If you play small deck again, I'll find someone to deal with you.\"",
+  "YUWANCARD-YANG_SWORD_GOURD.title": "Sword-Nurturing Gourd",
+  "YUWANCARD-YANG_SWORD_GOURD.description": "At the start of your turn, gain [blue]{Forge}[/blue] [gold]Forge[/gold].",
+  "YUWANCARD-YANG_SWORD_GOURD.flavor": "It stores edge for the perfect draw.",
+  "YUWANCARD-THOUSAND_CURSE_SCROLL.title": "Thousand Curse Scroll",
+  "YUWANCARD-THOUSAND_CURSE_SCROLL.description": "At the start of your turn, gain 1 temporary [gold]Strength[/gold] and [gold]Dexterity[/gold] this turn for each [gold]Curse[/gold] card in your hand.",
+  "YUWANCARD-THOUSAND_CURSE_SCROLL.flavor": "The deeper the curse, the sharper the power."
 }

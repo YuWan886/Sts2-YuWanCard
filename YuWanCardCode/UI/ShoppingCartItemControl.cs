@@ -1,5 +1,4 @@
 using Godot;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Utils;

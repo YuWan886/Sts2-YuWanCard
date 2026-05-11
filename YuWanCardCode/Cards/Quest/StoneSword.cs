@@ -23,7 +23,7 @@ public class StoneSword : YuWanCardModel
         rarity: CardRarity.Quest,
         target: TargetType.None)
     {
-        WithTip(typeof(SwordOfStone));
+        WithTip(typeof(SwordOfJade));
         WithVar("Elites", 3);
         WithKeywords(CardKeyword.Unplayable);
     }

@@ -1,7 +1,6 @@
 using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
-using YuWanCard;
 
 namespace YuWanCard.Core.Patches;
 

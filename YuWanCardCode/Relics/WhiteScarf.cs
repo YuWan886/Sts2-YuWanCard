@@ -34,7 +34,9 @@ public class WhiteScarf : YuWanRelicModel
         {
             var colorlessPool = ModelDb.CardPool<ColorlessCardPool>();
             var colorlessCards = colorlessPool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint);
-            var options = CardCreationOptions.ForRoom(player, room.RoomType).WithCustomPool(colorlessCards);
+            var options = CardCreationOptions.ForRoom(player, room.RoomType)
+                .WithCustomPool(colorlessCards)
+                .WithFlags(CardCreationFlags.NoCardPoolModifications);
             rewards.Add(new CardReward(options, 3, player));
         }
 

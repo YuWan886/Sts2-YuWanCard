@@ -1,5 +1,4 @@
 using System.Reflection;
-using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Modding;
 

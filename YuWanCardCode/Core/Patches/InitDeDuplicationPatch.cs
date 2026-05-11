@@ -2,8 +2,6 @@ using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Exceptions;
-using YuWanCard.Core.Lifecycle;
-using YuWanCard.Core.Registration;
 
 namespace YuWanCard.Core.Patches;
 

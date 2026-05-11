@@ -1,6 +1,5 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
-using YuWanCard.Core.HandGlow;
 
 namespace YuWanCard.Core.Patches;
 

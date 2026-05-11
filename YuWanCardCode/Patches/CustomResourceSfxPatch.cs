@@ -1,4 +1,3 @@
-using System;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using YuWanCard.Utils;

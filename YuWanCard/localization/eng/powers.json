@@ -94,5 +94,8 @@
   "YUWANCARD-BIG_BEN_PIG_POWER.smartDescription": "Gain {Amount} [gold]Strength[/gold] this turn.",
   "YUWANCARD-PIG_EXPLOSION_POWER.title": "Pig Explosion",
   "YUWANCARD-PIG_EXPLOSION_POWER.description": "After {Amount} turns, deal {Damage} damage to all enemies.",
-  "YUWANCARD-PIG_EXPLOSION_POWER.smartDescription": "After {Amount} turns, deal {Damage} damage to all enemies."
+  "YUWANCARD-PIG_EXPLOSION_POWER.smartDescription": "After {Amount} turns, deal {Damage} damage to all enemies.",
+  "YUWANCARD-HEALING_POTION_POWER.title": "Lingering Healing",
+  "YUWANCARD-HEALING_POTION_POWER.description": "At the start of your turn, heal [green]5[/green] HP.",
+  "YUWANCARD-HEALING_POTION_POWER.smartDescription": "At the start of your turn, heal [green]{Heal}[green] HP. Lasts {Amount} turns."
 }
