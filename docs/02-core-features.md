@@ -57,14 +57,18 @@ public class PigStrike : YuWanCardModel
 
 | TargetType | 说明 |
 |------------|------|
-| `Self` | 自身 |
-| `AllAllies` | 所有队友（包括自己） |
+| `None` | 无目标（不需要选择目标） |
+| `Self` | 自身（自动对自己使用） |
+| `AnyEnemy` | 任意敌人（单体） |
+| `AllEnemies` | 所有敌人（AOE） |
+| `RandomEnemy` | 随机敌人（自动选择） |
 | `AnyAlly` | 任意队友（包括自己） |
-| `AllEnemies` | 所有敌人 |
-| `AnyEnemy` | 任意敌人 |
-| `RandomEnemy` | 随机敌人 |
-| `AnyPlayer` | 任意玩家（可用于选择死亡玩家） |
-| `None` | 无目标 |
+| `AllAllies` | 所有队友（包括自己） |
+| `AnyPlayer` | 任意玩家（可选中已死亡的队友） |
+| `TargetedNoCreature` | 需要选择目标位置但不指向生物 |
+| `Osty` | Osty 系统专用目标 |
+
+使用 `DynamicEnumValueMinter` 可以创建自定义 `TargetType`（如 `Everyone`、`Anyone`），见 [扩展功能文档](11-extensions.md#自定义目标类型)。
 
 ### 卡牌类型 (CardType)
 
@@ -73,18 +77,54 @@ public class PigStrike : YuWanCardModel
 | `Attack` | 攻击牌 |
 | `Skill` | 技能牌 |
 | `Power` | 能力牌 |
-| `Curse` | 诅咒牌 |
-| `Status` | 状态牌 |
+| `Curse` | 诅咒牌（不可打出） |
+| `Status` | 状态牌（不可打出，战斗中生成） |
+| `Quest` | 任务牌 |
+
+### 卡牌标签 (CardTag)
+
+内置标签：
+
+| 标签 | 说明 |
+|------|------|
+| `Strike` | 打击系（被"完美打击"等卡牌计算） |
+| `Defend` | 防御系 |
+| `Minion` | 仆从标签 |
+| `OstyAttack` | Osty 攻击标签 |
+| `Shiv` | 小刀标签 |
+
+自定义标签使用 `ModCardTagRegistry` 创建（见 [工具类文档](05-utils.md#modcardtagregistry)）。
+
+### 卡牌关键字 (CardKeyword)
+
+内置关键字：
+
+| 关键字 | 说明 |
+|--------|------|
+| `Exhaust` | 消耗（打出后从牌组移除） |
+| `Ethereal` | 虚无（回合结束未打出则消耗） |
+| `Innate` | 固有（战斗开始时在手牌中） |
+| `Unplayable` | 不可打出 |
+| `Retain` | 保留（回合结束时不弃牌） |
+| `Sly` | 狡黠（特定条件下额外效果） |
+| `Eternal` | 永恒（不进入弃牌堆/消耗堆） |
+
+使用 `WithKeywords()` 和 `WithKeyword(keyword, UpgradeType.Add/Remove)` 管理关键字。
 
 ### 卡牌稀有度 (CardRarity)
 
-| 稀有度 | 说明 | 出现概率 |
+| 稀有度 | 说明 | 出现方式 |
 |--------|------|----------|
 | `Basic` | 基础牌 | 初始牌组 |
-| `Common` | 普通 | 50% |
-| `Uncommon` | 罕见 | 35% |
-| `Rare` | 稀有 | 15% |
-| `Special` | 特殊 | 特殊获取 |
+| `Common` | 普通 | 常规战斗奖励 |
+| `Uncommon` | 罕见 | 常规战斗奖励 |
+| `Rare` | 稀有 | 常规战斗奖励 |
+| `Ancient` | 先古之民 | 先古之民事件专属 |
+| `Event` | 事件 | 事件专属获取 |
+| `Token` | 衍生 | 通过其他卡牌/遗物生成 |
+| `Curse` | 诅咒 | 事件/遗物负面效果 |
+| `Status` | 状态 | 战斗中生成 |
+| `Quest` | 任务 | 任务系统专属 |
 
 ### 流式构建器 API
 
@@ -100,11 +140,11 @@ public MyCard() : base(...)
     WithHeal(3);                                // 设置治疗
     WithEnergy(1);                              // 设置能量
     WithCards(3);                               // 设置卡牌数量
+    WithRepeat(3);                              // 设置重复次数
     WithPower<StrengthPower>(2);                // 设置能力层数
     WithPower<StrengthPower>("Venom", 3);       // 命名能力层数
     WithVar("MyVar", 3, 1);                     // 通用变量
     WithVars(var1, var2);                       // 多个变量
-    WithCalculatedDamage(props, calc);          // 计算伤害
     WithTags(CardTag.Strike);                   // 添加标签
     WithKeywords(CardKeyword.Ethereal);         // 添加关键字
     WithKeyword(CardKeyword.Innate, UpgradeType.Add);    // 升级时添加关键字
@@ -117,6 +157,25 @@ public MyCard() : base(...)
     WithEnergyTip();                             // 能量提示
     WithCostUpgradeBy(-1);                       // 升级时费用变化
 }
+```
+
+**计算伤害**：使用 `WithCalculatedDamage` 实现基于状态的伤害计算：
+
+```csharp
+public MyCard() : base(...)
+{
+    WithCalculatedDamage(
+        ValueProp.Move,                           // 伤害属性
+        (card, target) => card.CombatState?.Enemies?.Count ?? 0, // 倍率（如敌人数量）
+        baseVal: 6,                               // 基础伤害
+        extraVal: 0,                              // 每层倍率额外伤害
+        baseUpgrade: 3,                           // 基础伤害升级值
+        extraUpgrade: 0                           // 额外伤害升级值
+    );
+}
+// 计算伤害 = (CalculationBase + CalculationExtra × 倍率) × 全局系数
+// 使用示例：每个敌人造成 6 点伤害 → 3个敌人 = 18点
+// 动态变量: {CalculatedDamage:diff()} 在本地化中使用
 ```
 
 ### 关键方法
@@ -143,6 +202,49 @@ public override Texture2D? CustomFrame => ResourceLoader.Load<Texture2D>(
 
 默认根据 `CardId` 查找 `images/card_portraits/{CardId}.png` 和 `images/card_frames/{CardId}.png`，如果文件不存在则回退到默认肖像。
 
+### 卡牌打出流程
+
+卡牌打出时按以下顺序执行：
+
+1. `CanPlay(PlayerChoiceContext, CardPlay)` — 检查是否可打出（返回 false 阻止打出）
+2. 扣除能量、移动卡牌到打出区
+3. `OnPlay(PlayerChoiceContext, CardPlay)` — 执行卡牌效果（异步）
+4. 触发 `AfterCardPlayed` 钩子（能力、遗物等）
+
+### 伤害命令链
+
+`DamageCmd` 提供流式 API 构建和执行伤害：
+
+```csharp
+await DamageCmd.Attack(damage)           // 攻击伤害（受力量加成）
+    .FromCard(this)                      // 来源卡牌（用于触发相关效果）
+    .Targeting(target)                   // 目标生物
+    .WithHitFx("vfx/vfx_attack_slash")   // 命中特效
+    .WithHitCount(hitCount)              // 命中次数
+    .SetUnblockable()                    // 设为不可格挡
+    .SetUnpowered()                      // 设为不受能力影响
+    .Execute(choiceContext);             // 执行
+
+// 直接伤害（不受力量加成，如中毒）
+await DamageCmd.DealDamage(amount)
+    .FromCard(this)
+    .Targeting(target)
+    .Execute(choiceContext);
+```
+
+### 卡牌费用升级
+
+```csharp
+public MyCard() : base(baseCost: 2, ...)
+{
+    WithCostUpgradeBy(-1);  // 升级后费用 -1
+}
+public MyCard() : base(baseCost: 1, ...)
+{
+    CostUpgrade = 0;  // 升级后费用变为 0
+}
+```
+
 ### 超脱卡牌 (Transcendence)
 
 实现 `ITranscendenceCard` 接口：
@@ -166,6 +268,23 @@ public override CardMultiplayerConstraint MultiplayerConstraint
 | `None` | 无限制 |
 | `MultiplayerOnly` | 仅多人模式 |
 | `SingleplayerOnly` | 仅单人模式 |
+
+### 命令系统 (Commands)
+
+游戏使用命令模式执行所有操作，以下是最常用的命令类：
+
+| 命令类 | 用途 | 常用方法 |
+|--------|------|---------|
+| `DamageCmd` | 造成伤害 | `.Attack()`, `.DealDamage()`, `.FromCard()`, `.Targeting()`, `.Execute()` |
+| `CreatureCmd` | 生物操作 | `.GainBlock()`, `.Heal()`, `.GainMaxHp()`, `.SetMaxHp()`, `.Damage()` |
+| `PowerCmd` | 能力操作 | `.Apply<T>()`, `.Remove<T>()`, `.ModifyAmount()` |
+| `PlayerCmd` | 玩家操作 | `.GainGold()`, `.LoseGold()`, `.GainEnergy()` |
+| `RelicCmd` | 遗物操作 | `.Obtain<T>()`, `.Remove<T>()` |
+| `CardPileCmd` | 卡牌堆操作 | `.Add()`, `.Move()`, `.Remove()`, `.Draw()`, `.Discard()`, `.Exhaust()` |
+| `ForgeCmd` | 锻造操作 | `.Forge()` |
+| `SfxCmd` | 音效 | `.Play()`, `.PlayMusic()` |
+
+所有命令方法都是异步的（返回 `Task`），需要使用 `await`。
 
 ---
 
@@ -197,6 +316,35 @@ public class PigDoubtPower : YuWanPowerModel
 }
 ```
 
+### 能力本地化：description vs smartDescription
+
+**能力有两种描述文本，使用规则不同**：
+
+| 字段 | 使用场景 | 是否支持动态变量 |
+|------|---------|---------------|
+| `description` | 图鉴/卡牌预览中的能力描述（规范模型） | **不支持** DynamicVar，仅支持 `{Amount}` 等隐式变量 |
+| `smartDescription` | 战斗中生物身上的能力悬浮提示（实例化后） | **支持** 所有 DynamicVar + 隐式变量 |
+| `remoteDescription` | 多人游戏中其他玩家施加的能力提示 | **支持** 所有 DynamicVar + 隐式变量 |
+
+**正确示例**：
+
+```json
+{
+  "YUWANCARD-PIG_DOUBT_POWER.title": "猪疑惑",
+  "YUWANCARD-PIG_DOUBT_POWER.description": "每回合获得1个随机的[gold]能力[/gold]。",
+  "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "每回合获得{PigDoubtPower}个随机的[gold]能力[/gold]。",
+  
+  "YUWANCARD-PIG_VAMPIRIC_POWER.title": "猪吸血",
+  "YUWANCARD-PIG_VAMPIRIC_POWER.description": "你在本回合内，每打出一张攻击牌，恢复1点生命值。",
+  "YUWANCARD-PIG_VAMPIRIC_POWER.smartDescription": "你在本回合内，每打出一张攻击牌，恢复{PigVampiricPower:diff()}点生命值。"
+}
+```
+
+**关键规则**：
+- `description` 写静态文本（因为加载规范模型时无法获取运行时动态变量）
+- `smartDescription` 写动态变量（因为能力实例化后，`DynamicVars.AddTo()` 会被自动调用）
+- 注意：**卡牌的 `description` 不同**，卡牌的 description 会自动调用 `DynamicVars.AddTo()`，所以卡牌 description 支持动态变量
+
 ### PowerType 类型
 
 | 类型 | 说明 | 颜色 |
@@ -209,24 +357,52 @@ public class PigDoubtPower : YuWanPowerModel
 
 | 类型 | 说明 |
 |------|------|
-| `Counter` | 层数叠加 |
-| `Single` | 不叠加 |
-| `None` | 不叠加 |
-| `Intensity` | 强度叠加 |
-| `Duration` | 持续时间 |
+| `Counter` | 层数叠加（显示数字，可增减） |
+| `Single` | 不叠加（施加后不显示数字，只存在或不存在） |
+| `None` | 无叠加显示（能力存在但不显示层数） |
+
+**注意**：Duration 的持续效果使用 `StackType = Counter`，然后利用 `SkipNextDurationTick` 控制每回合递减。
 
 ### 常用钩子方法
 
 | 方法 | 说明 |
 |------|------|
-| `AfterSideTurnStart(CombatSide, CombatState)` | 回合开始时 |
-| `AfterSideTurnEnd(CombatSide, CombatState)` | 回合结束时 |
-| `ModifyDamage(decimal, DamageInfo, Creature)` | 修改伤害 |
-| `ModifyBlock(decimal, Creature)` | 修改格挡 |
+| `AfterApplied(Creature?, CardModel?)` | 能力被施加后 |
+| `BeforeApplied(Creature?, CardModel?)` | 能力被施加前 |
+| `AfterPowerAmountChanged(int, int)` | 能力层数变化后 |
+| `AfterSideTurnStart(CombatSide, CombatState)` | 任意方回合开始时 |
+| `AfterSideTurnEnd(CombatSide, CombatState)` | 任意方回合结束时 |
+| `BeforeTurnStart(CombatTurn)` | 回合开始前 |
+| `AfterPlayerTurnStart()` | 玩家回合开始时 |
+| `AfterPlayerTurnEnd()` | 玩家回合结束时 |
+| `ModifyDamage(decimal, DamageInfo, Creature)` | 修改伤害值 |
+| `ModifyBlock(decimal, Creature)` | 修改格挡值 |
 | `OnAttack(DamageInfo, Creature)` | 攻击时触发 |
 | `OnAttacked(DamageInfo, Creature)` | 被攻击时触发 |
 | `AfterCardPlayed(Card)` | 打出卡牌后 |
 | `AfterCardDrawn(Card)` | 抽牌后 |
+| `AfterCardExhausted(Card)` | 卡牌被消耗后 |
+| `AfterCombatStarted()` | 战斗开始后 |
+| `AfterCombatEnded()` | 战斗结束后 |
+| `OnDeath()` | 拥有者死亡时 |
+| `ShouldPlayVfx` | 是否播放视觉特效（可重写） |
+
+### 隐式变量（smartDescription 中自动可用）
+
+在 `smartDescription` 中，以下变量会自动注入，无需在 `CanonicalVars` 中定义：
+
+| 变量名 | 类型 | 说明 |
+|--------|------|------|
+| `{Amount}` | int | 当前能力层数 |
+| `{Duration}` | int | 持续时间（Duration 类型时） |
+| `{OnPlayer}` | bool | 拥有者是否为玩家 |
+| `{IsMultiplayer}` | bool | 是否为多人游戏 |
+| `{PlayerCount}` | int | 玩家数量 |
+| `{OwnerName}` | string | 拥有者名称 |
+| `{ApplierName}` | string | 施加者名称（可能为空） |
+| `{TargetName}` | string | 目标名称（可能为空） |
+| `{singleStarIcon}` | string | 星星图标 img 标签 |
+| `{energyPrefix}` | string | 能量图标前缀 |
 
 ### 临时能力
 
@@ -319,27 +495,45 @@ public class PigCarrot : YuWanRelicModel
 
 | 稀有度 | 说明 | 掉落率 |
 |--------|------|--------|
+| `Starter` | 初始遗物 | 角色自带 |
 | `Common` | 普通 | 50% |
 | `Uncommon` | 罕见 | 35% |
 | `Rare` | 稀有 | 15% |
-| `Ancient` | 先古之民 | 特殊获取 |
-| `Shop` | 商店 | 仅商店购买 |
-| `Starter` | 初始 | 角色自带 |
+| `Shop` | 商店遗物 | 仅商店购买 |
+| `Event` | 事件遗物 | 事件专属获取 |
+| `Ancient` | 先古之民 | 先古之民专属 |
 
 ### 常用钩子方法
 
+**回合/战斗钩子**：
 | 方法 | 说明 |
 |------|------|
 | `AfterObtained()` | 获得遗物时 |
 | `AfterPlayerTurnStart()` | 玩家回合开始时 |
+| `AfterPlayerTurnEnd()` | 玩家回合结束时 |
+| `AfterCombatStarted()` | 战斗开始时 |
 | `AfterCombatVictory()` | 战斗胜利后 |
+| `AfterCombatDefeat()` | 战斗失败后 |
+| `AfterRoomEntered(AbstractRoom)` | 进入房间后 |
+
+**数值修改钩子**：
+| 方法 | 说明 |
+|------|------|
+| `ModifyDamage(decimal, DamageInfo, Player)` | 修改伤害值（加法） |
 | `ModifyDamageMultiplicative(decimal, Player)` | 修改伤害倍率 |
+| `ModifyBlock(decimal, Player)` | 修改格挡值（加法） |
 | `ModifyBlockMultiplicative(decimal, Player)` | 修改格挡倍率 |
 | `ModifyMaxEnergy(Player, decimal)` | 修改最大能量 |
 | `ModifyHandDraw(Player, int)` | 修改抽牌数 |
-| `ModifyRestSiteHealAmount(Player, decimal)` | 修改休息处回复 |
-| `TryModifyRewards(Rewards)` | 修改奖励 |
-| `ShouldGainGold(decimal, Player)` | 获得金币前 |
+| `ModifyRestSiteHealAmount(Player, decimal)` | 修改休息处回复量 |
+
+**卡牌/奖励钩子**：
+| 方法 | 说明 |
+|------|------|
+| `AfterCardPlayed(Card)` | 打出卡牌后 |
+| `AfterCardExhausted(Card)` | 卡牌被消耗后 |
+| `TryModifyRewards(Rewards)` | 修改战斗奖励 |
+| `ShouldGainGold(decimal, Player)` | 获得金币前（返回 false 阻止） |
 | `AfterGoldGained(Player)` | 获得金币后 |
 
 ### 遗物升级链
@@ -725,6 +919,16 @@ public class PigPotion : YuWanPotionModel
     }
 }
 ```
+
+### 药水稀有度 (PotionRarity)
+
+| 稀有度 | 说明 |
+|--------|------|
+| `Common` | 普通药水 |
+| `Uncommon` | 罕见药水 |
+| `Rare` | 稀有药水 |
+| `Event` | 事件专属药水 |
+| `Token` | 衍生药水 |
 
 ### 自定义资源路径
 

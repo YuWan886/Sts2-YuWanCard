@@ -119,16 +119,6 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 public class MyCustomVar : DynamicVar
 {
     public MyCustomVar(decimal baseValue) : base("MyCustomVar", baseValue) { }
-    
-    public override string FormatValue(decimal value, string? format = null)
-    {
-        return format switch
-        {
-            "percent" => $"{value * 100}%",
-            "time" => $"{value}次",
-            _ => value.ToString()
-        };
-    }
 }
 ```
 
@@ -258,11 +248,31 @@ public class MyCard : YuWanCardModel
 
 **解决方案**：
 1. 检查本地化文件路径：`YuWanCard/localization/{lang}/`
-2. 确保本地化键格式正确：
-   - 卡牌：`YUWANCARD-{CardId}.title`
-   - 能力：`YUWANCARD-{PowerId}.title`
+2. 确保本地化键格式正确（键名必须与类名 camelCase→snake_case 转换结果一致）
 3. 检查 JSON 文件语法是否正确
 4. Android 平台注意前缀回退问题
+
+### 能力描述中动态变量不显示
+
+**问题**：能力在战斗中悬浮提示时，`{MyVar}` 显示为原始文本而非数值。
+
+**原因**：能力的 `description` 不会自动注入 DynamicVar，动态变量必须放在 `smartDescription` 中。
+
+**解决方案**：
+将动态变量从 `description` 移到 `smartDescription`：
+
+```json
+// 错误 - description 中动态变量不会被替换
+{
+  "YUWANCARD-MY_POWER.description": "获得 {MyVar} 点力量。"
+}
+
+// 正确 - smartDescription 中动态变量会被替换
+{
+  "YUWANCARD-MY_POWER.description": "获得2点力量。",
+  "YUWANCARD-MY_POWER.smartDescription": "获得 {MyVar} 点[gold]力量[/gold]。"
+}
+```
 
 ### 能力赋予玩家后崩溃
 

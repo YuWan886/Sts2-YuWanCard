@@ -4,6 +4,11 @@
 
 游戏使用 `DynamicVar` 系统来处理卡牌和能力的动态数值。这些变量支持升级、本地化格式和描述文本中的占位符。
 
+**重要区分**：
+- **卡牌** `description`：自动调用 `DynamicVars.AddTo()` → 可以使用所有 DynamicVar 占位符
+- **能力** `description`：不会自动注入 DynamicVar → 只能写静态文本
+- **能力** `smartDescription`：当能力实例化在生物身上时，自动调用 `DynamicVars.AddTo()` → 可以使用 DynamicVar 占位符
+
 ## DynamicVar 基类
 
 所有动态变量都继承自 `DynamicVar` 基类：
@@ -14,13 +19,10 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 public class MyCustomVar : DynamicVar
 {
     public MyCustomVar(decimal baseValue) : base("MyCustomVar", baseValue) { }
-    
-    public override string FormatValue(decimal value, string? format = null)
-    {
-        return $"自定义格式: {value}";
-    }
 }
 ```
+
+DynamicVar 通过 `IConvertible` 接口参与 SmartFormat 格式化，内置格式化器（`diff()`、`energyIcons()`、`D` 等）由引擎提供。
 
 ## 内置变量类型
 
@@ -111,51 +113,6 @@ WithRepeat(3);
 DynamicVars.Repeat.UpgradeValueBy(1m);
 ```
 
-## 特殊变量类型
-
-### PersistVar（持续次数）
-
-每回合可打出 X 次的卡牌：
-
-```csharp
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
-
-protected override IEnumerable<DynamicVar> CanonicalVars => 
-    [new PersistVar(2m)];  // 每回合可打出 2 次
-```
-
-**特点**：
-- 每回合开始时重置次数
-- 打出卡牌时减少次数
-- 次数用完后无法打出
-
-### RefundVar（能量返还）
-
-打出后返还 X 点能量：
-
-```csharp
-protected override IEnumerable<DynamicVar> CanonicalVars => 
-    [new RefundVar(1m)];  // 打出后返还 1 点能量
-```
-
-**特点**：
-- 打出卡牌后自动返还能量
-- 常用于 0 费卡牌的平衡
-
-### ExhaustiveVar（耗尽次数）
-
-本场战斗总共可打出 X 次，至少保留 1 次：
-
-```csharp
-protected override IEnumerable<DynamicVar> CanonicalVars => 
-    [new ExhaustiveVar(3m)];  // 本场战斗总共可打出 3 次
-```
-
-**特点**：
-- 每场战斗开始时重置
-- 打出时减少次数
-- 至少保留 1 次（不会完全耗尽）
-
 ## CalculatedDamageVar / CalculatedBlockVar
 
 计算伤害/格挡，支持基础值、倍率和加成：
@@ -194,14 +151,18 @@ var extraDamage = new ExtraDamageVar(3m);
 
 ## CanonicalVars
 
-在能力或卡牌中定义规范变量，用于描述文本中的占位符：
+在能力或卡牌中定义规范变量，用于描述文本中的占位符。
+
+**使用位置差异**：
+- **卡牌**：`CanonicalVars` 中的变量会自动注入到 `description` → 可以直接使用占位符
+- **能力**：`CanonicalVars` 中的变量仅在 `smartDescription`（和 `remoteDescription`）中可用，`description` 不会注入
 
 ```csharp
-// 能力示例
+// 能力示例（变量只在 smartDescription 中可用）
 protected override IEnumerable<DynamicVar> CanonicalVars => 
     [new DynamicVar("PigDoubtPower", 1m)];
 
-// 多个变量
+// 卡牌示例（变量在 description 中可用）
 protected override IEnumerable<DynamicVar> CanonicalVars => 
 [
     new DynamicVar("Damage", 6m),
@@ -238,7 +199,7 @@ DynamicVars.Damage.ToString("F1");  // "6.0"
 
 ## 自定义 DynamicVar
 
-创建自定义变量类型：
+创建自定义变量类型，继承 `DynamicVar`：
 
 ```csharp
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -246,16 +207,6 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 public class MyCustomVar : DynamicVar
 {
     public MyCustomVar(decimal baseValue) : base("MyCustomVar", baseValue) { }
-    
-    public override string FormatValue(decimal value, string? format = null)
-    {
-        return format switch
-        {
-            "percent" => $"{value * 100}%",
-            "time" => $"{value}次",
-            _ => value.ToString()
-        };
-    }
 }
 ```
 
@@ -270,9 +221,11 @@ protected override IEnumerable<DynamicVar> CanonicalVars =>
 
 ```json
 {
-  "YUWANCARD-MY_CARD.description": "触发{MyCustomVar:time}效果。"
+  "YUWANCARD-MY_CARD.description": "触发{MyCustomVar}效果。"
 }
 ```
+
+**注意**：DynamicVar 的格式化通过 SmartFormat 的 `IConvertible` 接口实现。内置格式化器（`diff()`、`energyIcons()`、`D`、`F1`、`P0` 等）由游戏引擎的 SmartFormat 扩展提供。自定义格式化器可通过 SmartFormat 的 `IFormatter` 接口注册。
 
 ## DynamicVars 属性访问
 
@@ -323,20 +276,61 @@ if (DynamicVars.Damage.IsUpgraded)
 
 ## 变量类型汇总
 
+### 数值变量
+
+| 类型 | 说明 | 默认名称 | 示例 |
+|------|------|---------|------|
+| `DamageVar` | 伤害变量 | `Damage` | `new DamageVar(6m)` |
+| `BlockVar` | 格挡变量 | `Block` | `new BlockVar(5m, ValueProp.None)` |
+| `HealVar` | 治疗变量 | `Heal` | `new HealVar(10m)` |
+| `EnergyVar` | 能量变量 | `Energy` | `new EnergyVar(1m)` |
+| `PowerVar<T>` | 能力层数变量 | `类名` | `new PowerVar<StrengthPower>(2m)` |
+| `CardsVar` | 卡牌数量变量 | `Cards` | `new CardsVar(3m)` |
+| `RepeatVar` | 重复次数变量 | `Repeat` | `new RepeatVar(3m)` |
+| `ForgeVar` | 锻造值变量 | `Forge` | `new ForgeVar(3)` |
+| `GoldVar` | 金币数量变量 | `Gold` | `new GoldVar(50)` |
+| `MaxHpVar` | 最大生命值变量 | `MaxHp` | `new MaxHpVar(10m)` |
+| `HpLossVar` | 生命损失变量 | `HpLoss` | `new HpLossVar(3m)` |
+| `StarsVar` | 星星数量变量 | `Stars` | `new StarsVar(3)` |
+| `SummonVar` | 召唤数量变量 | `Summon` | `new SummonVar(1m)` |
+| `IntVar` | 通用整数变量 | 自定义 | `new IntVar("MyInt", 5m)` |
+| `DynamicVar` | 通用命名变量 | 自定义 | `new DynamicVar("MyVar", 1m)` |
+
+### 计算变量
+
+| 类型 | 说明 | 依赖 |
+|------|------|------|
+| `CalculatedDamageVar` | 计算伤害 `(基础 + 额外) × 倍率` | `CalculationBase` + `CalculationExtra` + multiplier |
+| `CalculatedBlockVar` | 计算格挡 `(基础 + 额外) × 倍率` | `CalculationBase` + `CalculationExtra` + multiplier |
+| `CalculatedVar` | 通用计算变量（需 `WithMultiplier`） | `CalculationBase` + `CalculationExtra` + multiplier |
+| `CalculationBaseVar` | 计算基数值 | — |
+| `CalculationExtraVar` / `ExtraDamageVar` | 计算额外值（每层倍率加成的基数） | — |
+| `OstyDamageVar` | Osty 攻击伤害 | — |
+
+### 特殊变量
+
 | 类型 | 说明 | 示例 |
 |------|------|------|
-| `DamageVar` | 伤害变量 | `new DamageVar(6m)` |
-| `BlockVar` | 格挡变量 | `new BlockVar(5m, ValueProp.None)` |
-| `HealVar` | 治疗变量 | `new HealVar(10m)` |
-| `EnergyVar` | 能量变量 | `new EnergyVar(1m)` |
-| `PowerVar<T>` | 能力层数变量 | `new PowerVar<StrengthPower>(2m)` |
-| `CardsVar` | 卡牌数量变量 | `new CardsVar(3m)` |
-| `RepeatVar` | 重复次数变量 | `new RepeatVar(3m)` |
-| `CalculatedDamageVar` | 计算伤害 | `new CalculatedDamageVar(6m, 2m, 3m)` |
-| `CalculatedBlockVar` | 计算格挡 | `new CalculatedBlockVar(5m, 1m, 2m)` |
-| `CalculationBaseVar` | 计算基数 | `new CalculationBaseVar(6m)` |
-| `ExtraDamageVar` | 额外伤害变量 | `new ExtraDamageVar(3m)` |
-| `PersistVar` | 持续次数 | `new PersistVar(2m)` |
-| `RefundVar` | 能量返还 | `new RefundVar(1m)` |
-| `ExhaustiveVar` | 耗尽次数 | `new ExhaustiveVar(3m)` |
-| `DynamicVar` | 通用命名变量 | `new DynamicVar("MyVar", 1m)` |
+| `BoolVar` | 布尔变量 | `new BoolVar("IsActive", true)` |
+| `StringVar` | 字符串变量 | `new StringVar("StatusName", "燃烧")` |
+| `IfUpgradedVar` | 升级条件变量 | 由卡牌系统自动注入，无需手动添加 |
+
+### 布尔变量
+
+```csharp
+protected override IEnumerable<DynamicVar> CanonicalVars => 
+    [new BoolVar("HasBuff", true)];
+
+// 本地化中使用
+// "description": "{HasBuff:hasBuff|有增益|无增益}"
+```
+
+### 字符串变量
+
+```csharp
+protected override IEnumerable<DynamicVar> CanonicalVars => 
+    [new StringVar("StatusName", "燃烧")];
+
+// 本地化中直接使用
+// "description": "施加{StatusName}效果。"
+```

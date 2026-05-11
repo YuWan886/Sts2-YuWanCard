@@ -521,10 +521,12 @@ class CombatRoomPatch
 ```json
 {
   "YUWANCARD-PIG_DOUBT_POWER.title": "猪猪怀疑",
-  "YUWANCARD-PIG_DOUBT_POWER.description": "每回合开始时，获得 {PigDoubtPower:diff()} 个随机 [gold]能力[/gold]。",
-  "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "每回合获得随机能力。"
+  "YUWANCARD-PIG_DOUBT_POWER.description": "每回合开始时，获得1个随机 [gold]能力[/gold]。",
+  "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "每回合获得{PigDoubtPower}个随机的[gold]能力[/gold]。"
 }
 ```
+
+**注意**：能力 `description` 使用静态文本（图鉴显示），`smartDescription` 使用动态变量（战斗中悬浮提示显示）。卡牌的 `description` 可以直接使用动态变量。
 
 ### relics.json
 
