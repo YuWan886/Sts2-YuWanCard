@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
@@ -18,5 +19,15 @@ public class PigAllCards : YuWanModifierModel
     {
         if (player.Character is not Pig) return options;
         return PigCardPoolUtils.ModifyCardRewardOptions(player, options);
+    }
+
+    public override bool TryModifyCardRewardOptions(Player player, List<CardCreationResult> cardRewardOptions, CardCreationOptions creationOptions)
+    {
+        if (player.Character is not Pig)
+        {
+            return false;
+        }
+
+        return PigCardPoolUtils.TryNormalizePigCardRewardOptions(player, cardRewardOptions, creationOptions);
     }
 }
