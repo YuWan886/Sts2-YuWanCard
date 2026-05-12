@@ -64,7 +64,6 @@
 ```
 YourMod/
 ├── .godot/                    # Godot 引擎配置目录
-├── .template.config/          # 模板配置
 ├── .vscode/                   # VSCode 配置
 ├── packages/                  # NuGet 包目录
 ├── YourMod/                   # 模组资源目录
@@ -130,7 +129,6 @@ YourMod/
 ├── MainFile.cs                # 模组入口文件
 ├── YourMod.csproj             # 项目配置文件
 ├── YourMod.json               # 模组清单文件
-└── AGENTS.md                  # AI 开发指南
 ```
 
 ## PoolAttribute 属性
