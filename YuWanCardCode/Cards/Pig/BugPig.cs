@@ -6,12 +6,8 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Multiplayer.Game;
-using MegaCrit.Sts2.Core.Runs;
-
 using MegaCrit.Sts2.Core.TestSupport;
 using YuWanCard.Characters;
-using YuWanCard.GameActions;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
@@ -22,8 +18,7 @@ public class BugPig : YuWanCardModel
     private const int BaseDamage = 7;
     private const int ErrorDamageBonus = 3;
     private const int ErrorDamageBonusUpgraded = 5;
-
-    private int YuWanCard_CalculatedDamageBonus { get; set; } = -1;
+    public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.SingleplayerOnly;
 
     public BugPig() : base(
         baseCost: 1,
@@ -41,65 +36,26 @@ public class BugPig : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (cardPlay.Target != null)
+        if (cardPlay.Target == null)
         {
-            var netService = RunManager.Instance?.NetService;
-            bool isMultiplayer = netService != null && netService.Type != NetGameType.Singleplayer && netService.Type != NetGameType.Replay;
-            bool isHost = netService?.Type == NetGameType.Host;
+            return;
+        }
 
-            if (isMultiplayer && !isHost)
-            {
-                MainFile.Logger.Debug($"BugPig: Client skipping OnPlay, waiting for Host to sync damage");
-                return;
-            }
+        int errorCount = CountTotalErrorsInLog();
+        int damageBonus = IsUpgraded ? errorCount * ErrorDamageBonusUpgraded : errorCount * ErrorDamageBonus;
+        int totalDamage = BaseDamage + damageBonus;
 
-            if (isMultiplayer)
-            {
-                int errorCount = CountTotalErrorsInLog();
-                int damageBonus = IsUpgraded ? errorCount * ErrorDamageBonusUpgraded : errorCount * ErrorDamageBonus;
-                int totalDamage = BaseDamage + damageBonus;
-                YuWanCard_CalculatedDamageBonus = damageBonus;
+        MainFile.Logger.Info($"BugPig: Singleplayer error count: {errorCount}, damage bonus: {damageBonus}, total damage: {totalDamage}");
 
-                int targetIndex = -1;
-                var combatState = Owner.Creature?.CombatState;
-                if (combatState != null)
-                {
-                    int index = 0;
-                    foreach (var creature in combatState.Creatures)
-                    {
-                        if (creature == cardPlay.Target)
-                        {
-                            targetIndex = index;
-                            break;
-                        }
-                        index++;
-                    }
-                }
+        await DamageCmd.Attack(totalDamage)
+            .FromCard(this)
+            .Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash")
+            .Execute(choiceContext);
 
-                MainFile.Logger.Info($"BugPig: Host calculated total error count: {errorCount}, damage bonus: {damageBonus}, total damage: {totalDamage}");
-
-                var action = new BugPigAction(Owner, targetIndex, totalDamage);
-                RunManager.Instance?.ActionQueueSynchronizer?.RequestEnqueue(action);
-            }
-            else
-            {
-                int errorCount = CountTotalErrorsInLog();
-                int damageBonus = IsUpgraded ? errorCount * ErrorDamageBonusUpgraded : errorCount * ErrorDamageBonus;
-                int totalDamage = BaseDamage + damageBonus;
-
-                MainFile.Logger.Info($"BugPig: Singleplayer error count: {errorCount}, damage bonus: {damageBonus}, total damage: {totalDamage}");
-
-                await DamageCmd.Attack(totalDamage)
-                    .FromCard(this)
-                    .Targeting(cardPlay.Target)
-                    .WithHitFx("vfx/vfx_attack_slash")
-                    .Execute(choiceContext);
-
-                if (!TestMode.IsOn)
-                {
-                    VfxUtils.PlayCentered("res://YuWanCard/scenes/vfx/vfx_glitch.tscn");
-                }
-            }
+        if (!TestMode.IsOn)
+        {
+            VfxUtils.PlayCentered("res://YuWanCard/scenes/vfx/vfx_glitch.tscn");
         }
     }
 
@@ -121,7 +77,7 @@ public class BugPig : YuWanCardModel
                 string? line;
                 while ((line = streamReader.ReadLine()) != null)
                 {
-                    if (line.Contains("[YuWanCard] BugPig:") || line.Contains("BugPigAction:"))
+                    if (line.Contains("[YuWanCard] BugPig:"))
                     {
                         continue;
                     }
@@ -142,16 +98,6 @@ public class BugPig : YuWanCardModel
             return 0;
         }
     }
-
-    public int GetSynchronizedDamageBonus()
-    {
-        return YuWanCard_CalculatedDamageBonus >= 0 ? YuWanCard_CalculatedDamageBonus : 0;
-    }
-
-    public bool HasSynchronizedDamage()
-    {
-        return YuWanCard_CalculatedDamageBonus >= 0;
-    }
 }
 
 public class BugPigDamageVar(int baseDamage, int errorBonus, int errorBonusUpgraded) : DynamicVar(Key, baseDamage)
@@ -161,22 +107,9 @@ public class BugPigDamageVar(int baseDamage, int errorBonus, int errorBonusUpgra
 
     public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
     {
-        var netService = RunManager.Instance?.NetService;
-        bool isMultiplayer = netService != null && netService.Type != NetGameType.Singleplayer && netService.Type != NetGameType.Replay;
-        bool isHost = netService?.Type == NetGameType.Host;
-
-        int damageBonus = 0;
-        
-        if (card is BugPig bugPig && bugPig.HasSynchronizedDamage())
-        {
-            damageBonus = bugPig.GetSynchronizedDamageBonus();
-        }
-        else if (!isMultiplayer || isHost)
-        {
-            int errorCount = BugPig.CountTotalErrorsInLog();
-            bool isUpgraded = card.IsUpgraded;
-            damageBonus = isUpgraded ? errorCount * errorBonusUpgraded : errorCount * errorBonus;
-        }
+        int errorCount = BugPig.CountTotalErrorsInLog();
+        bool isUpgraded = card.IsUpgraded;
+        int damageBonus = isUpgraded ? errorCount * errorBonusUpgraded : errorCount * errorBonus;
 
         decimal totalDamage = _baseDamage + damageBonus;
         BaseValue = totalDamage;
