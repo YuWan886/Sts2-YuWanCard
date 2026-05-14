@@ -91,5 +91,8 @@
   "YUWANCARD-PIG_EXPLOSION_POWER.smartDescription": "在{Amount}回合结束后，对所有敌人造成{Damage}点伤害。",
   "YUWANCARD-HEALING_POTION_POWER.title": "持续治疗",
   "YUWANCARD-HEALING_POTION_POWER.description": "回合开始时，恢复[green]5[/green]点生命值。\n持续[blue]3[/blue]回合",
-  "YUWANCARD-HEALING_POTION_POWER.smartDescription": "回合开始时，恢复[green]{Heal}[/green]点生命值。持续[blue]{Amount}[/blue]回合。"
+  "YUWANCARD-HEALING_POTION_POWER.smartDescription": "回合开始时，恢复[green]{Heal}[/green]点生命值。持续[blue]{Amount}[/blue]回合。",
+  "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.title": "健身鼠鼠",
+  "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.description": "在下个回合开始时，获得力量。",
+  "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.smartDescription": "在下个回合开始时，获得{Amount}点[gold]力量[/gold]。"
 }

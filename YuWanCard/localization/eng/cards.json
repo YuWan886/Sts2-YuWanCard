@@ -238,5 +238,9 @@
   "YUWANCARD-RED_KING.title": "Red King",
   "YUWANCARD-RED_KING.description": "After {Combats} combats, obtain a random Ancient relic.",
   "YUWANCARD-GAMBLER.title": "Gambler",
-  "YUWANCARD-GAMBLER.description": "Gain -{IfUpgraded:show:12|10}~{IfUpgraded:show:12|10} [gold]Strength[/gold]."
+  "YUWANCARD-GAMBLER.description": "Gain -{IfUpgraded:show:12|10}~{IfUpgraded:show:12|10} [gold]Strength[/gold].",
+  "YUWANCARD-FITNESS_MOUSE.title": "Fitness Mouse",
+  "YUWANCARD-FITNESS_MOUSE.description": "Gain {Strength:diff()} [gold]Strength[/gold] next turn.",
+  "YUWANCARD-LIGHT_BOAT_PAST_MOUNTAINS.title": "Light Boat Past Mountains",
+  "YUWANCARD-LIGHT_BOAT_PAST_MOUNTAINS.description": "Play all cards in your [gold]Exhaust Pile[/gold] except this one. "
 }

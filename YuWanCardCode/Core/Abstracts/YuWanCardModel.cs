@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 using Godot;
+using MegaCrit.Sts2.Core.Assets;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.HoverTips;
@@ -37,9 +39,30 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
     
     protected virtual string PortraitBasePath => $"{ModResPath}/images/card_portraits/{CardId}";
     protected virtual string FrameBasePath => $"{ModResPath}/images/card_frames/{CardId}";
+    protected virtual string AncientFramePath => ImageHelper.GetImagePath("atlases/card_atlas.sprites/beta.tres");
+    protected virtual string AncientBannerTexturePath => ImageHelper.GetImagePath("atlases/ui_atlas.sprites/card/card_banner_ancient_s.tres");
+    protected virtual string AncientBannerMaterialPath => "res://materials/cards/banners/card_banner_ancient_mat.tres";
+    protected virtual string AncientVisualTextBgPath
+    {
+        get
+        {
+            var cardType = Type switch
+            {
+                CardType.None or CardType.Status or CardType.Curse => CardType.Skill,
+                CardType.Attack or CardType.Skill or CardType.Power or CardType.Quest => Type,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            return ImageHelper.GetImagePath(
+                "atlases/compressed.sprites/card_template/ancient_card_text_bg_" +
+                cardType.ToString().ToLowerInvariant() +
+                ".tres");
+        }
+    }
 
     public override string PortraitPath => GetPortraitPath();
     public virtual string? CustomPortraitPath => null;
+    public virtual bool UseAncientVisualStyle => false;
 
     private string GetPortraitPath()
     {
@@ -54,12 +77,30 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
     {
         get
         {
+            if (UseAncientVisualStyle)
+                return ResourceLoader.Load<Texture2D>(AncientFramePath, null, ResourceLoader.CacheMode.Reuse);
+
             string framePath = $"{FrameBasePath}.png";
             if (ResourceLoader.Exists(framePath))
                 return ResourceLoader.Load<Texture2D>(framePath);
             return null;
         }
     }
+
+    public virtual Texture2D? CustomAncientTextBg =>
+        UseAncientVisualStyle
+            ? ResourceLoader.Load<Texture2D>(AncientVisualTextBgPath, null, ResourceLoader.CacheMode.Reuse)
+            : null;
+
+    public virtual Texture2D? CustomBannerTexture =>
+        UseAncientVisualStyle
+            ? ResourceLoader.Load<Texture2D>(AncientBannerTexturePath, null, ResourceLoader.CacheMode.Reuse)
+            : null;
+
+    public virtual Material? CustomBannerMaterial =>
+        UseAncientVisualStyle
+            ? PreloadManager.Cache.GetMaterial(AncientBannerMaterialPath)
+            : null;
 
     /// <summary>
     /// Override for card-specific gold glow logic when the stronger bonus line is active.
