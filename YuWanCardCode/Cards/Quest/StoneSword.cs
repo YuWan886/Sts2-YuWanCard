@@ -36,7 +36,7 @@ public class StoneSword : YuWanCardModel
 
             if (ElitesDefeated >= DynamicVars["Elites"].BaseValue)
             {
-                var relic = ModelDb.Relic<SwordOfStone>().ToMutable();
+                var relic = ModelDb.Relic<SwordOfJade>().ToMutable();
                 await RelicCmd.Obtain(relic, Owner);
                 await CardPileCmd.RemoveFromDeck(this);
                 PlayerCmd.CompleteQuest(this);
