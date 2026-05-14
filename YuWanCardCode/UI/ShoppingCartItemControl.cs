@@ -101,7 +101,10 @@ public partial class ShoppingCartItemControl : PanelContainer
         };
         infoContainer.AddChild(buttonRow);
 
+        var purchaseBlocked = ShoppingCartManager.IsPurchaseBlockedInCurrentRoom();
+
         var buyButton = CreateButton(GetLocText("YUWANCARD-SHOPPING_CART.buy"));
+        buyButton.Disabled = purchaseBlocked || !CanAfford();
         buyButton.Pressed += OnBuyPressed;
         buttonRow.AddChild(buyButton);
 

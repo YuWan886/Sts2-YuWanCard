@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Relics;
 
@@ -45,6 +46,18 @@ public static class ShoppingCartManager
     public static bool HasShoppingCart(Player? player = null)
     {
         return GetShoppingCartRelic(player) != null;
+    }
+
+    public static bool IsPurchaseBlockedInCurrentRoom(Player? player = null)
+    {
+        if (player == null)
+        {
+            var runState = RunManager.Instance.DebugOnlyGetState();
+            if (runState != null)
+                player = LocalContext.GetMe(runState.Players);
+        }
+
+        return player?.RunState.CurrentRoom is CombatRoom;
     }
 
     public static ShoppingCartData? GetCartData(Player? player = null)
@@ -147,6 +160,12 @@ public static class ShoppingCartManager
         var item = data.GetItem(index);
         if (item == null)
             return false;
+
+        if (IsPurchaseBlockedInCurrentRoom(player))
+        {
+            MainFile.Logger.Warn("ShoppingCartManager: Purchase blocked in combat room to avoid multiplayer desync");
+            return false;
+        }
 
         if (player.Gold < item.Price)
         {
