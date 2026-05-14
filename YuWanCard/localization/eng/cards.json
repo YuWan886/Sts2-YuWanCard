@@ -177,6 +177,8 @@
   "YUWANCARD-EMPERORS_NEW_PIG.description": "{IfUpgraded:show:Enemies cannot deal damage to you or apply debuffs.|Enemies cannot deal damage to you.}",
   "YUWANCARD-PIG_MISS_YOU.title": "Pig Miss You",
   "YUWANCARD-PIG_MISS_YOU.description": "Gain {PigFriendsPower:diff()} [gold]Pig Friends[/gold].",
+  "YUWANCARD-PIG_PAWN.title": "Pawn Little Pig",
+  "YUWANCARD-PIG_PAWN.description": "Sell a [gold]Little Pig[/gold]. Gain 1 Gold for every 5 HP it has.",
   "YUWANCARD-PIG_GANGLIE.title": "Pig Ganglie",
   "YUWANCARD-PIG_GANGLIE.description": "Gain {ThornsPower:diff()} [gold]Thorns[/gold].",
   "YUWANCARD-PIG_WAI_YOU_ZHU.title": "Pig Wai You Zhu",

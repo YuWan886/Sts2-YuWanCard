@@ -1,34 +1,44 @@
-using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using YuWanCard.Characters;
+using YuWanCard.Core.Abstracts;
+using YuWanCard.Monsters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
 [Pool(typeof(PigCardPool))]
-public class PigTouch : YuWanCardModel
+public class PigPawn : YuWanCardModel
 {
-    public PigTouch() : base(
+    public PigPawn() : base(
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
         target: CustomTargetType.AnyPigMinion)
     {
-        WithVars(new HealVar(5));
+        WithKeywords(CardKeyword.Exhaust);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Heal.UpgradeValueBy(2);
+        EnergyCost.UpgradeBy(-1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (cardPlay.Target is { IsDead: false } pig)
+        if (cardPlay.Target is not { IsDead: false } pig)
+            return;
+
+        if (pig.Monster is not PigMinion)
+            return;
+
+        int goldToGain = (int)(pig.CurrentHp / 5);
+        if (goldToGain > 0)
         {
-            await CreatureCmd.Heal(pig, DynamicVars.Heal.BaseValue);
+            await PlayerCmd.GainGold(goldToGain, Owner);
         }
+
+        await PetManager.KillPet(pig);
     }
 }

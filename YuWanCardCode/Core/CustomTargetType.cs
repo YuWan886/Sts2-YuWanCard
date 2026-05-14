@@ -10,9 +10,27 @@ public static class CustomTargetType
 
     public static TargetType Anyone { get; } = Mint("anyone");
 
+    public static TargetType AnyPigMinion { get; } = Mint("any_pig_minion");
+
     public static bool IsYuWanCustom(TargetType type)
     {
-        return type == Everyone || type == Anyone;
+        return type == Everyone
+               || type == Anyone
+               || type == AnyPigMinion
+               || CustomTargetTypeRegistry.IsYuWanCustom(type);
+    }
+
+    public static bool IsCustomSingleTargetType(TargetType type)
+    {
+        return type == Anyone
+               || type == AnyPigMinion
+               || CustomTargetTypeRegistry.IsCustomSingleTargetType(type);
+    }
+
+    public static bool IsCustomMultiTargetType(TargetType type)
+    {
+        return type == Everyone
+               || CustomTargetTypeRegistry.IsCustomMultiTargetType(type);
     }
 
     private static TargetType Mint(string localStem)

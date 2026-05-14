@@ -14,6 +14,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Random;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using YuWanCard.Monsters;
 using YuWanCard.Utils;
 
@@ -372,7 +373,8 @@ public class CallCompanionsPower : YuWanPowerModel
             TargetType.AnyAlly => combatState.Allies
                 .Where(c => c != null && c.IsAlive && c.IsPlayer)
                 .MinBy(c => (int)c.CurrentHp),
-            _ => combatState.HittableEnemies.FirstOrDefault()
+            _ => card.GetSelectableTargets().FirstOrDefault()
+                ?? combatState.HittableEnemies.FirstOrDefault()
                 ?? (Creature?)player.Creature
         };
     }
