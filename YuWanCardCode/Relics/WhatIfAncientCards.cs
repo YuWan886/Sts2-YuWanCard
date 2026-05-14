@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Runs;
@@ -77,13 +76,8 @@ public class WhatIfAncientCards : YuWanRelicModel
 
     private static IEnumerable<CardModel> GetAncientCards(Player player)
     {
-        var playerPoolCards = player.Character.CardPool
-            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint);
-        var colorlessPoolCards = ModelDb.CardPool<ColorlessCardPool>()
-            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint);
-
-        return playerPoolCards
-            .Concat(colorlessPoolCards)
+        return ModelDb.AllCardPools
+            .SelectMany(pool => pool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint))
             .Where(c => c.Rarity == CardRarity.Ancient && !ArchaicTooth.TranscendenceCards.Contains(c))
             .DistinctBy(c => c.Id.Entry);
     }
