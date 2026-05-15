@@ -22,6 +22,21 @@
 3. Game logs are in `%AppData%\SlayTheSpire2\logs\` folder
 4. Install [RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib) or [BaseLib](https://github.com/Alchyr/BaseLib-StS2) to see the piggy's config interface. This is **optional**.
 
+## Data Collection
+
+This mod anonymously collects minimal usage statistics (via PostHog) to understand how the mod is being used. Collected data includes:
+
+- Launch count and unique user count
+- Character selection (whether the pig character is used)
+- Win/loss counts
+- Ascension level
+- Player count (single/multiplayer)
+- Mod version
+
+**No personal information is collected** (such as Steam ID, username, IP address, etc.). All data is tracked using an auto-generated anonymous identifier.
+
+When you first enter the main menu, a consent dialog will appear. **Data is only sent after you explicitly choose "Enable Collection".** You can also completely disable data collection at any time by setting `enabled` to `false` in the config file at `<game user data>/mod_configs/YuWanCard/posthog.analytics.yaml`.
+
 #### Communication
 
 - [**QQ: 752913553**](https://qm.qq.com/q/ohYkDqbe7K)

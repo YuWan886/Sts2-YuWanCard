@@ -19,8 +19,6 @@
 如果模组目录下存在 `posthog.analytics.local.yaml`，会优先读取它。
 这个文件适合放私有 `projectApiKey`，并且已经被 `.gitignore` 忽略。
 
-如果之前已经使用过旧版 `posthog.analytics.json` / `posthog.analytics.local.json`，模组会在下次启动时自动迁移到 YAML。
-
 示例：
 
 ```yaml

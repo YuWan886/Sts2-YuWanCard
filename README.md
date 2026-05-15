@@ -23,6 +23,21 @@
 4. 安装 [RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib) 或者 [BaseLib](https://github.com/Alchyr/BaseLib-StS2)，就能看到猪猪的配置界面，这是**可选**的。
 5. [**点我看常见问题解答**](https://docs.qq.com/doc/DUXhoZXhKVURZR1ph)
 
+## 数据收集
+
+本 mod 会匿名收集少量统计数据（通过 PostHog），用于了解 mod 的使用情况。收集的数据包括：
+
+- 启动次数与独立用户数
+- 角色选择（是否使用猪角色）
+- 游戏胜负次数
+- 爬塔等级（Ascension Level）
+- 玩家数量（单人/多人）
+- mod 版本号
+
+**我们不会收集任何个人信息**（如 Steam ID、用户名、IP 地址等）。所有数据均通过自动生成的匿名标识符进行统计。
+
+首次进入主菜单时，mod 会弹出统计说明对话框，**只有你明确选择「启用收集」后才会开始上报**。你也可以随时在配置文件 `<游戏用户数据>/mod_configs/YuWanCard/posthog.analytics.yaml` 中将 `enabled` 设为 `false` 来完全关闭数据收集。
+
 ## 交流
 
 - [**QQ: 752913553**](https://qm.qq.com/q/ohYkDqbe7K)
