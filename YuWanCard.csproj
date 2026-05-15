@@ -66,6 +66,7 @@
         <None Include=".gitignore" />
         <None Include="YuWanCard.json" />
         <None Include="project.godot" />
+        <None Include="posthog.analytics.local.yaml" Condition="Exists('posthog.analytics.local.yaml')" CopyToOutputDirectory="PreserveNewest" />
         <None Include="YuWanCard/**" />
     </ItemGroup>
 
@@ -79,6 +80,9 @@
         <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(AssemblyName).json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="README.md" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
+        <Copy SourceFiles="posthog.analytics.local.yaml"
+              DestinationFolder="$(ModsPath)$(MSBuildProjectName)/"
+              Condition="Exists('posthog.analytics.local.yaml')" />
     </Target>
 
     <Target Name="CopyQuickPck" AfterTargets="PackPck" Condition="Exists('$(PckPackerOutputPath)') And '$(PckPackerSkipped)' != 'true'">

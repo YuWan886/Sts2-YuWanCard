@@ -71,6 +71,7 @@ public partial class MainFile : Node
         TeammatePayMessageHandler.Register();
 
         PreloadAssets();
+        CloudAnalyticsService.Initialize();
 
         ModLifecycle.Publish(ModLifecyclePhase.Initialized);
         Logger.Info("YuWanCard initialized");
