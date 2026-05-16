@@ -16,7 +16,8 @@ public class TurnToSpecimen : YuWanCardModel
     private static readonly HashSet<Type> s_powerBlacklist = new()
     {
         typeof(SandpitPower),
-        typeof(PersonalHivePower)
+        typeof(PersonalHivePower),
+        typeof(ReattachPower)
     };
 
     public TurnToSpecimen() : base(

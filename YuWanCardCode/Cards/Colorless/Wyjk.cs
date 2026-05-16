@@ -11,7 +11,7 @@ namespace YuWanCard.Cards;
 public class Wyjk : YuWanCardModel
 {
     public Wyjk() : base(
-        baseCost: 2,
+        baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
         target: TargetType.AllAllies)
