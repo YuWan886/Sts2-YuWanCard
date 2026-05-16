@@ -54,23 +54,41 @@ public static class VfxUtils
             return null;
         }
 
-        var effect = scene.Instantiate<Control>(PackedScene.GenEditState.Disabled);
-        if (effect == null)
+        var instance = scene.Instantiate(PackedScene.GenEditState.Disabled);
+        if (instance == null)
         {
             MainFile.Logger.Error($"VfxUtils: Failed to instantiate effect from: {scenePath}");
             return null;
         }
 
-        vfxContainer.AddChildSafely(effect);
-        var game = NGame.Instance;
-        if (game != null)
+        vfxContainer.AddChildSafely(instance);
+
+        if (instance is Control control)
         {
-            var viewportRect = game.GetViewportRect();
-            effect.Position = viewportRect.Size * 0.5f - effect.Size * 0.5f;
+            var viewportSize = NGame.Instance?.GetViewportRect().Size ?? Vector2.Zero;
+            control.Position = viewportSize * 0.5f - control.Size * 0.5f;
+        }
+        else if (instance is Node2D node2D)
+        {
+            var viewportSize = NGame.Instance?.GetViewportRect().Size ?? Vector2.Zero;
+            node2D.Position = viewportSize * 0.5f;
+        }
+
+        if (instance is Node node)
+        {
+            var animatedSprite = node.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+            if (animatedSprite?.SpriteFrames != null)
+            {
+                var animNames = animatedSprite.SpriteFrames.GetAnimationNames();
+                if (animNames.Length > 0)
+                {
+                    animatedSprite.Play(animNames[0]);
+                }
+            }
         }
 
         MainFile.Logger.Debug($"VfxUtils: Played centered effect: {scenePath}");
-        return effect;
+        return instance as Control;
     }
 
     public static Control? PlayAt(string scenePath, Vector2 position)
@@ -88,21 +106,39 @@ public static class VfxUtils
             return null;
         }
 
-        var effect = scene.Instantiate<Control>(PackedScene.GenEditState.Disabled);
-        if (effect == null)
+        var instance = scene.Instantiate(PackedScene.GenEditState.Disabled);
+        if (instance == null)
         {
             MainFile.Logger.Error($"VfxUtils: Failed to instantiate effect from: {scenePath}");
             return null;
         }
 
-        vfxContainer.AddChildSafely(effect);
-        effect.Position = position - effect.Size * 0.5f;
+        vfxContainer.AddChildSafely(instance);
+
+        if (instance is Control control)
+        {
+            control.Position = position - control.Size * 0.5f;
+        }
+        else if (instance is Node2D node2D)
+        {
+            node2D.Position = position;
+        }
 
         MainFile.Logger.Debug($"VfxUtils: Played effect at position {position}: {scenePath}");
-        return effect;
+        return instance as Control;
     }
 
     public static Node2D? PlayAtCreature(string scenePath, Creature creature)
+    {
+        return PlayAtCreatureInternal(scenePath, creature, null);
+    }
+
+    public static Node2D? PlayAtCreature(string scenePath, Creature creature, float durationSeconds)
+    {
+        return PlayAtCreatureInternal(scenePath, creature, durationSeconds);
+    }
+
+    private static Node2D? PlayAtCreatureInternal(string scenePath, Creature creature, float? durationSeconds)
     {
         if (creature == null)
         {
@@ -169,13 +205,134 @@ public static class VfxUtils
                 if (animNames.Length > 0)
                 {
                     animatedSprite.Play(animNames[0]);
-                    animatedSprite.Connect(AnimatedSprite2D.SignalName.AnimationFinished, 
-                        Callable.From(() => node.QueueFree()));
+                    if (durationSeconds.HasValue)
+                    {
+                        var tree = node.GetTree();
+                        if (tree != null)
+                        {
+                            tree.CreateTimer(durationSeconds.Value).Timeout += () =>
+                            {
+                                animatedSprite.Stop();
+                                node.QueueFree();
+                            };
+                        }
+                    }
+                    else
+                    {
+                        animatedSprite.Connect(AnimatedSprite2D.SignalName.AnimationFinished,
+                            Callable.From(() => node.QueueFree()));
+                    }
                 }
             }
         }
 
         MainFile.Logger.Debug($"VfxUtils: Played effect at creature position {globalPos}: {scenePath}");
+        return instance as Node2D;
+    }
+
+    public static Node2D? PlayAtCreatureTop(string scenePath, Creature creature)
+    {
+        return PlayAtCreatureTopInternal(scenePath, creature, null);
+    }
+
+    public static Node2D? PlayAtCreatureTop(string scenePath, Creature creature, float durationSeconds)
+    {
+        return PlayAtCreatureTopInternal(scenePath, creature, durationSeconds);
+    }
+
+    private static Node2D? PlayAtCreatureTopInternal(string scenePath, Creature creature, float? durationSeconds)
+    {
+        if (creature == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Creature is null, cannot play effect at creature top");
+            return null;
+        }
+
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Could not get creature node for creature");
+            return null;
+        }
+
+        var topPos = creatureNode.GetTopOfHitbox();
+
+        var scene = GetOrLoadScene(scenePath);
+        if (scene == null)
+        {
+            return null;
+        }
+
+        var vfxContainer = NCombatRoom.Instance?.CombatVfxContainer;
+        if (vfxContainer == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: CombatVfxContainer not found, cannot play effect at creature top");
+            return null;
+        }
+
+        var instance = scene.Instantiate(PackedScene.GenEditState.Disabled);
+        if (instance == null)
+        {
+            MainFile.Logger.Error($"VfxUtils: Failed to instantiate effect from: {scenePath}");
+            return null;
+        }
+
+        vfxContainer.AddChildSafely(instance);
+
+        if (instance is Control control)
+        {
+            control.GlobalPosition = topPos;
+            control.Position -= new Vector2(control.Size.X * 0.5f, control.Size.Y);
+        }
+        else if (instance is Node2D node2D)
+        {
+            var animatedSprite = node2D.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+            if (animatedSprite != null && animatedSprite.SpriteFrames != null)
+            {
+                var texture = animatedSprite.SpriteFrames.GetFrameTexture("default", 0);
+                if (texture != null)
+                {
+                    node2D.GlobalPosition = topPos;
+                    node2D.GlobalPosition -= new Vector2(0, texture.GetHeight() * 0.5f);
+                }
+            }
+            else
+            {
+                node2D.GlobalPosition = topPos;
+            }
+        }
+
+        if (instance is Node node)
+        {
+            var animatedSprite = node.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+            if (animatedSprite != null && animatedSprite.SpriteFrames != null)
+            {
+                var animNames = animatedSprite.SpriteFrames.GetAnimationNames();
+                if (animNames.Length > 0)
+                {
+                    animatedSprite.Play(animNames[0]);
+                    if (durationSeconds.HasValue)
+                    {
+                        var tree = node.GetTree();
+                        if (tree != null)
+                        {
+                            tree.CreateTimer(durationSeconds.Value).Timeout += () =>
+                            {
+                                animatedSprite.Stop();
+                                node.QueueFree();
+                            };
+                        }
+                    }
+                    else
+                    {
+                        animatedSprite.Connect(AnimatedSprite2D.SignalName.AnimationFinished,
+                            Callable.From(() => node.QueueFree()));
+                    }
+                }
+            }
+        }
+
+        MainFile.Logger.Debug($"VfxUtils: Played effect at creature top {topPos}: {scenePath}");
         return instance as Node2D;
     }
 

@@ -1,0 +1,74 @@
+[gd_scene load_steps=16 format=3 uid="uid://bfmojspxf03cc"]
+
+[ext_resource type="Texture2D" uid="uid://ca0gbjigoua" path="res://YuWanCard/images/vfx/fish/fish_1.png" id="1_uc77t"]
+[ext_resource type="Texture2D" uid="uid://ldqk8exdsrsd" path="res://YuWanCard/images/vfx/fish/fish_2.png" id="2_p822o"]
+[ext_resource type="Texture2D" uid="uid://de6w0cyvqkk0m" path="res://YuWanCard/images/vfx/fish/fish_3.png" id="3_jaelq"]
+[ext_resource type="Texture2D" uid="uid://b2oonh2fsaac8" path="res://YuWanCard/images/vfx/fish/fish_4.png" id="4_k2ysv"]
+[ext_resource type="Texture2D" uid="uid://pj7svjkek0gu" path="res://YuWanCard/images/vfx/fish/fish_5.png" id="5_vxdqj"]
+[ext_resource type="Texture2D" uid="uid://pv7yg06k1dbc" path="res://YuWanCard/images/vfx/fish/fish_6.png" id="6_0ot1q"]
+[ext_resource type="Texture2D" uid="uid://dkcfu7wc27c3y" path="res://YuWanCard/images/vfx/fish/fish_7.png" id="7_3jm0g"]
+[ext_resource type="Texture2D" uid="uid://cix3h0bsv2kv5" path="res://YuWanCard/images/vfx/fish/fish_8.png" id="8_0d6sa"]
+[ext_resource type="Texture2D" uid="uid://dsrn0ych28ac7" path="res://YuWanCard/images/vfx/fish/fish_9.png" id="9_h16ds"]
+[ext_resource type="Texture2D" uid="uid://b0f5ujbwmcewo" path="res://YuWanCard/images/vfx/fish/fish_10.png" id="10_ss462"]
+[ext_resource type="Texture2D" uid="uid://cyhw1stmcfd1x" path="res://YuWanCard/images/vfx/fish/fish_11.png" id="11_rjhrg"]
+[ext_resource type="Texture2D" uid="uid://c855c073cxkxi" path="res://YuWanCard/images/vfx/fish/fish_12.png" id="12_gc7mh"]
+[ext_resource type="Texture2D" uid="uid://gnf4ecivrdqh" path="res://YuWanCard/images/vfx/fish/fish_13.png" id="13_8atdc"]
+[ext_resource type="Texture2D" uid="uid://bbf6s43styk8g" path="res://YuWanCard/images/vfx/fish/fish_14.png" id="14_k2blm"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6hdtw"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_uc77t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_p822o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_jaelq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_k2ysv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_vxdqj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_0ot1q")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_3jm0g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_0d6sa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_h16ds")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_ss462")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_rjhrg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_gc7mh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_8atdc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_k2blm")
+}],
+"loop": true,
+"name": &"default",
+"speed": 24.0
+}]
+
+[node name="Vfx1" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.6, 0.6)
+sprite_frames = SubResource("SpriteFrames_6hdtw")
+frame = 13
+frame_progress = 1.0

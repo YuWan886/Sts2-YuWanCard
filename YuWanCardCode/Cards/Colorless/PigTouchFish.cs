@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -33,5 +34,6 @@ public class PigTouchFish : YuWanCardModel
     {
         await PowerCmd.Apply<RetainHandPower>(Owner.Creature, DynamicVars["RetainHandPower"].BaseValue, Owner.Creature, this);
         await PowerCmd.Apply<EnergyNextTurnPower>(Owner.Creature, DynamicVars["EnergyNextTurnPower"].BaseValue, Owner.Creature, this);
+        VfxUtils.PlayAtCreatureTop("res://YuWanCard/scenes/vfx/vfx_fish.tscn", Owner.Creature, 1.5f);
     }
 }
