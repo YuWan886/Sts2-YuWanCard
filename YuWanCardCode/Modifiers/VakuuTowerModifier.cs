@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.Runs;
 using System.Runtime.CompilerServices;
+using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Extensions;
 
 namespace YuWanCard.Modifiers;
