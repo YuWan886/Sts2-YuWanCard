@@ -52,6 +52,8 @@ public partial class MainFile : Node
         patcher.ApplySingle(
             h => Core.Patches.AutoSlayOptionsPatch.ApplyPatch(h), "AutoSlayOptions");
         patcher.ApplySingle(
+            h => Core.Patches.CustomEnergyIconPatches.Apply(h), "CustomEnergyIcons");
+        patcher.ApplySingle(
             h => ModInteropProcessor.Process(h, Assembly.GetExecutingAssembly()), "ModInterop");
 
         // Phase 3: Content discovery — scan for [Pool] and registration attributes

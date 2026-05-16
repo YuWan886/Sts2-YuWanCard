@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Godot;
 using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
@@ -48,7 +49,27 @@ public static class NodeFactory
     {
         if (!ResourceLoader.Exists(path)) return null;
         var scene = ResourceLoader.Load<PackedScene>(path);
-        return scene?.Instantiate<TNode>(PackedScene.GenEditState.Disabled);
+        if (scene == null) return null;
+
+        Node? instance = scene.Instantiate(PackedScene.GenEditState.Disabled);
+        if (instance == null) return null;
+
+        if (instance is not TNode)
+        {
+            TryAutoConvert(scene, ref instance);
+        }
+
+        if (instance is TNode typedNode)
+        {
+            return typedNode;
+        }
+
+        var actualType = instance?.GetType().Name ?? "null";
+        MainFile.Logger.Warn(
+            $"NodeFactory: scene '{path}' instantiated as '{actualType}', " +
+            $"which could not be converted to '{typeof(TNode).Name}'.");
+        instance?.QueueFreeSafely();
+        return null;
     }
 
     /// <summary>
