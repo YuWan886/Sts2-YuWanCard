@@ -21,6 +21,8 @@
 2. Extract to the `mods` folder in the game directory
 3. Game logs are in `%AppData%\SlayTheSpire2\logs\` folder
 4. Install [RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib) or [BaseLib](https://github.com/Alchyr/BaseLib-StS2) to see the piggy's config interface. This is **optional**.
+5. [Mod Wiki](https://yuwan886.github.io/Sts2-YuWanCard)
+6. [Data collection panel](https://us.posthog.com/shared/86iICJdcka6ZXAayfdaUqTv7ahovcA)
 
 ## Data Collection
 

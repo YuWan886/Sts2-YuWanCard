@@ -21,7 +21,9 @@
 2. 解压到游戏目录下的 `mods` 文件夹中
 3. 游戏日志在 `%AppData%\SlayTheSpire2\logs\` 文件夹中
 4. 安装 [RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib) 或者 [BaseLib](https://github.com/Alchyr/BaseLib-StS2)，就能看到猪猪的配置界面，这是**可选**的。
-5. [**点我看常见问题解答**](https://docs.qq.com/doc/DUXhoZXhKVURZR1ph)
+5. [模组wiki](https://yuwan886.github.io/Sts2-YuWanCard/)
+6. [**点我看常见问题解答**](https://docs.qq.com/doc/DUXhoZXhKVURZR1ph)
+7. [数据收集面板](https://us.posthog.com/shared/86iICJdcka6ZXAayfdaUqTv7ahovcA)
 
 ## 数据收集
 
@@ -30,7 +32,7 @@
 - 启动次数与独立用户数
 - 角色选择（是否使用猪角色）
 - 游戏胜负次数
-- 爬塔等级（Ascension Level）
+- 进阶层数
 - 玩家数量（单人/多人）
 - mod 版本号
 
