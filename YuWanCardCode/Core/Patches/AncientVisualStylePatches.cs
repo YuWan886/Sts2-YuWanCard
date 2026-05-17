@@ -77,13 +77,22 @@ static class NCardAncientTitleOutlinePatch
 [HarmonyPatch(typeof(NCard), "Reload")]
 static class NCardAncientVisualReloadPatch
 {
-    static void Postfix(NCard __instance)
+    static bool Prefix(NCard __instance)
     {
-        if (!AncientVisualStyleHelper.UsesAncientVisualStyle(__instance.Model) || !__instance.IsNodeReady())
-            return;
+        if (!AncientVisualStyleHelper.UsesAncientVisualStyle(__instance.Model))
+            return true;
 
-        var model = __instance.Model!;
+        if (!__instance.IsNodeReady() || __instance.Model == null)
+            return false;
+
+        if (OS.HasFeature("editor"))
+            __instance.Name = $"{typeof(NCard)}-{__instance.Model.Id}";
+
         var tr = Traverse.Create(__instance);
+        var model = __instance.Model;
+
+        tr.Field<TextureRect>("_energyIcon").Value.Texture = model.EnergyIcon;
+        tr.Method("UpdateTypePlaque").GetValue();
 
         var portraitBorder = tr.Field<TextureRect>("_portraitBorder").Value;
         var portrait = tr.Field<TextureRect>("_portrait").Value;
@@ -91,56 +100,95 @@ static class NCardAncientVisualReloadPatch
         var ancientPortrait = tr.Field<TextureRect>("_ancientPortrait").Value;
         var ancientBorder = tr.Field<TextureRect>("_ancientBorder").Value;
         var ancientTextBg = tr.Field<TextureRect>("_ancientTextBg").Value;
-        var ancientBanner = tr.Field<TextureRect>("_ancientBanner").Value;
+        var ancientBanner = tr.Field<Control>("_ancientBanner").Value;
         var banner = tr.Field<TextureRect>("_banner").Value;
-        var ancientHighlight = tr.Field<CanvasItem>("_ancientHighlight").Value;
+        var lockIcon = tr.Field<TextureRect>("_lock").Value;
         var portraitCanvasGroup = tr.Field<CanvasGroup>("_portraitCanvasGroup").Value;
+        var useAncientLayout = true;
 
-        portraitBorder.Visible = false;
-        portrait.Visible = false;
-        frame.Visible = false;
-        banner.Visible = false;
+        portraitBorder.Visible = !useAncientLayout;
+        portrait.Visible = !useAncientLayout;
+        frame.Visible = !useAncientLayout;
+        ancientPortrait.Visible = useAncientLayout;
+        ancientBorder.Visible = useAncientLayout;
+        ancientTextBg.Visible = useAncientLayout;
+        ancientBanner.Visible = useAncientLayout;
+        banner.Visible = !useAncientLayout;
+        lockIcon.Visible = __instance.Visibility == ModelVisibility.Locked;
 
-        ancientPortrait.Visible = true;
-        ancientBorder.Visible = true;
-        ancientTextBg.Visible = true;
-        ancientBanner.Visible = true;
-        ancientHighlight.Visible = true;
-
-        ancientPortrait.Texture = model.Portrait;
-        ancientTextBg.Texture = model.AncientTextBg;
-        banner.Material = null;
+        var portraitTexture = model.Portrait;
 
         if (__instance.Visibility != ModelVisibility.Visible)
         {
             var portraitBlurMaterial = PreloadManager.Cache.GetMaterial(AncientVisualStyleHelper.PortraitBlurMaterialPath);
-            var canvasGroupMaskBlurMaterial = PreloadManager.Cache.GetMaterial(AncientVisualStyleHelper.CanvasGroupMaskBlurMaterialPath);
-            portraitCanvasGroup.Material = canvasGroupMaskBlurMaterial;
+            portraitCanvasGroup.Material = PreloadManager.Cache.GetMaterial(AncientVisualStyleHelper.CanvasGroupMaskBlurMaterialPath);
             portrait.Material = portraitBlurMaterial;
             ancientPortrait.Material = portraitBlurMaterial;
         }
         else
         {
-            var canvasGroupMaskMaterial = PreloadManager.Cache.GetMaterial(AncientVisualStyleHelper.CanvasGroupMaskMaterialPath);
-            portraitCanvasGroup.Material = canvasGroupMaskMaterial;
+            portraitCanvasGroup.Material = PreloadManager.Cache.GetMaterial(AncientVisualStyleHelper.CanvasGroupMaskMaterialPath);
             portrait.Material = null;
             ancientPortrait.Material = null;
         }
+
+        ancientTextBg.Texture = model.AncientTextBg;
+        ancientPortrait.Texture = portraitTexture;
+        portraitBorder.Material = null;
+        portraitBorder.Texture = null;
+        banner.Texture = null;
+        banner.Material = null;
+        frame.Material = model.FrameMaterial;
+
+        tr.Method("ReloadOverlay").GetValue();
+        return false;
     }
 }
 
 [HarmonyPatch(typeof(NCard), "ReloadOverlay")]
 static class NCardAncientVisualOverlayPatch
 {
-    static void Postfix(NCard __instance)
+    static bool Prefix(NCard __instance)
     {
-        if (!AncientVisualStyleHelper.UsesAncientVisualStyle(__instance.Model) || !__instance.IsNodeReady())
-            return;
+        if (!AncientVisualStyleHelper.UsesAncientVisualStyle(__instance.Model))
+            return true;
+
+        if (!__instance.IsNodeReady() || __instance.Model == null)
+            return false;
 
         var tr = Traverse.Create(__instance);
+        var cardOverlay = tr.Field<Control?>("_cardOverlay").Value;
+        var overlayContainer = tr.Field<Node>("_overlayContainer").Value;
+
+        if (cardOverlay != null)
+        {
+            overlayContainer.RemoveChild(cardOverlay);
+            cardOverlay.QueueFree();
+            tr.Field<Control?>("_cardOverlay").Value = null;
+        }
+
         tr.Field<TextureRect>("_frame").Value.Visible = false;
         tr.Field<TextureRect>("_ancientBorder").Value.Visible = true;
         tr.Field<CanvasItem>("_ancientHighlight").Value.Visible = true;
+
+        Control? newOverlay = null;
+        var model = __instance.Model;
+        if (model.Affliction is { HasOverlay: true })
+        {
+            newOverlay = model.Affliction.CreateOverlay();
+        }
+        else if (model.HasBuiltInOverlay)
+        {
+            newOverlay = model.CreateOverlay();
+        }
+
+        if (newOverlay != null)
+        {
+            overlayContainer.AddChild(newOverlay);
+            tr.Field<Control?>("_cardOverlay").Value = newOverlay;
+        }
+
+        return false;
     }
 }
 
