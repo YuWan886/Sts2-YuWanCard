@@ -1,3 +1,4 @@
+using System.Reflection;
 using HarmonyLib;
 
 namespace YuWanCard.Core.Patching;
@@ -115,6 +116,58 @@ public class ModPatcher
             _applied[id] = false;
             MainFile.Logger.Warn($"[Patcher] {id} failed (may be mobile): {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Safely patches all [HarmonyPatch] classes in the assembly individually,
+    /// so that one failing method doesn't prevent others from being applied.
+    /// Essential for Android/Mono AOT compatibility.
+    /// </summary>
+    /// <param name="assembly">Assembly to scan for [HarmonyPatch] types.</param>
+    /// <param name="excludeTypeNames">Optional set of type names to skip
+    /// (e.g. patches that must be applied conditionally by platform).</param>
+    /// <returns>Number of successfully applied patch classes.</returns>
+    public int PatchAllSafe(Assembly assembly, HashSet<string>? excludeTypeNames = null)
+    {
+        if (_isApplied)
+            return 0;
+
+        var types = assembly.GetTypes();
+        int success = 0;
+        int failed = 0;
+
+        foreach (var type in types)
+        {
+            // Only process types with [HarmonyPatch] attribute(s)
+            if (!type.GetCustomAttributes<HarmonyPatch>().Any())
+                continue;
+
+            // Skip types that are applied manually with platform checks
+            if (excludeTypeNames != null && excludeTypeNames.Contains(type.Name))
+                continue;
+
+            try
+            {
+                _harmony.CreateClassProcessor(type).Patch();
+                success++;
+            }
+            catch (Exception ex)
+            {
+                failed++;
+                MainFile.Logger.Warn(
+                    $"[Patcher] Patch class '{type.Name}' failed (may be mobile): {ex.Message}");
+            }
+        }
+
+        MainFile.Logger.Info(
+            $"[Patcher] BulkPatchAllSafe: {success} applied, {failed} failed, {success + failed} total");
+
+        if (failed == 0)
+        {
+            _isApplied = true;
+        }
+
+        return success;
     }
 
     public void UnpatchAll()

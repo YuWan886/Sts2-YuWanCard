@@ -21,6 +21,8 @@ public static class SaveUtilPatch
     }
 }
 
+/// Excluded from auto-discovery on all platforms — applied manually in MainFile.cs
+/// (ref ModelId parameters fail on Android/Mono AOT so skipped there entirely).
 [HarmonyPatch(typeof(ProgressState), nameof(ProgressState.GetOrCreateEncounterStats))]
 public static class ProgressStateEncounterStatsPatch
 {

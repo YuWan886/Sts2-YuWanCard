@@ -392,6 +392,9 @@ public static class NodeFactory
         foreach (var child in source.GetChildren())
         {
             source.RemoveChild(child);
+            // Clear owner before adding to new parent to avoid Godot's
+            // "owner inconsistent" warning (child retains PackedScene owner)
+            child.Owner = null;
             target.AddChild(child);
             child.Owner = target;
             SetOwnerRecursive(target, child);
@@ -405,6 +408,9 @@ public static class NodeFactory
             source.RemoveChild(child);
             if (predicate(child))
             {
+                // Clear owner before adding to new parent to avoid Godot's
+                // "owner inconsistent" warning (child retains PackedScene owner)
+                child.Owner = null;
                 target.AddChild(child);
                 child.Owner = target;
                 SetOwnerRecursive(target, child);
