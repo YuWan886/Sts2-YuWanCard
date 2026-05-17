@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -34,5 +35,6 @@ public class Wyjk : YuWanCardModel
         {
             await PlayerCmd.GainEnergy(DynamicVars["Energy"].IntValue, teammate.Player!);
         }
+        VfxUtils.PlayAtCreatureTop("res://YuWanCard/scenes/vfx/vfx_wyjk.tscn", Owner.Creature);
     }
 }
