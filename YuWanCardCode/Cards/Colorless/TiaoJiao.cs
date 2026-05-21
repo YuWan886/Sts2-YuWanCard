@@ -36,6 +36,7 @@ public class TiaoJiao : YuWanCardModel
         if (cardPlay.Target == null) return;
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+            .Unpowered()
             .Execute(choiceContext);
         
         await PowerCmd.Apply<TrainYouWellPower>(new ThrowingPlayerChoiceContext(), cardPlay.Target, DynamicVars["TrainYouWellPower"].IntValue, Owner.Creature, this);

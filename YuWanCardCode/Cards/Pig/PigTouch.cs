@@ -1,11 +1,9 @@
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using YuWanCard.Characters;
-using YuWanCard.Monsters;
 
 namespace YuWanCard.Cards;
 
@@ -16,7 +14,7 @@ public class PigTouch : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.None)
+        target: CustomTargetType.AnyPigMinion)
     {
         WithVars(new HealVar(5));
     }
@@ -28,24 +26,9 @@ public class PigTouch : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var pig = FindPigPet();
-        if (pig != null && !pig.IsDead)
+        if (cardPlay.Target is { IsDead: false } pig)
         {
             await CreatureCmd.Heal(pig, DynamicVars.Heal.BaseValue);
         }
-    }
-
-    private Creature? FindPigPet()
-    {
-        if (Owner == null) return null;
-
-        foreach (var pet in Owner.Creature.Pets)
-        {
-            if (pet.Monster is PigMinion)
-            {
-                return pet;
-            }
-        }
-        return null;
     }
 }

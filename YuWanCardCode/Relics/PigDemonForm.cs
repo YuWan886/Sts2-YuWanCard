@@ -20,7 +20,7 @@ public class PigDemonForm : YuWanRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Shop;
 
-    public override int MerchantCost => 280;
+    public override int MerchantCost => 300;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(2m)];
 

@@ -16,6 +16,11 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class ReincarnatedEye : YuWanRelicModel
 {
+    static ReincarnatedEye()
+    {
+        SavedPropertyRegistration.RegisterType(typeof(ReincarnatedEye));
+    }
+
     [SavedProperty]
     private bool HasTriggeredThisCombat { get; set; }
 
@@ -79,7 +84,7 @@ public class ReincarnatedEye : YuWanRelicModel
 
         Flash();
 
-        var prompt = new LocString("relics", "YUWANCARD-REINCARNATED_EYE.selectionPrompt");
+        var prompt = new LocString("relics", $"{Id.Entry}.selectionPrompt");
         var selectedCards = await CardSelectCmd.FromDeckGeneric(
             Owner,
             new CardSelectorPrefs(prompt, 1),

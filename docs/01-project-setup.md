@@ -64,50 +64,71 @@
 ```
 YourMod/
 ├── .godot/                    # Godot 引擎配置目录
-├── .template.config/          # 模板配置
 ├── .vscode/                   # VSCode 配置
 ├── packages/                  # NuGet 包目录
 ├── YourMod/                   # 模组资源目录
 │   ├── images/
 │   │   ├── card_portraits/    # 卡牌立绘
+│   │   ├── card_frames/       # 卡牌边框
 │   │   ├── powers/            # 能力图标
 │   │   ├── relics/            # 遗物图标
 │   │   ├── ancients/          # 先古之民图标和背景
 │   │   ├── modifiers/         # 修改器图标
-│   │   └── ui/run_history/    # UI 图标
+│   │   ├── potions/           # 药水图标
+│   │   ├── orbs/              # 充能球图标
+│   │   ├── characters/        # 角色相关图片
+│   │   └── ui/                # UI 图标
+│   ├── scenes/                # Godot 场景文件
 │   ├── localization/zhs/      # 简体中文本地化
 │   │   ├── cards.json         # 卡牌本地化
 │   │   ├── powers.json        # 能力本地化
 │   │   ├── relics.json        # 遗物本地化
 │   │   ├── ancients.json      # 先古之民本地化
-│   │   └── modifiers.json     # 修改器本地化
+│   │   ├── modifiers.json     # 修改器本地化
+│   │   └── events.json        # 事件本地化
 │   └── mod_image.png          # 模组图标
 ├── YourModCode/               # 模组源代码目录
 │   ├── Cards/                 # 卡牌定义
-│   │   ├── xxx.cs             # xxxxx 卡牌
-│   │   └── YourModCardModel.cs # 卡牌基类
+│   │   ├── Pig/               # 猪角色卡牌
+│   │   ├── Colorless/         # 无色卡牌
+│   │   ├── Token/             # 衍生卡牌
+│   │   ├── Event/             # 事件卡牌
+│   │   ├── Regent/            # 君主卡牌
+│   │   └── Quest/             # 任务卡牌
 │   ├── Powers/                # 能力定义
-│   │   ├── xxx.cs             # xxxxx 能力
-│   │   └── YourModPowerModel.cs # 能力基类
 │   ├── Relics/                # 遗物定义
-│   │   ├── xxx.cs             # xxxxx
-│   │   └── YourModRelicModel.cs # 遗物基类
 │   ├── Ancients/              # 先古之民定义
 │   ├── Modifiers/             # 修改器定义
 │   ├── Monsters/              # 怪物定义
 │   ├── Encounters/            # 遭遇定义
+│   ├── Events/                # 事件定义
+│   ├── Orbs/                  # 充能球定义
+│   ├── Enchantments/          # 附魔定义
+│   ├── Characters/            # 角色和池定义
+│   ├── RelicPools/            # 遗物池定义
+│   ├── RestSite/              # 休息站选项
+│   ├── Badges/                # 成就徽章
+│   ├── GameActions/           # 自定义游戏动作
+│   ├── Multiplayer/           # 多人游戏消息
+│   ├── Commands/              # 调试命令
+│   ├── UI/                    # 自定义 UI
+│   ├── Vfx/                   # 视觉特效
 │   ├── Patches/               # Harmony 补丁
-│   ├── Core/                  # 核心框架
-│   │   ├── Abstracts/         # 抽象基类
-│   │   ├── Registration/      # 注册系统
-│   │   ├── Utils/             # 工具类
-│   │   └── Extensions/        # 扩展方法
-│   └── Utils/                 # 工具类
-├── others/                    # 参考资源目录
+│   ├── Utils/                 # 项目工具类
+│   └── Core/                  # 核心框架
+│       ├── Abstracts/         # 抽象基类（17个）
+│       ├── Registration/      # 注册系统
+│       ├── Patching/          # 补丁系统
+│       ├── Lifecycle/         # 生命周期管理
+│       ├── Patches/           # 框架级补丁
+│       ├── Interop/           # 模组互操作
+│       ├── Extensions/        # 扩展方法
+│       ├── Badges/            # 徽章系统
+│       └── Utils/             # 核心工具类
+├── others/                    # 参考资源目录（不参与编译）
 ├── MainFile.cs                # 模组入口文件
 ├── YourMod.csproj             # 项目配置文件
 ├── YourMod.json               # 模组清单文件
-└── AGENTS.md                  # AI 开发指南
 ```
 
 ## PoolAttribute 属性
@@ -118,7 +139,7 @@ YourMod/
 using YuWanCard.Core.Registration;
 
 [Pool(typeof(SharedRelicPool))]
-public class MyCustomRelic : RelicModel
+public class MyCustomRelic : YuWanRelicModel
 {
 }
 ```
@@ -145,6 +166,19 @@ ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
 - 自动扫描程序集中所有带有 `[Pool]` 属性的类型
 - 调用 `ModHelper.AddModelToPool` 注册到对应的池
 - 统计并记录注册的卡牌、遗物、药水等数量
+- 提供冻结机制，在 `ModelDb.Init` 后阻止晚期注册
+
+## CustomPoolContentRegistry 自定义池内容映射
+
+用于将模型类型映射到自定义池：
+
+```csharp
+// 注册自定义卡牌到自定义池
+CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyCard));
+CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyOtherCard));
+```
+
+配合 `PoolContentFallbackPatches` 确保池的 `AllCards`/`AllRelics`/`AllPotions` 属性包含所有已注册内容。
 
 ## IYuWanContent 接口
 
@@ -160,7 +194,7 @@ public interface IYuWanContent
 
 ## IYuWanCharacter 接口
 
-自定义角色应实现 `IYuWanCharacter` 接口，提供角色特有的视觉资源路径：
+自定义角色应实现 `IYuWanCharacter` 接口，提供角色特有的视觉资源路径（20+ 个可自定义路径）：
 
 ```csharp
 namespace YuWanCard.Core;
@@ -170,15 +204,20 @@ public interface IYuWanCharacter : IYuWanContent
     string? CustomVisualPath => null;
     string? CustomEnergyCounterPath => null;
     string? CustomCharacterSelectIconPath => null;
+    string? CustomCharacterSelectLockedIconPath => null;
+    string? CustomCharacterSelectBg => null;
     string? CustomIconPath => null;
     string? CustomIconTexturePath => null;
-    string? CustomCharacterSelectBg => null;
+    string? CustomIconOutlineTexturePath => null;
     string? CustomMerchantAnimPath => null;
     string? CustomRestSiteAnimPath => null;
     string? CustomArmPointingTexturePath => null;
     string? CustomArmRockTexturePath => null;
     string? CustomArmPaperTexturePath => null;
     string? CustomArmScissorsTexturePath => null;
+    string? CustomAttackSfx => null;
+    string? CustomCastSfx => null;
+    string? CustomDeathSfx => null;
 
     NCreatureVisuals? CreateCustomVisuals() => null;
     CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller) => null;
@@ -187,18 +226,18 @@ public interface IYuWanCharacter : IYuWanContent
 
 ## 自动 ID 生成
 
-所有基类都使用正则表达式自动将类名转换为 snake_case ID：
+所有基类都使用正则表达式自动将类名转换为 snake_case ID，并通过 `IdPrefixPatch` 自动添加 `YUWANCARD-` 前缀：
 
 ```csharp
-// PigDoubtPower -> pig_doubt_power
+// PigDoubtPower -> YUWANCARD-PIG_DOUBT_POWER
 protected virtual string PowerId => CamelCaseRegex.Replace(GetType().Name, "$1_$2").ToLowerInvariant();
 ```
 
 **ID 前缀**：
-- 卡牌：自动生成（如 `pig_strike`）
-- 能力：自动生成（如 `pig_doubt_power`）
-- 遗物：自动生成（如 `pig_carrot`）
-- 修改器：`YUWANCARD-` 前缀（如 `YUWANCARD-ENDLESS`）
+- 卡牌：`YUWANCARD-{snake_case_id}`（如 `YUWANCARD-PIG_STRIKE`）
+- 能力：`YUWANCARD-{snake_case_id}`（如 `YUWANCARD-PIG_DOUBT_POWER`）
+- 遗物：`YUWANCARD-{snake_case_id}`（如 `YUWANCARD-PIG_CARROT`）
+- 修改器：`YUWANCARD-{SNAKE_CASE_NAME}`（如 `YUWANCARD-ENDLESS`）
 
 ## CoreGlobalUsings 全局引用
 

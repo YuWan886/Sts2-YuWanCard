@@ -3,7 +3,6 @@ using Godot;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Rooms;
-using YuWanCard.Core.Utils;
 using YuWanCard.Monsters;
 
 namespace YuWanCard.Encounters;

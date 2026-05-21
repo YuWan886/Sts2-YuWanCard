@@ -23,8 +23,8 @@ public class StoneSword : YuWanCardModel
         rarity: CardRarity.Quest,
         target: TargetType.None)
     {
-        WithTip(typeof(SwordOfStone));
-        WithVar("Elites", 5);
+        WithTip(typeof(SwordOfJade));
+        WithVar("Elites", 3);
         WithKeywords(CardKeyword.Unplayable);
     }
 
@@ -36,7 +36,7 @@ public class StoneSword : YuWanCardModel
 
             if (ElitesDefeated >= DynamicVars["Elites"].BaseValue)
             {
-                var relic = ModelDb.Relic<SwordOfStone>().ToMutable();
+                var relic = ModelDb.Relic<SwordOfJade>().ToMutable();
                 await RelicCmd.Obtain(relic, Owner);
                 await CardPileCmd.RemoveFromDeck(this);
                 PlayerCmd.CompleteQuest(this);

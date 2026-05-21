@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
-using YuWanCard.Core.Patches;
 
 namespace YuWanCard.Core.Patches;
 
@@ -180,24 +179,26 @@ static class CompendiumPatch
         {
             if (child is not NCardPoolFilter f) continue;
 
-            f.CustomMinimumSize *= scale;
-            f.Size *= scale;
-            f.PivotOffset *= scale;
+            // Use deferred to avoid anchor/size conflict warnings (Godot anchors
+            // override direct size changes made during _Ready)
+            f.SetDeferred(Control.PropertyName.CustomMinimumSize, f.CustomMinimumSize * scale);
+            f.SetDeferred(Control.PropertyName.Size, f.Size * scale);
+            f.SetDeferred(Control.PropertyName.PivotOffset, f.PivotOffset * scale);
 
             if (imageField.GetValue(f) is Control img)
             {
-                img.CustomMinimumSize *= scale;
-                img.Size *= scale;
-                img.PivotOffset *= scale;
-                img.Position = (f.Size - img.Size) * 0.5f;
+                img.SetDeferred(Control.PropertyName.CustomMinimumSize, img.CustomMinimumSize * scale);
+                img.SetDeferred(Control.PropertyName.Size, img.Size * scale);
+                img.SetDeferred(Control.PropertyName.PivotOffset, img.PivotOffset * scale);
+                img.SetDeferred(Control.PropertyName.Position, (f.Size * scale - img.Size * scale) * 0.5f);
             }
 
             if (reticleField.GetValue(f) is Control reticle)
             {
-                reticle.CustomMinimumSize *= scale;
-                reticle.Size *= scale;
-                reticle.PivotOffset *= scale;
-                reticle.Position *= scale;
+                reticle.SetDeferred(Control.PropertyName.CustomMinimumSize, reticle.CustomMinimumSize * scale);
+                reticle.SetDeferred(Control.PropertyName.Size, reticle.Size * scale);
+                reticle.SetDeferred(Control.PropertyName.PivotOffset, reticle.PivotOffset * scale);
+                reticle.SetDeferred(Control.PropertyName.Position, reticle.Position * scale);
             }
         }
 

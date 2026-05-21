@@ -1,5 +1,4 @@
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
 
@@ -7,7 +6,7 @@ namespace YuWanCard.Multiplayer;
 
 public static class TeammatePayMessageHandler
 {
-    private static bool _isRegistered = false;
+    private static INetGameService? _registeredNetService = null;
     private static TeammatePayRequestMessage? _pendingRequest = null;
     private static DateTime _requestTime = DateTime.MinValue;
     private static readonly TimeSpan _requestTimeout = TimeSpan.FromSeconds(30);
@@ -20,8 +19,6 @@ public static class TeammatePayMessageHandler
 
     public static void Register(INetGameService? netService = null)
     {
-        if (_isRegistered) return;
-        
         netService ??= RunManager.Instance?.NetService;
         if (netService == null)
         {
@@ -29,28 +26,43 @@ public static class TeammatePayMessageHandler
             return;
         }
 
+        if (ReferenceEquals(_registeredNetService, netService))
+        {
+            return;
+        }
+
+        if (_registeredNetService != null)
+        {
+            Unregister(_registeredNetService);
+        }
+
         netService.RegisterMessageHandler<TeammatePayRequestMessage>(HandleRequest);
         netService.RegisterMessageHandler<TeammatePayResponseMessage>(HandleResponse);
         netService.RegisterMessageHandler<TeammatePayGoldQueryMessage>(HandleGoldQuery);
         netService.RegisterMessageHandler<TeammatePayGoldResponseMessage>(HandleGoldResponse);
-        _isRegistered = true;
+        _registeredNetService = netService;
         MainFile.Logger.Info("TeammatePay: Message handlers registered");
     }
 
-    public static bool IsRegistered => _isRegistered;
+    public static bool IsRegistered => _registeredNetService != null;
 
     public static void Unregister(INetGameService? netService = null)
     {
-        if (!_isRegistered) return;
-        
-        netService ??= RunManager.Instance?.NetService;
+        netService ??= _registeredNetService ?? RunManager.Instance?.NetService;
         if (netService == null) return;
 
         netService.UnregisterMessageHandler<TeammatePayRequestMessage>(HandleRequest);
         netService.UnregisterMessageHandler<TeammatePayResponseMessage>(HandleResponse);
         netService.UnregisterMessageHandler<TeammatePayGoldQueryMessage>(HandleGoldQuery);
         netService.UnregisterMessageHandler<TeammatePayGoldResponseMessage>(HandleGoldResponse);
-        _isRegistered = false;
+        if (ReferenceEquals(_registeredNetService, netService))
+        {
+            _registeredNetService = null;
+        }
+
+        _pendingRequest = null;
+        _teammateGoldCache.Clear();
+        _goldQueryTasks.Clear();
     }
 
     public static void SendRequest(TeammatePayRequestMessage request)

@@ -2,8 +2,7 @@ using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Exceptions;
-using YuWanCard.Core.Lifecycle;
-using YuWanCard.Core.Registration;
+using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Core.Patches;
 
@@ -88,7 +87,7 @@ static class InitDeDuplicationPatch
 
     private static void RunPostInitLogic()
     {
-        foreach (var modifier in Modifiers.YuWanModifierModel.RegisteredModifiers)
+        foreach (var modifier in YuWanModifierModel.RegisteredModifiers)
         {
             var modifierType = modifier.GetType();
             if (!ModelDb.Contains(modifierType))

@@ -33,14 +33,15 @@ internal static class ConfigRegistrar
         ("EnableWhatIfRelics", "游戏设置"),
     ];
 
-    private static readonly (string PropertyName, string ToggleId, string Label, string? Description)[] RitsuConfigProps =
+    private static readonly (string PropertyName, string ToggleId, string DataKey, string Label, string? Description)[]
+        RitsuConfigProps =
     [
-        ("EnableDeathEffect", "enable_death_effect", "死亡特效", "击败敌人时显示死亡特效"),
-        ("BypassModelDbHashCheck", "bypass_modeldb_check", "跳过哈希检查", "多人模式下跳过ModelDb哈希校验"),
-        ("EnableAutoUpdateCheck", "enable_auto_update", "自动检查更新", "启动时自动检查模组更新"),
-        ("EnableAutoSlay", "enable_auto_slay", "自动爬塔", "自动进行角色选择并开始爬塔"),
-        ("EnableSevenCursesRing", "enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒"),
-        ("EnableWhatIfRelics", "enable_what_if_relics", "假如遗物", "在Neow处可选择假如系列遗物"),
+        ("EnableDeathEffect", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效"),
+        ("BypassModelDbHashCheck", "bypass_modeldb_check", "config_bypass_modeldb_hash_check", "跳过哈希检查", "多人模式下跳过ModelDb哈希校验"),
+        ("EnableAutoUpdateCheck", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新"),
+        ("EnableAutoSlay", "enable_auto_slay", "config_enable_auto_slay", "自动爬塔", "自动进行角色选择并开始爬塔"),
+        ("EnableSevenCursesRing", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒"),
+        ("EnableWhatIfRelics", "enable_what_if_relics", "config_enable_what_if_relics", "假如遗物", "在Neow处可选择假如系列遗物"),
     ];
 
     public static void TryDeferredRegister()
@@ -294,21 +295,7 @@ internal static class ConfigRegistrar
                     typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(sectionCtor, ["display"]));
             }
 
-            CustomAttributeBuilder? bindingAttrBuilder = null;
-            if (bindingAttrType != null && bindingSourceType != null)
-            {
-                var bindingCtor = bindingAttrType.GetConstructor(Type.EmptyTypes);
-                if (bindingCtor != null)
-                {
-                    var globalVal = Enum.Parse(bindingSourceType, "Global");
-                    bindingAttrBuilder = new CustomAttributeBuilder(
-                        bindingCtor, Array.Empty<object>(),
-                        [bindingAttrType.GetProperty("Source")!],
-                        [globalVal]);
-                }
-            }
-
-            foreach (var (propName, toggleId, label, description) in RitsuConfigProps)
+            foreach (var (propName, toggleId, dataKey, label, description) in RitsuConfigProps)
             {
                 var field = typeBuilder.DefineField(
                     $"<{propName}>k__BackingField",
@@ -329,7 +316,7 @@ internal static class ConfigRegistrar
                 else
                     prop.SetCustomAttribute(new CustomAttributeBuilder(toggleCtor, [toggleId, "display"]));
 
-                if (bindingAttrBuilder != null)
+                if (TryCreateRitsuBindingAttribute(bindingAttrType, bindingSourceType, dataKey) is { } bindingAttrBuilder)
                     prop.SetCustomAttribute(bindingAttrBuilder);
 
                 var getter = typeBuilder.DefineMethod(
@@ -348,6 +335,11 @@ internal static class ConfigRegistrar
                 var setIL = setter.GetILGenerator();
                 setIL.Emit(OpCodes.Ldarg_0);
                 setIL.Emit(OpCodes.Stsfld, field);
+                setIL.Emit(OpCodes.Ldstr, propName);
+                setIL.Emit(OpCodes.Ldarg_0);
+                setIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
+                    nameof(RitsuConfigRuntimeBridge.ApplyRuntimeValue),
+                    BindingFlags.Public | BindingFlags.Static)!);
                 setIL.Emit(OpCodes.Ret);
                 prop.SetSetMethod(setter);
             }
@@ -396,19 +388,22 @@ internal static class ConfigRegistrar
 
             foreach (var propName in ConfigKeys)
             {
-                var dataKey = $"reflect::YuWanCard.Config.YuWanCardRitsuConfigProvider.{propName}";
-                try
+                foreach (var dataKey in EnumerateRitsuDataKeys(propName))
                 {
-                    var box = getTypedMethod.Invoke(dataStore, [dataKey]);
-                    if (box != null)
+                    try
                     {
+                        var box = getTypedMethod.Invoke(dataStore, [dataKey]);
+                        if (box == null)
+                            continue;
+
                         var savedValue = (bool)valueProp.GetValue(box)!;
                         SetConfigValue(propName, savedValue);
+                        break;
                     }
-                }
-                catch
-                {
-                    // Key may not exist yet (first run)
+                    catch
+                    {
+                        // Key may not exist yet (first run) or may use a different legacy format.
+                    }
                 }
             }
         }
@@ -445,6 +440,51 @@ internal static class ConfigRegistrar
         catch { }
     }
 
+    private static CustomAttributeBuilder? TryCreateRitsuBindingAttribute(
+        Type? bindingAttrType,
+        Type? bindingSourceType,
+        string dataKey)
+    {
+        if (bindingAttrType == null || bindingSourceType == null)
+            return null;
+
+        var bindingCtor = bindingAttrType.GetConstructor(Type.EmptyTypes);
+        var sourceProp = bindingAttrType.GetProperty("Source");
+        var dataKeyProp = bindingAttrType.GetProperty("DataKey");
+        if (bindingCtor == null || sourceProp == null || dataKeyProp == null)
+            return null;
+
+        var globalVal = Enum.Parse(bindingSourceType, "Global");
+        return new CustomAttributeBuilder(
+            bindingCtor,
+            Array.Empty<object>(),
+            [sourceProp, dataKeyProp],
+            [globalVal, dataKey]);
+    }
+
+    private static IEnumerable<string> EnumerateRitsuDataKeys(string propertyName)
+    {
+        if (TryGetRitsuDataKey(propertyName, out var dataKey))
+            yield return dataKey;
+
+        yield return $"reflect::YuWanCard.Config.YuWanCardRitsuConfigProvider.{propertyName}";
+    }
+
+    private static bool TryGetRitsuDataKey(string propertyName, out string dataKey)
+    {
+        foreach (var (registeredPropertyName, _, registeredDataKey, _, _) in RitsuConfigProps)
+        {
+            if (!string.Equals(registeredPropertyName, propertyName, StringComparison.Ordinal))
+                continue;
+
+            dataKey = registeredDataKey;
+            return true;
+        }
+
+        dataKey = string.Empty;
+        return false;
+    }
+
     private static bool GetConfigValue(string name)
     {
         return (bool)typeof(Config.YuWanCardConfig).GetProperty(name)!.GetValue(null)!;
@@ -467,5 +507,13 @@ internal static class ConfigRegistrar
             catch { }
         }
         return null;
+    }
+}
+
+public static class RitsuConfigRuntimeBridge
+{
+    public static void ApplyRuntimeValue(string propertyName, bool value)
+    {
+        typeof(Config.YuWanCardConfig).GetProperty(propertyName)?.SetValue(null, value);
     }
 }

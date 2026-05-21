@@ -1,4 +1,3 @@
-using System;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;

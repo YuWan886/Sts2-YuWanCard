@@ -1,4 +1,3 @@
-using YuWanCard.Core.Abstracts;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 

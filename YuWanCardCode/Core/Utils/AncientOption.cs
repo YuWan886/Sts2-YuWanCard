@@ -1,6 +1,5 @@
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
-using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Core.Utils;
 

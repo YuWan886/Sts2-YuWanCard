@@ -1,0 +1,42 @@
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Models;
+using YuWanCard.Cards;
+using YuWanCard.Core.Abstracts;
+using YuWanCard.RelicPools;
+
+namespace YuWanCard.Relics;
+
+[Pool(typeof(WhatIfRelicPool))]
+public class WhatIfDirectWin : YuWanRelicModel
+{
+    public override RelicRarity Rarity => RelicRarity.Event;
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+        HoverTipFactory.FromCardWithCardHoverTips<SadArmyWin>();
+
+    public WhatIfDirectWin() : base(true)
+    {
+    }
+
+    public override async Task AfterObtained()
+    {
+        await base.AfterObtained();
+
+        if (Owner?.Creature == null)
+        {
+            return;
+        }
+
+        decimal targetHp = Math.Max(1m, Math.Ceiling(Owner.Creature.MaxHp * 0.1m));
+        if (Owner.Creature.CurrentHp > targetHp)
+        {
+            await CreatureCmd.SetCurrentHp(Owner.Creature, targetHp);
+        }
+
+        var sadArmyWin = Owner.RunState.CreateCard(ModelDb.Card<SadArmyWin>(), Owner);
+        CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(sadArmyWin, PileType.Deck));
+    }
+}

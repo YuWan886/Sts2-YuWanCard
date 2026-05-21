@@ -54,7 +54,7 @@ public class ChefPigPower : YuWanPowerModel
             else
             {
                 var prefs = new CardSelectorPrefs(
-                    new LocString("powers", "YUWANCARD-PIG_CHEF_POWER.selectionScreenPrompt"),
+                    new LocString("powers", $"{Id.Entry}.selectionScreenPrompt"),
                     1
                 );
                 selectedCards = (await CardSelectCmd.FromHand(

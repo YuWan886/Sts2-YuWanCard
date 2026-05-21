@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Localization.Formatters;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Core.Patches;
 
@@ -16,8 +16,19 @@ namespace YuWanCard.Core.Patches;
 /// </summary>
 public static class CustomEnergyIconPatches
 {
-    private static readonly Dictionary<string, string> _bigIconPaths = new();
-    private static readonly Dictionary<string, string> _textIconPaths = new();
+    private static readonly Dictionary<string, string> _bigIconPaths = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly Dictionary<string, string> _textIconPaths = new(StringComparer.OrdinalIgnoreCase);
+
+    public static void Apply(Harmony harmony)
+    {
+        harmony.Patch(
+            original: AccessTools.Method(typeof(EnergyIconHelper), nameof(EnergyIconHelper.GetPath), [typeof(string)]),
+            prefix: new HarmonyMethod(typeof(CustomEnergyIconPatches), nameof(EnergyIconHelperGetPathPrefix)));
+
+        harmony.Patch(
+            original: AccessTools.Method(typeof(EnergyIconsFormatter), nameof(EnergyIconsFormatter.TryEvaluateFormat)),
+            prefix: new HarmonyMethod(typeof(CustomEnergyIconPatches), nameof(EnergyIconsFormatterTryEvaluateFormatPrefix)));
+    }
 
     /// <summary>
     /// Registers a pool's custom BigEnergyIconPath and TextEnergyIconPath, and returns
@@ -47,80 +58,108 @@ public static class CustomEnergyIconPatches
         return originalPath;
     }
 
-    [HarmonyPatch(typeof(EnergyIconHelper), nameof(EnergyIconHelper.GetPath), typeof(string))]
-    static class IconPatch
+    private static string? GetResolvedPrefix(object? currentValue, string? formatterOptions, out int result)
     {
-        static bool Prefix(string prefix, ref string __result)
+        result = 0;
+        string? prefix = null;
+        if (currentValue is EnergyVar energyVar)
         {
-            if (_bigIconPaths.TryGetValue(prefix, out string? path))
+            result = Convert.ToInt32(energyVar.PreviewValue);
+            if (!string.IsNullOrEmpty(energyVar.ColorPrefix))
             {
-                __result = path;
-                return false;
+                prefix = energyVar.ColorPrefix;
             }
-            return true;
         }
+        else if (currentValue is CalculatedVar calculatedVar)
+        {
+            result = Convert.ToInt32(calculatedVar.Calculate(null));
+        }
+        else if (currentValue is decimal amount)
+        {
+            result = (int)amount;
+        }
+        else if (currentValue is int amountInt)
+        {
+            result = amountInt;
+        }
+        else if (currentValue is string prefixValue)
+        {
+            if (!int.TryParse(formatterOptions, out result))
+            {
+                return null;
+            }
+            prefix = prefixValue;
+        }
+        else
+        {
+            return null;
+        }
+
+        if (string.IsNullOrEmpty(prefix) || prefix.Equals("colorless", StringComparison.OrdinalIgnoreCase))
+        {
+            prefix = RunManager.Instance.GetLocalCharacterEnergyIconPrefix();
+        }
+
+        if (string.IsNullOrEmpty(prefix))
+        {
+            Log.Warn("No energy prefix found for custom energy icon formatter! Using colorless as a fallback.");
+            prefix = "colorless";
+        }
+
+        return prefix;
     }
 
-    /// <summary>
-    /// Transpiler that redirects sprite font energy icon paths to custom TextEnergyIconPath.
-    /// Matches the string.Concat that builds "[img]res://.../sprite_fonts/{prefix}_energy_icon.png[/img]"
-    /// and replaces the result for custom prefixes.
-    /// </summary>
-    [HarmonyPatch(typeof(EnergyIconsFormatter), "TryEvaluateFormat")]
-    static class TextIconPatch
+    private static object? GetFormattingInfoProperty(object formattingInfo, string propertyName)
     {
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        return formattingInfo.GetType().GetProperty(propertyName)?.GetValue(formattingInfo);
+    }
+
+    private static void WriteFormattingInfo(object formattingInfo, string text)
+    {
+        formattingInfo.GetType().GetMethod("Write", [typeof(string)])?.Invoke(formattingInfo, [text]);
+    }
+
+    public static bool EnergyIconHelperGetPathPrefix(string prefix, ref string __result)
+    {
+        if (_bigIconPaths.TryGetValue(prefix, out string? path))
         {
-            var code = instructions.ToList();
-            var concat3 = AccessTools.Method(typeof(string), nameof(string.Concat),
-                [typeof(string), typeof(string), typeof(string)]);
-
-            for (int i = 2; i < code.Count - 2; i++)
-            {
-                if (code[i - 2].opcode == OpCodes.Ldstr &&
-                    (code[i - 2].operand as string) == "[img]res://images/packed/sprite_fonts/" &&
-                    IsLdloc(code[i - 1]) &&
-                    code[i].opcode == OpCodes.Ldstr &&
-                    (code[i].operand as string) == "_energy_icon.png[/img]" &&
-                    code[i + 1].Calls(concat3) &&
-                    IsStloc(code[i + 2]))
-                {
-                    var ldPrefix = code[i - 1];
-                    var stText3 = code[i + 2];
-                    var ldText3 = StlocToLdloc(stText3);
-
-                    var insert = new List<CodeInstruction>
-                    {
-                        new(ldPrefix.opcode, ldPrefix.operand),
-                        ldText3,
-                        CodeInstruction.Call(typeof(CustomEnergyIconPatches), nameof(GetCustomTextIcon)),
-                        new(stText3.opcode, stText3.operand),
-                    };
-                    code.InsertRange(i + 3, insert);
-                    break;
-                }
-            }
-            return code;
+            __result = path;
+            return false;
         }
 
-        static bool IsLdloc(CodeInstruction ci) =>
-            ci.opcode == OpCodes.Ldloc_0 || ci.opcode == OpCodes.Ldloc_1 ||
-            ci.opcode == OpCodes.Ldloc_2 || ci.opcode == OpCodes.Ldloc_3 ||
-            ci.opcode == OpCodes.Ldloc_S || ci.opcode == OpCodes.Ldloc;
+        return true;
+    }
 
-        static bool IsStloc(CodeInstruction ci) =>
-            ci.opcode == OpCodes.Stloc_0 || ci.opcode == OpCodes.Stloc_1 ||
-            ci.opcode == OpCodes.Stloc_2 || ci.opcode == OpCodes.Stloc_3 ||
-            ci.opcode == OpCodes.Stloc_S || ci.opcode == OpCodes.Stloc;
+    public static bool EnergyIconsFormatterTryEvaluateFormatPrefix(object __0, ref bool __result)
+    {
+        var formattingInfo = __0;
+        var currentValue = GetFormattingInfoProperty(formattingInfo, "CurrentValue");
+        var formatterOptions = GetFormattingInfoProperty(formattingInfo, "FormatterOptions") as string;
+        var prefix = GetResolvedPrefix(
+            currentValue,
+            formatterOptions,
+            out var result);
 
-        static CodeInstruction StlocToLdloc(CodeInstruction stloc)
+        if (string.IsNullOrEmpty(prefix))
         {
-            if (stloc.opcode == OpCodes.Stloc_0) return new(OpCodes.Ldloc_0);
-            if (stloc.opcode == OpCodes.Stloc_1) return new(OpCodes.Ldloc_1);
-            if (stloc.opcode == OpCodes.Stloc_2) return new(OpCodes.Ldloc_2);
-            if (stloc.opcode == OpCodes.Stloc_3) return new(OpCodes.Ldloc_3);
-            if (stloc.opcode == OpCodes.Stloc_S) return new(OpCodes.Ldloc_S, stloc.operand);
-            return new(OpCodes.Ldloc, stloc.operand);
+            return true;
         }
+
+        if (!_textIconPaths.ContainsKey(prefix) && !_bigIconPaths.ContainsKey(prefix))
+        {
+            return true;
+        }
+
+        var originalIconMarkup = $"[img]res://images/packed/sprite_fonts/{prefix}_energy_icon.png[/img]";
+        var resolvedIconMarkup = GetCustomTextIcon(prefix, originalIconMarkup);
+        var output = (result > 0 && result < 4)
+            ? string.Concat(Enumerable.Repeat(resolvedIconMarkup, result))
+            : currentValue is DynamicVar dynamicVar
+                ? dynamicVar.ToHighlightedString(inverse: false) + resolvedIconMarkup
+                : $"{result}{resolvedIconMarkup}";
+
+        WriteFormattingInfo(formattingInfo, output);
+        __result = true;
+        return false;
     }
 }

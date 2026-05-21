@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 
 namespace YuWanCard.Enchantments;
 
@@ -84,27 +85,6 @@ public sealed class Loyal : YuWanEnchantmentModel
 
     private Creature? GetTargetForCard(CardModel card, ICombatState? combatState)
     {
-        if (combatState == null || card.Owner == null)
-        {
-            return null;
-        }
-
-        var rng = card.Owner.RunState?.Rng;
-        if (rng == null)
-        {
-            return null;
-        }
-
-        return card.TargetType switch
-        {
-            TargetType.AnyEnemy or TargetType.AllEnemies or TargetType.RandomEnemy
-                => rng.CombatTargets.NextItem(combatState.HittableEnemies),
-            TargetType.AnyPlayer
-                => rng.CombatTargets.NextItem(combatState.Players.Where(p => p.Creature.IsAlive).Select(p => p.Creature)),
-            TargetType.AnyAlly or TargetType.AllAllies
-                => rng.CombatTargets.NextItem(combatState.Allies.Where(c => c != null && c.IsAlive)),
-            TargetType.Self => card.Owner.Creature,
-            _ => null
-        };
+        return combatState == null ? null : card.PickRandomTarget();
     }
 }

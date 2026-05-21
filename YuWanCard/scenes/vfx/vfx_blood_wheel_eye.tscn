@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://yuwancard/vfx/blood_wheel_eye"]
 
-[ext_resource type="Script" path="res://YuWanCardCode/Vfx/VfxBloodWheelEye.cs" id="1_script"]
+[ext_resource type="Script" path="res://YuWanCard/scripts/vfx/vfx_blood_wheel_eye_controller.gd" id="1_script"]
 
 [node name="VfxBloodWheelEye" type="ColorRect"]
 anchors_preset = 15

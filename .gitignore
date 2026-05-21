@@ -26,3 +26,7 @@ addons/
 test*.*
 .agents/
 wiki/node_modules/
+.codex/
+.kilo/
+posthog.analytics.local.yaml
+*.csproj.lscache

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.RestSite;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.RelicPools;
@@ -32,7 +33,7 @@ public class RingOfSevenCurses : YuWanRelicModel
 
     private GoldModificationGuard? _goldGuard;
 
-    public override RelicRarity Rarity => RelicRarity.Ancient;
+    public override RelicRarity Rarity => RelicRarity.Event;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(1)];
 
@@ -147,6 +148,15 @@ public class RingOfSevenCurses : YuWanRelicModel
             rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, room.RoomType), 3, player));
         }
 
+        int bossVisits = Owner.RunState.MapPointHistory
+            .SelectMany(static entries => entries)
+            .Count(entry => entry.MapPointType == MapPointType.Boss);
+
+        if (room.RoomType == RoomType.Boss && Owner.RunState.CurrentActIndex == 0 && bossVisits == 1)
+        {
+            rewards.Add(new RelicReward(ModelDb.Relic<ThousandCurseScroll>().ToMutable(), player));
+        }
+
         if (room.RoomType == RoomType.Monster && Owner.RunState.Rng.Niche.NextFloat() <= 0.7f)
         {
             rewards.Add(new RelicReward(player));
@@ -171,7 +181,7 @@ public class RingOfSevenCurses : YuWanRelicModel
         }
 
         var list = new List<LocString>(currentExtraText);
-        var extraText = new LocString("relics", "YUWANCARD-RING_OF_SEVEN_CURSES.additionalRestSiteHealText");
+        var extraText = new LocString("relics", $"{Id.Entry}.additionalRestSiteHealText");
         decimal baseHeal = (decimal)player.Creature.MaxHp * 0.3m;
         decimal actualHeal = baseHeal * 0.5m;
         int actualHealInt = (int)actualHeal;

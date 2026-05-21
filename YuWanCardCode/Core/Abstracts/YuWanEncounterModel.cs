@@ -1,7 +1,6 @@
 using Godot;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
-using YuWanCard.Core;
 
 namespace YuWanCard.Core.Abstracts;
 

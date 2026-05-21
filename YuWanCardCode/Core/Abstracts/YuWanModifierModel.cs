@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 
-namespace YuWanCard.Modifiers;
+namespace YuWanCard.Core.Abstracts;
 
 public abstract partial class YuWanModifierModel : ModifierModel
 {
@@ -10,6 +10,12 @@ public abstract partial class YuWanModifierModel : ModifierModel
     private static readonly List<YuWanModifierModel> _registeredModifiers = [];
 
     public static IReadOnlyList<YuWanModifierModel> RegisteredModifiers => _registeredModifiers.AsReadOnly();
+
+    /// <summary>
+    /// Whether this modifier can be randomly selected by the daily challenge.
+    /// Defaults to <c>false</c> — override to <c>true</c> in modifiers that are safe for daily runs.
+    /// </summary>
+    public virtual bool AllowedInDailyRun => false;
 
     protected virtual string ModifierId
     {

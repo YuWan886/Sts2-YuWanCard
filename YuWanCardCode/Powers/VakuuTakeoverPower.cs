@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
+using YuWanCard.Core.Extensions;
 
 namespace YuWanCard.Powers;
 
@@ -69,7 +70,7 @@ public class VakuuTakeoverPower : YuWanPowerModel
             TargetType.AnyEnemy => combatState.HittableEnemies.FirstOrDefault(),
             TargetType.AnyAlly => rng.CombatTargets.NextItem(combatState.Allies.Where(c => c != null && c.IsAlive && c.IsPlayer && c != Owner)),
             TargetType.AnyPlayer => Owner,
-            _ => null
+            _ => card.PickRandomTarget()
         };
     }
 }

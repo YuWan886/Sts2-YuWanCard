@@ -1,0 +1,85 @@
+using YuWanCard.Core.Abstracts;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
+using YuWanCard.Characters;
+
+namespace YuWanCard.Cards;
+
+[Pool(typeof(PigCardPool))]
+public class PigFishPig : YuWanCardModel
+{
+    private static readonly LocString DiscardSelectionScreenPrompt =
+        new("cards", "YUWANCARD-PIG_FISH_PIG.discardSelectionScreenPrompt");
+
+    public PigFishPig() : base(
+        baseCost: 1,
+        type: CardType.Skill,
+        rarity: CardRarity.Common,
+        target: TargetType.Self)
+    {
+    }
+
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+    }
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        var discardableCards = PileType.Hand.GetPile(Owner).Cards.ToList();
+        if (discardableCards.Count == 0)
+        {
+            return;
+        }
+
+        var discardPrefs = new CardSelectorPrefs(DiscardSelectionScreenPrompt, 1, 1);
+
+        var cardsToDiscard = await CardSelectCmd.FromHandForDiscard(
+            choiceContext,
+            Owner,
+            discardPrefs,
+            null,
+            this
+        );
+
+        var discardedCard = cardsToDiscard.FirstOrDefault();
+        if (discardedCard == null)
+        {
+            return;
+        }
+
+        await CardCmd.Discard(choiceContext, cardsToDiscard);
+
+        var upgradableCards = PileType.Hand.GetPile(Owner).Cards
+            .Where(c => c.IsUpgradable)
+            .ToList();
+
+        if (upgradableCards.Count == 0)
+        {
+            return;
+        }
+
+        var upgradePrefs = new CardSelectorPrefs(
+            new LocString("cards", $"{Id.Entry}.selectionScreenPrompt"),
+            1,
+            1
+        );
+
+        var cardsToUpgrade = await CardSelectCmd.FromHand(
+            context: choiceContext,
+            player: Owner,
+            prefs: upgradePrefs,
+            filter: c => c.IsUpgradable,
+            source: this
+        );
+
+        var selectedCard = cardsToUpgrade.FirstOrDefault();
+        if (selectedCard != null)
+        {
+            CardCmd.Upgrade(selectedCard);
+        }
+    }
+}

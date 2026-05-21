@@ -145,6 +145,42 @@ public class PigStrengthPowerCard : YuWanCardModel
 }
 ```
 
+### 升级时关键字变化
+
+```csharp
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models.CardPools;
+
+namespace YuWanCard.Cards;
+
+[Pool(typeof(SharedCardPool))]
+public class PigInnateCard : YuWanCardModel
+{
+    public PigInnateCard() : base(
+        baseCost: 2,
+        type: CardType.Skill,
+        rarity: CardRarity.Uncommon,
+        target: TargetType.Self)
+    {
+        WithBlock(10);
+        // 升级后获得「固有」关键字
+        WithKeyword(CardKeyword.Innate, UpgradeType.Add);
+        // 升级后失去「虚无」关键字
+        WithKeyword(CardKeyword.Ethereal, UpgradeType.Remove);
+    }
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Block.UpgradeValueBy(4m);
+    }
+}
+```
+
 ---
 
 ## 能力示例
@@ -214,6 +250,17 @@ public class PigStrengthPower : YuWanPowerModel
 }
 ```
 
+### 临时能力
+
+```csharp
+using MegaCrit.Sts2.Core.Entities.Powers;
+
+namespace YuWanCard.Powers;
+
+// 简单方式：一行实现
+public class PigChargePower : YuWanTemporaryPowerModelWrapper<PigCharge, StrengthPower>;
+```
+
 ---
 
 ## 遗物示例
@@ -230,6 +277,8 @@ namespace YuWanCard.Relics;
 public class PigCarrot : YuWanRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Common;
+
+    public PigCarrot() : base(autoAdd: true) { }
 
     public override async Task AfterPlayerTurnStart()
     {
@@ -252,6 +301,8 @@ namespace YuWanCard.Relics;
 public class PigTreasure : YuWanRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Uncommon;
+
+    public PigTreasure() : base(autoAdd: true) { }
 
     public override async Task AfterCombatVictory()
     {
@@ -276,6 +327,8 @@ public class PigCounter : YuWanRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Rare;
 
+    public PigCounter() : base(autoAdd: true) { }
+
     [SavedProperty]
     public int YuWanCard_Counter { get; set; } = 0;
 
@@ -291,6 +344,28 @@ public class PigCounter : YuWanRelicModel
             await PlayerCmd.GainEnergy(1, Owner);
         }
     }
+}
+```
+
+### 可升级遗物
+
+```csharp
+using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Models.RelicPools;
+
+namespace YuWanCard.Relics;
+
+[Pool(typeof(SharedRelicPool))]
+public class PigCarrotUpgradeable : YuWanRelicModel
+{
+    public PigCarrotUpgradeable() : base(autoAdd: true) { }
+
+    public override RelicModel? GetUpgradeReplacement() => ModelDb.Relic<GoldenCarrot>();
+}
+
+public class GoldenCarrot : YuWanRelicModel
+{
+    public GoldenCarrot() : base(autoAdd: false) { }  // 不自动注册
 }
 ```
 
@@ -446,10 +521,12 @@ class CombatRoomPatch
 ```json
 {
   "YUWANCARD-PIG_DOUBT_POWER.title": "猪猪怀疑",
-  "YUWANCARD-PIG_DOUBT_POWER.description": "每回合开始时，获得 {PigDoubtPower:diff()} 个随机 [gold]能力[/gold]。",
-  "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "每回合获得随机能力。"
+  "YUWANCARD-PIG_DOUBT_POWER.description": "每回合开始时，获得1个随机 [gold]能力[/gold]。",
+  "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "每回合获得{PigDoubtPower}个随机的[gold]能力[/gold]。"
 }
 ```
+
+**注意**：能力 `description` 使用静态文本（图鉴显示），`smartDescription` 使用动态变量（战斗中悬浮提示显示）。卡牌的 `description` 可以直接使用动态变量。
 
 ### relics.json
 

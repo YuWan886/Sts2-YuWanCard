@@ -4,22 +4,23 @@
 
 ### Q: 如何添加新的卡牌池？
 
-继承 `CustomCardPoolModel`：
+继承 `YuWanCardPoolModel`：
 
 ```csharp
 using MegaCrit.Sts2.Core.Models.CardPools;
 
-public class MyCardPool : CustomCardPoolModel
+namespace YuWanCard.Characters;
+
+public class MyCardPool : YuWanCardPoolModel
 {
-    public override string Title => "my_pool";
+    public override string? BigEnergyIconPath =>
+        "res://YuWanCard/images/characters/my_energy_counter.png";
+    public override string? TextEnergyIconPath =>
+        "res://YuWanCard/images/characters/my_text_energy.png";
+    public override Color ShaderColor => new("FFD700");
     public override bool IsShared => false;
-    public override bool IsColorless => false;
-    
-    protected override CardModel[] GenerateAllCards() => 
-    [
-        ModelDb.Card<MyCard1>(),
-        ModelDb.Card<MyCard2>()
-    ];
+    public override Color DeckEntryCardColor => new("FAFAD2");
+    public override Color EnergyOutlineColor => new("773726");
 }
 ```
 
@@ -28,6 +29,13 @@ public class MyCardPool : CustomCardPoolModel
 ```csharp
 public override CardMultiplayerConstraint MultiplayerConstraint 
     => CardMultiplayerConstraint.MultiplayerOnly;
+```
+
+### Q: 如何让卡牌仅在单人模式出现？
+
+```csharp
+public override CardMultiplayerConstraint MultiplayerConstraint 
+    => CardMultiplayerConstraint.SingleplayerOnly;
 ```
 
 ### Q: 如何正确处理金币修改？
@@ -60,6 +68,22 @@ public override async Task AfterGoldGained(Player player)
 using YuWanCard.Utils;
 
 var version = GameVersionCompat.GameVersion;
+```
+
+### Q: 如何检测运行平台？
+
+```csharp
+using YuWanCard.Utils;
+
+if (RuntimePlatform.IsMobileLike)
+{
+    // Android/iOS 特殊处理
+}
+
+if (RuntimePlatform.SupportsDynamicCode)
+{
+    // 可使用 Reflection.Emit
+}
 ```
 
 ### Q: 如何添加先古之民对话？
@@ -95,16 +119,65 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 public class MyCustomVar : DynamicVar
 {
     public MyCustomVar(decimal baseValue) : base("MyCustomVar", baseValue) { }
-    
-    public override string FormatValue(decimal value, string? format = null)
+}
+```
+
+### Q: 如何在生命条上显示预测效果？
+
+重写 `GetHealthBarForecastSegments` 方法：
+
+```csharp
+using Godot;
+
+public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegments(HealthBarForecastContext context)
+{
+    if (Amount > 0)
     {
-        return format switch
-        {
-            "percent" => $"{value * 100}%",
-            "time" => $"{value}次",
-            _ => value.ToString()
-        };
+        yield return new HealthBarForecastSegment(
+            Amount,
+            new Color(0.5f, 0.2f, 0.8f),
+            HealthBarForecastDirection.FromRight
+        );
     }
+}
+```
+
+### Q: 如何添加自定义卡牌标签？
+
+```csharp
+// 使用已有标签
+WithTags(YuWanTags.FoodPig);
+
+// 创建新标签
+public static readonly CardTag MyTag = ModCardTagRegistry.Create("my_tag");
+```
+
+### Q: 如何实现临时能力？
+
+```csharp
+// 简单方式：一行实现
+public class PigChargePower : YuWanTemporaryPowerModelWrapper<PigCharge, StrengthPower>;
+```
+
+### Q: 如何将内容注册到自定义池？
+
+```csharp
+// 在 ContentRegistered 阶段注册
+CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyCard));
+CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyOtherCard));
+```
+
+### Q: 如何指定自定义 ID？
+
+使用 `CustomIDAttribute` 覆盖默认的自动前缀生成：
+
+```csharp
+using YuWanCard.Core.Utils.Attributes;
+
+[CustomID("MYMOD-CUSTOM_ID")]
+public class MyCard : YuWanCardModel
+{
+    // 此卡牌的 ID 将是 "MYMOD-CUSTOM_ID"
 }
 ```
 
@@ -175,10 +248,31 @@ public class MyCustomVar : DynamicVar
 
 **解决方案**：
 1. 检查本地化文件路径：`YuWanCard/localization/{lang}/`
-2. 确保本地化键格式正确：
-   - 卡牌：`YUWANCARD-{CardId}.title`
-   - 能力：`YUWANCARD-{PowerId}.title`
+2. 确保本地化键格式正确（键名必须与类名 camelCase→snake_case 转换结果一致）
 3. 检查 JSON 文件语法是否正确
+4. Android 平台注意前缀回退问题
+
+### 能力描述中动态变量不显示
+
+**问题**：能力在战斗中悬浮提示时，`{MyVar}` 显示为原始文本而非数值。
+
+**原因**：能力的 `description` 不会自动注入 DynamicVar，动态变量必须放在 `smartDescription` 中。
+
+**解决方案**：
+将动态变量从 `description` 移到 `smartDescription`：
+
+```json
+// 错误 - description 中动态变量不会被替换
+{
+  "YUWANCARD-MY_POWER.description": "获得 {MyVar} 点力量。"
+}
+
+// 正确 - smartDescription 中动态变量会被替换
+{
+  "YUWANCARD-MY_POWER.description": "获得2点力量。",
+  "YUWANCARD-MY_POWER.smartDescription": "获得 {MyVar} 点[gold]力量[/gold]。"
+}
+```
 
 ### 能力赋予玩家后崩溃
 

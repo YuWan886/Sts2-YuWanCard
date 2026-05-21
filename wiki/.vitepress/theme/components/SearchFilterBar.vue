@@ -1,20 +1,22 @@
-<!-- SearchFilterBar.vue — Reusable filter bar with chip groups, sort, view toggle -->
+<!-- SearchFilterBar.vue — Reusable filter bar with dropdown groups, sort, view toggle -->
 <template>
   <div class="filter-bar">
-    <!-- Filter chip groups -->
-    <template v-for="(group, gi) in filterGroups" :key="group.key">
-      <span v-if="gi > 0" class="filter-divider"></span>
+    <!-- Filter dropdown groups -->
+    <label v-for="group in filterGroups" :key="group.key" class="filter-group">
       <span class="filter-label">{{ group.label }}</span>
-      <button v-for="chip in group.chips" :key="chip.key"
-        class="filter-chip"
-        :class="{ active: chip.active }"
-        @click="$emit('filterChange', group.key, chip.key)">
-        {{ chip.label }}
-      </button>
-    </template>
+      <select
+        class="tb-select filter-select"
+        :value="getActiveChipKey(group)"
+        @change="$emit('filterChange', group.key, ($event.target).value)">
+        <option value="">{{ allLabel }}</option>
+        <option v-for="chip in group.chips" :key="chip.key" :value="chip.key">
+          {{ chip.label }}
+        </option>
+      </select>
+    </label>
 
     <!-- Clear button -->
-    <button v-if="hasActiveFilters" class="filter-chip clear"
+    <button v-if="hasActiveFilters" class="tb-btn"
       @click="$emit('clearFilters')">
       {{ clearLabel }}
     </button>
@@ -74,6 +76,7 @@ const props = defineProps({
   showCount: { type: Boolean, default: true },
   // i18n
   clearLabel: { type: String, default: 'Clear' },
+  allLabel: { type: String, default: 'All' },
   sortLabel: { type: String, default: 'Sort' },
   resultsLabel: { type: String, default: 'results' },
   gridTitle: { type: String, default: 'Grid view' },
@@ -85,4 +88,8 @@ defineEmits(['filterChange', 'sortChange', 'viewChange', 'clearFilters'])
 const hasActiveFilters = computed(() =>
   props.filterGroups.some(g => g.chips.some(c => c.active))
 )
+
+function getActiveChipKey(group) {
+  return group.chips.find(c => c.active)?.key ?? ''
+}
 </script>

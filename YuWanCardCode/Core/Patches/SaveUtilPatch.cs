@@ -2,7 +2,6 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Encounters;
 using MegaCrit.Sts2.Core.Saves;
-using YuWanCard;
 
 namespace YuWanCard.Core.Patches;
 
@@ -19,5 +18,21 @@ public static class SaveUtilPatch
             return false;
         }
         return true;
+    }
+}
+
+/// Excluded from auto-discovery on all platforms — applied manually in MainFile.cs
+/// (ref ModelId parameters fail on Android/Mono AOT so skipped there entirely).
+[HarmonyPatch(typeof(ProgressState), nameof(ProgressState.GetOrCreateEncounterStats))]
+public static class ProgressStateEncounterStatsPatch
+{
+    [HarmonyPrefix]
+    public static void Prefix(ref ModelId encounterId)
+    {
+        if (encounterId == null || string.IsNullOrEmpty(encounterId.Entry))
+        {
+            MainFile.Logger.Warn("GetOrCreateEncounterStats called with null encounter id, falling back to DeprecatedEncounter");
+            encounterId = ModelDb.Encounter<DeprecatedEncounter>().Id;
+        }
     }
 }

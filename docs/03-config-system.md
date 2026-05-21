@@ -4,14 +4,14 @@
 
 项目使用配置系统管理模组设置，支持自动生成配置 UI 和持久化存储。
 
-## SimpleModConfig 基类
+## FallbackSimpleModConfig 基类
 
-所有配置类应继承 `SimpleModConfig` 基类：
+所有配置类应继承 `FallbackSimpleModConfig` 基类：
 
 ```csharp
 namespace YuWanCard.Config;
 
-public class YuWanCardConfig : SimpleModConfig
+public class YuWanCardConfig : FallbackSimpleModConfig
 {
     [ConfigSection("显示设置")]
     [ConfigHoverTip]
@@ -90,6 +90,18 @@ public static string ServerUrl { get; set; } = "http://localhost";
 public static int AutoSlayDelay { get; set; } = 1000;
 ```
 
+### ConfigHoverTipsByDefault
+
+为类中所有设置项默认添加悬停提示：
+
+```csharp
+[ConfigHoverTipsByDefault]
+public class MyModConfig : FallbackSimpleModConfig
+{
+    public static bool Option1 { get; set; } = true;  // 自动有悬停提示
+}
+```
+
 ## 配置属性要求
 
 **重要规则**：
@@ -117,7 +129,7 @@ public static int MaxCards { get; }  // 无法保存
 ```csharp
 namespace YuWanCard.Config;
 
-public class YuWanCardConfig : SimpleModConfig
+public class YuWanCardConfig : FallbackSimpleModConfig
 {
     [ConfigSection("显示设置")]
     [ConfigHoverTip]
@@ -157,7 +169,7 @@ public class YuWanCardConfig : SimpleModConfig
 ```csharp
 using MegaCrit.Sts2.Core.Saves.Runs;
 
-public class MyRelic : RelicModel
+public class MyRelic : YuWanRelicModel
 {
     [SavedProperty]
     public int YuWanCard_EndlessLoopCount { get; set; } = 0;
@@ -169,7 +181,7 @@ public class MyRelic : RelicModel
 
 **重要**：
 - 属性命名建议使用模组前缀（如 `YuWanCard_`），否则会产生警告
-- `SavedProperty` 用于存档数据，`SimpleModConfig` 用于模组设置
+- `SavedProperty` 用于存档数据，`FallbackSimpleModConfig` 用于模组设置
 
 ## 配置 UI 生成
 
@@ -181,6 +193,8 @@ public class MyRelic : RelicModel
    - `int`/`decimal` → 滑块（使用 `[ConfigSlider]`）
    - `string` → 文本框（使用 `[ConfigTextInput]`）
 3. `[ConfigHoverTip]` 添加悬停提示
+4. 使用 `GenerateOptionsForAllProperties` 自动生成所有选项
+5. 使用 `AddRestoreDefaultsButton` 添加恢复默认值按钮
 
 ## 本地化
 

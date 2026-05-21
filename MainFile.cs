@@ -3,11 +3,9 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Nodes;
-using MegaCrit.Sts2.Core.Nodes.Combat;
-using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
-using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Badges;
+using YuWanCard.Characters;
 using YuWanCard.Config;
 using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
@@ -27,20 +25,21 @@ public partial class MainFile : Node
 
     public static YuWanCardConfig? Config { get; private set; }
 
-    private const string PigVisualsPath = "res://YuWanCard/scenes/characters/pig.tscn";
-    private const string PigMerchantPath = "res://YuWanCard/scenes/characters/pig_merchant.tscn";
-    private const string PigEnergyCounterPath = "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
-    private const string PigRestSitePath = "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
-
     public static void Initialize()
     {
         ModLifecycle.Publish(ModLifecyclePhase.Initializing);
 
         var patcher = new ModPatcher(ModId);
 
-        // Phase 1: Apply [HarmonyPatch] classes safely (one bad patch won't block all others)
-        patcher.ApplySingle(
-            h => ApplyHarmonyPatchesSafely(h, Assembly.GetExecutingAssembly()), "BulkPatchAll");
+        // Phase 1: Bulk Harmony patches (auto-discovered via [HarmonyPatch] attributes)
+        // Uses PatchAllSafe for per-class try/catch — essential for Android/Mono AOT compatibility.
+        // Exclude patches that must be applied conditionally by platform.
+        var manualPatches = new HashSet<string>
+        {
+            nameof(Core.Patches.YuWanDailyRunModifierFilterPatch),
+            nameof(Core.Patches.ProgressStateEncounterStatsPatch)
+        };
+        patcher.PatchAllSafe(Assembly.GetExecutingAssembly(), manualPatches);
 
         ModLifecycle.Publish(ModLifecyclePhase.PatchesApplied);
 
@@ -52,12 +51,27 @@ public partial class MainFile : Node
         patcher.ApplySingle(
             h => Core.Patches.AutoSlayOptionsPatch.ApplyPatch(h), "AutoSlayOptions");
         patcher.ApplySingle(
+            h => Core.Patches.CustomEnergyIconPatches.Apply(h), "CustomEnergyIcons");
+        patcher.ApplySingle(
             h => ModInteropProcessor.Process(h, Assembly.GetExecutingAssembly()), "ModInterop");
+
+        // Desktop-only patches — skip on Android to avoid triggering NDailyRunScreen
+        // static constructor which has a known NRE bug on Mono AOT
+        if (!IsMobilePlatform())
+        {
+            patcher.ApplySingle(
+                h => h.CreateClassProcessor(typeof(Core.Patches.YuWanDailyRunModifierFilterPatch)).Patch(),
+                "YuWanDailyRunModifierFilter");
+            patcher.ApplySingle(
+                h => h.CreateClassProcessor(typeof(Core.Patches.ProgressStateEncounterStatsPatch)).Patch(),
+                "ProgressStateEncounterStats");
+        }
 
         // Phase 3: Content discovery — scan for [Pool] and registration attributes
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
-        CustomBadgeRegistry.Register((run, playerId, won) => new PigTycoonBadge(run, playerId, won));
+        SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
+        CustomBadgeRegistry.Register((run, playerId) => new PigTycoonBadge(run, playerId));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 
         // Phase 4: Config, scene conversions, multiplayer, assets
@@ -65,84 +79,31 @@ public partial class MainFile : Node
         ConfigRegistrar.TryDeferredRegister();
 
         NodeFactory.Init();
-        RegisterSceneConversions();
+        Pig.RegisterScenes();
 
         TeammatePayMessageHandler.Register();
 
-        PreloadAssets();
+        AssetPreloader.Preload();
+        CloudAnalyticsService.Initialize();
 
         ModLifecycle.Publish(ModLifecyclePhase.Initialized);
         Logger.Info("YuWanCard initialized");
     }
 
-    private static void ApplyHarmonyPatchesSafely(Harmony harmony, Assembly assembly)
+    /// <summary>
+    /// Returns true on Android/iOS to gate patches that access types with
+    /// broken static constructors on Mono AOT.
+    /// </summary>
+    private static bool IsMobilePlatform()
     {
-        int applied = 0;
-        int failed = 0;
-
-        foreach (var type in Core.Registration.AssemblyScanner.GetLoadableTypes(assembly)
-                     .Where(t => t.GetCustomAttributes(typeof(HarmonyPatch), inherit: false).Length > 0)
-                     .OrderBy(t => t.FullName, StringComparer.Ordinal))
+        try
         {
-            try
-            {
-                harmony.CreateClassProcessor(type).Patch();
-                applied++;
-            }
-            catch (Exception ex)
-            {
-                failed++;
-                Logger.Warn($"[Patcher] Failed patch class {type.FullName}: {ex.Message}");
-            }
+            var osName = Godot.OS.GetName();
+            return osName == "Android" || osName == "iOS";
         }
-
-        Logger.Info($"[Patcher] Harmony patch classes applied={applied}, failed={failed}");
-    }
-
-    private static void RegisterSceneConversions()
-    {
-        NodeFactory.RegisterSceneType<NCreatureVisuals>(PigVisualsPath);
-        NodeFactory.RegisterSceneType<NMerchantCharacter>(PigMerchantPath);
-        NodeFactory.RegisterSceneType<NEnergyCounter>(PigEnergyCounterPath);
-        NodeFactory.RegisterSceneType<NRestSiteCharacter>(PigRestSitePath);
-    }
-
-    private static void PreloadAssets()
-    {
-        VfxUtils.PreloadScenes(
-            "res://YuWanCard/scenes/vfx/vfx_blood_wheel_eye.tscn",
-            "res://YuWanCard/scenes/vfx/vfx_black_hole.tscn",
-            "res://YuWanCard/scenes/vfx/vfx_glitch.tscn",
-            "res://YuWanCard/scenes/vfx/vfx_glass_shatter.tscn",
-            "res://YuWanCard/scenes/vfx/vfx_matrix_rain.tscn"
-        );
-
-        VfxUtils.PreloadFrames("res://YuWanCard/images/vfx/blood_wheel_eye/blood_wheel_eye", 48);
-
-        PreloadTextures(
-            "res://YuWanCard/images/characters/character_icon_pig.png",
-            "res://YuWanCard/images/powers/pig_doubt_power.png"
-        );
-    }
-
-    private static void PreloadTextures(params string[] texturePaths)
-    {
-        int loadedCount = 0;
-        foreach (var path in texturePaths)
+        catch
         {
-            if (ResourceLoader.Exists(path))
-            {
-                ResourceLoader.Load<Texture2D>(path);
-                loadedCount++;
-            }
-            else
-            {
-                Logger.Warn($"PreloadTextures: Texture not found: {path}");
-            }
-        }
-        if (loadedCount > 0)
-        {
-            Logger.Debug($"PreloadTextures: Preloaded {loadedCount} textures");
+            return false; // Assume desktop if we can't detect
         }
     }
 }

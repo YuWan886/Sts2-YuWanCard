@@ -9,6 +9,7 @@ public static class SavedPropertiesTypeCachePatch
 {
     private static readonly Dictionary<string, int> PropertyNameToNetIdMap;
     private static readonly List<string> NetIdToPropertyNameMap;
+    private static readonly PropertyInfo? NetIdBitSizeProperty;
 
     static SavedPropertiesTypeCachePatch()
     {
@@ -16,6 +17,19 @@ public static class SavedPropertiesTypeCachePatch
             typeof(SavedPropertiesTypeCache), "_propertyNameToNetIdMap");
         NetIdToPropertyNameMap = AccessTools.StaticFieldRefAccess<List<string>>(
             typeof(SavedPropertiesTypeCache), "_netIdToPropertyNameMap");
+        NetIdBitSizeProperty = AccessTools.Property(typeof(SavedPropertiesTypeCache), "NetIdBitSize");
+    }
+
+    public static void EnsureTypeRegistered(Type type)
+    {
+        SavedPropertiesTypeCache.InjectTypeIntoCache(type);
+        RefreshNetIdBitSize();
+    }
+
+    private static void RefreshNetIdBitSize()
+    {
+        int newBitSize = (int)Math.Ceiling(Math.Log2(NetIdToPropertyNameMap.Count));
+        NetIdBitSizeProperty?.SetValue(null, newBitSize);
     }
 
     [HarmonyPrefix]
@@ -26,10 +40,7 @@ public static class SavedPropertiesTypeCachePatch
             netId = NetIdToPropertyNameMap.Count;
             PropertyNameToNetIdMap[propertyName] = netId;
             NetIdToPropertyNameMap.Add(propertyName);
-
-            int newBitSize = (int)Math.Ceiling(Math.Log2(NetIdToPropertyNameMap.Count));
-            AccessTools.Property(typeof(SavedPropertiesTypeCache), "NetIdBitSize")
-                ?.SetValue(null, newBitSize);
+            RefreshNetIdBitSize();
         }
 
         __result = netId;

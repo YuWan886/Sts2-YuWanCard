@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using YuWanCard.Core.Extensions;
 
 namespace YuWanCard.Cards;
 
@@ -62,20 +63,6 @@ public class BorrowKnifeToKill : YuWanCardModel
 
     private Creature? GetTargetForCard(CardModel card)
     {
-        var combatState = CombatState;
-        if (combatState == null)
-            return null;
-
-        return card.TargetType switch
-        {
-            TargetType.AnyEnemy or TargetType.AllEnemies or TargetType.RandomEnemy
-                => Owner.RunState.Rng.CombatTargets.NextItem(combatState.HittableEnemies),
-            TargetType.AnyPlayer
-                => Owner.RunState.Rng.CombatTargets.NextItem(combatState.Players.Where(p => p.Creature.IsAlive).Select(p => p.Creature)),
-            TargetType.AnyAlly or TargetType.AllAllies
-                => Owner.RunState.Rng.CombatTargets.NextItem(combatState.Allies.Where(c => c.IsAlive)),
-            TargetType.Self => Owner.Creature,
-            _ => null
-        };
+        return card.PickRandomTarget();
     }
 }

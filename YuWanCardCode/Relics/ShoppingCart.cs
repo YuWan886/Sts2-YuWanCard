@@ -11,6 +11,11 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class ShoppingCart : YuWanRelicModel
 {
+    static ShoppingCart()
+    {
+        SavedPropertyRegistration.RegisterType(typeof(ShoppingCart));
+    }
+
     private string _shoppingCartData = string.Empty;
     
     [SavedProperty]

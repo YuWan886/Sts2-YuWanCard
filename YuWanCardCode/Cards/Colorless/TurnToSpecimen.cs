@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using YuWanCard.Core.Abstracts;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
@@ -19,7 +16,8 @@ public class TurnToSpecimen : YuWanCardModel
     private static readonly HashSet<Type> s_powerBlacklist = new()
     {
         typeof(SandpitPower),
-        typeof(PersonalHivePower)
+        typeof(PersonalHivePower),
+        typeof(ReattachPower)
     };
 
     public TurnToSpecimen() : base(

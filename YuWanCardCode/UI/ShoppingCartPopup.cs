@@ -1,6 +1,5 @@
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
@@ -233,7 +232,8 @@ public partial class ShoppingCartPopup : Control, IScreenContext
         if (_buyAllButton != null && IsInstanceValid(_buyAllButton))
         {
             _buyAllButton.Visible = true;
-            _buyAllButton.Disabled = _player != null && _player.Gold < data.TotalPrice;
+            _buyAllButton.Disabled = ShoppingCartManager.IsPurchaseBlockedInCurrentRoom(_player)
+                || _player != null && _player.Gold < data.TotalPrice;
         }
     }
 
@@ -268,6 +268,12 @@ public partial class ShoppingCartPopup : Control, IScreenContext
         if (item == null)
             return false;
 
+        if (ShoppingCartManager.IsPurchaseBlockedInCurrentRoom(_player))
+        {
+            SfxCmd.Play("event:/sfx/npcs/merchant/merchant_dissapointment");
+            return false;
+        }
+
         if (_player != null && _player.Gold < item.Price)
         {
             SfxCmd.Play("event:/sfx/npcs/merchant/merchant_dissapointment");
@@ -299,6 +305,12 @@ public partial class ShoppingCartPopup : Control, IScreenContext
     {
         var data = ShoppingCartManager.GetCartData(_player);
         if (data == null || data.IsEmpty) return;
+
+        if (ShoppingCartManager.IsPurchaseBlockedInCurrentRoom(_player))
+        {
+            SfxCmd.Play("event:/sfx/npcs/merchant/merchant_dissapointment");
+            return;
+        }
 
         if (_player != null && _player.Gold < data.TotalPrice)
         {

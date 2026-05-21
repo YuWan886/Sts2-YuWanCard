@@ -33,10 +33,6 @@ class NeowSevenCursesPatch
 
         var options = __result.ToList();
 
-        // Modifier screens have fewer than 3 options — skip
-        if (options.Count < 3)
-            return;
-
         _normalOptions[__instance] = options;
 
         if (YuWanCardConfig.EnableSevenCursesRing)
@@ -80,13 +76,13 @@ class NeowSevenCursesPatch
 
     private static void ResolveSevenCurses(Neow neow)
     {
-        if (YuWanCardConfig.EnableWhatIfRelics && _normalOptions.ContainsKey(neow))
+        if (YuWanCardConfig.EnableWhatIfRelics)
         {
             SetEventState(neow, neow.InitialDescription, CreateWhatIfScreen(neow));
         }
-        else if (_normalOptions.TryGetValue(neow, out var normalOpts))
+        else
         {
-            SetEventState(neow, neow.InitialDescription, normalOpts);
+            RestoreNormalOptionsOrFinish(neow);
         }
     }
 
@@ -106,8 +102,7 @@ class NeowSevenCursesPatch
                 async () =>
                 {
                     await RelicCmd.Obtain(mutable, neow.Owner!);
-                    if (_normalOptions.TryGetValue(neow, out var opts))
-                        SetEventState(neow, neow.InitialDescription, opts);
+                    RestoreNormalOptionsOrFinish(neow);
                 },
                 mutable.Title,
                 mutable.Description,
@@ -118,8 +113,7 @@ class NeowSevenCursesPatch
 
         options.Add(CreateSkipOption(neow, () =>
         {
-            if (_normalOptions.TryGetValue(neow, out var opts))
-                SetEventState(neow, neow.InitialDescription, opts);
+            RestoreNormalOptionsOrFinish(neow);
         }, "YUWANCARD-WHAT_IF_SKIP", "relics"));
 
         return options;
@@ -144,5 +138,18 @@ class NeowSevenCursesPatch
     private static bool SetEventState(EventModel eventModel, LocString description, IEnumerable<EventOption> options)
     {
         return YuWanReflectionHelper.CallPrivateMethod(eventModel, "SetEventState", description, options);
+    }
+
+    private static void RestoreNormalOptionsOrFinish(Neow neow)
+    {
+        if (_normalOptions.TryGetValue(neow, out var normalOpts) && normalOpts.Count > 0)
+        {
+            SetEventState(neow, neow.InitialDescription, normalOpts);
+            return;
+        }
+
+        // In custom mode, modifiers may exist but provide no Neow options.
+        // In that case, conclude Neow cleanly after Seven Curses / What If resolves.
+        YuWanReflectionHelper.CallPrivateMethod(neow, "SetEventFinished", new LocString("events", "NEOW.pages.DONE.description"));
     }
 }

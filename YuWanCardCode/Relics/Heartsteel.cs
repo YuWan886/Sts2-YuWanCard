@@ -18,7 +18,8 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class Heartsteel : YuWanRelicModel
 {
-    private Dictionary<ModelId, EnemyDamageTracker> EnemyTrackers { get; set; } = new();
+    private Dictionary<Creature, EnemyDamageTracker>? enemyTrackers;
+    private bool _isResolvingColossalAppetite;
 
     [SavedProperty]
     private int TriggerCount { get; set; }
@@ -45,21 +46,26 @@ public class Heartsteel : YuWanRelicModel
 
     public override Task BeforeCombatStart()
     {
-        EnemyTrackers.Clear();
+        ResetCombatState();
         return Task.CompletedTask;
     }
 
     public override async Task AfterCombatVictory(CombatRoom room)
     {
         await base.AfterCombatVictory(room);
-        EnemyTrackers.Clear();
+        ResetCombatState();
     }
 
     public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (player != Owner) return Task.CompletedTask;
 
-        foreach (var tracker in EnemyTrackers.Values)
+        if (enemyTrackers == null)
+        {
+            return Task.CompletedTask;
+        }
+
+        foreach (var tracker in enemyTrackers.Values)
         {
             tracker.DamageThisTurn = 0m;
             tracker.PendingDamage = 0m;
@@ -76,12 +82,13 @@ public class Heartsteel : YuWanRelicModel
         if (target == null || target.Side != CombatSide.Enemy) return 0m;
         if (Owner == null) return 0m;
         if (amount <= 0) return 0m;
+        if (_isResolvingColossalAppetite) return 0m;
 
-        var enemyId = target.ModelId;
-        if (!EnemyTrackers.TryGetValue(enemyId, out EnemyDamageTracker? tracker))
+        var trackers = GetEnemyTrackers();
+        if (!trackers.TryGetValue(target, out EnemyDamageTracker? tracker))
         {
             tracker = new EnemyDamageTracker();
-            EnemyTrackers[enemyId] = tracker;
+            trackers[target] = tracker;
         }
 
         if (tracker.HasTriggered) return 0m;
@@ -99,12 +106,13 @@ public class Heartsteel : YuWanRelicModel
         if (Owner == null) return;
         if (result.TotalDamage <= 0) return;
         if (_hasTriggeredThisDamage) return;
+        if (_isResolvingColossalAppetite) return;
 
-        var enemyId = target.ModelId;
-        if (!EnemyTrackers.TryGetValue(enemyId, out EnemyDamageTracker? tracker))
+        var trackers = GetEnemyTrackers();
+        if (!trackers.TryGetValue(target, out EnemyDamageTracker? tracker))
         {
             tracker = new EnemyDamageTracker();
-            EnemyTrackers[enemyId] = tracker;
+            trackers[target] = tracker;
         }
 
         if (tracker.HasTriggered) return;
@@ -133,15 +141,35 @@ public class Heartsteel : YuWanRelicModel
         decimal bonusDamagePercent = DynamicVars["BonusDamagePercent"].BaseValue;
         decimal bonusDamage = Math.Floor(currentHp * bonusDamagePercent);
 
-        if (bonusDamage > 0 && !target.IsDead)
+        _isResolvingColossalAppetite = true;
+        try
         {
-            await CreatureCmd.Damage(choiceContext, target, bonusDamage, ValueProp.Move, Owner.Creature);
+            if (bonusDamage > 0 && !target.IsDead)
+            {
+                await CreatureCmd.Damage(choiceContext, target, bonusDamage, ValueProp.Unpowered, Owner.Creature);
+            }
+
+            decimal maxHpGain = DynamicVars["MaxHpGain"].BaseValue;
+            await CreatureCmd.GainMaxHp(Owner.Creature, maxHpGain);
+
+            MainFile.Logger.Info($"Heartsteel triggered: {bonusDamage} bonus damage, +{maxHpGain} max HP, TriggerCount: {TriggerCount}");
         }
+        finally
+        {
+            _isResolvingColossalAppetite = false;
+        }
+    }
 
-        decimal maxHpGain = DynamicVars["MaxHpGain"].BaseValue;
-        await CreatureCmd.GainMaxHp(Owner.Creature, maxHpGain);
+    private Dictionary<Creature, EnemyDamageTracker> GetEnemyTrackers()
+    {
+        return enemyTrackers ??= new Dictionary<Creature, EnemyDamageTracker>();
+    }
 
-        MainFile.Logger.Info($"Heartsteel triggered: {bonusDamage} bonus damage, +{maxHpGain} max HP, TriggerCount: {TriggerCount}");
+    private void ResetCombatState()
+    {
+        GetEnemyTrackers().Clear();
+        _hasTriggeredThisDamage = false;
+        _isResolvingColossalAppetite = false;
     }
 
     private class EnemyDamageTracker

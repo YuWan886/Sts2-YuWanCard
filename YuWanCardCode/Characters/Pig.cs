@@ -4,6 +4,8 @@ using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.RestSite;
+using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Cards;
 using YuWanCard.Relics;
 
@@ -12,6 +14,21 @@ namespace YuWanCard.Characters;
 public class Pig : CharacterModel, IYuWanCharacter
 {
     private const string PigVisualsPath = "res://YuWanCard/scenes/characters/pig.tscn";
+    private const string PigMerchantPath = "res://YuWanCard/scenes/characters/pig_merchant.tscn";
+    private const string PigEnergyCounterPath = "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
+    private const string PigRestSitePath = "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
+
+    /// <summary>
+    /// Registers Pig-specific scene type conversions with NodeFactory
+    /// so that Godot PackedScene instances are auto-converted to game types.
+    /// </summary>
+    public static void RegisterScenes()
+    {
+        NodeFactory.RegisterSceneType<NCreatureVisuals>(PigVisualsPath);
+        NodeFactory.RegisterSceneType<NMerchantCharacter>(PigMerchantPath);
+        NodeFactory.RegisterSceneType<NEnergyCounter>(PigEnergyCounterPath);
+        NodeFactory.RegisterSceneType<NRestSiteCharacter>(PigRestSitePath);
+    }
 
     IReadOnlyList<RelicModel> IYuWanCharacter.MultiplayerStartingRelics => [ModelDb.Relic<PigRoastPork>()];
 

@@ -11,6 +11,8 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.Runs;
 using System.Runtime.CompilerServices;
+using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 
 namespace YuWanCard.Modifiers;
 
@@ -1021,7 +1023,7 @@ public class VakuuTowerModifier : YuWanModifierModel
         var dynamicVars = card.DynamicVars;
         if (dynamicVars == null) return 0;
 
-        var selfTargetTypes = new[] { TargetType.Self, TargetType.AllAllies, TargetType.AnyAlly, TargetType.AnyPlayer };
+        var selfTargetTypes = new[] { TargetType.Self, TargetType.AllAllies, TargetType.AnyAlly, TargetType.AnyPlayer, CustomTargetType.AnyPigMinion };
         bool canTargetSelf = selfTargetTypes.Contains(card.TargetType);
 
         if (!canTargetSelf) return 0;
@@ -1579,7 +1581,7 @@ public class VakuuTowerModifier : YuWanModifierModel
             TargetType.Self => player.Creature,
             TargetType.AllEnemies => SelectBestEnemyTargetOptimized(card, enemyCache) ?? enemyCache[0].Enemy,
             TargetType.AllAllies => player.Creature,
-            _ => null
+            _ => card.GetSelectableTargets().FirstOrDefault()
         };
     }
 

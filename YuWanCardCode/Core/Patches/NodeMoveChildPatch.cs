@@ -1,6 +1,5 @@
 using Godot;
 using HarmonyLib;
-using YuWanCard;
 
 namespace YuWanCard.Core.Patches;
 

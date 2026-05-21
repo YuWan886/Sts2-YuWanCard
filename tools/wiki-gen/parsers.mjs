@@ -2,13 +2,43 @@
 
 import { basename, join, relative, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { readFile, pascalToSnake } from './utils.mjs'
+import { readFile, pascalToSnake, collectCsFiles } from './utils.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..')
 const SRC_ROOT = join(ROOT, 'YuWanCardCode')
+const CARDS_ROOT = join(SRC_ROOT, 'Cards')
+
+let cardClassFileMap = null
+let classFileMap = null
 
 function classId(filepath) {
   return pascalToSnake(basename(filepath, '.cs'))
+}
+
+function buildCardClassFileMap() {
+  if (cardClassFileMap) return cardClassFileMap
+  cardClassFileMap = new Map()
+  for (const filepath of collectCsFiles(CARDS_ROOT)) {
+    cardClassFileMap.set(basename(filepath, '.cs'), filepath)
+  }
+  return cardClassFileMap
+}
+
+function findCardFileByClass(className) {
+  return buildCardClassFileMap().get(className) || null
+}
+
+function buildClassFileMap() {
+  if (classFileMap) return classFileMap
+  classFileMap = new Map()
+  for (const filepath of collectCsFiles(SRC_ROOT)) {
+    classFileMap.set(basename(filepath, '.cs'), filepath)
+  }
+  return classFileMap
+}
+
+function findClassFileByClass(className) {
+  return buildClassFileMap().get(className) || null
 }
 
 // ---- Variable extractor helpers ----
@@ -186,6 +216,96 @@ function extractVariables(content) {
   return variables
 }
 
+function extractTemporaryPowerWrapperVars(content) {
+  const wrapperMatch = content.match(
+    /class\s+(\w+)\s*:\s*YuWanTemporaryPowerModelWrapper\s*<\s*(\w+)\s*,\s*(\w+)\s*>/
+  )
+  if (!wrapperMatch) return []
+
+  const wrapperClass = wrapperMatch[1]
+  const originCardClass = wrapperMatch[2]
+  const internalPowerClass = wrapperMatch[3]
+  const originCardFile = findCardFileByClass(originCardClass)
+  if (!originCardFile) return []
+
+  const originCardContent = readFile(originCardFile)
+  if (!originCardContent) return []
+
+  const originVars = extractVariables(originCardContent)
+  if (!originVars.length) return []
+
+  const preferredNames = [
+    wrapperClass.replace(/Power$/, ''),
+    wrapperClass,
+    internalPowerClass.replace(/Power$/, ''),
+    internalPowerClass
+  ]
+
+  for (const preferredName of preferredNames) {
+    const found = originVars.find(v => v.name === preferredName)
+    if (found) return [{ ...found }]
+  }
+
+  // Fallback: keep at least one variable so {Amount} can resolve.
+  return [{ ...originVars[0] }]
+}
+
+function stripTypeArgs(typeName) {
+  return typeName.replace(/<.*>/g, '').trim()
+}
+
+function parseBaseClassNames(content) {
+  const classMatch = content.match(/class\s+\w+(?:<[^>]+>)?\s*:\s*([^{\n]+)/)
+  if (!classMatch) return []
+
+  const inheritList = classMatch[1]
+    .split(',')
+    .map(s => stripTypeArgs(s.split('.').pop() || '').trim())
+    .filter(Boolean)
+  return inheritList
+}
+
+function parseCanonicalVarsFromInheritance(content, visited = new Set()) {
+  const baseNames = parseBaseClassNames(content)
+  for (const baseName of baseNames) {
+    if (visited.has(baseName)) continue
+    visited.add(baseName)
+
+    const baseFile = findClassFileByClass(baseName)
+    if (!baseFile) continue
+
+    const baseContent = readFile(baseFile)
+    if (!baseContent) continue
+
+    const baseConstants = buildConstants(baseContent)
+    const baseVars = parseCanonicalVars(baseContent, baseConstants)
+    if (baseVars.length > 0) return baseVars
+
+    const inherited = parseCanonicalVarsFromInheritance(baseContent, visited)
+    if (inherited.length > 0) return inherited
+  }
+  return []
+}
+
+function extractTipReferences(content) {
+  const refs = []
+  const seen = new Set()
+
+  function addRef(className) {
+    if (!className || seen.has(className)) return
+    seen.add(className)
+    refs.push(className)
+  }
+
+  for (const m of content.matchAll(/WithTip\s*\(\s*typeof\s*\(\s*(\w+)\s*\)\s*\)/g))
+    addRef(m[1])
+
+  for (const m of content.matchAll(/HoverTipFactory\.From\w+\s*<\s*(\w+)\s*>/g))
+    addRef(m[1])
+
+  return refs
+}
+
 // ---- Card ----
 
 export function parseCardFile(filepath) {
@@ -228,6 +348,7 @@ export function parseCardFile(filepath) {
 
   const tags = []
   for (const m of content.matchAll(/CardTag\.(\w+)/g)) tags.push(m[1])
+  const tipRefs = extractTipReferences(content)
 
   return {
     id: entityId, className, type: 'card', category, pool,
@@ -236,7 +357,7 @@ export function parseCardFile(filepath) {
     cardType: typeMatch ? typeMatch[1] : null,
     rarity: rarityMatch ? rarityMatch[1] : null,
     target: targetMatch ? targetMatch[1] : null,
-    variables, keywords, tags,
+    variables, keywords, tags, tipRefs,
     hiddenFromLibrary: !!showInLibraryMatch
   }
 }
@@ -270,7 +391,15 @@ export function parsePowerFile(filepath) {
   const typeMatch = content.match(/Type\s*=>\s*PowerType\.(\w+)/)
   const stackMatch = content.match(/StackType\s*=>\s*PowerStackType\.(\w+)/)
   const constants = buildConstants(content)
-  const variables = parseCanonicalVars(content, constants)
+  let variables = parseCanonicalVars(content, constants)
+  if (variables.length === 0) {
+    const inheritedVars = parseCanonicalVarsFromInheritance(content)
+    if (inheritedVars.length) variables = inheritedVars
+  }
+  if (variables.length === 0) {
+    const wrapperVars = extractTemporaryPowerWrapperVars(content)
+    if (wrapperVars.length) variables = wrapperVars
+  }
 
   return {
     id: classId(filepath), className: basename(filepath, '.cs'),
