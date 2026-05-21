@@ -25,6 +25,7 @@ public class Sha : YuWanCardModel
         target: TargetType.AnyEnemy)
     {
         WithDamage(9);
+        WithKeywords(CardKeyword.Exhaust);
     }
 
     protected override void OnUpgrade()

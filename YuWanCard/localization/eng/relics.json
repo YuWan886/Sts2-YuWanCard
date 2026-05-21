@@ -155,5 +155,8 @@
   "YUWANCARD-YANG_SWORD_GOURD.flavor": "It stores edge for the perfect draw.",
   "YUWANCARD-THOUSAND_CURSE_SCROLL.title": "Thousand Curse Scroll",
   "YUWANCARD-THOUSAND_CURSE_SCROLL.description": "At the start of your turn, gain 1 temporary [gold]Strength[/gold] and [gold]Dexterity[/gold] this turn for each [gold]Curse[/gold] card in your hand.",
-  "YUWANCARD-THOUSAND_CURSE_SCROLL.flavor": "The deeper the curse, the sharper the power."
+  "YUWANCARD-THOUSAND_CURSE_SCROLL.flavor": "The deeper the curse, the sharper the power.",
+  "YUWANCARD-WHAT_IF_SHA.title": "What If: Only Kill",
+  "YUWANCARD-WHAT_IF_SHA.description": "When obtained, transform all cards in your deck into [gold]Kill[/gold].\nCard rewards only contain [gold]Kill[/gold].",
+  "YUWANCARD-WHAT_IF_SHA.flavor": "Premium deck #008."
 }
