@@ -34,6 +34,6 @@ public class PawnServant : YuWanCardModel
             return;
 
         await PlayerCmd.GainGold(8, Owner);
-        await PowerCmd.Apply<VakuuTakeoverPower>(cardPlay.Target, 1, Owner.Creature, this);
+        await PowerCmd.Apply<VakuuTakeoverPower>(new ThrowingPlayerChoiceContext(), cardPlay.Target, 1, Owner.Creature, this);
     }
 }

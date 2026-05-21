@@ -38,7 +38,7 @@ public static class CardModelTargetingExtensions
         return card.Owner.RunState.Rng.CombatTargets.NextItem(candidates);
     }
 
-    private static List<Creature> GetCustomSelectableTargets(CardModel card, CombatState state)
+    private static List<Creature> GetCustomSelectableTargets(CardModel card, ICombatState state)
     {
         if (CustomTargetType.IsCustomSingleTargetType(card.TargetType))
         {

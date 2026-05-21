@@ -28,7 +28,7 @@ public class BullyLittlePig : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<SkittishPower>(Owner.Creature, DynamicVars["SkittishPower"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<HardToKillPower>(Owner.Creature, DynamicVars["HardToKillPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<SkittishPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["SkittishPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<HardToKillPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["HardToKillPower"].BaseValue, Owner.Creature, this);
     }
 }

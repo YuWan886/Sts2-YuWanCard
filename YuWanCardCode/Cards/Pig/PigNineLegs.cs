@@ -36,7 +36,7 @@ public class PigNineLegs : YuWanCardModel
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
 
-        if (!attackCommand.Results.Any(result => result.WasTargetKilled) || CombatState == null)
+        if (cardPlay.Target.IsAlive || CombatState == null)
             return;
 
         var otherEnemies = CombatState.HittableEnemies
@@ -46,6 +46,7 @@ public class PigNineLegs : YuWanCardModel
         if (otherEnemies.Count > 0)
         {
             await PowerCmd.Apply<StranglePower>(
+                new ThrowingPlayerChoiceContext(),
                 otherEnemies,
                 DynamicVars["StranglePower"].IntValue,
                 Owner.Creature,

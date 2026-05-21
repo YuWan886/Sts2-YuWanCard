@@ -71,7 +71,7 @@ public partial class MainFile : Node
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
         SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
-        CustomBadgeRegistry.Register((run, playerId) => new PigTycoonBadge(run, playerId));
+        CustomBadgeRegistry.Register((run, playerId, won) => new PigTycoonBadge(run, playerId, won));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 
         // Phase 4: Config, scene conversions, multiplayer, assets

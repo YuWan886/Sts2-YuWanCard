@@ -32,6 +32,6 @@ public class DefeatBringsSorrow : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<DefeatBringsSorrowPower>(Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<DefeatBringsSorrowPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, 1, Owner.Creature, this);
     }
 }

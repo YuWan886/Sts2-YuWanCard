@@ -42,6 +42,6 @@ public class VictoryBreedsArrogance : YuWanCardModel
             return;
         }
 
-        await PowerCmd.Apply<VictoryBreedsArrogancePower>(target, 3, Owner.Creature, this);
+        await PowerCmd.Apply<VictoryBreedsArrogancePower>(new ThrowingPlayerChoiceContext(), target, 3, Owner.Creature, this);
     }
 }

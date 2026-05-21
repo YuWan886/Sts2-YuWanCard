@@ -30,6 +30,6 @@ public class Gambler : YuWanCardModel
     {
         int range = IsUpgraded ? UpgradedRange : BaseRange;
         int randomAmount = Owner.RunState.Rng.CombatCardGeneration.NextInt(-range, range + 1);
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, randomAmount, Owner.Creature, this);
+        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, randomAmount, Owner.Creature, this);
     }
 }

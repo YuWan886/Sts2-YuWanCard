@@ -29,6 +29,7 @@ public class FitnessMouse : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<FitnessMouseNextTurnStrengthPower>(
+            new ThrowingPlayerChoiceContext(), 
             Owner.Creature,
             DynamicVars["Strength"].IntValue,
             Owner.Creature,

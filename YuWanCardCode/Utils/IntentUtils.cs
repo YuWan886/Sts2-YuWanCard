@@ -6,7 +6,7 @@ namespace YuWanCard.Utils;
 
 public static class IntentUtils
 {
-    public static bool AnyEnemyIntendsToAttack(CombatState? combatState)
+    public static bool AnyEnemyIntendsToAttack(ICombatState? combatState)
     {
         if (combatState == null)
         {
@@ -18,7 +18,7 @@ public static class IntentUtils
             enemy.Monster?.IntendsToAttack == true);
     }
 
-    public static int GetEnemyAttackIntentDamageTotal(CombatState? combatState)
+    public static int GetEnemyAttackIntentDamageTotal(ICombatState? combatState)
     {
         if (combatState == null)
         {

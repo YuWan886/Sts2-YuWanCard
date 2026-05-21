@@ -52,7 +52,7 @@ public class GluttonousPig : YuWanRelicModel
             foreach (var relic in player.Relics.OfType<GluttonousPig>())
                 relic.EatCard();
             return Task.CompletedTask;
-        }, PostAlternateCardRewardAction.DismissScreenAndRemoveReward));
+        }, PostAlternateCardRewardAction.EndSelectionAndCompleteReward));
         return true;
     }
 

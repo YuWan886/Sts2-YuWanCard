@@ -29,6 +29,7 @@ public class ThinPig : YuWanCardModel
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<IntangiblePower>(
+            choiceContext,
             Owner.Creature,
             DynamicVars["IntangiblePower"].BaseValue,
             Owner.Creature,

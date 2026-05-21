@@ -36,6 +36,6 @@ public class PigCall : YuWanCardModel
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
 
-        await PowerCmd.Apply<RetainEnergyNextTurnPower>(Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<RetainEnergyNextTurnPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, 1, Owner.Creature, this);
     }
 }

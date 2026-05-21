@@ -34,7 +34,7 @@ public sealed class Bite : YuWanEnchantmentModel
         }
 
         var poisonAmount = 7 * Amount;
-        await PowerCmd.Apply<PoisonPower>(GetTargets(cardPlay), poisonAmount, Card.Owner.Creature, Card);
+        await PowerCmd.Apply<PoisonPower>(new ThrowingPlayerChoiceContext(), GetTargets(cardPlay), poisonAmount, Card.Owner.Creature, Card);
     }
 
     private IEnumerable<Creature> GetTargets(CardPlay cardPlay)
@@ -74,7 +74,6 @@ public sealed class Bite : YuWanEnchantmentModel
 
         var randomTarget = rng.CombatTargets.NextItem(combatState.HittableEnemies);
         return randomTarget == null ? Array.Empty<Creature>() : new[] { randomTarget };
-    }
     }
 
     private sealed class PoisonAmountVar(Bite enchantment) : DynamicVar("Poison", 7m)

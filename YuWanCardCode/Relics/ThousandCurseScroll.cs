@@ -35,8 +35,8 @@ public class ThousandCurseScroll : YuWanRelicModel
         }
 
         Flash();
-        await PowerCmd.Apply<ThousandCurseScrollStrengthPower>(Owner.Creature, curseCount, Owner.Creature, null);
-        await PowerCmd.Apply<ThousandCurseScrollDexterityPower>(Owner.Creature, curseCount, Owner.Creature, null);
+        await PowerCmd.Apply<ThousandCurseScrollStrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, curseCount, Owner.Creature, null);
+        await PowerCmd.Apply<ThousandCurseScrollDexterityPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, curseCount, Owner.Creature, null);
         
     }
 }

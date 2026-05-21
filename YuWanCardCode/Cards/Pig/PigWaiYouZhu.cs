@@ -32,7 +32,7 @@ public class PigWaiYouZhu : YuWanCardModel
 
         if (CardsPlayedThisTurn < 3)
         {
-            await PowerCmd.Apply<PigFriendsPower>(Owner.Creature, DynamicVars["PigFriendsPower"].IntValue, Owner.Creature, this);
+            await PowerCmd.Apply<PigFriendsPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["PigFriendsPower"].IntValue, Owner.Creature, this);
         }
     }
 

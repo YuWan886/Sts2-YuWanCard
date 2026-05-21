@@ -28,6 +28,6 @@ public class HealingPotion : YuWanPotionModel
     protected override async Task OnUse(PlayerChoiceContext choiceContext, Creature? target)
     {
         AssertValidForTargetedPotion(target);
-        await PowerCmd.Apply<HealingPotionPower>(target, Duration, Owner.Creature, null);
+        await PowerCmd.Apply<HealingPotionPower>(new ThrowingPlayerChoiceContext(), target, Duration, Owner.Creature, null);
     }
 }

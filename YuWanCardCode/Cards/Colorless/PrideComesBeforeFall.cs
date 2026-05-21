@@ -29,6 +29,6 @@ public class PrideComesBeforeFall : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<PrideComesBeforeFallPower>(Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<PrideComesBeforeFallPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, 1, Owner.Creature, this);
     }
 }

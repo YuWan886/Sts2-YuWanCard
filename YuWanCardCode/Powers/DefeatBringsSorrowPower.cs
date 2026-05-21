@@ -64,7 +64,7 @@ public class DefeatBringsSorrowPower : YuWanPowerModel
         }
         else
         {
-            await PowerCmd.Apply<DefeatBringsSorrowStunPower>(Owner, 1, Owner, null);
+            await PowerCmd.Apply<DefeatBringsSorrowStunPower>(new ThrowingPlayerChoiceContext(), Owner, 1, Owner, null);
         }
 
         await PowerCmd.Remove(this);
