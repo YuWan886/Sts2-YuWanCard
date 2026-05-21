@@ -106,5 +106,8 @@
   "YUWANCARD-HEALING_POTION_POWER.smartDescription": "回合开始时，恢复[green]{Heal}[/green]点生命值。持续[blue]{Amount}[/blue]回合。",
   "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.title": "健身鼠鼠",
   "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.description": "在下个回合开始时，获得力量。",
-  "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.smartDescription": "在下个回合开始时，获得{Amount}点[gold]力量[/gold]。"
+  "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.smartDescription": "在下个回合开始时，获得{Amount}点[gold]力量[/gold]。",
+  "YUWANCARD-RETAIN_ENERGY_NEXT_TURN_POWER.title": "保留能量",
+  "YUWANCARD-RETAIN_ENERGY_NEXT_TURN_POWER.description": "保留本回合的能量至下一回合开始。",
+  "YUWANCARD-RETAIN_ENERGY_NEXT_TURN_POWER.smartDescription": "保留本回合的能量至下一回合开始。。"
 }

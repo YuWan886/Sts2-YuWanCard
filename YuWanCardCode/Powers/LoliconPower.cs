@@ -53,9 +53,12 @@ public class LoliconPower : YuWanPowerModel
         if (command.ModelSource is not CardModel cardModel) return;
         if (cardModel.Owner.Creature != Owner) return;
 
+        var reflectTargets = internalData.ReflectTargets.ToArray();
+        internalData.ReflectTargets.Clear();
+
         Flash();
 
-        foreach (var (target, damage) in internalData.ReflectTargets)
+        foreach (var (_, damage) in reflectTargets)
         {
             await DamageCmd.Attack(damage)
                 .FromCard(cardModel)
@@ -63,7 +66,5 @@ public class LoliconPower : YuWanPowerModel
                 .WithHitFx("vfx/vfx_attack_lightning", null, "lightning_orb_evoke.mp3")
                 .Execute(new ThrowingPlayerChoiceContext());
         }
-
-        internalData.ReflectTargets.Clear();
     }
 }

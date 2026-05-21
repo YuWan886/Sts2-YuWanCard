@@ -112,5 +112,8 @@
   "YUWANCARD-HEALING_POTION_POWER.smartDescription": "At the start of your turn, heal [green]{Heal}[green] HP. Lasts {Amount} turns.",
   "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.title": "Fitness Mouse",
   "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.description": "Gain Strength at the start of your next turn.",
-  "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.smartDescription": "Gain {Amount} [gold]Strength[/gold] at the start of your next turn."
+  "YUWANCARD-FITNESS_MOUSE_NEXT_TURN_STRENGTH_POWER.smartDescription": "Gain {Amount} [gold]Strength[/gold] at the start of your next turn.",
+  "YUWANCARD-RETAIN_ENERGY_NEXT_TURN_POWER.title": "Retain Energy",
+  "YUWANCARD-RETAIN_ENERGY_NEXT_TURN_POWER.description": "Retain your current energy at the start of your next turn.",
+  "YUWANCARD-RETAIN_ENERGY_NEXT_TURN_POWER.smartDescription": "Retain your current energy at the start of your next turn."
 }
