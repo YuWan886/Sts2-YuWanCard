@@ -33,7 +33,7 @@ static class CustomCharacterVisualPath
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomVisualPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomVisualPath;
             return false;
@@ -75,7 +75,7 @@ static class TrailPathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomTrailPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomTrailPath;
             return false;
@@ -89,10 +89,10 @@ static class IconOutlineTexturePathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomIconOutlineTexturePath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomIconOutlineTexturePath;
-            return false;
+            return __result == null;
         }
         return true;
     }
@@ -103,10 +103,10 @@ static class IconTexturePathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomIconTexturePath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomIconTexturePath;
-            return false;
+            return __result == null;
         }
         return true;
     }
@@ -117,10 +117,10 @@ static class IconPatch
 {
     static bool Prefix(CharacterModel __instance, ref Control? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomIcon != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomIcon;
-            return false;
+            return __result == null;
         }
         return true;
     }
@@ -131,7 +131,7 @@ static class IconPathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomIconPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomIconPath;
             return false;
@@ -145,7 +145,7 @@ static class EnergyCounterPathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomEnergyCounterPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomEnergyCounterPath;
             return false;
@@ -159,7 +159,7 @@ static class RestSiteAnimPathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomRestSiteAnimPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomRestSiteAnimPath;
             return false;
@@ -173,7 +173,7 @@ static class MerchantAnimPathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomMerchantAnimPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomMerchantAnimPath;
             return false;
@@ -187,7 +187,7 @@ static class ArmPointingTexturePathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomArmPointingTexturePath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomArmPointingTexturePath;
             return false;
@@ -201,7 +201,7 @@ static class ArmRockTexturePathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomArmRockTexturePath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomArmRockTexturePath;
             return false;
@@ -215,7 +215,7 @@ static class ArmPaperTexturePathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomArmPaperTexturePath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomArmPaperTexturePath;
             return false;
@@ -229,7 +229,7 @@ static class ArmScissorsTexturePathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomArmScissorsTexturePath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomArmScissorsTexturePath;
             return false;
@@ -243,7 +243,7 @@ static class CharacterSelectTransitionPathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomCharacterSelectTransitionPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomCharacterSelectTransitionPath;
             return false;
@@ -257,7 +257,7 @@ static class CustomCharacterSelectBgPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomCharacterSelectBg != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomCharacterSelectBg;
             return false;
@@ -271,7 +271,7 @@ static class CharacterSelectIconPathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomCharacterSelectIconPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomCharacterSelectIconPath;
             return false;
@@ -285,7 +285,7 @@ static class CharacterSelectLockedIconPathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomCharacterSelectLockedIconPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomCharacterSelectLockedIconPath;
             return false;
@@ -299,7 +299,7 @@ static class MapMarkerPathPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomMapMarkerPath != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomMapMarkerPath;
             return false;
@@ -313,7 +313,7 @@ static class AttackSfxPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomAttackSfx != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomAttackSfx;
             return false;
@@ -327,7 +327,7 @@ static class CastSfxPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomCastSfx != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomCastSfx;
             return false;
@@ -341,7 +341,7 @@ static class DeathSfxPatch
 {
     static bool Prefix(CharacterModel __instance, ref string? __result)
     {
-        if (__instance is IYuWanCharacter c && c.CustomDeathSfx != null)
+        if (__instance is IYuWanCharacter c)
         {
             __result = c.CustomDeathSfx;
             return false;

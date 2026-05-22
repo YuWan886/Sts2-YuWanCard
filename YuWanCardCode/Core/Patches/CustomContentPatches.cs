@@ -1,6 +1,7 @@
 using YuWanCard.Core.Abstracts;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Models;
 
 namespace YuWanCard.Core.Patches;
@@ -46,6 +47,12 @@ static class CustomCardFrame
         {
             __result = c.CustomFrame;
             if (__result != null) return false;
+
+            if (__instance.Pool is YuWanCardPoolModel customPool)
+            {
+                __result = customPool.CustomFrame(c);
+                if (__result != null) return false;
+            }
         }
         return true;
     }
@@ -126,6 +133,34 @@ static class CustomRelicBigIconPath
 }
 
 // --- Ancient custom paths ---
+
+[HarmonyPatch(typeof(EventModel), "BackgroundScenePath", MethodType.Getter)]
+static class CustomAncientBackgroundScenePath
+{
+    static bool Prefix(EventModel __instance, ref string? __result)
+    {
+        if (__instance is YuWanCard.Core.Abstracts.YuWanAncientModel a && a.CustomScenePath != null)
+        {
+            __result = a.CustomScenePath;
+            return false;
+        }
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(AncientEventModel), "RunHistoryIcon", MethodType.Getter)]
+static class CustomAncientRunHistoryIcon
+{
+    static bool Prefix(AncientEventModel __instance, ref Texture2D __result)
+    {
+        if (__instance is YuWanCard.Core.Abstracts.YuWanAncientModel a && a.CustomRunHistoryIconPath != null)
+        {
+            __result = PreloadManager.Cache.GetCompressedTexture2D(a.CustomRunHistoryIconPath);
+            return false;
+        }
+        return true;
+    }
+}
 
 [HarmonyPatch(typeof(AncientEventModel), "MapIconPath", MethodType.Getter)]
 static class CustomAncientMapIconPath
