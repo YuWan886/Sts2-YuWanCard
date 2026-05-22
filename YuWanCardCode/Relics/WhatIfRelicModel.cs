@@ -1,0 +1,32 @@
+using MegaCrit.Sts2.Core.Entities.Relics;
+using YuWanCard.Core.Abstracts;
+
+namespace YuWanCard.Relics;
+
+public abstract class WhatIfRelicModel : YuWanRelicModel
+{
+    private static readonly YuWanCustomRelicRarity WhatIfRarity =
+        new(
+            "YUWANCARD-WHAT_IF",
+            "relics",
+            "YUWANCARD-WHAT_IF_CATEGORY.header",
+            displayLocalizationKey: "YUWANCARD-WHAT_IF_RARITY.label",
+            visualRarity: RelicRarity.Event,
+            sortOrder: 100);
+
+    public sealed override RelicRarity Rarity => RelicRarity.None;
+
+    public override YuWanCustomRelicRarity? CustomRarity => WhatIfRarity;
+
+    public override int MerchantCost => 999999999;
+
+    public override bool IsAllowedInShops => false;
+
+    protected WhatIfRelicModel()
+    {
+    }
+
+    protected WhatIfRelicModel(bool autoAdd) : base(autoAdd)
+    {
+    }
+}

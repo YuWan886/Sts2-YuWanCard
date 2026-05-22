@@ -1,17 +1,13 @@
-using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
-using YuWanCard.Core.Abstracts;
 using YuWanCard.RelicPools;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfQuestionMark : YuWanRelicModel
+public class WhatIfQuestionMark : WhatIfRelicModel
 {
-    public override RelicRarity Rarity => RelicRarity.Event;
-
     private static readonly HashSet<MapPointType> EssentialTypes =
     [
         MapPointType.Boss,

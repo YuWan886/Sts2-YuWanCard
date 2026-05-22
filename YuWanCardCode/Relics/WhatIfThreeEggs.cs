@@ -1,17 +1,13 @@
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Relics;
-using YuWanCard.Core.Abstracts;
 using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfThreeEggs : YuWanRelicModel
+public class WhatIfThreeEggs : WhatIfRelicModel
 {
-    public override RelicRarity Rarity => RelicRarity.Event;
-
     public WhatIfThreeEggs() : base(true)
     {
     }

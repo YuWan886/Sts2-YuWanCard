@@ -30,6 +30,8 @@ public abstract partial class YuWanRelicModel : RelicModel, IYuWanContent
         if (autoAdd) ContentRegistry.AddModel(GetType());
     }
 
+    public virtual YuWanCustomRelicRarity? CustomRarity => null;
+
     public virtual RelicModel? GetUpgradeReplacement() => null;
 
     [GeneratedRegex(@"([a-z])([A-Z])", RegexOptions.Compiled)]

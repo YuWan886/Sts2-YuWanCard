@@ -1,25 +1,21 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using System.Globalization;
-using YuWanCard.Core.Abstracts;
 using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfForgePersists : YuWanRelicModel
+public class WhatIfForgePersists : WhatIfRelicModel
 {
     private const decimal BaseBladeDamage = 10m;
 
     [SavedProperty]
     public string YuWanCard_StoredForge { get; set; } = "0";
-
-    public override RelicRarity Rarity => RelicRarity.Event;
 
     public override bool ShowCounter => true;
 
