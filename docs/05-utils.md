@@ -41,9 +41,12 @@ await CommonActions.Apply<StrengthPower>(choiceContext, target, this, 2m);
 
 | 方法 | 说明 |
 |------|------|
-| `CardAttack(CardModel, CardPlay, int)` | 创建攻击命令 |
+| `CardAttack(CardModel, CardPlay, int)` | 创建攻击命令（自动处理目标类型） |
 | `CardBlock(CardModel, CardPlay?)` | 获得格挡 |
-| `Apply<T>(PlayerChoiceContext, Creature, CardModel, decimal)` | 施加能力 |
+| `Apply<T>(PlayerChoiceContext, Creature, CardModel, decimal)` | 对单个生物施加能力 |
+| `Apply<T>(PlayerChoiceContext, IEnumerable<Creature>, CardModel, bool)` | 对多个生物施加能力 |
+| `ApplySelf<T>(PlayerChoiceContext, CardModel, decimal)` | 对自身施加能力 |
+| `Draw(CardModel, PlayerChoiceContext)` | 抽牌 |
 
 ### NodeFactory
 
@@ -174,12 +177,20 @@ public override IEnumerable<TooltipSource> ExtraHoverTips
 ```csharp
 using YuWanCard.Core.Utils;
 
-// 创建新标签
-public static readonly CardTag MyTag = ModCardTagRegistry.Create("my_tag");
+// 获取模组注册表
+var registry = ModCardTagRegistry.For("YUWANCARD");
+
+// 注册自有标签（自动添加模组前缀）
+var tag1 = registry.RegisterOwned("FOOD_PIG");  // → YUWANCARD-FOOD_PIG
+
+// 注册指定 ID 的标签
+var tag2 = registry.Register("MYMOD-MY_TAG");
 
 // 在卡牌中使用
 WithTags(YuWanTags.FoodPig, YuWanTags.YuWan);
 ```
+
+`YuWanTags` 类（位于 `YuWanCard.Utils`）预定义了常用标签如 `FoodPig`。
 
 ### DynamicEnumValueMinter
 
@@ -284,26 +295,6 @@ var version = GameVersionCompat.GameVersion;
 
 // 当前版本常量
 var currentVersion = GameVersionCompat.CurrentVersion; // 0.103.2
-```
-
-### RuntimePlatform
-
-运行时平台检测：
-
-```csharp
-using YuWanCard.Utils;
-
-// 检测移动平台
-if (RuntimePlatform.IsMobileLike)
-{
-    // Android/iOS 特殊处理
-}
-
-// 检测是否支持动态代码生成（emit/transpiler）
-if (RuntimePlatform.SupportsDynamicCode)
-{
-    // Reflection.Emit 安全使用
-}
 ```
 
 ### PetManager

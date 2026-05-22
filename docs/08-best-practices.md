@@ -135,6 +135,43 @@ YuWanCard/localization/
 3. **升级合理**：升级通常增加约 30-50% 效果（+3 伤害、+2 格挡、-1 费用等）
 4. **目标类型正确**：Self 用于增益，AnyEnemy 用于单体攻击，AllEnemies 用于 AOE
 5. **标签一致**：攻击牌使用 CardTag.Strike，让打击系协同生效
+6. **升级不手动管理关键字**：使用 `WithKeyword(keyword, UpgradeType.Add/Remove)` 声明升级行为，`ConstructedUpgrade()` 自动处理，不要在 `OnUpgrade()` 中手动 AddKeyword/RemoveKeyword
+
+### 持久化卡牌状态
+
+对于需要在跨战斗间记住状态的卡牌（如"永久升级"类卡牌），使用 `[SavedProperty]` + `BaseReplayCount` + `DeckVersion` 模式：
+
+```csharp
+public class Sha : YuWanCardModel
+{
+    [SavedProperty] public int YUWANCARD_PermanentReplayCount { get; set; }
+
+    static Sha() { SavedPropertyRegistration.RegisterType(typeof(Sha)); }
+
+    protected override void AfterDeserialized()
+    {
+        base.AfterDeserialized();
+        BaseReplayCount = YUWANCARD_PermanentReplayCount;
+    }
+
+    protected override async Task OnPlay(...)
+    {
+        // ... 执行效果 ...
+        
+        // 同步状态回牌组
+        if (DeckVersion is Sha deckSha)
+        {
+            deckSha.YUWANCARD_PermanentReplayCount += 1;
+            deckSha.BaseReplayCount = deckSha.YUWANCARD_PermanentReplayCount;
+        }
+    }
+}
+```
+
+**关键点**：
+- `BaseReplayCount`：允许卡牌一回合多次打出
+- `DeckVersion`：指向牌组中的规范卡牌实例，修改它才能跨战斗持久化
+- 必须调用 `SavedPropertyRegistration.RegisterType(typeof(MyCard))` 注册类型
 
 ### 常见卡牌模式
 
@@ -364,26 +401,6 @@ YuWanReflectionHelper.SetPrivateField(instance, "_fieldName", newValue);
 
 // 使用 AccessTools
 var fieldRef = AccessTools.FieldRefAccess<SomeType, string>("_someField");
-```
-
----
-
-## 平台检测
-
-使用 `RuntimePlatform` 替代直接调用 `OS.HasFeature("mobile")`：
-
-```csharp
-// 检测移动平台
-if (RuntimePlatform.IsMobileLike)
-{
-    // Android/iOS 特殊处理
-}
-
-// 检测是否支持动态代码生成（emit/transpiler）
-if (RuntimePlatform.SupportsDynamicCode)
-{
-    // Reflection.Emit 安全使用
-}
 ```
 
 ---

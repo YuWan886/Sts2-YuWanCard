@@ -28,7 +28,7 @@ if (GameVersionCompat.GameVersion >= new Version(0, 103, 2))
 
 | 游戏版本 | 模组版本 | 说明 |
 |----------|----------|------|
-| 0.103.2 | 当前 | main 和 beta 分支统一版本 |
+| 0.103.2 | v0.5.1 | 当前版本 |
 
 ---
 
@@ -46,30 +46,7 @@ if (GameVersionCompat.GameVersion >= new Version(0, 103, 2))
 
 ### 平台检测
 
-使用 `RuntimePlatform` 进行平台检测：
-
-```csharp
-using YuWanCard.Utils;
-
-// 检测移动平台
-if (RuntimePlatform.IsMobileLike)
-{
-    // Android/iOS 特殊处理
-    // 例如：调整 UI 大小、禁用某些特效
-}
-
-// 检测是否支持动态代码生成
-if (RuntimePlatform.SupportsDynamicCode)
-{
-    // 可安全使用 Reflection.Emit
-    // 可安全使用 Harmony Transpiler
-}
-else
-{
-    // AOT 运行时（如 iOS）
-    // 避免使用动态代码生成
-}
-```
+游戏本身会自动处理平台差异。对于 Android 平台，`LocalizationPrefixFallbackPatch` 自动处理本地化前缀丢失问题。
 
 ### 移动端特殊处理
 

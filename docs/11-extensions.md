@@ -234,39 +234,12 @@ public static class CustomTargetType
 ```csharp
 using YuWanCard.Core.Utils;
 
-// 创建新标签
-public static readonly CardTag MyTag = ModCardTagRegistry.Create("my_tag");
+// 获取模组注册表并创建新标签
+var registry = ModCardTagRegistry.For("YUWANCARD");
+var myTag = registry.RegisterOwned("MY_TAG");  // → YUWANCARD-MY_TAG
 
 // 在卡牌中使用
-WithTags(YuWanTags.FoodPig, YuWanTags.YuWan, MyTag);
-```
-
----
-
-## 自定义 ID
-
-使用 `CustomIDAttribute` 覆盖默认的自动前缀生成：
-
-```csharp
-using YuWanCard.Core.Utils.Attributes;
-
-[CustomID("MYMOD-CUSTOM_ID")]
-public class MyCard : YuWanCardModel
-{
-    // 此卡牌的 ID 将是 "MYMOD-CUSTOM_ID"
-}
-```
-
----
-
-## 自定义池内容映射
-
-将内容注册到自定义池：
-
-```csharp
-// 在 ContentRegistered 阶段注册
-CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyCard));
-CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyOtherCard));
+WithTags(YuWanTags.FoodPig, myTag);
 ```
 
 ---

@@ -103,34 +103,25 @@ DynamicVars.Cards.UpgradeValueBy(1m);
 
 ### RepeatVar
 
-重复次数变量：
+重复次数变量（通过 `DynamicVars.Repeat` 访问，用于 `DamageCmd.Attack().WithHitCount()` 等）：
+
+## CalculatedDamageVar
+
+计算伤害，支持基础值、倍率和加成：
 
 ```csharp
-// 在卡牌构造函数中
-WithRepeat(3);
-
-// 升级时
-DynamicVars.Repeat.UpgradeValueBy(1m);
-```
-
-## CalculatedDamageVar / CalculatedBlockVar
-
-计算伤害/格挡，支持基础值、倍率和加成：
-
-```csharp
-// 伤害 = (基础值 + 加成) * 倍率
-var damage = new CalculatedDamageVar(
-    baseValue: 6m,    // 基础伤害
-    multiplier: 2m,   // 倍率
-    bonus: 3m         // 加成
+// 在卡牌构造函数中使用 WithCalculatedDamage
+WithCalculatedDamage(
+    ValueProp.Move,                               // 伤害属性
+    (card, target) => card.CombatState?.Enemies?.Count ?? 0, // 倍率函数
+    baseVal: 6,                                   // 基础伤害
+    extraVal: 0,                                  // 额外伤害（乘倍率前）
+    baseUpgrade: 3,                               // 基础伤害升级值
+    extraUpgrade: 0                               // 额外伤害升级值
 );
-// 结果: (6 + 3) * 2 = 18
-
-var block = new CalculatedBlockVar(
-    baseValue: 5m,
-    multiplier: 1m,
-    bonus: 2m
-);
+// 计算伤害 = (CalculationBase + CalculationExtra × 倍率) × 全局伤害系数
+// 自动创建三个 DynamicVar：CalculationBaseVar、ExtraDamageVar、CalculatedDamageVar
+// 本地化: {CalculatedDamage:diff()} 显示最终值
 ```
 
 ### CalculationBaseVar
