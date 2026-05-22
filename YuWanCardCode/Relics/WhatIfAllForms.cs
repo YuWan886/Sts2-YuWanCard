@@ -1,15 +1,13 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
-using YuWanCard.Core.Abstracts;
 using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfAllForms : YuWanRelicModel
+public class WhatIfAllForms : WhatIfRelicModel
 {
     private static readonly CardModel[] FormCards =
     [
@@ -20,8 +18,6 @@ public class WhatIfAllForms : YuWanRelicModel
         ModelDb.Card<VoidForm>(),
         ModelDb.Card<WraithForm>()
     ];
-
-    public override RelicRarity Rarity => RelicRarity.Event;
 
     public WhatIfAllForms() : base(true)
     {

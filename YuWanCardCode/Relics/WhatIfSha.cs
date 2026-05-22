@@ -3,20 +3,20 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Cards;
 using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfJackpot : WhatIfRelicModel
+public class WhatIfSha : WhatIfRelicModel
 {
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        HoverTipFactory.FromCardWithCardHoverTips<Jackpot>();
+        HoverTipFactory.FromCardWithCardHoverTips<Sha>();
 
-    public WhatIfJackpot() : base(true)
+    public WhatIfSha() : base(true)
     {
     }
 
@@ -38,10 +38,10 @@ public class WhatIfJackpot : WhatIfRelicModel
             return;
         }
 
-        var jackpotModel = ModelDb.Card<Jackpot>();
+        var shaModel = ModelDb.Card<Sha>();
 
         var transformations = originalCards.Select(card =>
-            new CardTransformation(card, Owner.RunState.CreateCard(jackpotModel, Owner)));
+            new CardTransformation(card, Owner.RunState.CreateCard(shaModel, Owner)));
 
         await CardCmd.Transform(transformations, null, CardPreviewStyle.None);
     }
@@ -53,11 +53,11 @@ public class WhatIfJackpot : WhatIfRelicModel
             return false;
         }
 
-        var jackpotModel = ModelDb.Card<Jackpot>();
+        var shaModel = ModelDb.Card<Sha>();
         for (int i = 0; i < cardRewardOptions.Count; i++)
         {
-            var jackpotCard = Owner.RunState.CreateCard(jackpotModel, Owner);
-            cardRewardOptions[i] = new CardCreationResult(jackpotCard);
+            var shaCard = Owner.RunState.CreateCard(shaModel, Owner);
+            cardRewardOptions[i] = new CardCreationResult(shaCard);
         }
 
         return true;

@@ -16,7 +16,7 @@ public class PigNineLegs : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(39);
+        WithDamage(29);
         WithPower<StranglePower>(9);
     }
 

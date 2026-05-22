@@ -68,22 +68,7 @@ public override async Task AfterGoldGained(Player player)
 using YuWanCard.Utils;
 
 var version = GameVersionCompat.GameVersion;
-```
-
-### Q: 如何检测运行平台？
-
-```csharp
-using YuWanCard.Utils;
-
-if (RuntimePlatform.IsMobileLike)
-{
-    // Android/iOS 特殊处理
-}
-
-if (RuntimePlatform.SupportsDynamicCode)
-{
-    // 可使用 Reflection.Emit
-}
+var currentVersion = GameVersionCompat.CurrentVersion; // 当前支持版本
 ```
 
 ### Q: 如何添加先古之民对话？
@@ -145,11 +130,12 @@ public override IEnumerable<HealthBarForecastSegment> GetHealthBarForecastSegmen
 ### Q: 如何添加自定义卡牌标签？
 
 ```csharp
-// 使用已有标签
-WithTags(YuWanTags.FoodPig);
+// 使用 ModCardTagRegistry
+var registry = ModCardTagRegistry.For("YUWANCARD");
+var myTag = registry.RegisterOwned("MY_TAG");
 
-// 创建新标签
-public static readonly CardTag MyTag = ModCardTagRegistry.Create("my_tag");
+// 使用已有标签
+WithTags(YuWanTags.FoodPig, myTag);
 ```
 
 ### Q: 如何实现临时能力？
@@ -161,25 +147,14 @@ public class PigChargePower : YuWanTemporaryPowerModelWrapper<PigCharge, Strengt
 
 ### Q: 如何将内容注册到自定义池？
 
-```csharp
-// 在 ContentRegistered 阶段注册
-CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyCard));
-CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyOtherCard));
-```
-
-### Q: 如何指定自定义 ID？
-
-使用 `CustomIDAttribute` 覆盖默认的自动前缀生成：
+使用 `[Pool]` 属性直接关联到自定义池：
 
 ```csharp
-using YuWanCard.Core.Utils.Attributes;
-
-[CustomID("MYMOD-CUSTOM_ID")]
-public class MyCard : YuWanCardModel
-{
-    // 此卡牌的 ID 将是 "MYMOD-CUSTOM_ID"
-}
+[Pool(typeof(MyCustomCardPool))]
+public class MyCard : YuWanCardModel { ... }
 ```
+
+`ContentRegistry.AutoRegisterAll()` 会自动扫描并注册所有 `[Pool]` 标记的类型。
 
 ---
 

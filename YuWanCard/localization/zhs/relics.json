@@ -83,7 +83,8 @@
   "YUWANCARD-WHAT_IF_ENTRY.description": "选择一个遗物，改变这场游戏的规则。",
   "YUWANCARD-WHAT_IF_SKIP.title": "跳过",
   "YUWANCARD-WHAT_IF_SKIP.description": "跳过选择。",
-  "YUWANCARD-WHAT_IF_CATEGORY.header": "“假如”遗物",
+  "YUWANCARD-WHAT_IF_CATEGORY.header": "[gold][font_size=28][b]假如：[/b][/font_size][/gold]“假如”系列遗物。",
+  "YUWANCARD-WHAT_IF_RARITY.label": "假如遗物",
   "YUWANCARD-WHAT_IF_JACKPOT.title": "假如只有大奖",
   "YUWANCARD-WHAT_IF_JACKPOT.description": "拾起时，将卡组中的所有卡牌都变化为[gold]大奖[/gold]。\n卡牌奖励只有[gold]大奖[/gold]。",
   "YUWANCARD-WHAT_IF_JACKPOT.flavor": "优质卡组#002。",
@@ -155,5 +156,8 @@
   "YUWANCARD-YANG_SWORD_GOURD.flavor": "剑意久藏，出鞘惊人。",
   "YUWANCARD-THOUSAND_CURSE_SCROLL.title": "千咒卷轴",
   "YUWANCARD-THOUSAND_CURSE_SCROLL.description": "回合开始时，手牌中每拥有1张[gold]诅咒牌[/gold]，就获得1点仅在本回合生效的[gold]力量[/gold]和[gold]敏捷[/gold]。",
-  "YUWANCARD-THOUSAND_CURSE_SCROLL.flavor": "只有承受七咒之人才能驾驭此物。"
+  "YUWANCARD-THOUSAND_CURSE_SCROLL.flavor": "只有承受七咒之人才能驾驭此物。",
+  "YUWANCARD-WHAT_IF_SHA.title": "假如只有杀",
+  "YUWANCARD-WHAT_IF_SHA.description": "拾起时，将卡组中的所有卡牌都变化为[gold]杀[/gold]。\n卡牌奖励只有[gold]杀[/gold]。",
+  "YUWANCARD-WHAT_IF_SHA.flavor": "优质卡组#008。"
 }

@@ -267,5 +267,9 @@
   "YUWANCARD-FITNESS_MOUSE.title": "健身鼠鼠",
   "YUWANCARD-FITNESS_MOUSE.description": "在下个回合获得{Strength:diff()}点[gold]力量[/gold]。",
   "YUWANCARD-LIGHT_BOAT_PAST_MOUNTAINS.title": "轻舟已过万重山",
-  "YUWANCARD-LIGHT_BOAT_PAST_MOUNTAINS.description": "打出[gold]消耗牌堆[/gold]的所有牌（不包括本卡牌）。"
+  "YUWANCARD-LIGHT_BOAT_PAST_MOUNTAINS.description": "打出[gold]消耗牌堆[/gold]的所有牌（不包括本卡牌）。",
+  "YUWANCARD-SHA.title": "杀",
+  "YUWANCARD-SHA.description": "造成{Damage:diff()}点伤害。斩杀时，此牌在本局游戏的重放次数+1。",
+  "YUWANCARD-SHAN.title": "闪",
+  "YUWANCARD-SHAN.description": "只有当敌人的意图是攻击时，才能打出。将目标的攻击意图无效化。"
 }

@@ -17,7 +17,8 @@ public class TurnToSpecimen : YuWanCardModel
     {
         typeof(SandpitPower),
         typeof(PersonalHivePower),
-        typeof(ReattachPower)
+        typeof(ReattachPower),
+        typeof(SkittishPower),
     };
 
     public TurnToSpecimen() : base(

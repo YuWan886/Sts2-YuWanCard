@@ -76,23 +76,24 @@ public class EndlessModifier : YuWanModifierModel
 
 ## 修改器 ID
 
-修改器 ID 通过 `ModifierId` 属性自动获取：
+修改器 ID 通过 `ModifierId` 属性自动生成。基类会自动：
+1. 去掉类名末尾的 `Modifier` 后缀
+2. 将驼峰命名转换为大写下划线格式
+3. 添加 `YUWANCARD-` 前缀
 
-```csharp
-public override string ModifierId => "YUWANCARD-ENDLESS";
-```
+例如：`EndlessModifier` → `YUWANCARD-ENDLESS`
 
-**ID 前缀**：所有修改器 ID 自动添加 `YUWANCARD-` 前缀。
+也可以手动覆盖 `ModifierId` 属性来指定自定义 ID。
 
 ## 修改器图标
 
-修改器图标路径通过 `ModifierId` 自动获取：
+图标路径通过 `IconBasePath` 自动生成（去掉 `Modifier` 后缀后转为小写下划线格式）：
 
 ```
-images/modifiers/{ModifierId}.png
+images/modifiers/{snake_case_name}.png
 ```
 
-例如：`images/modifiers/YUWANCARD-ENDLESS.png`
+例如 `EndlessModifier` → `images/modifiers/endless.png`
 
 ## 修改器本地化
 
@@ -115,6 +116,26 @@ YUWANCARD-{ModifierId}.neow_description
 | `AfterCombatDefeat()` | 战斗失败后 |
 | `ModifyDamage(decimal, DamageInfo, Creature)` | 修改伤害 |
 | `ModifyBlock(decimal, Creature)` | 修改格挡 |
+
+## 每日挑战控制
+
+重写 `AllowedInDailyRun` 控制修改器是否可被每日挑战随机选择：
+
+```csharp
+public override bool AllowedInDailyRun => false;  // 默认值，大多数修改器不应进入每日挑战
+```
+
+## 获取已注册修改器
+
+```csharp
+// 获取特定修改器实例
+var endless = YuWanModifierModel.GetModifier<EndlessModifier>();
+
+// 获取所有已注册修改器
+var allModifiers = YuWanModifierModel.RegisteredModifiers;
+```
+
+修改器在构造函数中自动注册到静态列表 `RegisteredModifiers`。
 
 ## 存档属性
 

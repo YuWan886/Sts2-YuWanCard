@@ -1,15 +1,13 @@
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
-using YuWanCard.Core.Abstracts;
 using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfSeriesRelics : YuWanRelicModel
+public class WhatIfSeriesRelics : WhatIfRelicModel
 {
     private static readonly Lazy<RelicModel[]> SevenSinRelics = new(() =>
     [
@@ -21,8 +19,6 @@ public class WhatIfSeriesRelics : YuWanRelicModel
         ModelDb.Relic<GluttonousPig>(),
         ModelDb.Relic<LustfulPig>()
     ]);
-
-    public override RelicRarity Rarity => RelicRarity.Event;
 
     public WhatIfSeriesRelics() : base(true)
     {

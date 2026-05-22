@@ -1,17 +1,13 @@
-using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Runs;
-using YuWanCard.Core.Abstracts;
 using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfDirectFlight : YuWanRelicModel
+public class WhatIfDirectFlight : WhatIfRelicModel
 {
-    public override RelicRarity Rarity => RelicRarity.Event;
-
     public WhatIfDirectFlight() : base(true)
     {
     }

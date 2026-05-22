@@ -1,24 +1,20 @@
-using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using System.Reflection;
-using YuWanCard.Core.Abstracts;
 using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfAllRelics : YuWanRelicModel
+public class WhatIfAllRelics : WhatIfRelicModel
 {
     private static readonly string[] RewardEffectHookNames =
     [
-        "TryModifyCardRewardAlternatives",
-        "ShouldAllowSelectingMoreCardRewards",
-        "ModifyCardRewardCreationOptions",
-        "TryModifyCardRewardOptions",
-        "TryModifyRewards"
+        nameof(TryModifyCardRewardAlternatives),
+        nameof(ShouldAllowSelectingMoreCardRewards),
+        nameof(ModifyCardRewardCreationOptions),
+        nameof(TryModifyCardRewardOptions),
+        nameof(TryModifyRewards)
     ];
-
-    public override RelicRarity Rarity => RelicRarity.Event;
 
     public WhatIfAllRelics() : base(true)
     {

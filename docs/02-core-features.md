@@ -128,25 +128,24 @@ public class PigStrike : YuWanCardModel
 
 ### 流式构建器 API
 
-`YuWanCardModel` 提供链式 API 来设置卡牌属性：
+`YuWanCardModel` 提供链式 API 来设置卡牌属性。所有 `With*` 方法的第二个参数为升级增加值（默认为 0）：
 
 ```csharp
 public MyCard() : base(...)
 {
     WithDamage(6);                              // 设置伤害
-    WithDamage(6, 3);                           // 设置伤害和升级值
+    WithDamage(6, 3);                           // 设置伤害（升级 +3）
     WithBlock(5);                               // 设置格挡
-    WithBlock(5, 3);                            // 设置格挡和升级值
+    WithBlock(5, 3);                            // 设置格挡（升级 +3）
     WithHeal(3);                                // 设置治疗
     WithEnergy(1);                              // 设置能量
     WithCards(3);                               // 设置卡牌数量
-    WithRepeat(3);                              // 设置重复次数
     WithPower<StrengthPower>(2);                // 设置能力层数
-    WithPower<StrengthPower>("Venom", 3);       // 命名能力层数
-    WithVar("MyVar", 3, 1);                     // 通用变量
-    WithVars(var1, var2);                       // 多个变量
+    WithPower<StrengthPower>("Venom", 3);       // 命名能力层数（升级 +3）
+    WithVar("MyVar", 3, 1);                     // 通用变量（升级 +1）
+    WithVars(var1, var2);                       // 多个变量（DynamicVar 数组）
     WithTags(CardTag.Strike);                   // 添加标签
-    WithKeywords(CardKeyword.Ethereal);         // 添加关键字
+    WithKeywords(CardKeyword.Ethereal);         // 添加关键字（始终存在）
     WithKeyword(CardKeyword.Innate, UpgradeType.Add);    // 升级时添加关键字
     WithKeyword(CardKeyword.Ethereal, UpgradeType.Remove); // 升级时移除关键字
     WithTip(_ => HoverTipFactory.FromPower<MyPower>());   // 悬停提示
@@ -156,8 +155,13 @@ public MyCard() : base(...)
     WithTips(...);                               // 多个提示
     WithEnergyTip();                             // 能量提示
     WithCostUpgradeBy(-1);                       // 升级时费用变化
+    WithHandGlowGold(card => /* 条件 */);       // 手牌金色高亮规则
+    WithHandGlowRed(card => /* 条件 */);        // 手牌红色警告规则
+    WithHandGlow(CardHandGlowRules.Gold(...));   // 通用手牌高亮规则
 }
 ```
+
+**注意**：`WithKeyword(keyword, UpgradeType.None)` 等于 `WithKeywords(keyword)`（立即添加）。关键字升级由 `ConstructedUpgrade()` 在升级时自动处理，**不要**在 `OnUpgrade()` 中手动添加/移除关键字。
 
 **计算伤害**：使用 `WithCalculatedDamage` 实现基于状态的伤害计算：
 
@@ -166,16 +170,84 @@ public MyCard() : base(...)
 {
     WithCalculatedDamage(
         ValueProp.Move,                           // 伤害属性
-        (card, target) => card.CombatState?.Enemies?.Count ?? 0, // 倍率（如敌人数量）
+        (card, target) => card.CombatState?.Enemies?.Count ?? 0, // 倍率函数
         baseVal: 6,                               // 基础伤害
-        extraVal: 0,                              // 每层倍率额外伤害
+        extraVal: 0,                              // 额外伤害（乘倍率前）
         baseUpgrade: 3,                           // 基础伤害升级值
         extraUpgrade: 0                           // 额外伤害升级值
     );
 }
 // 计算伤害 = (CalculationBase + CalculationExtra × 倍率) × 全局系数
-// 使用示例：每个敌人造成 6 点伤害 → 3个敌人 = 18点
-// 动态变量: {CalculatedDamage:diff()} 在本地化中使用
+// 自动创建 CalculationBaseVar、ExtraDamageVar、CalculatedDamageVar 三个 DynamicVar
+// 本地化: {CalculatedDamage:diff()} 显示最终计算伤害
+```
+
+### 升级机制 (ConstructedUpgrade)
+
+卡牌升级通过 `UpgradeInternalPatch`（Harmony 后置补丁）自动处理：
+
+1. 遍历所有 `DynamicVar`，调用 `.UpgradeValueBy(upgradeValue)` 应用升级值
+2. 检查 `CostUpgrade` 字段，调用 `EnergyCost.UpgradeBy(amount)` 更新费用
+3. 调用 `YuWanCardModel.ConstructedUpgrade()` 处理关键字升级（添加/移除）
+
+这意味着你在构造函数中用 `WithDamage(6, 3)` 设置升级值后，升级会自动生效，`OnUpgrade()` 只需写额外的自定义升级逻辑：
+
+```csharp
+protected override void OnUpgrade()
+{
+    // DynamicVar 升级和关键字升级已由框架自动处理
+    // 这里只写额外逻辑
+}
+```
+
+### 卡牌持久化状态 (SavedProperty)
+
+卡牌可以通过 `[SavedProperty]` 在跨战斗间持久化状态：
+
+1. **注册类型**（静态构造函数）：
+   ```csharp
+   static MyCard() { SavedPropertyRegistration.RegisterType(typeof(MyCard)); }
+   ```
+2. **标记属性**（使用模组前缀避免警告）：
+   ```csharp
+   [SavedProperty] public int YUWANCARD_Counter { get; set; }
+   ```
+3. **恢复状态**（重写 `AfterDeserialized()`）：
+   ```csharp
+   protected override void AfterDeserialized()
+   {
+       base.AfterDeserialized();
+       BaseReplayCount = YUWANCARD_PermanentReplayCount;
+   }
+   ```
+4. **同步回牌组**（使用 `DeckVersion`）：
+   ```csharp
+   if (DeckVersion is MyCard deckCard)
+   {
+       deckCard.YUWANCARD_Counter += 1;
+       deckCard.BaseReplayCount = deckCard.YUWANCARD_Counter;
+   }
+   ```
+
+### 多次打出 (BaseReplayCount)
+
+设置 `BaseReplayCount` 允许卡牌在同一回合多次打出：
+
+```csharp
+// 直接设置
+BaseReplayCount = 3;  // 可额外打出 3 次
+
+// 常用模式：持久化升级
+[SavedProperty] public int YUWANCARD_PermanentReplayCount { get; set; }
+// 在 AfterDeserialized() 中: BaseReplayCount = YUWANCARD_PermanentReplayCount;
+```
+
+### 先古视觉风格 (UseAncientVisualStyle)
+
+设置 `UseAncientVisualStyle = true` 使卡牌使用先古/测试版视觉风格（金色边框、横幅、文字背景）：
+
+```csharp
+public override bool UseAncientVisualStyle => true;
 ```
 
 ### 关键方法
@@ -237,13 +309,15 @@ await DamageCmd.DealDamage(amount)
 ```csharp
 public MyCard() : base(baseCost: 2, ...)
 {
-    WithCostUpgradeBy(-1);  // 升级后费用 -1
+    WithCostUpgradeBy(-1);  // 升级后费用 -1（变为 1 费）
 }
 public MyCard() : base(baseCost: 1, ...)
 {
-    CostUpgrade = 0;  // 升级后费用变为 0
+    WithCostUpgradeBy(-1);  // 升级后费用 -1（变为 0 费）
 }
 ```
+
+费用升级由 `ConstructedUpgrade()` 自动处理，通过 `EnergyCost.UpgradeBy(amount)` 实现。
 
 ### 超脱卡牌 (Transcendence)
 
@@ -502,6 +576,9 @@ public class PigCarrot : YuWanRelicModel
 | `Shop` | 商店遗物 | 仅商店购买 |
 | `Event` | 事件遗物 | 事件专属获取 |
 | `Ancient` | 先古之民 | 先古之民专属 |
+| `None` + `CustomRarity` | **自定义稀有度** | 独立图鉴分类 |
+
+> **自定义稀有度**（如 `WhatIfRelicModel`）：当 `Rarity = None` 且 `CustomRarity != null` 时，遗物会出现在独立的图鉴分类中，拥有自定义边框颜色和检视标签。详见下方「自定义遗物稀有度」部分。
 
 ### 常用钩子方法
 
@@ -550,6 +627,98 @@ public class PigCarrot : YuWanRelicModel
 public class GoldenCarrot : YuWanRelicModel
 {
     public GoldenCarrot() : base(false) { }  // autoAdd=false，不自动注册
+}
+```
+
+### 自定义遗物稀有度 (CustomRarity)
+
+`YuWanCustomRelicRarity` 允许创建独立的遗物图鉴分类，拥有自定义边框颜色、检视标签和排序。该功能由 `CustomRelicRarityCompendiumPatch` 提供完整的 UI/图鉴/检视/交易支持。
+
+**定义自定义稀有度：**
+
+```csharp
+private static readonly YuWanCustomRelicRarity WhatIfRarity = new(
+    "YUWANCARD-WHAT_IF",                        // 唯一 ID
+    "relics",                                    // 图鉴标题本地化表
+    "YUWANCARD-WHAT_IF_CATEGORY.header",         // 图鉴标题本地化键
+    displayLocalizationKey: "YUWANCARD-WHAT_IF_RARITY.label",  // 检视标签本地化键
+    visualRarity: RelicRarity.Event,              // 基础视觉稀有度（用于边框样式）
+    borderColor: new Color("741ADB"),             // 自定义边框/描边颜色
+    sortOrder: 100);                              // 图鉴排序位置
+```
+
+**在遗物上使用：**
+
+```csharp
+public abstract class WhatIfRelicModel : YuWanRelicModel
+{
+    private static readonly YuWanCustomRelicRarity WhatIfRarity = new(
+        "YUWANCARD-WHAT_IF", "relics",
+        "YUWANCARD-WHAT_IF_CATEGORY.header",
+        displayLocalizationKey: "YUWANCARD-WHAT_IF_RARITY.label",
+        visualRarity: RelicRarity.Event,
+        borderColor: new Color("741ADB"),
+        sortOrder: 100);
+
+    public sealed override RelicRarity Rarity => RelicRarity.None;  // 必须为 None
+    public override YuWanCustomRelicRarity? CustomRarity => WhatIfRarity;
+    public override int MerchantCost => 999999999;
+    public override bool IsAllowedInShops => false;
+
+    protected WhatIfRelicModel() { }
+    protected WhatIfRelicModel(bool autoAdd) : base(autoAdd) { }
+}
+```
+
+**关键规则：**
+
+1. **`Rarity` 必须设为 `RelicRarity.None`** — 自定义稀有度替换原版稀有度
+2. **重写 `CustomRarity`** — 返回 `YuWanCustomRelicRarity` 实例
+3. **设置 `IsAllowedInShops = false`** — 自定义稀有度遗物通常不在正常商店出现
+4. **设置 `MerchantCost = 999999999`** — 防止意外购买
+5. **`visualRarity`** — 借用现有原版稀有度的边框样式（如 `Event`、`Shop`、`Ancient`）
+
+**Patch 系统自动处理的功能：**
+
+| Patch | 功能 |
+|-------|------|
+| `NRelicCollection.LoadRelics` (postfix) | 按稀有度分组创建自定义图鉴分类 |
+| `NRelicCollectionCategory.LoadRelicNodes` (prefix) | 从原版分类中过滤掉自定义稀有度遗物 |
+| `NInspectRelicScreen.UpdateRelicDisplay` (postfix) | 显示自定义稀有度标签 + 通过 HSV shader 染色边框 |
+| `NRelic.Reload` (postfix) | 对遗物描边应用自定义边框颜色 |
+| `NRelicCollectionEntry._Ready` (postfix) | 在图鉴网格中应用自定义边框颜色 |
+| `RelicModel.get_IsTradable` (postfix) | 禁用自定义稀有度遗物的多人交易 |
+
+**示例：WhatIf 遗物系列**
+
+所有 WhatIf 遗物继承 `WhatIfRelicModel`，自动获得紫色边框、独立图鉴分类和特殊检视标签。典型实现模式为 `AfterObtained()` 替换牌组中的卡牌 + `TryModifyCardRewardOptions()` 替换奖励中的卡牌：
+
+```csharp
+[Pool(typeof(WhatIfRelicPool))]
+public class WhatIfStrike : WhatIfRelicModel
+{
+    public WhatIfStrike() : base(true) { }
+
+    public override async Task AfterObtained()
+    {
+        await base.AfterObtained();
+        // 将所有可转换的卡牌替换为目标卡牌
+        var originalCards = Owner.Deck.Cards.Where(c => c.IsTransformable).ToList();
+        var targetModel = ModelDb.Card<Hellraiser>();
+        var transformations = originalCards.Select(card =>
+            new CardTransformation(card, Owner.RunState.CreateCard(targetModel, Owner)));
+        await CardCmd.Transform(transformations, null, CardPreviewStyle.None);
+    }
+
+    public override bool TryModifyCardRewardOptions(Player player, 
+        List<CardCreationResult> cardRewardOptions, CardCreationOptions creationOptions)
+    {
+        if (player != Owner) return false;
+        var targetModel = ModelDb.Card<Hellraiser>();
+        for (int i = 0; i < cardRewardOptions.Count; i++)
+            cardRewardOptions[i] = new CardCreationResult(Owner.RunState.CreateCard(targetModel, Owner));
+        return true;
+    }
 }
 ```
 

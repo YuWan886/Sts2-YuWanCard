@@ -38,9 +38,9 @@
 | `Sts2DataDir` | 游戏数据目录（包含托管程序集） |
 | `ModsPath` | 模组输出路径 |
 
-### local.props 本地配置
+### local.props / Directory.Build.props 本地配置
 
-创建 `local.props` 文件（已被 .gitignore 忽略）来覆盖默认路径：
+创建 `local.props` 或 `Directory.Build.props` 文件（已被 `.gitignore` 忽略）来覆盖默认路径：
 
 ```xml
 <Project>
@@ -51,11 +51,13 @@
         <!-- 可选：覆盖托管数据文件夹 -->
         <!-- <Sts2DataDir>$(Sts2Path)\data_sts2_windows_x86_64</Sts2DataDir> -->
         
-        <!-- 可选：MegaDot / Godot 4.5.1 mono 可执行文件路径（用于 --export-pack） -->
+        <!-- 可选：MegaDot / Godot 4.5.1 mono 可执行文件路径（仅 dotnet publish 时需要） -->
         <!-- <GodotPath>Z:\Projects\sts2\megadot\MegaDot_v4.5.1-stable_mono_win64.exe</GodotPath> -->
     </PropertyGroup>
 </Project>
 ```
+
+**注意**：`dotnet build` 不需要 Godot 路径，只有 `dotnet publish`（导出 .pck 资产包）才需要。
 
 ## 基本结构
 
@@ -153,32 +155,27 @@ public class MyCustomRelic : YuWanRelicModel
 
 ## ContentRegistry 注册系统
 
-项目使用 `ContentRegistry` 类自动扫描程序集并注册带有 `[Pool]` 属性的模型：
+项目使用 `ContentRegistry` 类自动扫描所有已加载程序集并注册带有 `[Pool]` 属性的模型：
 
 ```csharp
 using YuWanCard.Core.Registration;
 
-// 在模组初始化时调用
-ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
+// 在模组初始化时调用（自动扫描所有程序集）
+ContentRegistry.AutoRegisterAll();
 ```
 
 **功能**：
-- 自动扫描程序集中所有带有 `[Pool]` 属性的类型
+- 自动扫描所有已加载程序集中带有 `[Pool]` 属性的类型
+- 同时收集带有 `[RegisterEvent]`、`[RegisterAncient]`、`[RegisterOrb]`、`[RegisterMonster]`、`[RegisterEnchantment]`、`[RegisterSingleton]`、`[RegisterCharacter]` 属性的类型
+- 自动检测事件类型（无需显式 `[RegisterEvent]`）和自定义遗物池类型
 - 调用 `ModHelper.AddModelToPool` 注册到对应的池
 - 统计并记录注册的卡牌、遗物、药水等数量
-- 提供冻结机制，在 `ModelDb.Init` 后阻止晚期注册
+- 提供冻结机制，在 `ModelDb.Init` 后阻止晚期注册（`ContentRegistry.Freeze()`）
+- 提供 `ContentRegistry.AddModel(Type)` 用于基类构造函数中的按需注册
 
-## CustomPoolContentRegistry 自定义池内容映射
+### 自定义池内容
 
-用于将模型类型映射到自定义池：
-
-```csharp
-// 注册自定义卡牌到自定义池
-CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyCard));
-CustomPoolContentRegistry.Register(typeof(MyCustomPool), typeof(MyOtherCard));
-```
-
-配合 `PoolContentFallbackPatches` 确保池的 `AllCards`/`AllRelics`/`AllPotions` 属性包含所有已注册内容。
+如果使用了自定义的 `CardPoolModel` / `RelicPoolModel` / `PotionPoolModel`（继承自对应的 `YuWan*PoolModel`），`ContentRegistry` 会自动检测并注册标记了 `IYuWanContent` 的遗物池类型。卡牌和药水通过 `[Pool]` 属性自动关联到对应池。
 
 ## IYuWanContent 接口
 
