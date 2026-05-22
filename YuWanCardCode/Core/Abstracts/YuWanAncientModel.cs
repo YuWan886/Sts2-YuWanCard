@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Core.Patches;
 
@@ -30,6 +31,12 @@ public abstract class YuWanAncientModel : AncientEventModel, IYuWanContent
     public virtual string? CustomMapIconOutlinePath => null;
     public virtual string? CustomRunHistoryIconPath => null;
     public virtual string? CustomRunHistoryIconOutlinePath => null;
+
+    public override IEnumerable<EventOption> AllPossibleOptions =>
+        OptionPools.AllOptions.SelectMany(option => option.AllVariants.Select(relic => RelicOption(relic)));
+
+    protected override IReadOnlyList<EventOption> GenerateInitialOptions() =>
+        OptionPools.Roll(Rng).Select(option => RelicOption(option.ModelForOption)).ToList();
 
     public static WeightedList<AncientOption> MakePool(params RelicModel[] options)
     {

@@ -91,33 +91,21 @@ public class PigPig : YuWanAncientModel
         MakePool(Array.Empty<RelicModel>())
     );
 
-    public override IEnumerable<EventOption> AllPossibleOptions => _validRelics.Value.Select(r => RelicOption(r.ToMutable()));
+    public override IEnumerable<EventOption> AllPossibleOptions => _validRelics.Value.Select(r => RelicOption(r.ToMutable(), "INITIAL"));
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
         var randomSevenSinsIndex = Rng.NextInt(_validRelics.Value.Length);
         var selectedRelic = _validRelics.Value[randomSevenSinsIndex].ToMutable();
-        
+
         var eventOptions = new List<EventOption>
         {
-            RelicOption(selectedRelic),
+            RelicOption(selectedRelic, "INITIAL"),
             new(this, ChooseRandomRelic, $"{Id.Entry}.pages.INITIAL.options.CHOOSE_RELIC"),
             new(this, UpgradeCards, $"{Id.Entry}.pages.INITIAL.options.UPGRADE_CARDS")
         };
-        
+
         return eventOptions;
-    }
-
-    private EventOption RelicOption(RelicModel relic)
-    {
-        var optionKey = $"{Id.Entry}.pages.INITIAL.options.{relic.Id.Entry.Replace("YUWANCARD-", "").ToUpperInvariant()}";
-        return EventOption.FromRelic(relic, this, () => ObtainRelic(relic), optionKey);
-    }
-
-    private async Task ObtainRelic(RelicModel relic)
-    {
-        await RelicCmd.Obtain(relic, Owner!);
-        FinishEvent();
     }
 
     private async Task ChooseRandomRelic()
@@ -136,7 +124,7 @@ public class PigPig : YuWanAncientModel
         
         if (relicsToOffer.Count == 0)
         {
-            FinishEvent();
+            Done();
             return;
         }
         
@@ -156,7 +144,7 @@ public class PigPig : YuWanAncientModel
             }
         }
         
-        FinishEvent();
+        Done();
     }
 
     private async Task UpgradeCards()
@@ -180,11 +168,6 @@ public class PigPig : YuWanAncientModel
         {
             CardCmd.Upgrade(card);
         }
-        FinishEvent();
-    }
-
-    private void FinishEvent()
-    {
         Done();
     }
 }
