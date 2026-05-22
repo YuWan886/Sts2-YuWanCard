@@ -1,3 +1,4 @@
+using Godot;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Entities.Relics;
 
@@ -10,6 +11,8 @@ public sealed class YuWanCustomRelicRarity(
     string? displayLocalizationTable = null,
     string? displayLocalizationKey = null,
     RelicRarity visualRarity = RelicRarity.None,
+    Color? borderColor = null,
+    Color? labelColor = null,
     int sortOrder = 0)
 {
     public string Id { get; } = id;
@@ -23,6 +26,10 @@ public sealed class YuWanCustomRelicRarity(
     public string DisplayLocalizationKey { get; } = displayLocalizationKey ?? headerLocalizationKey;
 
     public RelicRarity VisualRarity { get; } = visualRarity;
+
+    public Color? BorderColor { get; } = borderColor;
+
+    public Color? LabelColor { get; } = labelColor;
 
     public int SortOrder { get; } = sortOrder;
 

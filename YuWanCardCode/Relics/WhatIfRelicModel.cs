@@ -1,3 +1,4 @@
+using Godot;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using YuWanCard.Core.Abstracts;
 
@@ -12,6 +13,7 @@ public abstract class WhatIfRelicModel : YuWanRelicModel
             "YUWANCARD-WHAT_IF_CATEGORY.header",
             displayLocalizationKey: "YUWANCARD-WHAT_IF_RARITY.label",
             visualRarity: RelicRarity.Event,
+            borderColor: new Color("741ADB"),
             sortOrder: 100);
 
     public sealed override RelicRarity Rarity => RelicRarity.None;

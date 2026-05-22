@@ -4,8 +4,10 @@ using MegaCrit.Sts2.addons.mega_text;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Assets;
+using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Relics;
 using MegaCrit.Sts2.Core.Nodes.Screens.RelicCollection;
 using MegaCrit.Sts2.Core.Nodes.Screens.InspectScreens;
 using MegaCrit.Sts2.Core.Saves;
@@ -18,6 +20,7 @@ namespace YuWanCard.Core.Patches;
 static class CustomRelicRarityCompendiumPatch
 {
     private sealed record CustomRarityGroup(YuWanCustomRelicRarity Rarity, List<RelicModel> Relics);
+    private sealed record InspectFrameVisuals(Color LabelColor, Vector3 FrameHsv);
 
     private static readonly ConditionalWeakTable<NRelicCollection, List<NRelicCollectionCategory>> CustomCategories = new();
 
@@ -32,10 +35,65 @@ static class CustomRelicRarityCompendiumPatch
     private static readonly FieldInfo? RelicsField =
         YuWanReflectionHelper.GetPrivateField(typeof(NRelicCollection), "_relics");
 
+    private static readonly FieldInfo? FrameHsvField =
+        YuWanReflectionHelper.GetPrivateField(typeof(NInspectRelicScreen), "_frameHsv");
+
+    private static readonly StringName HParam = "h";
+    private static readonly StringName SParam = "s";
+    private static readonly StringName VParam = "v";
+
     private static bool TryGetCustomRarity(RelicModel relic, out YuWanCustomRelicRarity? rarity)
     {
         rarity = (relic.CanonicalInstance as YuWanRelicModel)?.CustomRarity;
         return rarity != null;
+    }
+
+    private static bool TryGetCustomOutlineColor(RelicModel relic, out Color color)
+    {
+        if (!TryGetCustomRarity(relic, out var rarity) || rarity?.BorderColor is not Color borderColor)
+        {
+            color = default;
+            return false;
+        }
+
+        color = borderColor;
+        return true;
+    }
+
+    private static bool TryGetCustomInspectFrameVisuals(
+        YuWanCustomRelicRarity rarity,
+        out InspectFrameVisuals visuals)
+    {
+        if (rarity.BorderColor is not Color borderColor)
+        {
+            visuals = null!;
+            return false;
+        }
+
+        var labelColor = rarity.LabelColor ?? borderColor;
+        visuals = new InspectFrameVisuals(labelColor, new Vector3(borderColor.H, borderColor.S, borderColor.V));
+        return true;
+    }
+
+    private static void ApplyInspectFrameVisuals(
+        NInspectRelicScreen inspectScreen,
+        MegaLabel rarityLabel,
+        InspectFrameVisuals visuals)
+    {
+        rarityLabel.Modulate = visuals.LabelColor;
+
+        if (FrameHsvField?.GetValue(inspectScreen) is not ShaderMaterial frameHsv)
+            return;
+
+        frameHsv.SetShaderParameter(HParam, visuals.FrameHsv.X);
+        frameHsv.SetShaderParameter(SParam, visuals.FrameHsv.Y);
+        frameHsv.SetShaderParameter(VParam, visuals.FrameHsv.Z);
+    }
+
+    private static void ApplyOutlineColor(TextureRect outline, Color color)
+    {
+        color.A = outline.SelfModulate.A > 0f ? outline.SelfModulate.A : color.A;
+        outline.SelfModulate = color;
     }
 
     private static List<CustomRarityGroup>? _cachedCustomRarityGroups;
@@ -249,7 +307,41 @@ static class CustomRelicRarityCompendiumPatch
             return;
 
         ____rarityLabel.SetTextAutoSize(rarity.CreateDisplayLabel().GetFormattedText());
+        if (TryGetCustomInspectFrameVisuals(rarity, out var visuals))
+        {
+            ApplyInspectFrameVisuals(__instance, ____rarityLabel, visuals);
+            return;
+        }
+
         SetRarityVisualsMethod?.Invoke(__instance, [rarity.VisualRarity]);
+    }
+
+    [HarmonyPatch(typeof(NRelic), "Reload")]
+    [HarmonyPostfix]
+    static void ApplyCustomRarityOutlineColor(NRelic __instance)
+    {
+        if (!__instance.IsNodeReady() || !__instance.Outline.Visible)
+            return;
+
+        if (!TryGetCustomOutlineColor(__instance.Model, out var color))
+            return;
+
+        ApplyOutlineColor(__instance.Outline, color);
+    }
+
+    [HarmonyPatch(typeof(NRelicCollectionEntry), "_Ready")]
+    [HarmonyPostfix]
+    static void ApplyCompendiumCustomRarityOutlineColor(
+        NRelicCollectionEntry __instance,
+        Control ____relicNode)
+    {
+        if (__instance.ModelVisibility != ModelVisibility.Visible || ____relicNode is not NRelic relicNode)
+            return;
+
+        if (!TryGetCustomOutlineColor(__instance.relic, out var color))
+            return;
+
+        ApplyOutlineColor(relicNode.Outline, color);
     }
 
     [HarmonyPatch(typeof(RelicModel), "get_IsTradable")]
