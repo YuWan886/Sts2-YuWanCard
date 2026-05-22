@@ -246,7 +246,7 @@ public class CallCompanionsPower : YuWanPowerModel
                 if (!combatState.ContainsCard(card))
                     combatState.AddCard(card, player);
 
-                await CardPileCmd.Add(card, PileType.Hand, CardPilePosition.Top, source: this, skipVisuals: true);
+                await CardPileCmd.Add(card, PileType.Hand, CardPilePosition.Top, clonedBy: this, skipVisuals: true);
                 await card.SpendResources();
                 _energy = player.PlayerCombatState!.Energy;
                 player.PlayerCombatState.Energy = playerEnergy;

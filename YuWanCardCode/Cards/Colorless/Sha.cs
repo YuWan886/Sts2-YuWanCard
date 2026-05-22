@@ -49,7 +49,7 @@ public class Sha : YuWanCardModel
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
 
-        if (!attackCommand.Results.Any(result => result.WasTargetKilled)) return;
+        if (!attackCommand.Results.SelectMany(r => r).Any(result => result.WasTargetKilled)) return;
 
         YUWANCARD_PermanentReplayCount += 1;
         BaseReplayCount = YUWANCARD_PermanentReplayCount;

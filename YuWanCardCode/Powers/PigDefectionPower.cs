@@ -72,7 +72,7 @@ public class PigDefectionPower : YuWanPowerModel
         return creature.IsAlive;
     }
 
-    public override async Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side != Owner.Side) return;
         if (Owner.IsDead) return;

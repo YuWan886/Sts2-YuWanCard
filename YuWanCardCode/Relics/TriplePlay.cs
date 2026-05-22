@@ -25,7 +25,7 @@ public class TriplePlay : YuWanRelicModel
     {
     }
 
-    public override Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
+    public override Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side == Owner.Creature.Side)
         {

@@ -1,6 +1,7 @@
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -17,7 +18,7 @@ public class PigDoubtPower : YuWanPowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("PigDoubtPower", 1m)];
 
-    public override async Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side == Owner.Side)
         {

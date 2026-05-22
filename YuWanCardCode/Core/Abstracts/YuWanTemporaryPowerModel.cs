@@ -38,7 +38,7 @@ public abstract class YuWanTemporaryPowerModel : YuWanPowerModel
         await PowerCmd.Apply(choiceContext, mutablePower, Owner, amount, applier, cardSource, true);
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         if ((!UntilEndOfOtherSideTurn && side != Owner.Side) ||
             (UntilEndOfOtherSideTurn && side == Owner.Side))

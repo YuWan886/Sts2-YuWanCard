@@ -48,7 +48,7 @@ public class ShieldToFrontImmunePower : YuWanPowerModel
         return 0m;
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         if (side != CombatSide.Enemy) return;
 

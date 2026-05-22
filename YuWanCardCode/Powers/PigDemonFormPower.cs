@@ -26,7 +26,7 @@ public class PigDemonFormPower : YuWanPowerModel
 
     private int StrengthGain => DynamicVars["StrengthGain"].IntValue;
 
-    public override async Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side != Owner.Side) return;
 

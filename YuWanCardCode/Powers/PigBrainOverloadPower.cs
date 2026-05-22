@@ -63,7 +63,7 @@ public class PigBrainOverloadPower : YuWanPowerModel
         await base.AfterApplied(applier, cardSource);
     }
 
-    public override async Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side == Owner.Side)
         {

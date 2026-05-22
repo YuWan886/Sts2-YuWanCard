@@ -27,7 +27,7 @@ public class PigExplosionPower : YuWanPowerModel
         DynamicVars.Damage.BaseValue = damage;
     }
 
-    public override async Task BeforeTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         if (side != Owner.Side)
         {

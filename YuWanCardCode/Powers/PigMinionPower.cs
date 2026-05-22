@@ -141,7 +141,7 @@ public class PigMinionPower : YuWanPowerModel
         await CreatureCmd.GainBlock(Owner, BonusBlock, ValueProp.Unpowered, null);
     }
 
-    public override async Task AfterSideTurnStart(CombatSide side, ICombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side != Owner.Side) return;
         if (Owner.IsDead) return;
