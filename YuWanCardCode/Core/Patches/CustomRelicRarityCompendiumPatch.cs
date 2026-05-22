@@ -323,7 +323,10 @@ static class CustomRelicRarityCompendiumPatch
         if (!__instance.IsNodeReady() || !__instance.Outline.Visible)
             return;
 
-        if (!TryGetCustomOutlineColor(__instance.Model, out var color))
+        if (AccessTools.Field(typeof(NRelic), "_model").GetValue(__instance) is not RelicModel model)
+            return;
+
+        if (!TryGetCustomOutlineColor(model, out var color))
             return;
 
         ApplyOutlineColor(__instance.Outline, color);
