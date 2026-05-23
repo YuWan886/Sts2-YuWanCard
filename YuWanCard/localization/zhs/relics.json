@@ -68,7 +68,7 @@
   "YUWANCARD-WHITE_SCARF.description": "战斗胜利后，额外获得一次[gold]无色卡牌[/gold]奖励。",
   "YUWANCARD-WHITE_SCARF.flavor": "温暖的围巾，带来意外的惊喜。",
   "YUWANCARD-SKULL_GOLD.title": "骷髅打金",
-  "YUWANCARD-SKULL_GOLD.description": "每场战斗结束后，额外获得[gold]50[/gold]金币。",
+  "YUWANCARD-SKULL_GOLD.description": "每场战斗结束后，额外获得[gold]{GoldAmount}[/gold]金币。",
   "YUWANCARD-SKULL_GOLD.flavor": "嘟嘟哒嘟嘟哒。",
   "YUWANCARD-TRIPLE_PLAY.title": "33",
   "YUWANCARD-TRIPLE_PLAY.description": "一回合内，连续打出3张相同类型的卡牌时，第3张卡牌额外打出1次。",

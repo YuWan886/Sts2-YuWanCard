@@ -81,11 +81,11 @@ public sealed class SkullGoldRush : YuWanEventModel
         int roll = Rng.NextInt(1000);
         return roll switch
         {
-            < 54 => 1,
-            < 296 => 30,
-            < 695 => 50,
-            < 937 => 100,
-            < 991 => 500,
+            < 140 => 1,
+            < 380 => 20,
+            < 600 => 30,
+            < 860 => 50,
+            < 970 => 100,
             _ => 999
         };
     }
