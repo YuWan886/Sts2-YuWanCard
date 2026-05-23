@@ -68,8 +68,16 @@ static class CustomEventInitialPortraitPatch
             var imagePath = ev.GetYuWanEventImagePath();
             if (imagePath != null)
             {
-                __result = PreloadManager.Cache.GetTexture2D(imagePath);
-                return false;
+                try
+                {
+                    __result = PreloadManager.Cache.GetTexture2D(imagePath);
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    MainFile.Logger.Warn(
+                        $"CustomEventInitialPortrait: Failed to load custom image '{imagePath}' for event '{__instance.Id.Entry}', falling back to default. Error: {ex.Message}");
+                }
             }
         }
         return true;
