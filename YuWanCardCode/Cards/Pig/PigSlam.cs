@@ -1,8 +1,7 @@
 using YuWanCard.Core.Abstracts;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Characters;
 
 namespace YuWanCard.Cards;
@@ -16,26 +15,25 @@ public class PigSlam : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(12);
-        WithPower<StrengthPower>(2);
+        WithDamage(4);
+        WithVar("Repeat", 2);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4);
+        DynamicVars.Damage.UpgradeValueBy(2);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (cardPlay.Target != null)
+        int hitCount = DynamicVars["Repeat"].IntValue;
+
+        // 如果目标敌人有增益效果，额外命中一次
+        if (cardPlay.Target != null && cardPlay.Target.Powers.Any(p => p.Type == PowerType.Buff))
         {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
-                .Targeting(cardPlay.Target)
-                .WithHitFx("vfx/vfx_attack_slash")
-                .Execute(choiceContext);
+            hitCount++;
         }
 
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars.Strength.IntValue, Owner.Creature, this);
+        await CommonActions.CardAttack(this, cardPlay, hitCount: hitCount).Execute(choiceContext);
     }
 }

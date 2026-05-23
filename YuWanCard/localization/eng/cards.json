@@ -146,7 +146,7 @@
   "YUWANCARD-LITTLE_SNAKE_BITE.title": "Little Snake Bite",
   "YUWANCARD-LITTLE_SNAKE_BITE.description": "Gain 1 [gold]Snake Bite[/gold] Orb. [keyword]Retain[/keyword].\nUpgrade: Gain 2.",
   "YUWANCARD-PIG_SLAM.title": "Pig Slam",
-  "YUWANCARD-PIG_SLAM.description": "Deal {Damage:diff()} damage. Gain {StrengthPower:diff()} [gold]Strength[/gold].",
+  "YUWANCARD-PIG_SLAM.description": "Deal {Damage:diff()} damage {Repeat:diff()} times. If the target enemy has any Buff, hit an additional time.",
   "YUWANCARD-PIG_ROAR.title": "Pig Roar",
   "YUWANCARD-PIG_ROAR.description": "Apply {WeakPower:diff()} [gold]Weak[/gold] to all enemies.",
   "YUWANCARD-PIG_ROLL.title": "Pig Roll",

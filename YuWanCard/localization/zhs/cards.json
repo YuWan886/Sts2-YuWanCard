@@ -146,7 +146,7 @@
   "YUWANCARD-LITTLE_SNAKE_BITE.title": "小蛇咬",
   "YUWANCARD-LITTLE_SNAKE_BITE.description": "生成{IfUpgraded:show:2|1}个[gold]小蛇咬[/gold]充能球。",
   "YUWANCARD-PIG_SLAM.title": "猪猛击",
-  "YUWANCARD-PIG_SLAM.description": "造成{Damage:diff()}点伤害。获得{StrengthPower:diff()}点[gold]力量[/gold]。",
+  "YUWANCARD-PIG_SLAM.description": "造成{Damage:diff()}点伤害{Repeat:diff()}次。如果目标敌人有增益效果，则额外命中一次。",
   "YUWANCARD-PIG_ROAR.title": "猪咆哮",
   "YUWANCARD-PIG_ROAR.description": "对所有敌人施加{WeakPower:diff()}层[gold]虚弱[/gold]。",
   "YUWANCARD-PIG_ROLL.title": "猪翻滚",

@@ -14,6 +14,7 @@ public static class MerchantAnimationFallbackPatch
     {
         var child = __instance.GetChild(0);
         if (child == null) return true;
+        if (child.GetClass() != "SpineSprite") return false;
 
         var megaSprite = new MegaSprite(child);
         if (!megaSprite.HasAnimation(anim))

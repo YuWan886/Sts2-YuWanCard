@@ -4,7 +4,10 @@ using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.RestSite;
+using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Core.Patches.UI;
+using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Core.Abstracts;
 
@@ -42,8 +45,35 @@ public abstract class YuWanCharacterModel : CharacterModel, IYuWanCharacter
 
     public virtual CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller) => null;
 
+    protected YuWanCharacterModel()
+    {
+        RegisterSceneConversions();
+    }
+
+    /// <summary>
+    /// Auto-registers scene paths for type conversion, matching BaseLib's
+    /// ISceneConversions pattern. This allows modders to use plain Node2D/Control
+    /// root nodes in their scenes; the SceneConversionPatch converts them to the
+    /// game-expected types at instantiation time.
+    /// </summary>
+    protected virtual void RegisterSceneConversions()
+    {
+        if (CustomVisualPath != null)
+            NodeFactory.RegisterSceneType<NCreatureVisuals>(CustomVisualPath);
+        if (CustomEnergyCounterPath != null)
+            NodeFactory.RegisterSceneType<NEnergyCounter>(CustomEnergyCounterPath);
+        if (CustomMerchantAnimPath != null)
+            NodeFactory.RegisterSceneType<NMerchantCharacter>(CustomMerchantAnimPath);
+        if (CustomRestSiteAnimPath != null)
+            NodeFactory.RegisterSceneType<NRestSiteCharacter>(CustomRestSiteAnimPath);
+    }
+
     Control? IYuWanCharacter.CustomIcon => null;
-    NCreatureVisuals? IYuWanCharacter.CreateCustomVisuals() => null;
+    NCreatureVisuals? IYuWanCharacter.CreateCustomVisuals()
+    {
+        if (CustomVisualPath == null) return null;
+        return NodeFactory.CreateFromScene<NCreatureVisuals>(CustomVisualPath);
+    }
     CreatureAnimator? IYuWanCharacter.SetupCustomAnimationStates(MegaSprite controller) => SetupCustomAnimationStates(controller);
 
     protected static CreatureAnimator SetupAnimationState(MegaSprite controller, string idleName,
