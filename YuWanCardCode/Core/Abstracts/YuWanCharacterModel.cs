@@ -7,7 +7,6 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Core.Patches.UI;
-using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Core.Abstracts;
 

@@ -131,6 +131,12 @@ public class Pig : CharacterModel, IYuWanCharacter
         };
         animator.AddAnyState("Tf", tfAnim);
 
+        var tf2Anim = new AnimState("tf2", false)
+        {
+            NextState = new AnimState("idle_loop", true)
+        };
+        animator.AddAnyState("Tf2", tf2Anim);
+
         return animator;
     }
 }

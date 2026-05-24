@@ -19,7 +19,7 @@ public class PigDemonForm : YuWanRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Shop;
 
-    public override int MerchantCost => 300;
+    public override int MerchantCost => 266;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(2m)];
 
@@ -52,13 +52,13 @@ public class PigDemonForm : YuWanRelicModel
             await CreatureCmd.TriggerAnim(Owner.Creature, "Tf", 4.5f);
             await Task.Delay(TimeSpan.FromSeconds(4.7f));
 
-            PigDemonFormPower.SwitchCreatureSkin(Owner.Creature, "demon");
+            CreatureVisualUtils.SwitchCreatureSkin(Owner.Creature, "demon");
             NCombatRoom.Instance?.GetCreatureNode(Owner.Creature)?.SetAnimationTrigger("Idle");
 
             var pigMinion = PetManager.FindPetByType<PigMinion>(Owner.Creature);
             if (pigMinion != null && pigMinion.IsAlive)
             {
-                PigDemonFormPower.SwitchCreatureSkin(pigMinion, "demon");
+                CreatureVisualUtils.SwitchCreatureSkin(pigMinion, "demon");
                 NCombatRoom.Instance?.GetCreatureNode(pigMinion)?.SetAnimationTrigger("Idle");
             }
         }
