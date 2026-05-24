@@ -39,10 +39,15 @@ This mod anonymously collects minimal usage statistics (via PostHog) to understa
 
 When you first enter the main menu, a consent dialog will appear. **Data is only sent after you explicitly choose "Enable Collection".** You can also completely disable data collection at any time by setting `enabled` to `false` in the config file at `<game user data>/mod_configs/YuWanCard/posthog.analytics.yaml`.
 
-#### Communication
+## Communication
 
 - [**QQ: 752913553**](https://qm.qq.com/q/ohYkDqbe7K)
 - [**Discord**](https://discord.gg/tJT3a95Y8y)
+
+## Mod Integration
+> Installing these mods together with this mod will provide additional game content.
+
+- [海克斯符文-HextechRunes](https://www.bilibili.com/video/BV1AE9xByEuM/)
 
 ## CREDITS
 

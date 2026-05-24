@@ -12,6 +12,7 @@ using YuWanCard.Core.Interop;
 using YuWanCard.Multiplayer;
 using YuWanCard.Patches;
 using YuWanCard.Utils;
+using YuWanCard.Hextech;
 
 namespace YuWanCard;
 
@@ -54,6 +55,8 @@ public partial class MainFile : Node
             h => Core.Patches.CustomEnergyIconPatches.Apply(h), "CustomEnergyIcons");
         patcher.ApplySingle(
             h => ModInteropProcessor.Process(h, Assembly.GetExecutingAssembly()), "ModInterop");
+        patcher.ApplySingle(
+            HextechRuntimeCompat.TryInstall, "HextechRuntimeCompat");
 
         // Desktop-only patches — skip on Android to avoid triggering NDailyRunScreen
         // static constructor which has a known NRE bug on Mono AOT
@@ -114,6 +117,7 @@ public static class NMainMenu_ConfigRegisterPatch
     public static void Postfix()
     {
         ConfigRegistrar.TryDeferredRegister();
+        HextechRuntimeCompat.TryInstallIfAvailable();
     }
 }
 
@@ -123,5 +127,6 @@ public static class NGame_Ready_ConfigPreloadPatch
     public static void Prefix()
     {
         ConfigRegistrar.TryDeferredRegister();
+        HextechRuntimeCompat.TryInstallIfAvailable();
     }
 }

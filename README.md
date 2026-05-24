@@ -45,6 +45,11 @@
 - [**QQ: 752913553**](https://qm.qq.com/q/ohYkDqbe7K)
 - [**Discord**](https://discord.gg/tJT3a95Y8y)
 
+## 模组联动
+> 下面mods和猪猪一起安装会有额外游戏内容。
+
+- [海克斯符文-HextechRunes](https://www.bilibili.com/video/BV1AE9xByEuM/)
+
 ## CREDITS
 
 - 可爱的猪猪 - [PigHub](https://www.pighub.top/)

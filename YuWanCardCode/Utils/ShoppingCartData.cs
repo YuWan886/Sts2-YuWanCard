@@ -4,13 +4,21 @@ public class ShoppingCartData
 {
     public const int MaxCapacity = 5;
 
+    private int _capacity = MaxCapacity;
+
+    public int Capacity
+    {
+        get => _capacity;
+        set => _capacity = Math.Max(0, value);
+    }
+
     private List<ShoppingCartItem> _items = new();
 
     public IReadOnlyList<ShoppingCartItem> Items => _items.AsReadOnly();
 
     public int Count => _items.Count;
 
-    public bool IsFull => _items.Count >= MaxCapacity;
+    public bool IsFull => _items.Count >= Capacity;
 
     public bool IsEmpty => _items.Count == 0;
 
@@ -24,7 +32,7 @@ public class ShoppingCartData
     {
         if (IsFull)
         {
-            MainFile.Logger.Warn($"ShoppingCart: Cannot add item, cart is full ({MaxCapacity} items max)");
+            MainFile.Logger.Warn($"ShoppingCart: Cannot add item, cart is full ({Capacity} items max)");
             return false;
         }
 
@@ -80,6 +88,7 @@ public class ShoppingCartData
 
     public void Deserialize(string data)
     {
+        CartCleared?.Invoke();
         _items.Clear();
 
         if (string.IsNullOrEmpty(data))
@@ -88,6 +97,12 @@ public class ShoppingCartData
         var itemStrings = data.Split(';', StringSplitOptions.RemoveEmptyEntries);
         foreach (var itemString in itemStrings)
         {
+            if (IsFull)
+            {
+                MainFile.Logger.Warn($"ShoppingCart: Deserialization stopped at capacity limit ({Capacity} items max)");
+                break;
+            }
+
             var item = ShoppingCartItem.Deserialize(itemString);
             if (item != null)
             {

@@ -9,8 +9,9 @@ public abstract class WhatIfRelicModel : YuWanRelicModel
     private static readonly YuWanCustomRelicRarity WhatIfRarity =
         new(
             "YUWANCARD-WHAT_IF",
-            "relics",
+            "relic_collection",
             "YUWANCARD-WHAT_IF_CATEGORY.header",
+            displayLocalizationTable: "relics",
             displayLocalizationKey: "YUWANCARD-WHAT_IF_RARITY.label",
             visualRarity: RelicRarity.Event,
             borderColor: new Color("741ADB"),
