@@ -2,9 +2,9 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Core.Transcendence;
 using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics;
@@ -74,7 +74,7 @@ public class WhatIfAncientCards : WhatIfRelicModel
     {
         return ModelDb.AllCardPools
             .SelectMany(pool => pool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint))
-            .Where(c => c.Rarity == CardRarity.Ancient && !ArchaicTooth.TranscendenceCards.Contains(c))
+            .Where(c => c.Rarity == CardRarity.Ancient && !TranscendenceRegistry.IsAncientCard(c))
             .DistinctBy(c => c.Id.Entry);
     }
 

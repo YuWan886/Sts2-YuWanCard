@@ -2,8 +2,9 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Relics;
+using YuWanCard.Core.Transcendence;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(DustyTome))]
 class DustyTomePatch
@@ -14,8 +15,8 @@ class DustyTomePatch
     {
         var ancientCards = player.Character.CardPool
             .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
-            .Where(c => c.Rarity == MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Ancient 
-                && !ArchaicTooth.TranscendenceCards.Contains(c))
+            .Where(c => c.Rarity == MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Ancient
+                && !TranscendenceRegistry.IsAncientCard(c))
             .ToList();
 
         if (ancientCards.Count == 0)
@@ -23,8 +24,8 @@ class DustyTomePatch
             var colorlessPool = MegaCrit.Sts2.Core.Models.ModelDb.CardPool<ColorlessCardPool>();
             ancientCards = colorlessPool
                 .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
-                .Where(c => c.Rarity == MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Ancient 
-                    && !ArchaicTooth.TranscendenceCards.Contains(c))
+                .Where(c => c.Rarity == MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Ancient
+                    && !TranscendenceRegistry.IsAncientCard(c))
                 .ToList();
         }
 

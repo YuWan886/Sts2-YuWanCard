@@ -1,45 +1,42 @@
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Entities.Relics;
 
 namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class RagnarokTrait : MaliceTraitPowerBase
 {
-    private class Data
-    {
-        public int TickCount;
-    }
-
-    protected override object InitInternalData() => new Data();
-
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override Task AfterSideTurnStart(CombatSide side, CombatState combatState)
     {
         if (side != Owner.Side || Owner.IsDead)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        Data data = GetInternalData<Data>();
-        data.TickCount++;
-        if (data.TickCount < 4)
+        // Collect all players that have at least one non-disabled relic
+        var candidates = combatState.Players
+            .Where(p => !p.Creature.IsDead && p.Relics.Any(r => r.Status != RelicStatus.Disabled))
+            .ToList();
+
+        if (candidates.Count == 0)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        data.TickCount = 0;
+        var rng = combatState.RunState!.Rng!.UpFront;
+        var targetPlayer = rng.NextItem(candidates)!;
 
+        var availableRelics = targetPlayer.Relics
+            .Where(r => r.Status != RelicStatus.Disabled)
+            .ToList();
+
+        if (availableRelics.Count == 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        var targetRelic = rng.NextItem(availableRelics)!;
         Flash();
-        int damage = 15 * Amount;
-        foreach (var player in combatState.Players)
-        {
-            if (player.Creature.IsDead)
-            {
-                continue;
-            }
-
-            await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), player.Creature, damage, ValueProp.Unblockable | ValueProp.Unpowered, Owner, null);
-        }
+        targetRelic.Status = RelicStatus.Disabled;
+        return Task.CompletedTask;
     }
 }

@@ -3,12 +3,11 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
-using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Relics.Malice;
 
 [Pool(typeof(SharedRelicPool))]
-public sealed class GreedMalice : YuWanRelicModel
+public sealed class GreedMalice : MaliceRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Rare;
 

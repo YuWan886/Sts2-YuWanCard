@@ -1,13 +1,16 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class DrainTrait : MaliceTraitPowerBase
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("DrainBuffs", 1m)];
+    protected override string[] AutoUpdateVarNames => ["DrainBuffs"];
+
     public override async Task AfterAttack(AttackCommand command)
     {
         if (command.Attacker != Owner)
@@ -33,7 +36,6 @@ public sealed class DrainTrait : MaliceTraitPowerBase
             }
 
             Flash();
-            await PowerCmd.Apply<StrengthPower>(Owner, 2 * Amount, Owner, null);
             break;
         }
     }

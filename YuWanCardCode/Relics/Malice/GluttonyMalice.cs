@@ -3,13 +3,12 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.RelicPools;
-using YuWanCard.Core.Abstracts;
 using YuWanCard.Malice;
 
 namespace YuWanCard.Relics.Malice;
 
 [Pool(typeof(SharedRelicPool))]
-public sealed class GluttonyMalice : YuWanRelicModel
+public sealed class GluttonyMalice : MaliceRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Uncommon;
 

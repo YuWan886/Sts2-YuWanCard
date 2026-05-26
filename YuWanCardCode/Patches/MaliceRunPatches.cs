@@ -1,26 +1,11 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Malice;
 using YuWanCard.Modifiers;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
-
-[HarmonyPatch(typeof(NGame), nameof(NGame.StartNewSingleplayerRun))]
-public static class MaliceSingleplayerStartPatch
-{
-    [HarmonyPrefix]
-    public static void Prefix(CharacterModel character, GameMode gameMode, ref IReadOnlyList<ModifierModel> modifiers)
-    {
-        if (gameMode != GameMode.Standard)
-        {
-            return;
-        }
-
-        modifiers = MaliceModifierPatchHelpers.EnsureMaliceModifier(character, modifiers);
-    }
-}
 
 [HarmonyPatch(typeof(RunManager), "OnEnded", [typeof(bool)])]
 public static class MaliceRunEndedPatch
@@ -50,13 +35,24 @@ public static class MaliceRunStateCreatePatch
     [HarmonyPostfix]
     public static void Postfix(RunState __result)
     {
-        if (__result.GameMode != GameMode.Standard || __result.Players.Count != 1)
+        if (__result.GameMode != GameMode.Standard)
         {
             return;
         }
 
-        var player = __result.Players[0];
-        MaliceManager.EnsureConsistency(player.Character.Id);
+        var localPlayer = __result.Players.FirstOrDefault();
+        if (localPlayer == null)
+        {
+            return;
+        }
+
+        MaliceManager.EnsureConsistency(localPlayer.Character.Id);
+
+        var modifiers = MaliceModifierPatchHelpers.EnsureMaliceModifier(localPlayer.Character, __result.Modifiers);
+        if (!ReferenceEquals(modifiers, __result.Modifiers))
+        {
+            YuWanReflectionHelper.SetPrivateField(__result, "<Modifiers>k__BackingField", modifiers);
+        }
     }
 }
 

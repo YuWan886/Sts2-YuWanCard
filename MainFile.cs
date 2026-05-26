@@ -9,6 +9,7 @@ using YuWanCard.Characters;
 using YuWanCard.Config;
 using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
+using YuWanCard.Core.Transcendence;
 using YuWanCard.Multiplayer;
 using YuWanCard.Patches;
 using YuWanCard.Utils;
@@ -74,6 +75,7 @@ public partial class MainFile : Node
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
         SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
+        TranscendenceRegistry.RegisterDefaults();
         CustomBadgeRegistry.Register((run, playerId) => new PigTycoonBadge(run, playerId));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 

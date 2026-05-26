@@ -1,9 +1,11 @@
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Malice;
 using YuWanCard.Relics.Malice;
@@ -57,11 +59,47 @@ public sealed class MaliceModifier : YuWanModifierModel
     public override async Task AfterCreatureAddedToCombat(Creature creature)
     {
         await ApplyTraitsIfNeeded(creature);
+        ApplyHpScaling(creature);
+    }
+
+    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        if (dealer != null && dealer.Side == CombatSide.Enemy && EffectiveMaliceLevel >= 5)
+        {
+            return amount * 1.10m;
+        }
+
+        return amount;
+    }
+
+    private void ApplyHpScaling(Creature creature)
+    {
+        if (EffectiveMaliceLevel <= 0 || creature.Side != CombatSide.Enemy)
+        {
+            return;
+        }
+
+        if (OwnerHasSlothDisabled())
+        {
+            return;
+        }
+
+        if (EffectiveMaliceLevel < 2)
+        {
+            return;
+        }
+
+        decimal multiplier = EffectiveMaliceLevel >= 8 ? 1.15m : 1.05m;
+        decimal ratio = multiplier; // new/old
+        decimal newMaxHp = creature.MaxHp * multiplier;
+        decimal newCurrentHp = creature.CurrentHp * ratio;
+        creature.SetMaxHpInternal(newMaxHp);
+        creature.SetCurrentHpInternal(newCurrentHp);
     }
 
     private async Task ApplyTraitsIfNeeded(Creature creature)
     {
-        if (EffectiveMaliceLevel <= 0 || creature.Side != MegaCrit.Sts2.Core.Combat.CombatSide.Enemy)
+        if (EffectiveMaliceLevel <= 0 || creature.Side != CombatSide.Enemy)
         {
             return;
         }

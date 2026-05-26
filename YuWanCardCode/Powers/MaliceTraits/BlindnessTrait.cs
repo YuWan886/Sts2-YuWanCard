@@ -1,12 +1,16 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Cards;
 
 namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class BlindnessTrait : MaliceTraitPowerBase
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("DazedCount", 2m)];
+    protected override string[] AutoUpdateVarNames => ["DazedCount"];
+
     public override async Task AfterAttack(AttackCommand command)
     {
         if (command.Attacker != Owner)

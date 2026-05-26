@@ -218,6 +218,7 @@
   "YUWANCARD-LOLICON.description": "对身高超过[blue]140[/blue]的敌人造成的伤害翻倍。对身高不超过[blue]140[/blue]的敌人造成伤害时，你受到同等伤害。",
   "YUWANCARD-PIG_TEAMMATE.title": "猪队友",
   "YUWANCARD-PIG_TEAMMATE.description": "抢走另一名玩家所有手牌和能量。该玩家获得1层[gold]缓冲[/gold]。",
+  "YUWANCARD-PIG_TEAMMATE.selectionScreenPrompt": "选择一名队友",
   "YUWANCARD-CHEF_PIG.title": "厨师猪",
   "YUWANCARD-CHEF_PIG.description": "每回合开始时，选择1张手牌，将其变化为一张随机的[gold]食物猪[/gold]卡牌。",
   "YUWANCARD-CHEF_PIG.selectionScreenPrompt": "选择1张手牌变化为随机的食物猪卡牌",

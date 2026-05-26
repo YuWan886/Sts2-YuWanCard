@@ -23,6 +23,25 @@ namespace YuWanCard.Patches;
 class NeowSevenCursesPatch
 {
     private static readonly Dictionary<Neow, List<EventOption>> _normalOptions = [];
+    private static readonly Dictionary<Neow, LocString> _normalDescriptions = [];
+    private static readonly Dictionary<AncientEventModel, IReadOnlyList<ModifierModel>> _temporarilyFilteredModifiers = [];
+
+    internal static void StoreOriginalModifiers(AncientEventModel eventModel, IReadOnlyList<ModifierModel> modifiers)
+    {
+        _temporarilyFilteredModifiers[eventModel] = modifiers;
+    }
+
+    internal static bool TryTakeOriginalModifiers(AncientEventModel eventModel, out IReadOnlyList<ModifierModel> modifiers)
+    {
+        if (!_temporarilyFilteredModifiers.TryGetValue(eventModel, out modifiers!))
+        {
+            modifiers = Array.Empty<ModifierModel>();
+            return false;
+        }
+
+        _temporarilyFilteredModifiers.Remove(eventModel);
+        return true;
+    }
 
     [HarmonyPostfix]
     [HarmonyPatch("GenerateInitialOptions")]
@@ -34,6 +53,7 @@ class NeowSevenCursesPatch
         var options = __result.ToList();
 
         _normalOptions[__instance] = options;
+        _normalDescriptions[__instance] = __instance.InitialDescription;
 
         if (YuWanCardConfig.EnableSevenCursesRing)
         {
@@ -144,12 +164,58 @@ class NeowSevenCursesPatch
     {
         if (_normalOptions.TryGetValue(neow, out var normalOpts) && normalOpts.Count > 0)
         {
-            SetEventState(neow, neow.InitialDescription, normalOpts);
+            LocString description = _normalDescriptions.TryGetValue(neow, out var originalDescription)
+                ? originalDescription
+                : neow.InitialDescription;
+            SetEventState(neow, description, normalOpts);
             return;
         }
 
         // In custom mode, modifiers may exist but provide no Neow options.
         // In that case, conclude Neow cleanly after Seven Curses / What If resolves.
         YuWanReflectionHelper.CallPrivateMethod(neow, "SetEventFinished", new LocString("events", "NEOW.pages.DONE.description"));
+    }
+}
+
+[HarmonyPatch(typeof(AncientEventModel), "SetInitialEventState")]
+static class NeowRuntimeModifierFilterPatch
+{
+    [HarmonyPrefix]
+    static void Prefix(AncientEventModel __instance)
+    {
+        if (__instance is not Neow || __instance.Owner?.RunState == null)
+        {
+            return;
+        }
+
+        var runState = __instance.Owner.RunState;
+        var originalModifiers = runState.Modifiers;
+        var optionModifiers = originalModifiers
+            .Where(modifier => modifier.GenerateNeowOption(__instance) != null)
+            .ToList();
+
+        if (optionModifiers.Count == originalModifiers.Count)
+        {
+            return;
+        }
+
+        NeowSevenCursesPatch.StoreOriginalModifiers(__instance, originalModifiers);
+        YuWanReflectionHelper.SetPrivateField(runState, "<Modifiers>k__BackingField", optionModifiers);
+    }
+
+    [HarmonyPostfix]
+    static void Postfix(AncientEventModel __instance)
+    {
+        if (__instance.Owner?.RunState == null)
+        {
+            return;
+        }
+
+        if (!NeowSevenCursesPatch.TryTakeOriginalModifiers(__instance, out var originalModifiers))
+        {
+            return;
+        }
+
+        YuWanReflectionHelper.SetPrivateField(__instance.Owner.RunState, "<Modifiers>k__BackingField", originalModifiers);
     }
 }

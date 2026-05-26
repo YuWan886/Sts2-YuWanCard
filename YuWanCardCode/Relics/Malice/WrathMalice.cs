@@ -3,13 +3,12 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.ValueProps;
-using YuWanCard.Core.Abstracts;
 using YuWanCard.Malice;
 
 namespace YuWanCard.Relics.Malice;
 
 [Pool(typeof(SharedRelicPool))]
-public sealed class WrathMalice : YuWanRelicModel
+public sealed class WrathMalice : MaliceRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Uncommon;
 
@@ -24,6 +23,6 @@ public sealed class WrathMalice : YuWanRelicModel
             return 1m;
         }
 
-        return 1.25m;
+        return 1.50m;
     }
 }

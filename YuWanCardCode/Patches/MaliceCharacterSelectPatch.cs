@@ -34,8 +34,7 @@ public static class MaliceCharacterSelectReadyPatch
         malicePanel.Position = GetMalicePanelPosition(ascensionPanel);
         malicePanel.SetMeta("YUWANCARD_MALICE_PANEL", true);
         EnsureUniqueVisualResources(malicePanel);
-        malicePanel.Initialize(MultiplayerUiMode.Singleplayer);
-        malicePanel.SetMeta("YUWANCARD_MALICE_INITIALIZED", true);
+        malicePanel.Visible = false;
     }
 
     private static Vector2 GetMalicePanelPosition(NAscensionPanel ascensionPanel)
@@ -69,16 +68,12 @@ public static class MaliceCharacterSelectSyncPatch
 
     internal static void SyncMalicePanel(NCharacterSelectScreen screen)
     {
+        EnsureMalicePanelInitialized(screen);
+
         var selectedButton = AccessTools.Field(typeof(NCharacterSelectScreen), "_selectedButton")?.GetValue(screen) as NCharacterSelectButton;
         var malicePanel = screen.GetNodeOrNull<NAscensionPanel>("MalicePanel");
         if (selectedButton?.Character == null || malicePanel == null)
         {
-            return;
-        }
-
-        if (screen.Lobby.NetService.Type != NetGameType.Singleplayer)
-        {
-            malicePanel.Visible = false;
             return;
         }
 
@@ -96,6 +91,25 @@ public static class MaliceCharacterSelectSyncPatch
         }
 
         MalicePanelStyler.Apply(malicePanel);
+    }
+
+    internal static void EnsureMalicePanelInitialized(NCharacterSelectScreen screen)
+    {
+        var malicePanel = screen.GetNodeOrNull<NAscensionPanel>("MalicePanel");
+        if (malicePanel == null || malicePanel.HasMeta("YUWANCARD_MALICE_INITIALIZED"))
+        {
+            return;
+        }
+
+        MultiplayerUiMode mode = screen.Lobby.NetService.Type switch
+        {
+            NetGameType.Host => MultiplayerUiMode.Host,
+            NetGameType.Client => MultiplayerUiMode.Client,
+            _ => MultiplayerUiMode.Singleplayer
+        };
+
+        malicePanel.Initialize(mode);
+        malicePanel.SetMeta("YUWANCARD_MALICE_INITIALIZED", true);
     }
 
     private static void OnMaliceChanged(NCharacterSelectScreen screen, NAscensionPanel panel)
@@ -118,6 +132,36 @@ public static class MaliceCharacterSelectOpenedPatch
     public static void Postfix(NCharacterSelectScreen __instance)
     {
         MaliceCharacterSelectSyncPatch.SyncMalicePanel(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(NCharacterSelectScreen), nameof(NCharacterSelectScreen.InitializeMultiplayerAsHost))]
+public static class MaliceCharacterSelectHostInitPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(NCharacterSelectScreen __instance)
+    {
+        MaliceCharacterSelectSyncPatch.EnsureMalicePanelInitialized(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(NCharacterSelectScreen), nameof(NCharacterSelectScreen.InitializeMultiplayerAsClient))]
+public static class MaliceCharacterSelectClientInitPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(NCharacterSelectScreen __instance)
+    {
+        MaliceCharacterSelectSyncPatch.EnsureMalicePanelInitialized(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(NCharacterSelectScreen), nameof(NCharacterSelectScreen.InitializeSingleplayer))]
+public static class MaliceCharacterSelectSingleplayerInitPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(NCharacterSelectScreen __instance)
+    {
+        MaliceCharacterSelectSyncPatch.EnsureMalicePanelInitialized(__instance);
     }
 }
 
