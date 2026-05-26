@@ -57,3 +57,4 @@
 - Spire Codex - [Spire Codex](https://github.com/ptrlrd/spire-codex)
 - 《女神『转生异世界想成为什么』我「勇者的肋骨」》 - [「勇者の肋骨」俺＆女神さまのボイス収めたカオスな本PV、キービジュアルも公開](https://natalie.mu/comic/news/663320)
 - 猪的Spine动画 by [mmmmm基因](https://space.bilibili.com/51792041)
+- 词条图标 - [莱特兰恶意 (L2Hostility)](https://www.mcmod.cn/class/12008.html)

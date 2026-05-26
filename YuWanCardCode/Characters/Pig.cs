@@ -88,13 +88,13 @@ public class Pig : CharacterModel, IYuWanCharacter
         ModelDb.Card<PigStrike>(),
         ModelDb.Card<PigStrike>(),
         ModelDb.Card<PigStrike>(),
-        ModelDb.Card<PigStrike>(),
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigFriends>(),
-        ModelDb.Card<PigShelter>()
+        ModelDb.Card<PigShelter>(),
+        ModelDb.Card<PigMissYou>()
     ];
 
     public override IReadOnlyList<RelicModel> StartingRelics => [ModelDb.Relic<PigCarrot>()];

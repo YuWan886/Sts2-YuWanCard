@@ -1,0 +1,109 @@
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core.Abstracts;
+using YuWanCard.Malice;
+using YuWanCard.Relics.Malice;
+
+namespace YuWanCard.Modifiers;
+
+public sealed class MaliceModifier : YuWanModifierModel
+{
+    [SavedProperty]
+    public int YuWanCard_MaliceLevel { get; set; }
+
+    [SavedProperty]
+    public int YuWanCard_MaliceTraitKills { get; set; }
+
+    public int EffectiveMaliceLevel => Math.Clamp(YuWanCard_MaliceLevel, 0, MaliceManager.MaxMaliceLevel);
+
+    public override Func<Task>? GenerateNeowOption(EventModel eventModel) => null;
+
+    protected override void AfterRunCreated(RunState runState)
+    {
+        Player? localPlayer = runState.Players.FirstOrDefault();
+        if (localPlayer == null)
+        {
+            YuWanCard_MaliceLevel = 0;
+            return;
+        }
+
+        MaliceManager.EnsureConsistency(localPlayer.Character.Id);
+        YuWanCard_MaliceLevel = MaliceManager.GetPreferredMalice(localPlayer.Character.Id);
+        MainFile.Logger.Info($"MaliceModifier: initialized at malice {YuWanCard_MaliceLevel} for {localPlayer.Character.Id}");
+    }
+
+    protected override void AfterRunLoaded(RunState runState)
+    {
+        MainFile.Logger.Info($"MaliceModifier: loaded with malice {YuWanCard_MaliceLevel}");
+    }
+
+    public override async Task AfterRoomEntered(AbstractRoom room)
+    {
+        if (room is not CombatRoom combatRoom)
+        {
+            return;
+        }
+
+        foreach (Creature creature in combatRoom.CombatState.Enemies)
+        {
+            await ApplyTraitsIfNeeded(creature);
+        }
+    }
+
+    public override async Task AfterCreatureAddedToCombat(Creature creature)
+    {
+        await ApplyTraitsIfNeeded(creature);
+    }
+
+    private async Task ApplyTraitsIfNeeded(Creature creature)
+    {
+        if (EffectiveMaliceLevel <= 0 || creature.Side != MegaCrit.Sts2.Core.Combat.CombatSide.Enemy)
+        {
+            return;
+        }
+
+        if (OwnerHasSlothDisabled())
+        {
+            return;
+        }
+
+        await MaliceTraitDistributor.AssignTraits(creature, EffectiveMaliceLevel, this);
+    }
+
+    public override Task AfterDeath(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
+    {
+        if (!wasRemovalPrevented && MaliceHelper.IsTraitEnemy(creature))
+        {
+            YuWanCard_MaliceTraitKills++;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private bool OwnerHasSlothDisabled()
+    {
+        return RunState.Players.Any(p => p.GetRelic<SlothMalice>() != null);
+    }
+
+    public static MaliceModifier? GetMaliceModifier(RunState runState)
+    {
+        foreach (ModifierModel modifier in runState.Modifiers)
+        {
+            if (modifier is MaliceModifier maliceModifier)
+            {
+                return maliceModifier;
+            }
+        }
+
+        return null;
+    }
+
+    public static bool IsMaliceMode(RunState runState)
+    {
+        return GetMaliceModifier(runState)?.EffectiveMaliceLevel > 0;
+    }
+}

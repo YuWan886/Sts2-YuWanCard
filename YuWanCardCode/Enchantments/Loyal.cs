@@ -37,6 +37,11 @@ public sealed class Loyal : YuWanEnchantmentModel
             return false;
         }
 
+        if (card.Keywords.Contains(CardKeyword.Exhaust))
+        {
+            return false;
+        }
+
         if (card.GetEnchantedReplayCount() > 0)
         {
             return false;

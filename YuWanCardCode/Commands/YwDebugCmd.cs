@@ -12,6 +12,8 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Saves;
+using YuWanCard.Malice;
 
 namespace YuWanCard.Commands;
 
@@ -37,9 +39,9 @@ public class YwDebugCmd : AbstractConsoleCmd
 
     public override string CmdName => "yw";
 
-    public override string Args => "[sinpigrelics|regenerateancient|refreshshop]";
+    public override string Args => "[sinpigrelics|regenerateancient|refreshshop|unlockmalice]";
 
-    public override string Description => "YuWanCard debug commands. 'yw sinpigrelics' - obtain all 7 sin pig relics. 'yw regenerateancient' - regenerate current ancient options. 'yw refreshshop' - reroll all shop items";
+    public override string Description => "YuWanCard debug commands. 'yw sinpigrelics' - obtain all 7 sin pig relics. 'yw regenerateancient' - regenerate current ancient options. 'yw refreshshop' - reroll all shop items. 'yw unlockmalice' - unlock all Malice levels for all characters";
 
     public override bool IsNetworked => true;
 
@@ -47,15 +49,20 @@ public class YwDebugCmd : AbstractConsoleCmd
     {
         if (args.Length < 1)
         {
-            return new CmdResult(false, "Usage: yw <sinpigrelics|regenerateancient|refreshshop>");
+            return new CmdResult(false, "Usage: yw <sinpigrelics|regenerateancient|refreshshop|unlockmalice>");
+        }
+
+        string subCmd = args[0].ToLowerInvariant();
+
+        if (subCmd == "unlockmalice")
+        {
+            return UnlockAllMalice();
         }
 
         if (issuingPlayer == null)
         {
             return new CmdResult(false, "A run is currently not in progress!");
         }
-
-        string subCmd = args[0].ToLowerInvariant();
 
         if (subCmd == "sinpigrelics")
         {
@@ -72,7 +79,7 @@ public class YwDebugCmd : AbstractConsoleCmd
             return RefreshShop(issuingPlayer);
         }
 
-        return new CmdResult(false, $"Unknown subcommand: {subCmd}. Use 'yw sinpigrelics', 'yw regenerateancient', or 'yw refreshshop'.");
+        return new CmdResult(false, $"Unknown subcommand: {subCmd}. Use 'yw sinpigrelics', 'yw regenerateancient', 'yw refreshshop', or 'yw unlockmalice'.");
     }
 
     private CmdResult GrantAllPigs(Player player)
@@ -197,13 +204,40 @@ public class YwDebugCmd : AbstractConsoleCmd
         }
     }
 
+    private CmdResult UnlockAllMalice()
+    {
+        try
+        {
+            int unlockedCharacters = MaliceManager.UnlockAllMalice();
+            SaveManager.Instance.Progress.MaxMultiplayerAscension = 10;
+            foreach (var character in ModelDb.AllCharacters)
+            {
+                var stats = SaveManager.Instance.Progress.GetOrCreateCharacterStats(character.Id);
+                stats.MaxAscension = 10;
+                stats.PreferredAscension = 10;
+            }
+            SaveManager.Instance.SaveProgressFile();
+
+            string message = unlockedCharacters > 0
+                ? $"Unlocked max Malice for {unlockedCharacters} characters!"
+                : "All available Malice levels were already unlocked!";
+            MainFile.Logger.Info($"YwDebugCmd: {message}");
+            return new CmdResult(true, message);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"YwDebugCmd: Failed to unlock malice - {ex.Message}");
+            return new CmdResult(false, $"Failed to unlock malice: {ex.Message}");
+        }
+    }
+
     public override CompletionResult GetArgumentCompletions(Player? player, string[] args)
     {
         if (args.Length == 0 || (args.Length == 1 && string.IsNullOrWhiteSpace(args[0])))
         {
             return new CompletionResult
             {
-                Candidates = ["sinpigrelics", "regenerateancient", "refreshshop"],
+                Candidates = ["sinpigrelics", "regenerateancient", "refreshshop", "unlockmalice"],
                 Type = CompletionType.Subcommand,
                 ArgumentContext = CmdName
             };
@@ -225,6 +259,10 @@ public class YwDebugCmd : AbstractConsoleCmd
             if ("refreshshop".StartsWith(partial))
             {
                 candidates.Add("refreshshop");
+            }
+            if ("unlockmalice".StartsWith(partial))
+            {
+                candidates.Add("unlockmalice");
             }
 
             if (candidates.Count > 0)
