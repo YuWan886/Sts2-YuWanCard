@@ -9,7 +9,7 @@ namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class FieryTrait : MaliceTraitPowerBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("FieryDamage", 3m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("FieryDamage", 2m)];
     protected override string[] AutoUpdateVarNames => ["FieryDamage"];
 
     public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
@@ -20,6 +20,6 @@ public sealed class FieryTrait : MaliceTraitPowerBase
         }
 
         Flash();
-        await CreatureCmd.Damage(choiceContext, dealer, 3 * Amount, ValueProp.Unpowered, Owner, null);
+        await CreatureCmd.Damage(choiceContext, dealer, 2 * Amount, ValueProp.Unpowered, Owner, null);
     }
 }

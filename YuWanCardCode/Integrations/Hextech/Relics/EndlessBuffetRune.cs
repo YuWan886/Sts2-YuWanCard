@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
@@ -26,6 +27,6 @@ public sealed class EndlessBuffetRune : HextechPigRuneBase
 
         Flash();
         CardModel copy = Owner.RunState.CreateCard(cardPlay.Card.CanonicalInstance ?? cardPlay.Card, Owner);
-        return MegaCrit.Sts2.Core.Commands.CardPileCmd.AddGeneratedCardsToCombat([copy], PileType.Hand, addedByPlayer: true);
+        return CardPileCmd.AddGeneratedCardsToCombat([copy], PileType.Hand, addedByPlayer: true);
     }
 }

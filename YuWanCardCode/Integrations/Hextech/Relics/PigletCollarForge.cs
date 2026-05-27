@@ -7,14 +7,14 @@ public sealed class PigletCollarForge : HextechPigForgeBase
 {
     public override HextechForgeRarity HextechRarity => HextechForgeRarity.Silver;
 
-    public override async Task AfterObtained()
+    public override async Task BeforeCombatStart()
     {
-        await base.AfterObtained();
         if (Owner == null)
         {
             return;
         }
 
+        Flash();
         await PowerCmd.Apply<PigFriendsPower>(Owner.Creature, 1, Owner.Creature, null);
     }
 }

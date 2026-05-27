@@ -1,14 +1,13 @@
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Models.RelicPools;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Hextech;
-using YuWanCard.Integrations.Hextech.RelicPools;
 
 namespace YuWanCard.Relics;
 
-[Pool(typeof(HextechPigRunePool))]
-public abstract class HextechPigRuneBase : YuWanRelicModel
+[Pool(typeof(SharedRelicPool))]
+public abstract class HextechSharedRuneBase : YuWanRelicModel
 {
     public sealed override RelicRarity Rarity => RelicRarity.None;
 
@@ -20,10 +19,10 @@ public abstract class HextechPigRuneBase : YuWanRelicModel
 
     public virtual bool IsAvailableForPlayer(Player player)
     {
-        return player.Character.Id == ModelDb.GetId<Characters.Pig>();
+        return true;
     }
 
-    protected HextechPigRuneBase() : base(true)
+    protected HextechSharedRuneBase() : base(true)
     {
     }
 }

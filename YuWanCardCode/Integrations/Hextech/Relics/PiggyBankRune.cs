@@ -8,7 +8,7 @@ using YuWanCard.Powers;
 
 namespace YuWanCard.Relics;
 
-public sealed class PiggyBankRune : HextechPigRuneBase
+public sealed class PiggyBankRune : HextechSharedRuneBase
 {
     public override HextechRuneRarity HextechRarity => HextechRuneRarity.Silver;
 

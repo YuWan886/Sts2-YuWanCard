@@ -32,6 +32,12 @@ public abstract partial class YuWanRelicModel : RelicModel, IYuWanContent
 
     public virtual YuWanCustomRelicRarity? CustomRarity => null;
 
+    /// <summary>
+    /// Optional custom localization key for the rarity label shown in the relic inspect screen.
+    /// When non-null, replaces the standard "RELIC_RARITY.{Rarity}" lookup in the "gameplay_ui" table.
+    /// </summary>
+    public virtual string? CustomRarityLabelKey => null;
+
     public virtual RelicModel? GetUpgradeReplacement() => null;
 
     [GeneratedRegex(@"([a-z])([A-Z])", RegexOptions.Compiled)]

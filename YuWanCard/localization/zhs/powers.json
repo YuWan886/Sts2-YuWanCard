@@ -121,6 +121,7 @@
   "YUWANCARD-RETAIN_ENERGY_NEXT_TURN_POWER.smartDescription": "保留本回合的能量至下一回合。",
   "YUWANCARD-CORROSION_ENERGY_LOSS_POWER.title":"下回合失去能量",
   "YUWANCARD-CORROSION_ENERGY_LOSS_POWER.description":"在下个回合开始时，失去1点能量。",
+  "========== 莱特兰恶意 ==========": "========== 莱特兰恶意 ==========",
   "YUWANCARD-MALICE_TRAIT_MARKER_POWER.title": "恶意词条",
   "YUWANCARD-MALICE_TRAIT_MARKER_POWER.description": "该敌人拥有恶意词条。",
   "YUWANCARD-TANK_TRAIT.title": "重装",
@@ -191,5 +192,10 @@
   "YUWANCARD-KILLER_AURA_TRAIT.description": "攻击牌费用+1。",
   "YUWANCARD-RAGNAROK_TRAIT.title": "诸神黄昏",
   "YUWANCARD-RAGNAROK_TRAIT.description": "在你的回合开始时，使玩家的一个遗物失效。",
-  "YUWANCARD-RAGNAROK_TRAIT.smartDescription": "在你的回合开始时，使玩家的一个遗物失效。"
+  "YUWANCARD-RAGNAROK_TRAIT.smartDescription": "在你的回合开始时，使玩家的一个遗物失效。",
+  "========== 海克斯符文 ==========": "========== 海克斯符文 ==========",
+  "YUWANCARD-SIN_OF_WRATH_GUARD_POWER.title": "临时血量",
+  "YUWANCARD-SIN_OF_WRATH_GUARD_POWER.description": "在护甲穿透后吸收伤害。",
+  "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.title": "小猪护卫",
+  "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.description": "小猪护卫可吸收的攻击次数。"
 }

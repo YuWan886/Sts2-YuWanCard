@@ -51,11 +51,15 @@ public class RingOfSevenCurses : YuWanRelicModel
 
     public override bool ShouldGainGold(decimal amount, Player player)
     {
+        if (IsCanonical)
+            return true;
         return GoldGuard.ShouldGainGold(amount, player);
     }
 
     public override async Task AfterGoldGained(Player player)
     {
+        if (IsCanonical)
+            return;
         await GoldGuard.AfterGoldGained(player);
     }
 

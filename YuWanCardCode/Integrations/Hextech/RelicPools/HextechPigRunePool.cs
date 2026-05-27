@@ -10,7 +10,7 @@ public sealed class HextechPigRunePool : YuWanRelicPoolModel
 
     protected override IEnumerable<RelicModel> GenerateAllRelics()
     {
-        return HextechPigRuneRegistry.GetAllRunes()
+        return HextechPigRuneRegistry.GetAllPigRunes()
             .Concat(HextechForgeRegistry.GetAllForges())
             .Select(type => ModelDb.GetById<RelicModel>(ModelDb.GetId(type)));
     }

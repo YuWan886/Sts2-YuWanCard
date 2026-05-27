@@ -8,7 +8,7 @@ using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
-public sealed class SinOfEnvyRune : HextechPigRuneBase
+public sealed class SinOfEnvyRune : HextechSharedRuneBase
 {
     private readonly Dictionary<ulong, int> _enemyTriggerCounts = [];
 

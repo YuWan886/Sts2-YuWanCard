@@ -224,7 +224,7 @@ public static class HextechRuntimeCompat
     public static void GetGenericSelectableRuneTypesPostfix(ref IReadOnlyList<Type> __result)
     {
         __result = __result
-            .Where(type => !HextechPigRuneRegistry.GetAllRunes().Contains(type))
+            .Where(type => !HextechPigRuneRegistry.GetAllPigRunes().Contains(type))
             .Distinct()
             .ToArray();
     }
@@ -253,7 +253,7 @@ public static class HextechRuntimeCompat
             return;
         }
 
-        IReadOnlyList<RelicModel> pigRelics = HextechPigRuneRegistry.GetAllRunes()
+        IReadOnlyList<RelicModel> pigRelics = HextechPigRuneRegistry.GetAllPigRunes()
             .Select(type => ModelDb.GetById<RelicModel>(ModelDb.GetId(type)))
             .ToArray();
         object pigGroup = ctor.Invoke(["CHARACTER.PIG", pigRelics]);
@@ -284,6 +284,10 @@ public static class HextechRuntimeCompat
         {
             __result = HextechRunePoolKey.Pig;
         }
+        else if (HextechPigRuneRegistry.IsSharedRune(relic))
+        {
+            __result = HextechRunePoolKey.Generic;
+        }
     }
 
     public static void IsAvailableForPlayerPostfix(RelicModel relic, MegaCrit.Sts2.Core.Entities.Players.Player player, ref bool __result)
@@ -295,6 +299,10 @@ public static class HextechRuntimeCompat
             {
                 __result = pigRune.IsAvailableForPlayer(player);
             }
+        }
+        else if (HextechPigRuneRegistry.IsSharedRune(relic))
+        {
+            __result = true;
         }
         else if (HextechForgeRegistry.IsPigForge(relic))
         {
@@ -316,7 +324,7 @@ public static class HextechRuntimeCompat
 
     public static void IsHextechRelicScopedPostfix(RelicModel? relic, ref bool __result)
     {
-        if (!__result && IsOwnedRuneRecognitionScopeActive() && HextechPigRuneRegistry.IsPigRune(relic))
+        if (!__result && IsOwnedRuneRecognitionScopeActive() && HextechPigRuneRegistry.IsPigOrSharedRune(relic))
         {
             __result = true;
         }
@@ -360,7 +368,7 @@ public static class HextechRuntimeCompat
 
     public static void IsRelicSeenPostfix(RelicModel relic, ref bool __result)
     {
-        if (!__result && HextechPigRuneRegistry.IsPigRune(relic))
+        if (!__result && HextechPigRuneRegistry.IsPigOrSharedRune(relic))
         {
             __result = true;
         }
@@ -368,7 +376,7 @@ public static class HextechRuntimeCompat
 
     public static void EnergyIconHelperGetPrefixPostfix(AbstractModel model, ref string __result)
     {
-        if (model is RelicModel relic && HextechPigRuneRegistry.IsPigRune(relic))
+        if (model is RelicModel relic && HextechPigRuneRegistry.IsPigOrSharedRune(relic))
         {
             __result = ModelDb.CardPool<Characters.PigCardPool>().EnergyColorName;
         }

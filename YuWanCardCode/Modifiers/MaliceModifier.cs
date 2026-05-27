@@ -1,8 +1,11 @@
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -21,6 +24,8 @@ public sealed class MaliceModifier : YuWanModifierModel
     public int YuWanCard_MaliceTraitKills { get; set; }
 
     public int EffectiveMaliceLevel => Math.Clamp(YuWanCard_MaliceLevel, 0, MaliceManager.MaxMaliceLevel);
+
+    public override IEnumerable<IHoverTip> HoverTips => [GetHoverTip(EffectiveMaliceLevel)];
 
     public override Func<Task>? GenerateNeowOption(EventModel eventModel) => null;
 
@@ -62,14 +67,29 @@ public sealed class MaliceModifier : YuWanModifierModel
         ApplyHpScaling(creature);
     }
 
+    public override bool TryModifyRewards(Player player, List<Reward> rewards, AbstractRoom? room)
+    {
+        if (EffectiveMaliceLevel <= 0 || room == null)
+            return false;
+
+        if (room.RoomType != RoomType.Boss)
+            return false;
+
+        if (RunState.Rng.Niche.NextFloat() > 0.25f)
+            return false;
+
+        rewards.Add(new RelicReward(ModelDb.Relic<PrideMalice>().ToMutable(), player));
+        return true;
+    }
+
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
         if (dealer != null && dealer.Side == CombatSide.Enemy && EffectiveMaliceLevel >= 5)
         {
-            return amount * 1.10m;
+            return 1.10m;
         }
 
-        return amount;
+        return 1m;
     }
 
     private void ApplyHpScaling(Creature creature)
@@ -143,5 +163,40 @@ public sealed class MaliceModifier : YuWanModifierModel
     public static bool IsMaliceMode(RunState runState)
     {
         return GetMaliceModifier(runState)?.EffectiveMaliceLevel > 0;
+    }
+
+    public static HoverTip GetHoverTip(int level)
+    {
+        LocString title;
+        if (level > 0)
+        {
+            title = new LocString("modifiers", "YUWANCARD-MALICE.PORTRAIT_TITLE");
+            title.Add("malice", level);
+        }
+        else
+        {
+            title = new LocString("modifiers", "YUWANCARD-MALICE.PORTRAIT_TITLE_NO_MALICE");
+        }
+
+        LocString description = new LocString("modifiers", "YUWANCARD-MALICE.PORTRAIT_DESCRIPTION");
+        description.Add("malices", GetMaliceLines(level));
+        return new HoverTip(title, description);
+    }
+
+    private static List<string> GetMaliceLines(int level)
+    {
+        var lines = new List<string>();
+        if (level <= 0)
+        {
+            lines.Add(new LocString("modifiers", "YUWANCARD-MALICE.LEVEL_00.title").GetFormattedText());
+            return lines;
+        }
+
+        for (int i = 1; i <= level; i++)
+        {
+            lines.Add(new LocString("modifiers", $"YUWANCARD-MALICE.LEVEL_{i:00}.title").GetFormattedText());
+        }
+
+        return lines;
     }
 }

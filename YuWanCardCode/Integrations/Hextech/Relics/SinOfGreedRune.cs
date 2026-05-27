@@ -11,7 +11,7 @@ using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
-public sealed class SinOfGreedRune : HextechPigRuneBase
+public sealed class SinOfGreedRune : HextechSharedRuneBase
 {
     private GoldModificationGuard? _goldGuard;
 

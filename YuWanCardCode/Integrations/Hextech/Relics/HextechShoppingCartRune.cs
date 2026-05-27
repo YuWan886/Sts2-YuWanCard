@@ -1,7 +1,4 @@
-using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using YuWanCard.Hextech;
 using YuWanCard.Utils;
@@ -14,8 +11,7 @@ public sealed class HextechShoppingCartRune : HextechPigRuneBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new EnergyVar(1),
-        new CardsVar(1)
+        new DynamicVar("DiscountPercent", 20)
     ];
 
     public override bool IsAvailableForPlayer(Player player)
@@ -23,15 +19,31 @@ public sealed class HextechShoppingCartRune : HextechPigRuneBase
         return base.IsAvailableForPlayer(player) && player.GetRelic<ShoppingCart>() != null;
     }
 
-    public override async Task AfterItemPurchased(Player player, MerchantEntry itemPurchased, int goldSpent)
+    public override async Task AfterObtained()
     {
-        if (player != Owner || ShoppingCartManager.GetShoppingCartRelic(player) == null || player.Creature.CombatState == null)
+        await base.AfterObtained();
+        ApplyCartDiscount();
+    }
+
+    public override Task BeforeCombatStart()
+    {
+        ApplyCartDiscount();
+        return Task.CompletedTask;
+    }
+
+    private void ApplyCartDiscount()
+    {
+        if (Owner == null)
         {
             return;
         }
 
-        Flash();
-        await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, player);
-        await MegaCrit.Sts2.Core.Commands.CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), DynamicVars.Cards.IntValue, player);
+        var cart = ShoppingCartManager.GetShoppingCartRelic(Owner);
+        if (cart != null)
+        {
+            Flash();
+            cart.GetCartData().DiscountMultiplier = 0.8;
+            MainFile.Logger.Info($"HextechShoppingCartRune: Applied 20% discount to shopping cart");
+        }
     }
 }

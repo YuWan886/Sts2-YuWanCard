@@ -5,7 +5,7 @@ using YuWanCard.Hextech;
 
 namespace YuWanCard.Relics;
 
-public sealed class HeartyMealRune : HextechPigRuneBase
+public sealed class HeartyMealRune : HextechSharedRuneBase
 {
     public override HextechRuneRarity HextechRarity => HextechRuneRarity.Silver;
 

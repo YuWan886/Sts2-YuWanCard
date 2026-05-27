@@ -12,7 +12,7 @@ using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
-public sealed class SinOfGluttonyRune : HextechPigRuneBase
+public sealed class SinOfGluttonyRune : HextechSharedRuneBase
 {
     private int _exhaustTriggersThisTurn;
     private int _foodTriggersThisTurn;

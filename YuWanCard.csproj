@@ -32,6 +32,10 @@
         <Publicize Include="sts2" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false" />
     </ItemGroup>
 
+    <ItemGroup Condition="!Exists('$(Sts2DataDir)/sts2.dll')">
+        <PackageReference Include="BSchneppe.Sts2.ReferenceAssemblies" Version="0.103.*" PrivateAssets="All" />
+    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="All" />
         <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="*" />
@@ -41,6 +45,10 @@
 
     <PropertyGroup>
         <NoWarn>$(NoWarn);NU1608</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(CI)' == 'true'">
+        <PublicizeSts>false</PublicizeSts>
     </PropertyGroup>
 
     <ItemGroup>
@@ -70,11 +78,11 @@
         <None Include="YuWanCard/**" />
     </ItemGroup>
 
-    <Target Name="CheckDependencyPaths">
+    <Target Name="CheckDependencyPaths" Condition="'$(CI)' != 'true'">
         <Error Text="Slay the Spire 2 data not found at path '$(Sts2DataDir)'" Condition="'$(Sts2DataDir)' == '' or !Exists('$(Sts2DataDir)')" />
     </Target>
 
-    <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent">
+    <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent" Condition="'$(CI)' != 'true'">
         <Message Text="Copying .dll and manifest to mods folder." Importance="high" />
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
@@ -85,12 +93,12 @@
               Condition="Exists('posthog.analytics.local.yaml')" />
     </Target>
 
-    <Target Name="CopyQuickPck" AfterTargets="PackPck" Condition="Exists('$(PckPackerOutputPath)') And '$(PckPackerSkipped)' != 'true'">
+    <Target Name="CopyQuickPck" AfterTargets="PackPck" Condition="'$(CI)' != 'true' And Exists('$(PckPackerOutputPath)') And '$(PckPackerSkipped)' != 'true'">
         <Message Text="Copying quick .pck to mods folder." Importance="high" />
         <Copy SourceFiles="$(PckPackerOutputPath)" DestinationFolder="$(ModsPath)/$(MSBuildProjectName)" />
     </Target>
 
-    <Target Name="NeedGodotForPublish" BeforeTargets="Publish">
+    <Target Name="NeedGodotForPublish" BeforeTargets="Publish" Condition="'$(CI)' != 'true'">
         <Error Text="Godot path must be set up before publishing; Godot not found at path '$(GodotPath)'. Check Directory.Build.props file."
                Condition="'$(GodotPath)' == '' or !Exists('$(GodotPath)')" />
     </Target>

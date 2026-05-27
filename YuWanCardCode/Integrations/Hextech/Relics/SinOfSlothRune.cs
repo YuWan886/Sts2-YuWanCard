@@ -9,7 +9,7 @@ using YuWanCard.Hextech;
 
 namespace YuWanCard.Relics;
 
-public sealed class SinOfSlothRune : HextechPigRuneBase
+public sealed class SinOfSlothRune : HextechSharedRuneBase
 {
     private int _cardsPlayedThisTurn;
 

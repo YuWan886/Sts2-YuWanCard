@@ -11,7 +11,7 @@ using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
-public sealed class SinOfLustRune : HextechPigRuneBase
+public sealed class SinOfLustRune : HextechSharedRuneBase
 {
     private bool _spreadUsedThisTurn;
     private int _debuffsAppliedThisTurn;

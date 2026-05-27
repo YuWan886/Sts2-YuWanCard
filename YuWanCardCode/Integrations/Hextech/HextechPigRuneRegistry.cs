@@ -8,8 +8,6 @@ public static class HextechPigRuneRegistry
     private static readonly IReadOnlyList<Type> SilverRunes =
     [
         typeof(PigletDashRune),
-        typeof(PiggyBankRune),
-        typeof(HeartyMealRune),
         typeof(PigletGuardRune),
         typeof(GluttonsFeastRune),
         typeof(ToughPigskinRune),
@@ -23,14 +21,7 @@ public static class HextechPigRuneRegistry
         typeof(EndlessBuffetRune),
         typeof(GildedPigskinRune),
         typeof(CoinRainRune),
-        typeof(SwornBrotherRune),
-        typeof(SinOfGluttonyRune),
-        typeof(SinOfSlothRune),
-        typeof(SinOfPrideRune),
-        typeof(SinOfEnvyRune),
-        typeof(SinOfLustRune),
-        typeof(SinOfGreedRune),
-        typeof(SinOfWrathRune)
+        typeof(SwornBrotherRune)
     ];
 
     private static readonly IReadOnlyList<Type> PrismaticRunes =
@@ -39,6 +30,23 @@ public static class HextechPigRuneRegistry
         typeof(ThroneOfPigsRune),
         typeof(HextechShoppingCartRune),
         typeof(PerpetualPigRune)
+    ];
+
+    private static readonly IReadOnlyList<Type> SharedSilverRunes =
+    [
+        typeof(PiggyBankRune),
+        typeof(HeartyMealRune)
+    ];
+
+    private static readonly IReadOnlyList<Type> SharedGoldRunes =
+    [
+        typeof(SinOfGluttonyRune),
+        typeof(SinOfSlothRune),
+        typeof(SinOfPrideRune),
+        typeof(SinOfEnvyRune),
+        typeof(SinOfLustRune),
+        typeof(SinOfGreedRune),
+        typeof(SinOfWrathRune)
     ];
 
     private static readonly IReadOnlySet<Type> FirstActExcluded = new HashSet<Type>
@@ -66,6 +74,12 @@ public static class HextechPigRuneRegistry
 
     public static IReadOnlyList<Type> GetAllRunes()
     {
+        return SilverRunes.Concat(GoldRunes).Concat(PrismaticRunes)
+            .Concat(SharedSilverRunes).Concat(SharedGoldRunes).ToArray();
+    }
+
+    public static IReadOnlyList<Type> GetAllPigRunes()
+    {
         return SilverRunes.Concat(GoldRunes).Concat(PrismaticRunes).ToArray();
     }
 
@@ -73,8 +87,8 @@ public static class HextechPigRuneRegistry
     {
         return rarity switch
         {
-            HextechRuneRarity.Silver => SilverRunes,
-            HextechRuneRarity.Gold => GoldRunes,
+            HextechRuneRarity.Silver => SilverRunes.Concat(SharedSilverRunes).ToArray(),
+            HextechRuneRarity.Gold => GoldRunes.Concat(SharedGoldRunes).ToArray(),
             HextechRuneRarity.Prismatic => PrismaticRunes,
             _ => Array.Empty<Type>()
         };
@@ -88,7 +102,23 @@ public static class HextechPigRuneRegistry
         }
 
         ModelId id = relic.CanonicalInstance?.Id ?? relic.Id;
-        return GetAllRunes().Any(type => ModelDb.GetId(type) == id);
+        return GetAllPigRunes().Any(type => ModelDb.GetId(type) == id);
+    }
+
+    public static bool IsSharedRune(RelicModel? relic)
+    {
+        if (relic == null)
+        {
+            return false;
+        }
+
+        ModelId id = relic.CanonicalInstance?.Id ?? relic.Id;
+        return SharedSilverRunes.Concat(SharedGoldRunes).Any(type => ModelDb.GetId(type) == id);
+    }
+
+    public static bool IsPigOrSharedRune(RelicModel? relic)
+    {
+        return IsPigRune(relic) || IsSharedRune(relic);
     }
 
     public static bool TryGetRarity(RelicModel? relic, out HextechRuneRarity rarity)
@@ -124,11 +154,21 @@ public static class HextechPigRuneRegistry
 
     public static bool IsAvailableForPlayer(RelicModel relic, MegaCrit.Sts2.Core.Entities.Players.Player player)
     {
+        if (IsSharedRune(relic))
+        {
+            return true;
+        }
+
         return player.Character.Id == ModelDb.GetId<Characters.Pig>();
     }
 
     public static string GetPoolKey(RelicModel relic)
     {
+        if (IsSharedRune(relic))
+        {
+            return HextechRunePoolKey.Generic;
+        }
+
         return IsPigRune(relic) ? HextechRunePoolKey.Pig : HextechRunePoolKey.Generic;
     }
 

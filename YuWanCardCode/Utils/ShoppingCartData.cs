@@ -12,6 +12,12 @@ public class ShoppingCartData
         set => _capacity = Math.Max(0, value);
     }
 
+    /// <summary>
+    /// Multiplier applied to item prices when added to the cart.
+    /// 1.0 = no discount, 0.8 = 20% off.
+    /// </summary>
+    public double DiscountMultiplier { get; set; } = 1.0;
+
     private List<ShoppingCartItem> _items = new();
 
     public IReadOnlyList<ShoppingCartItem> Items => _items.AsReadOnly();
@@ -40,6 +46,13 @@ public class ShoppingCartData
         {
             MainFile.Logger.Warn($"ShoppingCart: Item already in cart: {item.ItemId}");
             return false;
+        }
+
+        if (DiscountMultiplier < 1.0)
+        {
+            var originalPrice = item.Price;
+            item.Price = (int)Math.Floor(item.Price * DiscountMultiplier);
+            MainFile.Logger.Info($"ShoppingCart: Applied {((1.0 - DiscountMultiplier) * 100):0}% discount: {originalPrice} → {item.Price}");
         }
 
         _items.Add(item);

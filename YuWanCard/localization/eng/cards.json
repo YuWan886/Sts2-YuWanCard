@@ -264,6 +264,7 @@
   "YUWANCARD-PIG_EXPLOSION.description": "After {Turns} turns, deal {PigExplosionDamage:diff()} damage to all enemies.",
   "YUWANCARD-PIG_BIRTH.title": "Pig Birth",
   "YUWANCARD-PIG_BIRTH.description": "Draw {Cards:diff()} cards, discard up to 1 card.",
+  "YUWANCARD-PIG_BIRTH.selectionScreenPrompt": "Select a card to discard",
   "YUWANCARD-RED_KING.title": "Red King",
   "YUWANCARD-RED_KING.description": "After {Combats} combats, obtain a random Ancient relic.",
   "YUWANCARD-GAMBLER.title": "Gambler",

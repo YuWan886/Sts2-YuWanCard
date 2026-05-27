@@ -11,25 +11,26 @@ using YuWanCard.Powers;
 
 namespace YuWanCard.Relics;
 
-public sealed class SinOfWrathRune : HextechPigRuneBase
+public sealed class SinOfWrathRune : HextechSharedRuneBase
 {
     public override HextechRuneRarity HextechRarity => HextechRuneRarity.Gold;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new PowerVar<StrengthPower>(1m),
-        new DynamicVar("GuardAmount", 2m),
+        new DynamicVar("GuardAmount", 3m),
         new DynamicVar("AttackBonusPercent", 15m)
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
-        HoverTipFactory.FromPower<StrengthPower>()
+        HoverTipFactory.FromPower<StrengthPower>(),
+        HoverTipFactory.FromPower<SinOfWrathGuardPower>()
     ];
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (dealer != Owner?.Creature || !props.IsPoweredAttack())
+        if (dealer?.Player != Owner || !props.IsPoweredAttack())
         {
             return 1m;
         }

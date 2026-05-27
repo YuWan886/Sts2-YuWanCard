@@ -10,7 +10,7 @@ using YuWanCard.Hextech;
 
 namespace YuWanCard.Relics;
 
-public sealed class SinOfPrideRune : HextechPigRuneBase
+public sealed class SinOfPrideRune : HextechSharedRuneBase
 {
     private int _gainedStrengthThisCombat;
 

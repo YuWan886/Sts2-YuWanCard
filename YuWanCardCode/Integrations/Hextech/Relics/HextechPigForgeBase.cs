@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Integrations.Hextech.RelicPools;
 
@@ -16,7 +17,7 @@ public abstract class HextechPigForgeBase : YuWanRelicModel
 
     public virtual bool IsAvailableForPlayer(Player player)
     {
-        return player.Character.Id == MegaCrit.Sts2.Core.Models.ModelDb.GetId<Characters.Pig>();
+        return player.Character.Id == ModelDb.GetId<Characters.Pig>();
     }
 
     protected HextechPigForgeBase() : base(true)
