@@ -154,7 +154,17 @@ const IMAGE_CATEGORY_MAP = {
   character: 'characters'
 }
 
-export function findImage(entityId, entityType, imgRoot) {
+export function findImage(entityId, entityType, imgRoot, entity) {
+  // Hextech integration content has images in a subdirectory
+  if (entity?.isHextech) {
+    const subdir = entityType === 'relic' ? 'relics' : 'powers'
+    const hextechDir = join(imgRoot, 'integrations', 'hextech', subdir)
+    if (existsSync(hextechDir)) {
+      const path = join(hextechDir, `${entityId}.png`)
+      if (existsSync(path)) return path
+    }
+  }
+
   const category = IMAGE_CATEGORY_MAP[entityType]
   if (!category) return null
 
@@ -199,7 +209,7 @@ export function copyImages(entities, imgRoot, publicImgDir) {
     const targetDir = join(publicImgDir, category)
     ensureDir(targetDir)
 
-    const imgPath = findImage(entity.id, entity.type, imgRoot)
+    const imgPath = findImage(entity.id, entity.type, imgRoot, entity)
     if (imgPath) {
       const target = join(targetDir, basename(imgPath))
       if (!copied.has(target)) {

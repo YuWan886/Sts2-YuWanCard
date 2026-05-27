@@ -17,10 +17,13 @@
       :results-label="t('results')"
       :grid-title="t('grid_view')"
       :list-title="t('list_view')"
+      :text-search="textSearch"
+      :search-placeholder="t('search_placeholder')"
       @filter-change="onFilterChange"
       @sort-change="activeSort = $event"
       @view-change="viewMode = $event"
       @clear-filters="clearFilters"
+      @text-search-change="textSearch = $event"
     />
 
     <!-- Toolbar (when no filter groups, still show sort + view + count) -->
@@ -105,6 +108,7 @@ const props = defineProps({
 
 const activeSort = ref('')
 const viewMode = ref('grid')
+const textSearch = ref('')
 
 // Active filter states — stored as { groupKey: chipKey }
 const activeFilters = ref({})
@@ -137,7 +141,8 @@ const labels = computed(() => ({
   results: props.lang === 'zhs' ? '个' : '',
   grid_view: props.lang === 'zhs' ? '画廊视图' : 'Grid view',
   list_view: props.lang === 'zhs' ? '列表视图' : 'List view',
-  no_matches: props.lang === 'zhs' ? '没有匹配的结果' : 'No items match the filters.'
+  no_matches: props.lang === 'zhs' ? '没有匹配的结果' : 'No items match the filters.',
+  search_placeholder: props.lang === 'zhs' ? '搜索名称或描述...' : 'Search name or description...'
 }))
 function t(k) { return labels.value[k] || k }
 
@@ -155,6 +160,16 @@ const filterGroupsWithState = computed(() =>
 // Filtered items
 const filteredItems = computed(() => {
   let result = props.items
+
+  // Apply text search (match against title and description)
+  if (textSearch.value.trim()) {
+    const q = textSearch.value.trim().toLowerCase()
+    result = result.filter(item => {
+      const title = (item.title || '').toLowerCase()
+      const desc = (item.desc || item.description || '').toLowerCase()
+      return title.includes(q) || desc.includes(q)
+    })
+  }
 
   // Apply active filters
   for (const [groupKey, chipKey] of Object.entries(activeFilters.value)) {

@@ -32,7 +32,7 @@ public sealed class SinOfPrideRune : HextechSharedRuneBase
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
-        if (player != Owner || Owner == null || Owner.Creature.CurrentHp < Owner.Creature.MaxHp)
+        if (player != Owner || Owner == null || (float)Owner.Creature.CurrentHp / Owner.Creature.MaxHp <= 0.8f)
         {
             return;
         }

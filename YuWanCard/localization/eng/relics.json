@@ -93,7 +93,7 @@
   "YUWANCARD-SIN_OF_SLOTH_RUNE.description": "At end of turn, if you played no more than {CardThreshold} cards this turn, gain {StrengthPower} [gold]Strength[/gold] and {PlatingPower} [gold]Plating[/gold].",
   "YUWANCARD-SIN_OF_SLOTH_RUNE.flavor": "Move less. Win anyway.",
   "YUWANCARD-SIN_OF_PRIDE_RUNE.title": "Sin of Pride",
-  "YUWANCARD-SIN_OF_PRIDE_RUNE.description": "If you are at full HP, gain {Energy:energyIcons()} at the start of your turn. Whenever you kill an enemy, gain {StrengthPower} [gold]Strength[/gold]. If you take damage, lose all Strength granted by this rune.",
+  "YUWANCARD-SIN_OF_PRIDE_RUNE.description": "If your HP is above 80%, gain {Energy:energyIcons()} at the start of your turn. Whenever you kill an enemy, gain {StrengthPower} [gold]Strength[/gold]. If you take damage, lose all Strength granted by this rune.",
   "YUWANCARD-SIN_OF_PRIDE_RUNE.flavor": "Perfection is the only acceptable posture.",
   "YUWANCARD-SIN_OF_ENVY_RUNE.title": "Sin of Envy",
   "YUWANCARD-SIN_OF_ENVY_RUNE.description": "Whenever an enemy gains a Buff, you have a 50% chance to gain 1 stack of that Buff as well. Each enemy can trigger this at most 2 times per turn.",

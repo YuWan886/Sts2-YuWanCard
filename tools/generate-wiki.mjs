@@ -11,7 +11,8 @@ import {
 import {
   parseCardFile, parseRelicFile, parsePowerFile,
   parseEnchantmentFile, parseOrbFile, parseMonsterFile,
-  parseEventFile, parseAncientFile, parseModifierFile, parseCharacterFile
+  parseEventFile, parseAncientFile, parseModifierFile, parseCharacterFile,
+  parseHextechRelicFile
 } from './wiki-gen/parsers.mjs'
 import {
   loadLocalization, buildLocaleLookup
@@ -65,6 +66,31 @@ function parseAllEntities() {
     for (const f of files) {
       const entity = fn(f)
       if (entity) entities.push(entity)
+    }
+  }
+
+  // Hextech integration relics
+  const hextechRelicDirs = ['Integrations/Hextech/Relics']
+  for (const dir of hextechRelicDirs) {
+    const files = collectCsFiles(join(SRC_ROOT, dir))
+    console.log(`  ${dir}: ${files.length} files`)
+    for (const f of files) {
+      const entity = parseHextechRelicFile(f)
+      if (entity) entities.push(entity)
+    }
+  }
+
+  // Hextech integration powers
+  const hextechPowerDirs = ['Integrations/Hextech/Powers']
+  for (const dir of hextechPowerDirs) {
+    const files = collectCsFiles(join(SRC_ROOT, dir))
+    console.log(`  ${dir}: ${files.length} files`)
+    for (const f of files) {
+      const entity = parsePowerFile(f)
+      if (entity) {
+        entity.isHextech = true
+        entities.push(entity)
+      }
     }
   }
 

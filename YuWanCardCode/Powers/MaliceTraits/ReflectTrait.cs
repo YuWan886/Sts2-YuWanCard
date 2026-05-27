@@ -21,6 +21,6 @@ public sealed class ReflectTrait : MaliceTraitPowerBase
 
         int reflectDamage = Math.Max(1, (int)Math.Ceiling(result.TotalDamage * 0.3m * Amount));
         Flash();
-        await CreatureCmd.Damage(choiceContext, dealer, reflectDamage, ValueProp.Unpowered | ValueProp.Unblockable, Owner, null);
+        await CreatureCmd.Damage(choiceContext, dealer, reflectDamage, ValueProp.Unpowered, Owner, null);
     }
 }

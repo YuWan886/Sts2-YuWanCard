@@ -9,9 +9,13 @@ namespace YuWanCard.Hextech.Relics;
 [Pool(typeof(HextechPigRunePool))]
 public abstract class HextechPigForgeBase : YuWanRelicModel
 {
+    private const string HextechForgeIconBasePath = "res://HextechRunes/images/relics";
+
     public sealed override RelicRarity Rarity => RelicRarity.None;
 
-    protected override string IconBasePath => $"res://YuWanCard/images/integrations/hextech/relics/{RelicId}";
+    protected override string IconBasePath => $"{HextechForgeIconBasePath}/{GetForgeIconStem()}";
+
+    public sealed override string? CustomRarityLabelKey => "YUWANCARD-HEXTECH_RUNE_RARITY.label";
 
     public abstract HextechForgeRarity HextechRarity { get; }
 
@@ -22,5 +26,16 @@ public abstract class HextechPigForgeBase : YuWanRelicModel
 
     protected HextechPigForgeBase() : base(true)
     {
+    }
+
+    private string GetForgeIconStem()
+    {
+        return HextechRarity switch
+        {
+            HextechForgeRarity.Silver => "silverForge",
+            HextechForgeRarity.Gold => "goldForge",
+            HextechForgeRarity.Prismatic => "prismaticForge",
+            _ => "silverForge"
+        };
     }
 }

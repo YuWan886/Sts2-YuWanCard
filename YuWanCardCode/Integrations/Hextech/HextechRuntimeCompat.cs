@@ -73,11 +73,14 @@ public static class HextechRuntimeCompat
         PatchMethod(harmony, catalogType, "GetGenericSelectableRuneTypes", nameof(GetGenericSelectableRuneTypesPostfix));
         PatchMethod(harmony, catalogType, "GetPlayerRuneTypesForRarity", nameof(GetPlayerRuneTypesForRarityPostfix));
         PatchMethod(harmony, catalogType, "GetCharacterRuneGroups", nameof(GetCharacterRuneGroupsPostfix));
+        PatchMethod(harmony, catalogType, "GetCanonicalForges", nameof(GetCanonicalForgesPostfix));
+        PatchMethod(harmony, catalogType, "GetCanonicalVisibleCustomRelics", nameof(GetCanonicalVisibleCustomRelicsPostfix));
         PatchMethod(harmony, catalogType, "IsPlayerRuneTypeSelectable", nameof(IsPlayerRuneTypeSelectablePostfix));
         PatchMethod(harmony, catalogType, "GetPlayerRunePoolKey", nameof(GetPlayerRunePoolKeyPostfix));
         PatchMethod(harmony, catalogType, "IsAvailableForPlayer", nameof(IsAvailableForPlayerPostfix));
         PatchMethod(harmony, catalogType, "IsPlayerRuneAllowedInAct", nameof(IsPlayerRuneAllowedInActPostfix));
         PatchMethod(harmony, catalogType, "IsHextechRelic", nameof(IsHextechRelicScopedPostfix));
+        PatchMethod(harmony, catalogType, "IsHextechForgeRelic", nameof(IsHextechForgeRelicPostfix));
         PatchMethod(harmony, catalogType, "TryGetPlayerRuneRarity", nameof(TryGetPlayerRuneRarityScopedPostfix));
         PatchMethod(harmony, catalogType, "GetMutuallyExclusivePlayerRuneIds", nameof(GetMutuallyExclusivePlayerRuneIdsPostfix));
     }
@@ -216,6 +219,13 @@ public static class HextechRuntimeCompat
         };
     }
 
+    private static IReadOnlyList<RelicModel> GetPigForgeRelics()
+    {
+        return HextechForgeRegistry.GetAllForges()
+            .Select(type => ModelDb.GetById<RelicModel>(ModelDb.GetId(type)))
+            .ToArray();
+    }
+
     public static void GetAllSelectableRuneTypesPostfix(ref IReadOnlyList<Type> __result)
     {
         __result = __result.Concat(HextechPigRuneRegistry.GetAllRunes()).Distinct().ToArray();
@@ -268,6 +278,20 @@ public static class HextechRuntimeCompat
         }
 
         __result = typedGroups;
+    }
+
+    public static void GetCanonicalForgesPostfix(ref IReadOnlyList<RelicModel> __result)
+    {
+        __result = __result.Concat(GetPigForgeRelics()).Distinct().ToArray();
+    }
+
+    public static void GetCanonicalVisibleCustomRelicsPostfix(ref IReadOnlyList<RelicModel> __result)
+    {
+        __result = __result
+            .Concat(HextechPigRuneRegistry.GetAllRunes().Select(type => ModelDb.GetById<RelicModel>(ModelDb.GetId(type))))
+            .Concat(GetPigForgeRelics())
+            .Distinct()
+            .ToArray();
     }
 
     public static void IsPlayerRuneTypeSelectablePostfix(Type runeType, ref bool __result)
@@ -330,6 +354,14 @@ public static class HextechRuntimeCompat
         }
     }
 
+    public static void IsHextechForgeRelicPostfix(RelicModel? relic, ref bool __result)
+    {
+        if (!__result && HextechForgeRegistry.IsPigForge(relic))
+        {
+            __result = true;
+        }
+    }
+
     public static void TryGetPlayerRuneRarityScopedPostfix(RelicModel? relic, out object __state, ref bool __result, ref object rarity)
     {
         __state = rarity;
@@ -362,13 +394,14 @@ public static class HextechRuntimeCompat
     {
         __result = (__result ?? Array.Empty<RelicModel>())
             .Concat(HextechPigRuneRegistry.GetAllRunes().Select(type => ModelDb.GetById<RelicModel>(ModelDb.GetId(type))))
+            .Concat(GetPigForgeRelics())
             .Distinct()
             .ToArray();
     }
 
     public static void IsRelicSeenPostfix(RelicModel relic, ref bool __result)
     {
-        if (!__result && HextechPigRuneRegistry.IsPigOrSharedRune(relic))
+        if (!__result && (HextechPigRuneRegistry.IsPigOrSharedRune(relic) || HextechForgeRegistry.IsPigForge(relic)))
         {
             __result = true;
         }
