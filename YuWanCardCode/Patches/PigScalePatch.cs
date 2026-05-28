@@ -62,26 +62,6 @@ public class PigScalePatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(CreatureCmd), "SetCurrentHp", typeof(Creature), typeof(decimal))]
-    static void OnHpChanged(Creature creature, decimal amount)
-    {
-        if (creature.Player != null && creature.Player.Character is Pig && NCombatRoom.Instance != null)
-        {
-            UpdateScale(creature);
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Creature), "SetCurrentHpInternal", typeof(decimal))]
-    static void OnHpChangedInternal(Creature __instance)
-    {
-        if (__instance.Player != null && __instance.Player.Character is Pig && NCombatRoom.Instance != null)
-        {
-            UpdateScale(__instance);
-        }
-    }
-
-    [HarmonyPostfix]
     [HarmonyPatch(typeof(Creature), "set_CurrentHp")]
     static void OnCurrentHpSet(Creature __instance)
     {

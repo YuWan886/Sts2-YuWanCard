@@ -9,51 +9,39 @@ namespace YuWanCard.Patches;
 
 [HarmonyPatch(typeof(NMapScreen))]
 [HarmonyPatch("RecalculateTravelability")]
-public static class MapScreenPatch
+public static class RingOfSevenCursesFlightPatch
 {
     [HarmonyPostfix]
     public static void RecalculateTravelabilityPostfix(NMapScreen __instance)
     {
         var runState = YuWanReflectionHelper.GetPrivateField<RunState>(__instance, "_runState");
         if (runState == null)
-        {
             return;
-        }
 
         bool hasRingOfSevenCurses = runState.Players.Any(p =>
             p.Relics.Any(r => r is RingOfSevenCurses)
         );
 
         if (!hasRingOfSevenCurses)
-        {
             return;
-        }
 
         bool hasFlightModifier = runState.Modifiers.OfType<MegaCrit.Sts2.Core.Models.Modifiers.Flight>().Any();
         if (hasFlightModifier)
-        {
             return;
-        }
 
         var map = YuWanReflectionHelper.GetPrivateField<ActMap>(__instance, "_map");
         if (map == null)
-        {
             return;
-        }
 
         var mapPointDictionary = YuWanReflectionHelper.GetPrivateField<IDictionary<MegaCrit.Sts2.Core.Map.MapCoord, NMapPoint>>(__instance, "_mapPointDictionary");
         if (mapPointDictionary == null || !runState.VisitedMapCoords.Any())
-        {
             return;
-        }
 
         var visitedMapCoords = runState.VisitedMapCoords;
         var lastVisitedCoord = visitedMapCoords[visitedMapCoords.Count - 1];
 
         if (lastVisitedCoord.row >= map.GetRowCount() - 1)
-        {
             return;
-        }
 
         var secondBossPointNode = YuWanReflectionHelper.GetPrivateField<NMapPoint>(__instance, "_secondBossPointNode");
         var bossPointNode = YuWanReflectionHelper.GetPrivateField<NMapPoint>(__instance, "_bossPointNode");
@@ -68,68 +56,7 @@ public static class MapScreenPatch
         foreach (var point in nextRowPoints)
         {
             if (mapPointDictionary.TryGetValue(point.coord, out var mapPoint))
-            {
                 mapPoint.State = MapPointState.Travelable;
-            }
-        }
-    }
-}
-
-/// <summary>
-/// Transforms all map points (except Ancient and Boss) to Unknown when any
-/// player has the WhatIfQuestionMark relic.  Patches NMapScreen.SetMap so
-/// the transformation happens right before the map is rendered, every act.
-/// </summary>
-[HarmonyPatch(typeof(NMapScreen))]
-[HarmonyPatch("SetMap")]
-public static class WhatIfQuestionMarkMapPatch
-{
-    [HarmonyPrefix]
-    public static void Prefix(ActMap map)
-    {
-        var state = RunManager.Instance?.State;
-        if (state == null || map == null)
-            return;
-
-        var hasRelic = state.Players.Any(p =>
-            p.Relics.Any(r => r is WhatIfQuestionMark));
-
-        if (hasRelic)
-            WhatIfQuestionMark.ForceMapToUnknown(map);
-    }
-}
-
-[HarmonyPatch(typeof(NMapScreen), nameof(NMapScreen.SetMap))]
-public static class WhatIfDirectFlightMapScreenPatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(NMapScreen __instance)
-    {
-        var runState = YuWanReflectionHelper.GetPrivateField<RunState>(__instance, "_runState");
-        WhatIfDirectFlight.TryEnableTravelMode(runState, __instance);
-    }
-}
-
-[HarmonyPatch(typeof(NMapPoint), "get_IsTravelable")]
-public static class WhatIfDirectFlightMapPointPatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(NMapPoint __instance, ref bool __result)
-    {
-        if (!__result)
-        {
-            return;
-        }
-
-        var runState = YuWanReflectionHelper.GetPrivateField<IRunState>(__instance, "_runState");
-        if (!WhatIfDirectFlight.HasDirectFlight(runState))
-        {
-            return;
-        }
-
-        if (WhatIfDirectFlight.HasVisited(runState, __instance.Point.coord))
-        {
-            __result = false;
         }
     }
 }

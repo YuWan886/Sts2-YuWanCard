@@ -7,46 +7,28 @@ using YuWanCard.Relics;
 
 namespace YuWanCard.Patches;
 
-[HarmonyPatch(typeof(VulnerablePower))]
-class VulnerablePowerArrogantPigPatch
+[HarmonyPatch]
+static class ArrogantPigPowerPatch
 {
-    [HarmonyPostfix]
-    [HarmonyPatch("ModifyDamageMultiplicative")]
-    static decimal ModifyVulnerableMultiplier(decimal __result, Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource)
+    private static decimal ModifyMultiplier(decimal result, Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource,
+        Func<ArrogantPig, decimal> getModified)
     {
-        if (dealer == null || dealer.Player == null)
-        {
-            return __result;
-        }
+        if (dealer?.Player == null || target == null)
+            return result;
 
         var arrogantPig = dealer.Player.GetRelic<ArrogantPig>();
-        if (arrogantPig != null && target != null)
-        {
-            __result = arrogantPig.ModifyVulnerableMultiplier(target, __result, props, dealer, cardSource);
-        }
-
-        return __result;
+        return arrogantPig != null ? getModified(arrogantPig) : result;
     }
-}
 
-[HarmonyPatch(typeof(WeakPower))]
-class WeakPowerArrogantPigPatch
-{
     [HarmonyPostfix]
-    [HarmonyPatch("ModifyDamageMultiplicative")]
-    static decimal ModifyWeakMultiplier(decimal __result, Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource)
-    {
-        if (dealer == null || dealer.Player == null)
-        {
-            return __result;
-        }
+    [HarmonyPatch(typeof(VulnerablePower), "ModifyDamageMultiplicative")]
+    static decimal OnVulnerableMultiplier(decimal __result, Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource)
+        => ModifyMultiplier(__result, target, props, dealer, cardSource,
+            a => a.ModifyVulnerableMultiplier(target!, __result, props, dealer!, cardSource!));
 
-        var arrogantPig = dealer.Player.GetRelic<ArrogantPig>();
-        if (arrogantPig != null && target != null)
-        {
-            __result = arrogantPig.ModifyWeakMultiplier(target, __result, props, dealer, cardSource);
-        }
-
-        return __result;
-    }
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(WeakPower), "ModifyDamageMultiplicative")]
+    static decimal OnWeakMultiplier(decimal __result, Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource)
+        => ModifyMultiplier(__result, target, props, dealer, cardSource,
+            a => a.ModifyWeakMultiplier(target!, __result, props, dealer!, cardSource!));
 }

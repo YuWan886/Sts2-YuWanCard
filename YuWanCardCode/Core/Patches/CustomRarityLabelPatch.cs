@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.InspectScreens;
 using MegaCrit.Sts2.addons.mega_text;
 using YuWanCard.Core.Abstracts;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 /// <summary>
 /// Postfixes the relic inspect screen to support <see cref="YuWanRelicModel.CustomRarityLabelKey"/>

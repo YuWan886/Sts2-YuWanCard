@@ -2,7 +2,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using YuWanCard.Utils;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 /// <summary>
 /// Routes mod-local audio resources through AudioUtils, because SfxCmd only

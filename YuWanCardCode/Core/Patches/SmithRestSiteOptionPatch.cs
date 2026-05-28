@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using YuWanCard.Utils;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(SmithRestSiteOption))]
 public static class SmithRestSiteOptionPatch

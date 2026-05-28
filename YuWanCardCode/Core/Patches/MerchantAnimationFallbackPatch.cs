@@ -2,7 +2,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(NMerchantCharacter), "PlayAnimation")]
 public static class MerchantAnimationFallbackPatch

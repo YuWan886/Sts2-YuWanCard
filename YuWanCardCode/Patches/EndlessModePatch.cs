@@ -1,6 +1,5 @@
 using System.Reflection;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Runs;
@@ -110,91 +109,4 @@ public class EndlessModePatch
         }
     }
 
-    private static int CalculateEliteBonus(int loopCount)
-    {
-        if (loopCount <= 0) return 0;
-        
-        int bonus = loopCount / 2;
-        
-        if (loopCount >= 5)
-        {
-            bonus += 1;
-        }
-        
-        if (loopCount >= 10)
-        {
-            bonus += 2;
-        }
-        
-        return Math.Max(1, bonus);
-    }
-
-    private static RunState? GetCurrentRunState()
-    {
-        var runManagerType = typeof(RunManager);
-        var instanceProperty = runManagerType.GetProperty("Instance");
-        if (instanceProperty == null)
-        {
-            return null;
-        }
-
-        var runManager = instanceProperty.GetValue(null) as RunManager;
-        return runManager?.State;
-    }
-
-    private static void ProcessEliteBonus(MapPointTypeCounts __instance)
-    {
-        var runState = GetCurrentRunState();
-        if (runState == null)
-        {
-            return;
-        }
-
-        var endlessModifier = EndlessModifier.GetEndlessModifier(runState);
-        if (endlessModifier == null)
-        {
-            return;
-        }
-
-        int loopCount = endlessModifier.EffectiveLoopCount;
-        if (loopCount <= 0)
-        {
-            return;
-        }
-
-        int eliteBonus = CalculateEliteBonus(loopCount);
-        int newEliteCount = __instance.NumOfElites + eliteBonus;
-
-        var backingField = YuWanReflectionHelper.GetPrivateField(typeof(MapPointTypeCounts), $"<NumOfElites>k__BackingField");
-        if (backingField != null)
-        {
-            backingField.SetValue(__instance, newEliteCount);
-            MainFile.Logger.Info($"Endless mode: Increased elite count by {eliteBonus} (Loop {loopCount})");
-        }
-    }
-
-    public static void ApplyMapPointTypeCountsPatches(Harmony harmony)
-    {
-        try
-        {
-            var postfixMethod = AccessTools.Method(typeof(EndlessModePatch), nameof(MapPointTypeCountsPostfix));
-            var ctor = AccessTools.Constructor(typeof(MapPointTypeCounts), [typeof(int), typeof(int)]);
-            if (ctor == null)
-            {
-                MainFile.Logger.Warn("Endless mode: MapPointTypeCounts(int, int) constructor not found, skipping patch");
-                return;
-            }
-            harmony.Patch(ctor, postfix: new HarmonyMethod(postfixMethod));
-            MainFile.Logger.Info("Endless mode: Applied patch to MapPointTypeCounts(int, int) constructor");
-        }
-        catch (Exception ex)
-        {
-            MainFile.Logger.Warn($"Endless mode: Failed to apply MapPointTypeCounts patch (may be Android/mobile): {ex.Message}");
-        }
-    }
-
-    private static void MapPointTypeCountsPostfix(MapPointTypeCounts __instance, int unknownCount, int restCount)
-    {
-        ProcessEliteBonus(__instance);
-    }
 }

@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Runs;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(CardFactory))]
 public static class MerchantCardFallbackPatch

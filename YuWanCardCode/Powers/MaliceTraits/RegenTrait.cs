@@ -6,7 +6,7 @@ namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class RegenTrait : MaliceTraitPowerBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("RegenPercent", 10m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("RegenPercent", 5m)];
     protected override string[] AutoUpdateVarNames => ["RegenPercent"];
 
     public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
@@ -16,7 +16,7 @@ public sealed class RegenTrait : MaliceTraitPowerBase
             return;
         }
 
-        int healAmount = Math.Max(1, (int)Math.Ceiling(Owner.MaxHp * 0.1m * Amount));
+        int healAmount = Math.Max(1, (int)Math.Ceiling(Owner.MaxHp * 0.05m * Amount));
         Flash();
         await CreatureCmd.Heal(Owner, healAmount, playAnim: true);
     }

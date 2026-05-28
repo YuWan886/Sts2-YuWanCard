@@ -101,32 +101,3 @@ public static class DeathEffectPatch
         }
     }
 }
-
-/// <summary>
-/// 死亡特效自动销毁控制器 - 显示固定时间后销毁节点
-/// </summary>
-public partial class DeathEffectAutoDestroy : Node
-{
-    private double _elapsedTime = 0;
-    private const double Duration = 1.5;
-
-    public override void _Process(double delta)
-    {
-        base._Process(delta);
-
-        _elapsedTime += delta;
-
-        if (_elapsedTime >= Duration)
-        {
-            var parent = GetParent();
-            if (parent != null)
-            {
-                parent.QueueFree();
-            }
-            else
-            {
-                QueueFree();
-            }
-        }
-    }
-}

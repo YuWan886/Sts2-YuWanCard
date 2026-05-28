@@ -1,10 +1,11 @@
 using HarmonyLib;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.UI;
-using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using YuWanCard.Malice;
+using YuWanCard.Modifiers;
 
 namespace YuWanCard.Patches;
 
@@ -79,7 +80,13 @@ public static class MaliceCharacterSelectSyncPatch
 
         var character = selectedButton.Character;
         int max = MaliceManager.GetAvailableSelectionMax(character.Id);
-        int preferred = MaliceManager.GetPreferredMalice(character.Id);
+        int preferred = screen.Lobby.NetService.Type == NetGameType.Client
+            ? MaliceModifierPatchHelpers.GetMaliceLevel(screen.Lobby.Modifiers)
+            : MaliceManager.GetPreferredMalice(character.Id);
+        if (screen.Lobby.NetService.Type == NetGameType.Client)
+        {
+            max = Math.Max(max, preferred);
+        }
 
         malicePanel.SetMaxAscension(max);
         malicePanel.SetAscensionLevel(Math.Min(max, preferred));
@@ -91,6 +98,7 @@ public static class MaliceCharacterSelectSyncPatch
         }
 
         MalicePanelStyler.Apply(malicePanel);
+        SyncLobbyMalice(screen, malicePanel.Ascension);
     }
 
     internal static void EnsureMalicePanelInitialized(NCharacterSelectScreen screen)
@@ -121,7 +129,58 @@ public static class MaliceCharacterSelectSyncPatch
         }
 
         MaliceManager.SetPreferredMalice(selectedButton.Character.Id, panel.Ascension);
+        SyncLobbyMalice(screen, panel.Ascension);
         MalicePanelStyler.Apply(panel);
+    }
+
+    private static void SyncLobbyMalice(NCharacterSelectScreen screen, int maliceLevel)
+    {
+        if (screen.Lobby.NetService.Type != NetGameType.Host)
+        {
+            return;
+        }
+
+        List<ModifierModel> modifiers = screen.Lobby.Modifiers
+            .Where(modifier => modifier is not MaliceModifier)
+            .Select(modifier => ModifierModel.FromSerializable(modifier.ToSerializable()))
+            .ToList();
+
+        if (maliceLevel > 0)
+        {
+            modifiers.Add(MaliceModifierPatchHelpers.CreateMaliceModifier(maliceLevel));
+        }
+
+        if (HaveSameModifiers(screen.Lobby.Modifiers, modifiers))
+        {
+            return;
+        }
+
+        screen.Lobby.SetModifiers(modifiers);
+    }
+
+    private static bool HaveSameModifiers(IReadOnlyList<ModifierModel> left, IReadOnlyList<ModifierModel> right)
+    {
+        if (left.Count != right.Count)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < left.Count; i++)
+        {
+            if (left[i].Id != right[i].Id)
+            {
+                return false;
+            }
+
+            if (left[i] is MaliceModifier leftMalice
+                && right[i] is MaliceModifier rightMalice
+                && leftMalice.EffectiveMaliceLevel != rightMalice.EffectiveMaliceLevel)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
@@ -165,6 +224,37 @@ public static class MaliceCharacterSelectSingleplayerInitPatch
     }
 }
 
+[HarmonyPatch(typeof(NCharacterSelectScreen), nameof(NCharacterSelectScreen.BeginRun))]
+public static class MaliceCharacterSelectBeginRunPatch
+{
+    [HarmonyPrefix]
+    public static void Prefix(NCharacterSelectScreen __instance, ref IReadOnlyList<ModifierModel> modifiers)
+    {
+        if (__instance.Lobby.GameMode != MegaCrit.Sts2.Core.Runs.GameMode.Standard || modifiers.Count == 0)
+        {
+            return;
+        }
+
+        MaliceModifierPatchHelpers.SetPendingRunModifiers(__instance.Lobby, modifiers);
+
+        if (modifiers.All(modifier => modifier is MaliceModifier))
+        {
+            modifiers = Array.Empty<ModifierModel>();
+        }
+    }
+}
+
+[HarmonyPatch(typeof(NCharacterSelectScreen), nameof(NCharacterSelectScreen.ModifiersChanged))]
+public static class MaliceCharacterSelectModifiersChangedPatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(NCharacterSelectScreen __instance)
+    {
+        MaliceCharacterSelectSyncPatch.SyncMalicePanel(__instance);
+        return false;
+    }
+}
+
 [HarmonyPatch(typeof(NAscensionPanel), "RefreshAscensionText")]
 public static class MaliceAscensionPanelTextPatch
 {
@@ -177,54 +267,5 @@ public static class MaliceAscensionPanelTextPatch
         }
 
         MalicePanelStyler.Apply(__instance);
-    }
-}
-
-internal static class MalicePanelStyler
-{
-    private const string MaliceLocTable = "modifiers";
-    private const string MaliceLocPrefix = "YUWANCARD-MALICE";
-
-    public static bool IsMalicePanel(NAscensionPanel panel) =>
-        panel.HasMeta("YUWANCARD_MALICE_PANEL") && panel.GetMeta("YUWANCARD_MALICE_PANEL").AsBool();
-
-    public static void Apply(NAscensionPanel panel)
-    {
-        if (!IsMalicePanel(panel))
-        {
-            return;
-        }
-
-        var info = panel.GetNodeOrNull<RichTextLabel>("HBoxContainer/AscensionDescription/Description");
-        var levelLabel = panel.GetNodeOrNull<Label>("HBoxContainer/AscensionIconContainer/AscensionIcon/AscensionLevel");
-        var icon = panel.GetNodeOrNull<Control>("%AscensionIcon");
-
-        if (icon?.Material is ShaderMaterial shader)
-        {
-            shader.SetShaderParameter("h", 0.82f);
-            shader.SetShaderParameter("v", 1.1f);
-        }
-
-        if (levelLabel != null)
-        {
-            levelLabel.Text = panel.Ascension.ToString();
-        }
-
-        if (info != null)
-        {
-            string title = GetTitle(panel.Ascension);
-            string desc = GetDescription(panel.Ascension);
-            info.Text = $"[b][purple]{title}[/purple][/b]\n{desc}";
-        }
-    }
-
-    private static string GetTitle(int level) => GetLevelLocString(level, "title").GetFormattedText();
-
-    private static string GetDescription(int level) => GetLevelLocString(level, "description").GetFormattedText();
-
-    private static LocString GetLevelLocString(int level, string suffix)
-    {
-        int clampedLevel = Math.Clamp(level, 0, 10);
-        return new LocString(MaliceLocTable, $"{MaliceLocPrefix}.LEVEL_{clampedLevel:00}.{suffix}");
     }
 }

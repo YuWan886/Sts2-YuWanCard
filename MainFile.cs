@@ -11,7 +11,6 @@ using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
 using YuWanCard.Core.Transcendence;
 using YuWanCard.Multiplayer;
-using YuWanCard.Patches;
 using YuWanCard.Utils;
 using YuWanCard.Hextech;
 
@@ -46,8 +45,6 @@ public partial class MainFile : Node
         ModLifecycle.Publish(ModLifecyclePhase.PatchesApplied);
 
         // Phase 2: Platform-conditional patches (wrapped to survive mobile)
-        patcher.ApplySingle(
-            h => EndlessModePatch.ApplyMapPointTypeCountsPatches(h), "EndlessMode");
         patcher.ApplySingle(
             h => Core.Patches.AutoSlayCharacterPatch.ApplyPatch(h), "AutoSlayCharacter");
         patcher.ApplySingle(

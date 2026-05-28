@@ -130,7 +130,7 @@
   "YUWANCARD-SPEEDY_TRAIT.description": "在你的回合开始时，使玩家失去1点[gold]敏捷[/gold]。",
   "YUWANCARD-SPEEDY_TRAIT.smartDescription": "在你的回合开始时，使玩家失去{Amount}点[gold]敏捷[/gold]。",
   "YUWANCARD-REGEN_TRAIT.title": "再生",
-  "YUWANCARD-REGEN_TRAIT.description": "在你的回合开始时，回复最大生命值10%的生命值。",
+  "YUWANCARD-REGEN_TRAIT.description": "在你的回合开始时，回复最大生命值5%的生命值。",
   "YUWANCARD-REGEN_TRAIT.smartDescription": "在你的回合开始时，回复最大生命值{RegenPercent}%的生命值。",
   "YUWANCARD-FIERY_TRAIT.title": "烈焰",
   "YUWANCARD-FIERY_TRAIT.description": "受到攻击时，对攻击者造成1点伤害。",

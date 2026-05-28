@@ -13,7 +13,22 @@ using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
+
+internal static class CardPlayDelegates
+{
+    internal static readonly Func<NCardPlay, CardModel?> GetCard =
+        AccessTools.MethodDelegate<Func<NCardPlay, CardModel?>>(
+            AccessTools.DeclaredPropertyGetter(typeof(NCardPlay), "Card"));
+
+    internal static readonly Func<NCardPlay, NCard?> GetCardNode =
+        AccessTools.MethodDelegate<Func<NCardPlay, NCard?>>(
+            AccessTools.DeclaredPropertyGetter(typeof(NCardPlay), "CardNode"));
+
+    internal static readonly Action<NCardPlay> TryShowEvokingOrbs =
+        AccessTools.MethodDelegate<Action<NCardPlay>>(
+            AccessTools.DeclaredMethod(typeof(NCardPlay), "TryShowEvokingOrbs"));
+}
 
 [HarmonyPatch(typeof(ModelDb), nameof(ModelDb.Init))]
 internal static class ModelDbInitCustomTargetTypeRegistrationPatch
@@ -117,18 +132,6 @@ internal static class CardModelIsValidTargetCustomTargetTypePatch
 [HarmonyPatch(typeof(NMouseCardPlay), "TargetSelection", typeof(TargetMode))]
 internal static class NMouseCardPlayTargetSelectionCustomTargetTypePatch
 {
-    private static readonly Func<NCardPlay, CardModel?> GetCard =
-        AccessTools.MethodDelegate<Func<NCardPlay, CardModel?>>(
-            AccessTools.DeclaredPropertyGetter(typeof(NCardPlay), "Card"));
-
-    private static readonly Func<NCardPlay, NCard?> GetCardNode =
-        AccessTools.MethodDelegate<Func<NCardPlay, NCard?>>(
-            AccessTools.DeclaredPropertyGetter(typeof(NCardPlay), "CardNode"));
-
-    private static readonly Action<NCardPlay> TryShowEvokingOrbs =
-        AccessTools.MethodDelegate<Action<NCardPlay>>(
-            AccessTools.DeclaredMethod(typeof(NCardPlay), "TryShowEvokingOrbs"));
-
     private static readonly Func<NMouseCardPlay, TargetMode, TargetType, Task> SingleCreatureTargeting =
         AccessTools.MethodDelegate<Func<NMouseCardPlay, TargetMode, TargetType, Task>>(
             AccessTools.DeclaredMethod(typeof(NMouseCardPlay), "SingleCreatureTargeting",
@@ -136,7 +139,7 @@ internal static class NMouseCardPlayTargetSelectionCustomTargetTypePatch
 
     public static bool Prefix(NMouseCardPlay __instance, TargetMode targetMode, ref Task __result)
     {
-        var card = GetCard(__instance);
+        var card = CardPlayDelegates.GetCard(__instance);
         if (card == null || !CustomTargetType.IsCustomSingleTargetType(card.TargetType))
             return true;
 
@@ -146,11 +149,11 @@ internal static class NMouseCardPlayTargetSelectionCustomTargetTypePatch
 
     private static async Task RunTargeting(NMouseCardPlay instance, TargetMode targetMode, TargetType targetType)
     {
-        var cardNode = GetCardNode(instance);
+        var cardNode = CardPlayDelegates.GetCardNode(instance);
         if (cardNode == null)
             return;
 
-        TryShowEvokingOrbs(instance);
+        CardPlayDelegates.TryShowEvokingOrbs(instance);
         cardNode.CardHighlight.AnimFlash();
         await SingleCreatureTargeting(instance, targetMode, targetType);
     }
@@ -159,18 +162,6 @@ internal static class NMouseCardPlayTargetSelectionCustomTargetTypePatch
 [HarmonyPatch(typeof(NControllerCardPlay), nameof(NControllerCardPlay.Start))]
 internal static class NControllerCardPlayStartCustomTargetTypePatch
 {
-    private static readonly Func<NCardPlay, CardModel?> GetCard =
-        AccessTools.MethodDelegate<Func<NCardPlay, CardModel?>>(
-            AccessTools.DeclaredPropertyGetter(typeof(NCardPlay), "Card"));
-
-    private static readonly Func<NCardPlay, NCard?> GetCardNode =
-        AccessTools.MethodDelegate<Func<NCardPlay, NCard?>>(
-            AccessTools.DeclaredPropertyGetter(typeof(NCardPlay), "CardNode"));
-
-    private static readonly Action<NCardPlay> TryShowEvokingOrbs =
-        AccessTools.MethodDelegate<Action<NCardPlay>>(
-            AccessTools.DeclaredMethod(typeof(NCardPlay), "TryShowEvokingOrbs"));
-
     private static readonly Action<NCardPlay> CenterCard =
         AccessTools.MethodDelegate<Action<NCardPlay>>(
             AccessTools.DeclaredMethod(typeof(NCardPlay), "CenterCard"));
@@ -186,11 +177,11 @@ internal static class NControllerCardPlayStartCustomTargetTypePatch
 
     public static bool Prefix(NControllerCardPlay __instance)
     {
-        var card = GetCard(__instance);
+        var card = CardPlayDelegates.GetCard(__instance);
         if (card == null || !CustomTargetType.IsCustomSingleTargetType(card.TargetType))
             return true;
 
-        var cardNode = GetCardNode(__instance);
+        var cardNode = CardPlayDelegates.GetCardNode(__instance);
         if (cardNode == null)
             return false;
 
@@ -211,7 +202,7 @@ internal static class NControllerCardPlayStartCustomTargetTypePatch
             return false;
         }
 
-        TryShowEvokingOrbs(__instance);
+        CardPlayDelegates.TryShowEvokingOrbs(__instance);
         cardNode.CardHighlight.AnimFlash();
         CenterCard(__instance);
         TaskHelper.RunSafely(SingleCreatureTargeting(__instance, card.TargetType));
@@ -222,14 +213,6 @@ internal static class NControllerCardPlayStartCustomTargetTypePatch
 [HarmonyPatch(typeof(NControllerCardPlay), "SingleCreatureTargeting", typeof(TargetType))]
 internal static class NControllerCardPlaySingleTargetingCustomTargetTypePatch
 {
-    private static readonly Func<NCardPlay, CardModel?> GetCard =
-        AccessTools.MethodDelegate<Func<NCardPlay, CardModel?>>(
-            AccessTools.DeclaredPropertyGetter(typeof(NCardPlay), "Card"));
-
-    private static readonly Func<NCardPlay, NCard?> GetCardNode =
-        AccessTools.MethodDelegate<Func<NCardPlay, NCard?>>(
-            AccessTools.DeclaredPropertyGetter(typeof(NCardPlay), "CardNode"));
-
     private static readonly Action<NCardPlay, NCreature> OnCreatureHover =
         AccessTools.MethodDelegate<Action<NCardPlay, NCreature>>(
             AccessTools.DeclaredMethod(typeof(NCardPlay), "OnCreatureHover", [typeof(NCreature)]));
@@ -253,8 +236,8 @@ internal static class NControllerCardPlaySingleTargetingCustomTargetTypePatch
 
     private static async Task RunTargeting(NControllerCardPlay instance, TargetType targetType)
     {
-        var card = GetCard(instance);
-        var cardNode = GetCardNode(instance);
+        var card = CardPlayDelegates.GetCard(instance);
+        var cardNode = CardPlayDelegates.GetCardNode(instance);
         if (card?.CombatState == null || cardNode == null)
         {
             instance.CancelPlayCard();

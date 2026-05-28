@@ -83,7 +83,7 @@
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(AssemblyName).json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
-        <Copy SourceFiles="README.md" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
+        <Copy SourceFiles="README.md" DestinationFolder="$(ModsPath)/" />
         <Copy SourceFiles="posthog.analytics.local.yaml"
               DestinationFolder="$(ModsPath)$(MSBuildProjectName)/"
               Condition="Exists('posthog.analytics.local.yaml')" />

@@ -42,8 +42,8 @@ public class AngelPigPower : YuWanPowerModel
         await base.AfterApplied(applier, cardSource);
 
         CreatureVisualUtils.SwitchCreatureSkin(Owner, "normal");
-        await CreatureCmd.TriggerAnim(Owner, "Tf2", 4.5f);
-        await Task.Delay(TimeSpan.FromSeconds(4.6f));
+        await CreatureCmd.TriggerAnim(Owner, "Tf2", 4.0f);
+        await Task.Delay(TimeSpan.FromSeconds(4.2f));
         CreatureVisualUtils.SwitchCreatureSkin(Owner, "tianshi");
     }
 

@@ -35,6 +35,12 @@ public sealed class MaliceModifier : YuWanModifierModel
 
     protected override void AfterRunCreated(RunState runState)
     {
+        if (runState.Players.Count > 1)
+        {
+            MainFile.Logger.Info($"MaliceModifier: initialized in multiplayer at malice {YuWanCard_MaliceLevel}");
+            return;
+        }
+
         Player? localPlayer = runState.Players.FirstOrDefault();
         if (localPlayer == null)
         {
