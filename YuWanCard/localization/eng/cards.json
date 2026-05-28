@@ -276,5 +276,11 @@
   "YUWANCARD-SHA.title": "Kill",
   "YUWANCARD-SHA.description": "Deal {Damage:diff()} damage. On kill, this card's replay count +1.",
   "YUWANCARD-SHAN.title": "Dodge",
-  "YUWANCARD-SHAN.description": "Can only be played when the enemy intends to attack. Nullify the target's attack intent."
+  "YUWANCARD-SHAN.description": "Can only be played when the enemy intends to attack. Nullify the target's attack intent.",
+  "YUWANCARD-PIG_OFF_WORK.title": "Pig Off Work",
+  "YUWANCARD-PIG_OFF_WORK.description": "Instantly win the current combat. Remove this card from your deck.",
+  "YUWANCARD-YOU_ARE_DUMB_CRY.title": "You Are Dumb Cry",
+  "YUWANCARD-YOU_ARE_DUMB_CRY.description": "Gain {Energy:energyIcons()}. \nTarget teammate gets {CryCount} [gold]Pig Always Cry[/gold].",
+  "YUWANCARD-PIG_ALWAYS_CRY.title": "Pig Always Cry",
+  "YUWANCARD-PIG_ALWAYS_CRY.description": ""
 }

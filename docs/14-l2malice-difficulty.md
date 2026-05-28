@@ -45,34 +45,34 @@ Malice 共 10 个等级，效果累积：
 |------|------|
 | Tank（坦克） | +25% MaxHP |
 | Speedy（迅捷） | 获得 Dexterity（每层 +1） |
-| Regen（再生） | 每回合回复 MaxHP 的 10% |
-| Fiery（荆棘） | 被攻击时对攻击者造成 3 点不可格挡伤害 |
-| Weakness（虚弱） | 攻击命中时施加 1 层 Weak |
-| Slowness（迟缓） | 攻击命中时施加 1 层 Frail |
+| Regen（再生） | 每回合回复 MaxHP 的 5% |
+| Fiery（荆棘） | 被攻击时对攻击者造成 1 点伤害 |
+| Weakness（虚弱） | 攻击命中时施加 1 层 虚弱 |
+| Slowness（迟缓） | 攻击命中时施加 1 层 脆弱 |
 | Gravity（重力） | 每 2 回合使所有玩家失去力量，上限随幕数增加 |
 
 ### 罕见词条（Uncommon，Malice 4+）
 
 | 词条 | 效果 |
 |------|------|
-| Poison（中毒） | 攻击命中时施加多层 Poison |
+| Poison（中毒） | 攻击命中时施加 1 层 中毒 |
 | Reflect（反射） | 受到伤害后反射 30% |
-| Protection（保护） | 获得 Plated Armor（每层 +2） |
-| Wither（凋零） | 攻击命中时减少玩家 Strength |
-| Blindness（致盲） | 攻击命中时向玩家抽牌堆塞入 Dazed |
-| Shulker（潜影） | 己方回合开始时获得 Slippery（滑溜） |
+| Protection（保护） | 获得 覆甲（每层 +2） |
+| Wither（凋零） | 攻击命中时减少玩家 力量 |
+| Blindness（致盲） | 攻击命中时向玩家抽牌堆塞入 晕眩 |
+| Shulker（潜影） | 己方回合开始时获得 滑溜 |
 
 ### 稀有词条（Rare，Malice 6+）
 
 | 词条 | 效果 |
 |------|------|
-| Drain（汲取） | 攻击命中时移除玩家 1 个随机 Buff，获得 2 Strength |
-| Growth（成长） | 每回合获得 +2 Strength |
-| Counter Strike（反击） | 受到伤害后 50% 概率对攻击者造成 5 点不可格挡伤害 |
+| Drain（嗜魔） | 攻击命中时移除玩家 1 个随机 Buff，获得 1 力量 |
+| Growth（成长） | 每回合获得 +2 力量 |
+| Counter Strike（反击） | 受到伤害后 30% 概率对攻击者造成 6 点伤害 |
 | Corrosion（腐蚀） | 攻击命中时玩家失去 1 能量 |
 | Adaptive（适应） | 来自相同来源的连续伤害降低 30% |
-| Invisible（隐形） | 己方回合开始时若没有 Buffer 则获得 Buffer |
-| Dispell（驱散） | 攻击命中时移除玩家所有 Block |
+| Invisible（隐形） | 己方回合开始时若没有 缓冲 则获得 缓冲 |
+| Dispell（破魔） | 使卡牌上的附魔失效。|
 
 ### 传说词条（Legendary，Malice 9+）
 
@@ -80,7 +80,7 @@ Malice 共 10 个等级，效果累积：
 |------|------|
 | Undying（不朽） | 首次死亡时复活并回复 50% HP（一次性） |
 | Dementor（摄魂） | 攻击时补上被格挡掉的伤害 |
-| Split（分裂） | 死亡时生成 2 个半血副本（无词条） |
+| Split（分裂） | 死亡时生成 2 个1/4副本（无词条） |
 | Master（主宰） | 己方回合开始时召唤随机小怪 |
 | Killer Aura（杀手光环） | 玩家攻击牌费用 +1 |
 | Ragnarok（诸神黄昏） | 每回合使玩家的一个遗物失效 |
@@ -111,7 +111,7 @@ Malice 共 10 个等级，效果累积：
 | 恶意·嫉妒（Envy） | Uncommon | 词条敌人 25% 概率额外掉落一张卡牌 |
 | 恶意·贪婪（Greed） | Rare | 词条敌人掉落金币翻倍 |
 | 恶意·暴怒（Wrath） | Uncommon | 对词条敌人的伤害 +25% |
-| 恶意·傲慢（Pride） | Rare | 击杀词条敌人获得 +1 Strength（本场战斗）；词条出现概率 +50% |
+| 恶意·傲慢（Pride） | Rare | 击杀词条敌人获得 +1 力量（本场战斗）；词条出现概率 +50% |
 | 恶意·懒惰（Sloth） | Rare | 词条敌人不再掉落额外奖励；所有敌人不再获得词条（关闭恶意系统） |
 | 恶意·暴食（Gluttony） | Uncommon | 击杀词条敌人回复 5 HP |
 | 恶意·色欲（Lust） | Rare | 词条敌人 15% 概率额外掉落一件遗物 |
@@ -196,7 +196,7 @@ public sealed class ExampleTrait : MaliceTraitPowerBase
 | 钩子 | 用途 | 示例 |
 |------|------|------|
 | `AfterApplied` | 施加时一次性效果 | Tank（+MaxHP）、Speedy（+Dexterity） |
-| `AfterSideTurnStart` | 每回合持续效果 | Regen（回血）、Growth（+Strength）、Gravity（减Strength） |
+| `AfterSideTurnStart` | 每回合持续效果 | Regen（回血）、Growth（+力量）、Gravity（减力量） |
 | `AfterAttack` | 攻击命中后 | Weakness、Drain、Blindness |
 | `AfterDamageReceived` | 受到伤害后 | Fiery（荆棘）、Reflect（反射）、CounterStrike（反击） |
 | `AfterDamageGiven` | 造成伤害后 | Dementor（补上格挡伤害） |

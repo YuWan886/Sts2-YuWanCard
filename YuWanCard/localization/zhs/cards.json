@@ -276,5 +276,11 @@
   "YUWANCARD-SHA.title": "杀",
   "YUWANCARD-SHA.description": "造成{Damage:diff()}点伤害。斩杀时，此牌在本局游戏的重放次数+1。",
   "YUWANCARD-SHAN.title": "闪",
-  "YUWANCARD-SHAN.description": "只有当敌人的意图是攻击时，才能打出。将目标的攻击意图无效化。"
+  "YUWANCARD-SHAN.description": "只有当敌人的意图是攻击时，才能打出。将目标的攻击意图无效化。",
+  "YUWANCARD-PIG_OFF_WORK.title": "猪下班",
+  "YUWANCARD-PIG_OFF_WORK.description": "直接获得本场战斗胜利。使用后从你的牌组中移除。",
+  "YUWANCARD-YOU_ARE_DUMB_CRY.title": "你已笨哭",
+  "YUWANCARD-YOU_ARE_DUMB_CRY.description": "获得{Energy:energyIcons()}。\n将{CryCount}张[gold]猪一直哭[/gold]加入指定队友的[gold]抽牌堆[/gold]。",
+  "YUWANCARD-PIG_ALWAYS_CRY.title": "猪一直哭",
+  "YUWANCARD-PIG_ALWAYS_CRY.description": ""
 }
