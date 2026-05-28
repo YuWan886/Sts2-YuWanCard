@@ -194,8 +194,8 @@
   "YUWANCARD-RAGNAROK_TRAIT.description": "Every turn, disable one of the player's relics.",
   "YUWANCARD-RAGNAROK_TRAIT.smartDescription": "Every turn, disable one of the player's relics.",
   "========== Hextech Runes ==========": "========== Hextech Runes ==========",
-  "YUWANCARD-SIN_OF_WRATH_GUARD_POWER.title": "Guard",
-  "YUWANCARD-SIN_OF_WRATH_GUARD_POWER.description": "Temporary HP buffer. Absorbs an equal amount of HP damage after block is bypassed. Removed at end of turn.",
+  "YUWANCARD-ABSORPTION_POWER.title": "Absorption",
+  "YUWANCARD-ABSORPTION_POWER.description": "Temporary HP buffer. Absorbs an equal amount of HP damage after block is bypassed. Removed at end of turn.",
   "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.title": "Piglet Guard Marker",
   "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.description": "Tracks the remaining number of attacks the Piglet Guard minion can absorb."
 }

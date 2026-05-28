@@ -9,13 +9,11 @@ using YuWanCard.Core.HealthBar;
 
 namespace YuWanCard.Powers;
 
-public class SinOfWrathGuardPower : YuWanPowerModel, IHealthBarOverlaySource
+public class AbsorptionPower : YuWanPowerModel, IHealthBarOverlaySource
 {
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Counter;
-
-    protected override string IconBasePath => "res://YuWanCard/images/integrations/hextech/powers/sin_of_wrath_guard_power.png";
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("GuardAmount", 2m)];
 

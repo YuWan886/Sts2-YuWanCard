@@ -25,7 +25,7 @@ public sealed class SinOfWrathRune : HextechSharedRuneBase
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromPower<StrengthPower>(),
-        HoverTipFactory.FromPower<SinOfWrathGuardPower>()
+        HoverTipFactory.FromPower<AbsorptionPower>()
     ];
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
@@ -50,6 +50,6 @@ public sealed class SinOfWrathRune : HextechSharedRuneBase
 
         Flash();
         await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars.Strength.BaseValue, Owner.Creature, cardSource);
-        await PowerCmd.Apply<SinOfWrathGuardPower>(Owner.Creature, DynamicVars["GuardAmount"].BaseValue, Owner.Creature, cardSource);
+        await PowerCmd.Apply<AbsorptionPower>(Owner.Creature, DynamicVars["GuardAmount"].BaseValue, Owner.Creature, cardSource);
     }
 }

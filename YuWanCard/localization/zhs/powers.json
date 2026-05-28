@@ -133,7 +133,7 @@
   "YUWANCARD-REGEN_TRAIT.description": "在你的回合开始时，回复最大生命值10%的生命值。",
   "YUWANCARD-REGEN_TRAIT.smartDescription": "在你的回合开始时，回复最大生命值{RegenPercent}%的生命值。",
   "YUWANCARD-FIERY_TRAIT.title": "烈焰",
-  "YUWANCARD-FIERY_TRAIT.description": "受到攻击时，对攻击者造成3点伤害。",
+  "YUWANCARD-FIERY_TRAIT.description": "受到攻击时，对攻击者造成1点伤害。",
   "YUWANCARD-FIERY_TRAIT.smartDescription": "受到攻击时，对攻击者造成{FieryDamage}点伤害。",
   "YUWANCARD-WEAKNESS_TRAIT.title": "虚弱",
   "YUWANCARD-WEAKNESS_TRAIT.description": "攻击命中玩家时，施加1层[gold]虚弱[/gold]。",
@@ -194,8 +194,8 @@
   "YUWANCARD-RAGNAROK_TRAIT.description": "在你的回合开始时，使玩家的一个遗物失效。",
   "YUWANCARD-RAGNAROK_TRAIT.smartDescription": "在你的回合开始时，使玩家的一个遗物失效。",
   "========== 海克斯符文 ==========": "========== 海克斯符文 ==========",
-  "YUWANCARD-SIN_OF_WRATH_GUARD_POWER.title": "临时血量",
-  "YUWANCARD-SIN_OF_WRATH_GUARD_POWER.description": "在护甲穿透后吸收伤害。",
+  "YUWANCARD-ABSORPTION_POWER.title": "伤害吸收",
+  "YUWANCARD-ABSORPTION_POWER.description": "在护甲穿透后吸收伤害。",
   "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.title": "小猪护卫",
   "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.description": "小猪护卫可吸收的攻击次数。"
 }

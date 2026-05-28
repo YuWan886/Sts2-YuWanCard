@@ -10,6 +10,9 @@ namespace YuWanCard.Malice;
 
 public static class MaliceTraitDistributor
 {
+    private const float DefaultTraitSuppressionChance = 0.10f;
+    private const float MinionTraitSuppressionChance = 0.10f;
+
     private enum TraitRarity
     {
         Common,
@@ -58,23 +61,29 @@ public static class MaliceTraitDistributor
             return;
         }
 
+        bool isMinion = MaliceHelper.IsMinionEnemy(creature);
+        if (isMinion && await NormalizeMinionTraitsIfNeeded(creature))
+        {
+            return;
+        }
+
         if (creature.GetPower<MaliceTraitMarkerPower>() != null)
         {
             return;
         }
 
-        int budget = GetTraitBudget(creature, maliceLevel);
+        int budget = GetTraitBudget(creature, maliceLevel, isMinion);
         if (budget <= 0)
         {
             return;
         }
 
-        if (HasSuppression(creature, budget))
+        if (HasSuppression(creature, budget, isMinion))
         {
             return;
         }
 
-        var available = GetAvailableTraits(maliceLevel)
+        var available = GetAvailableTraits(maliceLevel, isMinion)
             .Where(t => creature.GetPower(ModelDb.GetId(t.PowerType)) == null)
             .ToList();
         if (available.Count == 0)
@@ -82,19 +91,20 @@ public static class MaliceTraitDistributor
             return;
         }
 
+        int actNumber = GetActNumber(creature);
         int traitCount = Math.Min(budget, available.Count);
         int totalTraitCount = traitCount;
         for (int i = 0; i < traitCount; i++)
         {
-            int index = creature.CombatState!.RunState.Rng.UpFront.NextInt(available.Count);
+            int index = ChooseWeightedTraitIndex(creature, available, actNumber, isMinion);
             var selected = available[index];
             available.RemoveAt(index);
             await ApplyTrait(creature, selected.PowerType, 1);
         }
 
-        if (traitCount > 0 && creature.CombatState!.RunState.Players.Any(p => p.GetRelic<PrideMalice>() != null))
+        if (!isMinion && traitCount > 0 && creature.CombatState!.RunState.Players.Any(p => p.GetRelic<PrideMalice>() != null))
         {
-            totalTraitCount += await MaybeApplyExtraTraitFromPride(creature, maliceLevel, available);
+            totalTraitCount += await MaybeApplyExtraTraitFromPride(creature, maliceLevel, available, actNumber);
         }
 
         if (totalTraitCount > 0)
@@ -103,7 +113,42 @@ public static class MaliceTraitDistributor
         }
     }
 
-    private static async Task<int> MaybeApplyExtraTraitFromPride(Creature creature, int maliceLevel, List<(Type PowerType, TraitRarity Rarity)> remaining)
+    private static async Task<bool> NormalizeMinionTraitsIfNeeded(Creature creature)
+    {
+        List<MaliceTraitPowerBase> existingTraits = creature.Powers.OfType<MaliceTraitPowerBase>().ToList();
+        var marker = creature.GetPower<MaliceTraitMarkerPower>();
+
+        if (existingTraits.Count == 0)
+        {
+            if (marker != null)
+            {
+                await PowerCmd.Remove(marker);
+            }
+
+            return false;
+        }
+
+        if (existingTraits.Count == 1 && marker?.Amount == 1)
+        {
+            return true;
+        }
+
+        foreach (MaliceTraitPowerBase trait in existingTraits)
+        {
+            await PowerCmd.Remove(trait);
+        }
+
+        if (marker != null)
+        {
+            await PowerCmd.Remove(marker);
+        }
+
+        await ApplyTrait(creature, existingTraits[0].GetType(), 1);
+        await PowerCmd.Apply<MaliceTraitMarkerPower>(creature, 1, creature, null);
+        return true;
+    }
+
+    private static async Task<int> MaybeApplyExtraTraitFromPride(Creature creature, int maliceLevel, List<(Type PowerType, TraitRarity Rarity)> remaining, int actNumber)
     {
         if (remaining.Count == 0)
         {
@@ -116,19 +161,24 @@ public static class MaliceTraitDistributor
             return 0;
         }
 
-        var available = remaining.Where(t => IsTraitAvailableAtMalice(t.Rarity, maliceLevel)).ToList();
+        var available = remaining.Where(t => IsTraitAvailableAtMalice(t.Rarity, maliceLevel, isMinion: false)).ToList();
         if (available.Count == 0)
         {
             return 0;
         }
 
-        int index = creature.CombatState.RunState.Rng.UpFront.NextInt(available.Count);
+        int index = ChooseWeightedTraitIndex(creature, available, actNumber, isMinion: false);
         await ApplyTrait(creature, available[index].PowerType, 1);
         return 1;
     }
 
-    private static int GetTraitBudget(Creature creature, int maliceLevel)
+    private static int GetTraitBudget(Creature creature, int maliceLevel, bool isMinion)
     {
+        if (isMinion)
+        {
+            return 1;
+        }
+
         var room = creature.CombatState?.RunState?.CurrentRoom;
         bool isBoss = room?.RoomType == MegaCrit.Sts2.Core.Rooms.RoomType.Boss || creature.IsPrimaryEnemy && room?.IsVictoryRoom == false && creature.Monster?.Title?.GetFormattedText()?.Contains("Boss", StringComparison.OrdinalIgnoreCase) == true;
         bool isElite = room?.RoomType == MegaCrit.Sts2.Core.Rooms.RoomType.Elite;
@@ -164,29 +214,118 @@ public static class MaliceTraitDistributor
         return normalBudget;
     }
 
-    private static bool HasSuppression(Creature creature, int budget)
+    private static bool HasSuppression(Creature creature, int budget, bool isMinion)
     {
         if (budget <= 0)
         {
             return true;
         }
 
-        return creature.CombatState!.RunState.Rng.UpFront.NextFloat() < 0.10f;
+        float suppressionChance = isMinion ? MinionTraitSuppressionChance : DefaultTraitSuppressionChance;
+        return creature.CombatState!.RunState.Rng.UpFront.NextFloat() < suppressionChance;
     }
 
-    private static List<(Type PowerType, TraitRarity Rarity)> GetAvailableTraits(int maliceLevel)
+    private static List<(Type PowerType, TraitRarity Rarity)> GetAvailableTraits(int maliceLevel, bool isMinion)
     {
-        return TraitPool.Where(t => IsTraitAvailableAtMalice(t.Rarity, maliceLevel)).ToList();
+        return TraitPool.Where(t => IsTraitAvailableAtMalice(t.Rarity, maliceLevel, isMinion)).ToList();
     }
 
-    private static bool IsTraitAvailableAtMalice(TraitRarity rarity, int maliceLevel) => rarity switch
+    private static bool IsTraitAvailableAtMalice(TraitRarity rarity, int maliceLevel, bool isMinion)
     {
-        TraitRarity.Common => maliceLevel >= 1,
-        TraitRarity.Uncommon => maliceLevel >= 4,
-        TraitRarity.Rare => maliceLevel >= 6,
-        TraitRarity.Legendary => maliceLevel >= 9,
-        _ => false
-    };
+        if (isMinion)
+        {
+            return rarity is TraitRarity.Common or TraitRarity.Uncommon;
+        }
+
+        return rarity switch
+        {
+            TraitRarity.Common => maliceLevel >= 1,
+            TraitRarity.Uncommon => maliceLevel >= 4,
+            TraitRarity.Rare => maliceLevel >= 6,
+            TraitRarity.Legendary => maliceLevel >= 9,
+            _ => false
+        };
+    }
+
+    private static int ChooseWeightedTraitIndex(
+        Creature creature,
+        List<(Type PowerType, TraitRarity Rarity)> available,
+        int actNumber,
+        bool isMinion)
+    {
+        List<(int Index, int Weight)> weighted =
+            available.Select((trait, index) => (Index: index, Weight: GetTraitWeight(trait.Rarity, actNumber, isMinion)))
+                .Where(x => x.Weight > 0)
+                .ToList();
+
+        if (weighted.Count == 0)
+        {
+            return creature.CombatState!.RunState.Rng.UpFront.NextInt(available.Count);
+        }
+
+        int totalWeight = weighted.Sum(x => x.Weight);
+        int roll = creature.CombatState!.RunState.Rng.UpFront.NextInt(totalWeight);
+        int cumulative = 0;
+        foreach (var entry in weighted)
+        {
+            cumulative += entry.Weight;
+            if (roll < cumulative)
+            {
+                return entry.Index;
+            }
+        }
+
+        return weighted[^1].Index;
+    }
+
+    private static int GetTraitWeight(TraitRarity rarity, int actNumber, bool isMinion)
+    {
+        if (isMinion)
+        {
+            return rarity switch
+            {
+                TraitRarity.Common => Math.Max(20, 80 - (actNumber - 1) * 20),
+                TraitRarity.Uncommon => Math.Min(80, 20 + (actNumber - 1) * 20),
+                _ => 0
+            };
+        }
+
+        return actNumber switch
+        {
+            <= 1 => rarity switch
+            {
+                TraitRarity.Common => 70,
+                TraitRarity.Uncommon => 30,
+                _ => 0
+            },
+            2 => rarity switch
+            {
+                TraitRarity.Common => 50,
+                TraitRarity.Uncommon => 35,
+                TraitRarity.Rare => 15,
+                _ => 0
+            },
+            3 => rarity switch
+            {
+                TraitRarity.Common => 35,
+                TraitRarity.Uncommon => 35,
+                TraitRarity.Rare => 22,
+                TraitRarity.Legendary => 8,
+                _ => 0
+            },
+            _ => rarity switch
+            {
+                TraitRarity.Common => 25,
+                TraitRarity.Uncommon => 35,
+                TraitRarity.Rare => 25,
+                TraitRarity.Legendary => 15,
+                _ => 0
+            }
+        };
+    }
+
+    private static int GetActNumber(Creature creature) =>
+        (creature.CombatState?.RunState?.CurrentActIndex ?? 0) + 1;
 
     private static async Task ApplyTrait(Creature creature, Type powerType, int amount)
     {

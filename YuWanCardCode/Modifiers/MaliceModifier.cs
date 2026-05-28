@@ -1,9 +1,11 @@
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
@@ -11,6 +13,8 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Malice;
+using YuWanCard.Powers;
+using YuWanCard.Powers.MaliceTraits;
 using YuWanCard.Relics.Malice;
 
 namespace YuWanCard.Modifiers;
@@ -48,9 +52,9 @@ public sealed class MaliceModifier : YuWanModifierModel
         MainFile.Logger.Info($"MaliceModifier: loaded with malice {YuWanCard_MaliceLevel}");
     }
 
-    public override async Task AfterRoomEntered(AbstractRoom room)
+    public override async Task BeforeCombatStartLate()
     {
-        if (room is not CombatRoom combatRoom)
+        if (RunState.CurrentRoom is not CombatRoom combatRoom)
         {
             return;
         }
@@ -65,6 +69,22 @@ public sealed class MaliceModifier : YuWanModifierModel
     {
         await ApplyTraitsIfNeeded(creature);
         ApplyHpScaling(creature);
+    }
+
+    public override async Task AfterPowerAmountChanged(PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
+    {
+        if (power is not MinionPower || power.Owner == null || amount <= 0)
+        {
+            return;
+        }
+
+        if (MaliceHelper.IsTraitEnemy(power.Owner))
+        {
+            await RerollTraitsForLateMinion(power.Owner);
+            return;
+        }
+
+        await ApplyTraitsIfNeeded(power.Owner);
     }
 
     public override bool TryModifyRewards(Player player, List<Reward> rewards, AbstractRoom? room)
@@ -130,6 +150,22 @@ public sealed class MaliceModifier : YuWanModifierModel
         }
 
         await MaliceTraitDistributor.AssignTraits(creature, EffectiveMaliceLevel, this);
+    }
+
+    private async Task RerollTraitsForLateMinion(Creature creature)
+    {
+        if (!MaliceHelper.IsMinionEnemy(creature))
+        {
+            return;
+        }
+
+        foreach (PowerModel trait in creature.Powers.OfType<MaliceTraitPowerBase>().Cast<PowerModel>().ToList())
+        {
+            await PowerCmd.Remove(trait);
+        }
+
+        await PowerCmd.Remove<MaliceTraitMarkerPower>(creature);
+        await ApplyTraitsIfNeeded(creature);
     }
 
     public override Task AfterDeath(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)

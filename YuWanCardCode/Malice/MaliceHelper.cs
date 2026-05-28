@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Modifiers;
 using YuWanCard.Powers;
@@ -33,6 +34,9 @@ public static class MaliceHelper
 
         return creature.GetPower<MaliceTraitMarkerPower>() != null;
     }
+
+    public static bool IsMinionEnemy(Creature? creature) =>
+        IsEnemyCombat(creature) && creature!.GetPower<MinionPower>() != null;
 
     public static bool IsEnemyCombat(Creature? creature) =>
         creature is { Side: CombatSide.Enemy, CombatState: not null };
