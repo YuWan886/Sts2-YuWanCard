@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Malice;
+using YuWanCard.Modifiers;
 
 namespace YuWanCard.Relics.Malice;
 
@@ -22,7 +23,9 @@ public abstract class MaliceRelicModel : YuWanRelicModel
 
     public override bool IsAllowed(IRunState runState)
     {
-        return MaliceHelper.HasMalice(1);
+        if (runState is not RunState run)
+            return true;
+        return MaliceModifier.GetMaliceModifier(run)?.EffectiveMaliceLevel >= 1;
     }
 
     public override bool IsAllowedInShops => false;

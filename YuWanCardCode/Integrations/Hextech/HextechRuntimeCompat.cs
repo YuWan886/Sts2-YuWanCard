@@ -1,7 +1,7 @@
 using System.Reflection;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Models;
+using YuWanCard.Core.Interop;
 using YuWanCard.Relics;
 using YuWanCard.Hextech.Relics;
 
@@ -28,15 +28,16 @@ public static class HextechRuntimeCompat
             return;
         }
 
-        if (!IsHextechLoaded(out Assembly? hextechAssembly))
+        ModCompatContext? context = ModCompat.TryCreate(HextechModId, "HextechRuntimeCompat");
+        if (context == null)
         {
             return;
         }
 
         _installed = true;
         MainFile.Logger.Info("HextechRuntimeCompat: HextechRunes detected, applying Pig rune runtime integration");
-        PatchHextechCatalog(harmony, hextechAssembly!);
-        PatchScopedRuntimeRecognition(harmony, hextechAssembly!);
+        PatchHextechCatalog(harmony, context);
+        PatchScopedRuntimeRecognition(harmony, context);
         PatchCompendiumDisplayCompat(harmony);
     }
 
@@ -45,103 +46,71 @@ public static class HextechRuntimeCompat
         TryInstall(new Harmony(MainFile.ModId));
     }
 
-    private static bool IsHextechLoaded(out Assembly? assembly)
+    private static void PatchHextechCatalog(Harmony harmony, ModCompatContext context)
     {
-        assembly = null;
-        foreach (var mod in ModManager.GetLoadedMods())
-        {
-            if (mod.manifest?.id == HextechModId && mod.assembly != null)
-            {
-                assembly = mod.assembly;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static void PatchHextechCatalog(Harmony harmony, Assembly hextechAssembly)
-    {
-        Type? catalogType = hextechAssembly.GetType(HextechCatalogTypeName);
+        Type? catalogType = context.ResolveType(HextechCatalogTypeName);
         if (catalogType == null)
         {
             MainFile.Logger.Warn("HextechRuntimeCompat: HextechCatalog type not found");
             return;
         }
 
-        PatchMethod(harmony, catalogType, "GetAllSelectableRuneTypes", nameof(GetAllSelectableRuneTypesPostfix));
-        PatchMethod(harmony, catalogType, "GetGenericSelectableRuneTypes", nameof(GetGenericSelectableRuneTypesPostfix));
-        PatchMethod(harmony, catalogType, "GetPlayerRuneTypesForRarity", nameof(GetPlayerRuneTypesForRarityPostfix));
-        PatchMethod(harmony, catalogType, "GetCharacterRuneGroups", nameof(GetCharacterRuneGroupsPostfix));
-        PatchMethod(harmony, catalogType, "GetCanonicalForges", nameof(GetCanonicalForgesPostfix));
-        PatchMethod(harmony, catalogType, "GetCanonicalVisibleCustomRelics", nameof(GetCanonicalVisibleCustomRelicsPostfix));
-        PatchMethod(harmony, catalogType, "IsPlayerRuneTypeSelectable", nameof(IsPlayerRuneTypeSelectablePostfix));
-        PatchMethod(harmony, catalogType, "GetPlayerRunePoolKey", nameof(GetPlayerRunePoolKeyPostfix));
-        PatchMethod(harmony, catalogType, "IsAvailableForPlayer", nameof(IsAvailableForPlayerPostfix));
-        PatchMethod(harmony, catalogType, "IsPlayerRuneAllowedInAct", nameof(IsPlayerRuneAllowedInActPostfix));
-        PatchMethod(harmony, catalogType, "IsHextechRelic", nameof(IsHextechRelicScopedPostfix));
-        PatchMethod(harmony, catalogType, "IsHextechForgeRelic", nameof(IsHextechForgeRelicPostfix));
-        PatchMethod(harmony, catalogType, "TryGetPlayerRuneRarity", nameof(TryGetPlayerRuneRarityScopedPostfix));
-        PatchMethod(harmony, catalogType, "GetMutuallyExclusivePlayerRuneIds", nameof(GetMutuallyExclusivePlayerRuneIdsPostfix));
-    }
-
-    private static void PatchMethod(Harmony harmony, Type type, string methodName, string postfixName)
-    {
-        MethodInfo? original = AccessTools.Method(type, methodName);
-        MethodInfo? postfix = AccessTools.Method(typeof(HextechRuntimeCompat), postfixName);
-        if (original == null || postfix == null)
-        {
-            MainFile.Logger.Warn($"HextechRuntimeCompat: skipped patch {type.Name}.{methodName}");
-            return;
-        }
-
-        harmony.Patch(original, postfix: new HarmonyMethod(postfix));
-    }
-
-    private static void PatchScopedRuntimeRecognition(Harmony harmony, Assembly hextechAssembly)
-    {
-        PatchScopedMethods(
+        context.PatchMethods(
             harmony,
-            hextechAssembly.GetType(HextechRuneGrantHelperTypeName),
+            catalogType,
+            typeof(HextechRuntimeCompat),
+            prefixName: null,
+            postfixName: nameof(GetAllSelectableRuneTypesPostfix),
+            "GetAllSelectableRuneTypes");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetGenericSelectableRuneTypesPostfix), "GetGenericSelectableRuneTypes");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetPlayerRuneTypesForRarityPostfix), "GetPlayerRuneTypesForRarity");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCharacterRuneGroupsPostfix), "GetCharacterRuneGroups");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCanonicalForgesPostfix), "GetCanonicalForges");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCanonicalVisibleCustomRelicsPostfix), "GetCanonicalVisibleCustomRelics");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsPlayerRuneTypeSelectablePostfix), "IsPlayerRuneTypeSelectable");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetPlayerRunePoolKeyPostfix), "GetPlayerRunePoolKey");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsAvailableForPlayerPostfix), "IsAvailableForPlayer");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsPlayerRuneAllowedInActPostfix), "IsPlayerRuneAllowedInAct");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsHextechRelicScopedPostfix), "IsHextechRelic");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsHextechForgeRelicPostfix), "IsHextechForgeRelic");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(TryGetPlayerRuneRarityScopedPostfix), "TryGetPlayerRuneRarity");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetMutuallyExclusivePlayerRuneIdsPostfix), "GetMutuallyExclusivePlayerRuneIds");
+    }
+
+    private static void PatchScopedRuntimeRecognition(Harmony harmony, ModCompatContext context)
+    {
+        context.PatchMethods(
+            harmony,
+            context.ResolveType(HextechRuneGrantHelperTypeName),
+            typeof(HextechRuntimeCompat),
+            nameof(BeginOwnedRuneRecognitionScope),
+            nameof(EndOwnedRuneRecognitionScope),
             "BuildObtainableRunePool",
             "ReplaceOwnedHextechRunesWithRandomRunes");
-        PatchScopedMethods(
+        context.PatchMethods(
             harmony,
-            hextechAssembly.GetType(HextechRuneSelectionCoordinatorTypeName),
+            context.ResolveType(HextechRuneSelectionCoordinatorTypeName),
+            typeof(HextechRuntimeCompat),
+            nameof(BeginOwnedRuneRecognitionScope),
+            nameof(EndOwnedRuneRecognitionScope),
             "BuildSelectableRunePool");
-        PatchScopedMethods(
+        context.PatchMethods(
             harmony,
-            hextechAssembly.GetType(HextechMayhemModifierTypeName),
+            context.ResolveType(HextechMayhemModifierTypeName),
+            typeof(HextechRuntimeCompat),
+            nameof(BeginOwnedRuneRecognitionScope),
+            nameof(EndOwnedRuneRecognitionScope),
             "GetHighestActResolvedByPlayerRuneCounts",
             "TryInferRarityForActFromPlayerRelics",
             "DescribePlayerHexCounts",
             "GetMinimumPlayerHexCount");
-        PatchScopedMethods(
+        context.PatchMethods(
             harmony,
-            hextechAssembly.GetType(HextechTelemetryTypeName),
+            context.ResolveType(HextechTelemetryTypeName),
+            typeof(HextechRuntimeCompat),
+            nameof(BeginOwnedRuneRecognitionScope),
+            nameof(EndOwnedRuneRecognitionScope),
             "CreateRunTelemetry");
-    }
-
-    private static void PatchScopedMethods(Harmony harmony, Type? type, params string[] methodNames)
-    {
-        if (type == null)
-        {
-            return;
-        }
-
-        MethodInfo? prefix = AccessTools.Method(typeof(HextechRuntimeCompat), nameof(BeginOwnedRuneRecognitionScope));
-        MethodInfo? postfix = AccessTools.Method(typeof(HextechRuntimeCompat), nameof(EndOwnedRuneRecognitionScope));
-        foreach (string methodName in methodNames)
-        {
-            MethodInfo? original = AccessTools.Method(type, methodName);
-            if (original == null || prefix == null || postfix == null)
-            {
-                MainFile.Logger.Warn($"HextechRuntimeCompat: skipped scoped patch {type.Name}.{methodName}");
-                continue;
-            }
-
-            harmony.Patch(original, prefix: new HarmonyMethod(prefix), postfix: new HarmonyMethod(postfix));
-        }
     }
 
     private static void PatchCompendiumDisplayCompat(Harmony harmony)

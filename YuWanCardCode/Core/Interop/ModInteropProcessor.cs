@@ -16,7 +16,7 @@ public static class ModInteropProcessor
     /// </summary>
     public static void Process(Harmony harmony, Assembly sourceAssembly)
     {
-        Dictionary<string, Assembly> loaded = BuildLoadedMap();
+        IReadOnlyDictionary<string, Assembly> loaded = ModCompat.GetLoadedAssemblies();
 
         foreach (var type in sourceAssembly.GetTypes())
         {
@@ -32,17 +32,6 @@ public static class ModInteropProcessor
             MainFile.Logger.Debug($"ModInterop: processing {type.Name} → {interop.ModId}");
             ProcessType(harmony, type, targetAssembly, interop.Type, requireStatic: true);
         }
-    }
-
-    private static Dictionary<string, Assembly> BuildLoadedMap()
-    {
-        var map = new Dictionary<string, Assembly>();
-        foreach (var mod in ModManager.GetLoadedMods())
-        {
-            if (mod.manifest?.id is { } id && mod.assembly is { } asm)
-                map[id] = asm;
-        }
-        return map;
     }
 
     private static void ProcessType(Harmony harmony, Type interopType, Assembly targetAssembly,
@@ -236,7 +225,7 @@ public static class ModInteropProcessor
 
     private static Type? ResolveType(string typeName, Assembly targetAssembly)
     {
-        return Type.GetType($"{typeName}, {targetAssembly}") ?? targetAssembly.GetType(typeName);
+        return ModCompat.ResolveType(targetAssembly, typeName);
     }
 
     private static (MethodInfo? method, int offset) FindTargetMethod(

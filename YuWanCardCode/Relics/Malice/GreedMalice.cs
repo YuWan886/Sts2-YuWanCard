@@ -1,12 +1,12 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
-using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
+using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics.Malice;
 
-[Pool(typeof(SharedRelicPool))]
+[Pool(typeof(MaliceRelicPool))]
 public sealed class GreedMalice : MaliceRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Rare;
@@ -33,7 +33,7 @@ public sealed class GreedMalice : MaliceRelicModel
             return false;
         }
 
-        rewards.Add(new GoldReward(15 * modifier.YuWanCard_MaliceTraitKills, player));
+        rewards.Add(new GoldReward(40 * modifier.YuWanCard_MaliceTraitKills, player));
         return true;
     }
 }

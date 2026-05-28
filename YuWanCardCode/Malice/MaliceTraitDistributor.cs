@@ -4,14 +4,13 @@ using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Modifiers;
 using YuWanCard.Powers;
 using YuWanCard.Powers.MaliceTraits;
-using YuWanCard.Relics.Malice;
 
 namespace YuWanCard.Malice;
 
 public static class MaliceTraitDistributor
 {
-    private const float DefaultTraitSuppressionChance = 0.10f;
-    private const float MinionTraitSuppressionChance = 0.10f;
+    private const float MinTraitApplicationChance = 0.50f;
+    private const float MaxTraitApplicationChance = 0.90f;
 
     private enum TraitRarity
     {
@@ -22,6 +21,7 @@ public static class MaliceTraitDistributor
     }
 
     private static readonly IReadOnlyList<(Type PowerType, TraitRarity Rarity)> TraitPool =
+
     [
         (typeof(TankTrait), TraitRarity.Common),
         (typeof(SpeedyTrait), TraitRarity.Common),
@@ -78,7 +78,7 @@ public static class MaliceTraitDistributor
             return;
         }
 
-        if (HasSuppression(creature, budget, isMinion))
+        if (HasSuppression(creature, budget, isMinion, maliceLevel))
         {
             return;
         }
@@ -93,7 +93,6 @@ public static class MaliceTraitDistributor
 
         int actNumber = GetActNumber(creature);
         int traitCount = Math.Min(budget, available.Count);
-        int totalTraitCount = traitCount;
         for (int i = 0; i < traitCount; i++)
         {
             int index = ChooseWeightedTraitIndex(creature, available, actNumber, isMinion);
@@ -102,14 +101,9 @@ public static class MaliceTraitDistributor
             await ApplyTrait(creature, selected.PowerType, 1);
         }
 
-        if (!isMinion && traitCount > 0 && creature.CombatState!.RunState.Players.Any(p => p.GetRelic<PrideMalice>() != null))
+        if (traitCount > 0)
         {
-            totalTraitCount += await MaybeApplyExtraTraitFromPride(creature, maliceLevel, available, actNumber);
-        }
-
-        if (totalTraitCount > 0)
-        {
-            await PowerCmd.Apply<MaliceTraitMarkerPower>(creature, totalTraitCount, creature, null);
+            await PowerCmd.Apply<MaliceTraitMarkerPower>(creature, traitCount, creature, null);
         }
     }
 
@@ -146,30 +140,6 @@ public static class MaliceTraitDistributor
         await ApplyTrait(creature, existingTraits[0].GetType(), 1);
         await PowerCmd.Apply<MaliceTraitMarkerPower>(creature, 1, creature, null);
         return true;
-    }
-
-    private static async Task<int> MaybeApplyExtraTraitFromPride(Creature creature, int maliceLevel, List<(Type PowerType, TraitRarity Rarity)> remaining, int actNumber)
-    {
-        if (remaining.Count == 0)
-        {
-            return 0;
-        }
-
-        float roll = creature.CombatState!.RunState.Rng.UpFront.NextFloat();
-        if (roll > 0.5f)
-        {
-            return 0;
-        }
-
-        var available = remaining.Where(t => IsTraitAvailableAtMalice(t.Rarity, maliceLevel, isMinion: false)).ToList();
-        if (available.Count == 0)
-        {
-            return 0;
-        }
-
-        int index = ChooseWeightedTraitIndex(creature, available, actNumber, isMinion: false);
-        await ApplyTrait(creature, available[index].PowerType, 1);
-        return 1;
     }
 
     private static int GetTraitBudget(Creature creature, int maliceLevel, bool isMinion)
@@ -214,14 +184,17 @@ public static class MaliceTraitDistributor
         return normalBudget;
     }
 
-    private static bool HasSuppression(Creature creature, int budget, bool isMinion)
+    private static bool HasSuppression(Creature creature, int budget, bool isMinion, int maliceLevel)
     {
         if (budget <= 0)
         {
             return true;
         }
 
-        float suppressionChance = isMinion ? MinionTraitSuppressionChance : DefaultTraitSuppressionChance;
+        float applicationChance = MinTraitApplicationChance
+            + (maliceLevel - 1) / (float)(MaliceManager.MaxMaliceLevel - 1)
+            * (MaxTraitApplicationChance - MinTraitApplicationChance);
+        float suppressionChance = 1.0f - applicationChance;
         return creature.CombatState!.RunState.Rng.UpFront.NextFloat() < suppressionChance;
     }
 

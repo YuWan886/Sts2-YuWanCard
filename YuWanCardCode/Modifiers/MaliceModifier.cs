@@ -98,13 +98,28 @@ public sealed class MaliceModifier : YuWanModifierModel
         if (EffectiveMaliceLevel <= 0 || room == null)
             return false;
 
-        if (room.RoomType != RoomType.Boss)
+        bool isElite = room.RoomType == RoomType.Elite;
+        bool isBoss = room.RoomType == RoomType.Boss;
+
+        if (!isElite && !isBoss)
             return false;
 
-        if (RunState.Rng.Niche.NextFloat() > 0.25f)
+        float chance = isBoss ? 1.0f : 0.25f;
+        if (RunState.Rng.Niche.NextFloat() > chance)
             return false;
 
-        rewards.Add(new RelicReward(ModelDb.Relic<PrideMalice>().ToMutable(), player));
+        var maliceRelics = new RelicModel[]
+        {
+            ModelDb.Relic<EnvyMalice>(),
+            ModelDb.Relic<GluttonyMalice>(),
+            ModelDb.Relic<GreedMalice>(),
+            ModelDb.Relic<LustMalice>(),
+            ModelDb.Relic<PrideMalice>(),
+            ModelDb.Relic<SlothMalice>(),
+            ModelDb.Relic<WrathMalice>(),
+        };
+        var relic = maliceRelics[RunState.Rng.Niche.NextInt(maliceRelics.Length)];
+        rewards.Add(new RelicReward(relic.ToMutable(), player));
         return true;
     }
 

@@ -2,15 +2,15 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models.RelicPools;
 using YuWanCard.Malice;
+using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics.Malice;
 
-[Pool(typeof(SharedRelicPool))]
+[Pool(typeof(MaliceRelicPool))]
 public sealed class GluttonyMalice : MaliceRelicModel
 {
-    public override RelicRarity Rarity => RelicRarity.Uncommon;
+    public override RelicRarity Rarity => RelicRarity.Rare;
 
     public GluttonyMalice() : base(true)
     {
@@ -24,6 +24,6 @@ public sealed class GluttonyMalice : MaliceRelicModel
         }
 
         Flash();
-        await CreatureCmd.Heal(Owner.Creature, 5, playAnim: true);
+        await CreatureCmd.Heal(Owner.Creature, 10, playAnim: true);
     }
 }

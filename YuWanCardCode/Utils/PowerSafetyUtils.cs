@@ -35,7 +35,7 @@ public static class PowerSafetyUtils
         // Malice Traits
         ModelDb.Power<MaliceTraitMarkerPower>,
         ModelDb.Power<MaliceTraitPowerBase>,
-        
+
         // Mock Powers
         ModelDb.Power<MockCloneCardsOnPlayPower>,
         ModelDb.Power<MockFreeCardsPower>,

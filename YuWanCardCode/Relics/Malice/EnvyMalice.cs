@@ -1,15 +1,15 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
-using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
+using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics.Malice;
 
-[Pool(typeof(SharedRelicPool))]
+[Pool(typeof(MaliceRelicPool))]
 public sealed class EnvyMalice : MaliceRelicModel
 {
-    public override RelicRarity Rarity => RelicRarity.Uncommon;
+    public override RelicRarity Rarity => RelicRarity.Rare;
 
     public EnvyMalice() : base(true)
     {
@@ -33,7 +33,7 @@ public sealed class EnvyMalice : MaliceRelicModel
             return false;
         }
 
-        rewards.Add(new CardReward(MegaCrit.Sts2.Core.Runs.CardCreationOptions.ForRoom(player, room.RoomType), 3, player));
+        rewards.Add(new CardReward(MegaCrit.Sts2.Core.Runs.CardCreationOptions.ForRoom(player, room.RoomType), 4, player));
         return true;
     }
 }

@@ -13,7 +13,12 @@ public sealed class ShulkerTrait : MaliceTraitPowerBase
             return;
         }
 
-        Flash();
-        await PowerCmd.Apply<SlipperyPower>(Owner, 1 * Amount, Owner, null);
+        int currentSlippery = Owner.GetPower<SlipperyPower>()?.Amount ?? 0;
+        int toApply = Math.Min(2 * Amount, 4 - currentSlippery);
+        if (toApply > 0)
+        {
+            Flash();
+            await PowerCmd.Apply<SlipperyPower>(Owner, toApply, Owner, null);
+        }
     }
 }

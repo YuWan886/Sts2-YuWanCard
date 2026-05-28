@@ -1,15 +1,16 @@
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Runs;
-using MegaCrit.Sts2.Core.Models.RelicPools;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YuWanCard.Malice;
+using MegaCrit.Sts2.Core.ValueProps;
+using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics.Malice;
 
-[Pool(typeof(SharedRelicPool))]
+[Pool(typeof(MaliceRelicPool))]
 public sealed class PrideMalice : MaliceRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Rare;
@@ -18,14 +19,9 @@ public sealed class PrideMalice : MaliceRelicModel
     {
     }
 
-    public override bool IsAllowed(IRunState runState)
+    public override async Task AfterDamageGiven(PlayerChoiceContext choiceContext, Creature? dealer, DamageResult result, ValueProp props, Creature target, CardModel? cardSource)
     {
-        return false;
-    }
-
-    public override async Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
-    {
-        if (wasRemovalPrevented || Owner?.Creature == null || !MaliceHelper.IsTraitEnemy(creature))
+        if (dealer != Owner?.Creature || Owner?.Creature == null || result.UnblockedDamage <= 0)
         {
             return;
         }
