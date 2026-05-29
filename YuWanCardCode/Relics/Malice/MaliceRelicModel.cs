@@ -2,7 +2,6 @@ using Godot;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Core.Abstracts;
-using YuWanCard.Malice;
 using YuWanCard.Modifiers;
 
 namespace YuWanCard.Relics.Malice;

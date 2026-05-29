@@ -9,11 +9,13 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 using YuWanCard.Malice;
+using YuWanCard.Relics;
 
 namespace YuWanCard.Commands;
 
@@ -39,9 +41,9 @@ public class YwDebugCmd : AbstractConsoleCmd
 
     public override string CmdName => "yw";
 
-    public override string Args => "[sinpigrelics|regenerateancient|refreshshop|unlockmalice]";
+    public override string Args => "[sinpigrelics|regenerateancient|refreshshop|unlockmalice|maplength]";
 
-    public override string Description => "YuWanCard debug commands. 'yw sinpigrelics' - obtain all 7 sin pig relics. 'yw regenerateancient' - regenerate current ancient options. 'yw refreshshop' - reroll all shop items. 'yw unlockmalice' - unlock all Malice levels for all characters";
+    public override string Description => "YuWanCard debug commands. 'yw sinpigrelics' - obtain all 7 sin pig relics. 'yw regenerateancient' - regenerate current ancient options. 'yw refreshshop' - reroll all shop items. 'yw unlockmalice' - unlock all Malice levels for all characters. 'yw maplength <1-10>' - regenerate the current act map with a custom length multiplier.";
 
     public override bool IsNetworked => true;
 
@@ -49,7 +51,7 @@ public class YwDebugCmd : AbstractConsoleCmd
     {
         if (args.Length < 1)
         {
-            return new CmdResult(false, "Usage: yw <sinpigrelics|regenerateancient|refreshshop|unlockmalice>");
+            return new CmdResult(false, "Usage: yw <sinpigrelics|regenerateancient|refreshshop|unlockmalice|maplength>");
         }
 
         string subCmd = args[0].ToLowerInvariant();
@@ -79,7 +81,54 @@ public class YwDebugCmd : AbstractConsoleCmd
             return RefreshShop(issuingPlayer);
         }
 
-        return new CmdResult(false, $"Unknown subcommand: {subCmd}. Use 'yw sinpigrelics', 'yw regenerateancient', 'yw refreshshop', or 'yw unlockmalice'.");
+        if (subCmd == "maplength")
+        {
+            return SetMapLength(args);
+        }
+
+        return new CmdResult(false, $"Unknown subcommand: {subCmd}. Use 'yw sinpigrelics', 'yw regenerateancient', 'yw refreshshop', 'yw unlockmalice', or 'yw maplength'.");
+    }
+
+    private CmdResult SetMapLength(string[] args)
+    {
+        if (args.Length < 2 || !int.TryParse(args[1], out int multiplier) || multiplier < 1 || multiplier > 10)
+        {
+            return new CmdResult(false, "Usage: yw maplength <1-10>");
+        }
+
+        var runManager = RunManager.Instance;
+        var runState = runManager.State;
+        var currentMap = runState?.Map;
+        if (runState == null || currentMap == null)
+        {
+            return new CmdResult(false, "No map is currently available!");
+        }
+
+        if (multiplier == 1)
+        {
+            TaskHelper.RunSafely(runManager.GenerateMap());
+            return new CmdResult(true, "Regenerated the current act with standard map length.");
+        }
+
+        try
+        {
+            var scaledMap = new ScaledActMap(currentMap, multiplier);
+            runState.Map = scaledMap;
+            runState.RemoveStaleVisitedMapCoords(scaledMap);
+
+            if (NMapScreen.Instance != null)
+            {
+                NMapScreen.Instance.SetMap(scaledMap, runState.Rng.Seed, clearDrawings: true);
+            }
+
+            MainFile.Logger.Info($"YwDebugCmd: Set current act map length multiplier to {multiplier}. New rows: {scaledMap.GetRowCount()}");
+            return new CmdResult(true, $"Set current act map length to x{multiplier}. Current rows: {scaledMap.GetRowCount()}");
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"YwDebugCmd: Failed to set map length - {ex.Message}");
+            return new CmdResult(false, $"Failed to set map length: {ex.Message}");
+        }
     }
 
     private CmdResult GrantAllPigs(Player player)
@@ -237,7 +286,7 @@ public class YwDebugCmd : AbstractConsoleCmd
         {
             return new CompletionResult
             {
-                Candidates = ["sinpigrelics", "regenerateancient", "refreshshop", "unlockmalice"],
+                Candidates = ["sinpigrelics", "regenerateancient", "refreshshop", "unlockmalice", "maplength"],
                 Type = CompletionType.Subcommand,
                 ArgumentContext = CmdName
             };
@@ -264,10 +313,33 @@ public class YwDebugCmd : AbstractConsoleCmd
             {
                 candidates.Add("unlockmalice");
             }
+            if ("maplength".StartsWith(partial))
+            {
+                candidates.Add("maplength");
+            }
 
             if (candidates.Count > 0)
             {
                 return CompleteArgument(candidates, [], partial, CompletionType.Subcommand);
+            }
+        }
+
+        if (args.Length == 2 && args[0].Equals("maplength", StringComparison.OrdinalIgnoreCase))
+        {
+            string partial = args[1];
+            var candidates = new List<string>();
+            for (int value = 1; value <= 10; value++)
+            {
+                string candidate = value.ToString();
+                if (candidate.StartsWith(partial, StringComparison.OrdinalIgnoreCase))
+                {
+                    candidates.Add(candidate);
+                }
+            }
+
+            if (candidates.Count > 0)
+            {
+                return CompleteArgument(candidates, [], partial, CompletionType.Argument);
             }
         }
 

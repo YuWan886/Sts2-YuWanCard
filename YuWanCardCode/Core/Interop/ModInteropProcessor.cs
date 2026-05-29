@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Modding;
 
 namespace YuWanCard.Core.Interop;
 

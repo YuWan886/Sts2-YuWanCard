@@ -13,7 +13,7 @@ namespace YuWanCard.Enchantments;
 public sealed class Loyal : YuWanEnchantmentModel
 {
     public override bool ShowAmount => true;
-    public override bool IsStackable => false;
+    public override bool IsStackable => true;
 
     public override bool CanEnchant(CardModel card)
     {
