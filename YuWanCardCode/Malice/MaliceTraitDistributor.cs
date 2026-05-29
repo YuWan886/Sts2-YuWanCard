@@ -9,9 +9,6 @@ namespace YuWanCard.Malice;
 
 public static class MaliceTraitDistributor
 {
-    private const float MinTraitApplicationChance = 0.50f;
-    private const float MaxTraitApplicationChance = 0.90f;
-
     private enum TraitRarity
     {
         Common,
@@ -78,11 +75,6 @@ public static class MaliceTraitDistributor
             return;
         }
 
-        if (HasSuppression(creature, budget, isMinion, maliceLevel))
-        {
-            return;
-        }
-
         var available = GetAvailableTraits(maliceLevel, isMinion)
             .Where(t => creature.GetPower(ModelDb.GetId(t.PowerType)) == null)
             .ToList();
@@ -144,6 +136,11 @@ public static class MaliceTraitDistributor
 
     private static int GetTraitBudget(Creature creature, int maliceLevel, bool isMinion)
     {
+        if (maliceLevel <= 0)
+        {
+            return 0;
+        }
+
         if (isMinion)
         {
             return 1;
@@ -155,7 +152,12 @@ public static class MaliceTraitDistributor
 
         if (isBoss)
         {
-            int baseBudget = maliceLevel >= 7 ? 1 : 0;
+            int baseBudget = 1;
+            if (maliceLevel >= 7)
+            {
+                baseBudget++;
+            }
+
             if (maliceLevel >= 10)
             {
                 baseBudget++;
@@ -166,7 +168,12 @@ public static class MaliceTraitDistributor
 
         if (isElite)
         {
-            int baseBudget = maliceLevel >= 3 ? 1 : 0;
+            int baseBudget = 1;
+            if (maliceLevel >= 3)
+            {
+                baseBudget++;
+            }
+
             if (maliceLevel >= 6)
             {
                 baseBudget++;
@@ -175,27 +182,13 @@ public static class MaliceTraitDistributor
             return baseBudget;
         }
 
-        int normalBudget = maliceLevel >= 1 ? 1 : 0;
+        int normalBudget = 1;
         if (maliceLevel >= 4)
         {
             normalBudget++;
         }
 
         return normalBudget;
-    }
-
-    private static bool HasSuppression(Creature creature, int budget, bool isMinion, int maliceLevel)
-    {
-        if (budget <= 0)
-        {
-            return true;
-        }
-
-        float applicationChance = MinTraitApplicationChance
-            + (maliceLevel - 1) / (float)(MaliceManager.MaxMaliceLevel - 1)
-            * (MaxTraitApplicationChance - MinTraitApplicationChance);
-        float suppressionChance = 1.0f - applicationChance;
-        return creature.CombatState!.RunState.Rng.UpFront.NextFloat() < suppressionChance;
     }
 
     private static List<(Type PowerType, TraitRarity Rarity)> GetAvailableTraits(int maliceLevel, bool isMinion)

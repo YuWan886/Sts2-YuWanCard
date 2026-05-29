@@ -24,16 +24,16 @@ Malice 共 10 个等级，效果累积：
 
 | 等级 | 名称 | 效果 |
 |------|------|------|
-| 1 | 恶意初现 | 普通敌人获得 1 个常见词条 |
+| 1 | 恶意初现 | 所有敌人获得 1 个常见词条 |
 | 2 | 词条扩散 | 敌人 HP +5% |
-| 3 | 加深诅咒 | 精英敌人获得 1 个常见词条 |
+| 3 | 加深诅咒 | 精英敌人词条上限 +1 |
 | 4 | 腐化之力 | 罕见词条解锁；普通敌人词条上限 +1 |
 | 5 | 深渊凝视 | 敌人伤害 +10% |
-| 6 | 灵魂灼烧 | 稀有词条解锁；精英敌人词条上限 +1 |
-| 7 | 绝望蔓延 | Boss 获得 1 个词条 |
+| 6 | 灵魂灼烧 | 稀有词条解锁；精英敌人词条上限再 +1 |
+| 7 | 绝望蔓延 | Boss 词条上限 +1 |
 | 8 | 永恒诅咒 | 敌人 HP +15%（覆盖 Lv2 的 5%） |
 | 9 | 地狱之门 | 传说词条解锁 |
-| 10 | 终焉恶意 | Boss 词条上限 +1 |
+| 10 | 终焉恶意 | Boss 词条上限再 +1 |
 
 ## 词条系统
 
@@ -91,8 +91,9 @@ Malice 共 10 个等级，效果累积：
 
 1. **预算计算**
    - 普通敌人：Malice 1+ 有 1 预算，Malice 4+ 有 2 预算
-   - 精英敌人：Malice 3+ 有 1 预算，Malice 6+ 有 2 预算
-   - Boss：Malice 7+ 有 1 预算，Malice 10+ 有 2 预算
+   - 精英敌人：Malice 1+ 有 1 预算，Malice 3+ 有 2 预算，Malice 6+ 有 3 预算
+   - Boss：Malice 1+ 有 1 预算，Malice 7+ 有 2 预算，Malice 10+ 有 3 预算
+   - 召唤物（Minion）：固定 1 预算
 
 2. **稀有度门槛**
    - 根据当前 Malice 等级确定可用稀有度池
@@ -120,12 +121,19 @@ Malice 共 10 个等级，效果累积：
      | 3  | 40   | 60   |
      | 4+ | 20   | 80   |
 
-4. **分配概率**
+4. **分配方式**
    - 从可用池中随机不重复选取词条，最多选取预算数量个
-   - 获得词条的概率随恶意等级递增：恶意 1 时为 50%，线性增长至恶意 10 时为 90%
+   - 只要敌人有预算，就会实际获得词条；当前实现不再对单个敌人额外做“概率跳过”
 
-3. **标记**
+5. **标记**
    - 分配成功后施加 `MaliceTraitMarkerPower`（不可见的 Counter Power），用于标识词条敌人（影响遗物效果和击杀统计）
+
+## 多人模式
+
+- 恶意难度在多人模式下采用和原版多人进阶相同的主机权威逻辑
+- 只有主机可以在角色选择界面调整恶意难度
+- 客机面板只显示主机当前选择的恶意等级，不能本地修改，也不会把本地偏好写回 Lobby
+- 开局时使用主机确认后的 `Lobby.Modifiers` / pending modifiers 作为恶意来源，避免主客机各自读取本地偏好导致不同步
 
 ## 7 宗罪遗物
 
@@ -154,7 +162,7 @@ Malice 共 10 个等级，效果累积：
 - 等级上限不超过该角色的 MaxAscension
 - 胜利时若当前 Malice = MaxMalice 且 MaxMalice < 10，则 MaxMalice +1
 
-Daily / Custom / Multiplayer 模式不影响 Malice 进度。
+Daily / Custom 模式不影响 Malice 进度。多人模式下恶意仍由主机统一选择，但不会把客机本地偏好带入对局。
 
 ## 代码架构
 
@@ -175,12 +183,13 @@ YuWanCardCode/
 │   └── MaliceTraitDistributor.cs      # 词条随机分配器
 └── Patches/
     ├── MaliceCharacterSelectPatch.cs   # 角色选择 UI
-    └── MaliceProgressPatch.cs          # 胜利进度推进
+    ├── MaliceRunPatches.cs             # 开局修饰符同步、胜利进度推进
+    └── MaliceTopBarPatch.cs            # 顶栏恶意提示
 ```
 
 ### 关键类说明
 
-**MaliceModifier**：继承 `YuWanModifierModel`，存储 `YuWanCard_MaliceLevel` 和 `YuWanCard_MaliceTraitKills`，通过 `AfterCreatureAddedToCombat` 和 `AfterRoomEntered` 触发词条分配。
+**MaliceModifier**：继承 `YuWanModifierModel`，存储 `YuWanCard_MaliceLevel` 和 `YuWanCard_MaliceTraitKills`，通过 `BeforeCombatStartLate`、`AfterCreatureAddedToCombat` 和 `AfterPowerAmountChanged` 触发词条分配与召唤物补发。
 
 **MaliceHelper**：静态辅助类，提供 `HasMalice(level)`、`GetMaliceLevel()`、`IsTraitEnemy(creature)` 等查询方法，可在任何需要感知 Malice 状态的地方使用。
 

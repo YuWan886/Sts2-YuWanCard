@@ -71,25 +71,32 @@ public static class MaliceCharacterSelectSyncPatch
     {
         EnsureMalicePanelInitialized(screen);
 
-        var selectedButton = AccessTools.Field(typeof(NCharacterSelectScreen), "_selectedButton")?.GetValue(screen) as NCharacterSelectButton;
         var malicePanel = screen.GetNodeOrNull<NAscensionPanel>("MalicePanel");
-        if (selectedButton?.Character == null || malicePanel == null)
+        if (malicePanel == null)
         {
             return;
         }
 
-        var character = selectedButton.Character;
-        int max = MaliceManager.GetAvailableSelectionMax(character.Id);
-        int preferred = screen.Lobby.NetService.Type == NetGameType.Client
-            ? MaliceModifierPatchHelpers.GetMaliceLevel(screen.Lobby.Modifiers)
-            : MaliceManager.GetPreferredMalice(character.Id);
+        int authoritativeMaliceLevel = MaliceModifierPatchHelpers.GetMaliceLevel(screen.Lobby.Modifiers);
         if (screen.Lobby.NetService.Type == NetGameType.Client)
         {
-            max = Math.Max(max, preferred);
+            malicePanel.SetMaxAscension(authoritativeMaliceLevel);
+            malicePanel.SetAscensionLevel(authoritativeMaliceLevel);
+            ApplyClientReadOnlyState(malicePanel);
         }
+        else
+        {
+            var selectedButton = AccessTools.Field(typeof(NCharacterSelectScreen), "_selectedButton")?.GetValue(screen) as NCharacterSelectButton;
+            if (selectedButton?.Character == null)
+            {
+                return;
+            }
 
-        malicePanel.SetMaxAscension(max);
-        malicePanel.SetAscensionLevel(Math.Min(max, preferred));
+            int max = MaliceManager.GetAvailableSelectionMax(selectedButton.Character.Id);
+            int preferred = MaliceManager.GetPreferredMalice(selectedButton.Character.Id);
+            malicePanel.SetMaxAscension(max);
+            malicePanel.SetAscensionLevel(Math.Min(max, preferred));
+        }
 
         if (!malicePanel.HasMeta("YUWANCARD_MALICE_CONNECTED"))
         {
@@ -98,7 +105,10 @@ public static class MaliceCharacterSelectSyncPatch
         }
 
         MalicePanelStyler.Apply(malicePanel);
-        SyncLobbyMalice(screen, malicePanel.Ascension);
+        if (screen.Lobby.NetService.Type != NetGameType.Client)
+        {
+            SyncLobbyMalice(screen, malicePanel.Ascension);
+        }
     }
 
     internal static void EnsureMalicePanelInitialized(NCharacterSelectScreen screen)
@@ -122,6 +132,18 @@ public static class MaliceCharacterSelectSyncPatch
 
     private static void OnMaliceChanged(NCharacterSelectScreen screen, NAscensionPanel panel)
     {
+        if (screen.Lobby.NetService.Type == NetGameType.Client)
+        {
+            int authoritativeMaliceLevel = MaliceModifierPatchHelpers.GetMaliceLevel(screen.Lobby.Modifiers);
+            if (panel.Ascension != authoritativeMaliceLevel)
+            {
+                panel.SetAscensionLevel(authoritativeMaliceLevel);
+            }
+
+            MalicePanelStyler.Apply(panel);
+            return;
+        }
+
         var selectedButton = AccessTools.Field(typeof(NCharacterSelectScreen), "_selectedButton")?.GetValue(screen) as NCharacterSelectButton;
         if (selectedButton?.Character == null)
         {
@@ -131,6 +153,13 @@ public static class MaliceCharacterSelectSyncPatch
         MaliceManager.SetPreferredMalice(selectedButton.Character.Id, panel.Ascension);
         SyncLobbyMalice(screen, panel.Ascension);
         MalicePanelStyler.Apply(panel);
+    }
+
+    private static void ApplyClientReadOnlyState(NAscensionPanel panel)
+    {
+        panel.MouseFilter = Control.MouseFilterEnum.Ignore;
+        panel.GetNodeOrNull<Control>("HBoxContainer/LeftArrowContainer")?.Set("mouse_filter", (int)Control.MouseFilterEnum.Ignore);
+        panel.GetNodeOrNull<Control>("HBoxContainer/RightArrowContainer")?.Set("mouse_filter", (int)Control.MouseFilterEnum.Ignore);
     }
 
     private static void SyncLobbyMalice(NCharacterSelectScreen screen, int maliceLevel)

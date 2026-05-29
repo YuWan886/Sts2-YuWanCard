@@ -74,12 +74,11 @@ public static class CustomRarityLabelPatch
                 AutowrapMode = TextServer.AutowrapMode.Off,
                 FitContent = false
             };
+            SyncTheme(source, rich);
             parent.AddChild(rich);
             parent.MoveChild(rich, source.GetIndex() + 1);
             rich.Owner = parent;
         }
-
-        SyncTheme(source, rich);
         rich.Visible = true;
         rich.Modulate = source.Modulate;
         rich.SelfModulate = source.SelfModulate;
@@ -113,7 +112,10 @@ public static class CustomRarityLabelPatch
     private static void SyncTheme(MegaLabel source, MegaRichTextLabel target)
     {
         var font = source.GetThemeFont(ThemeConstants.Label.Font, LabelThemeType)
-                   ?? source.GetThemeFont(ThemeConstants.Label.Font, MegaLabelThemeType);
+                   ?? source.GetThemeFont(ThemeConstants.Label.Font, MegaLabelThemeType)
+                   ?? source.GetThemeFont(ThemeConstants.RichTextLabel.NormalFont, RichTextThemeType)
+                   ?? source.GetThemeDefaultFont();
+
         if (font != null)
         {
             target.AddThemeFontOverride(ThemeConstants.RichTextLabel.NormalFont, font);
