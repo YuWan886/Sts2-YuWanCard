@@ -24,6 +24,18 @@ public class BorrowKnifeToKill : YuWanCardModel
         WithKeywords(CardKeyword.Exhaust);
     }
 
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (!base.IsPlayable) return false;
+            if (Owner?.Creature?.CombatState is not { } combatState) return false;
+            return combatState.PlayerCreatures
+                .Where(c => c.IsAlive && c != Owner.Creature)
+                .Any(c => c.Player != null && PileType.Hand.GetPile(c.Player).Cards.Any(card => card.Type == CardType.Attack && !card.EnergyCost.CostsX));
+        }
+    }
+
     protected override void OnUpgrade()
     {
         RemoveKeyword(CardKeyword.Exhaust);

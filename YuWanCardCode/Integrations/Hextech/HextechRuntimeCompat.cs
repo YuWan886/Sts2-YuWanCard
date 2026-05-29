@@ -110,7 +110,7 @@ public static class HextechRuntimeCompat
             typeof(HextechRuntimeCompat),
             nameof(BeginOwnedRuneRecognitionScope),
             nameof(EndOwnedRuneRecognitionScope),
-            "CreateRunTelemetry");
+            "OnRunEnded");
     }
 
     private static void PatchCompendiumDisplayCompat(Harmony harmony)

@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using MegaCrit.Sts2.Core.Localization;
 using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Cards;
@@ -25,6 +26,13 @@ public class FrostSwordFourteenStates : YuWanCardModel
     protected override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
+    }
+
+    protected override void AddExtraArgsToDescription(LocString description)
+    {
+        int playerCount = Math.Max(CombatState?.Players.Count ?? 1, 1);
+        int totalForge = DynamicVars["Forge"].IntValue * playerCount;
+        description.Add("TotalForge", totalForge);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

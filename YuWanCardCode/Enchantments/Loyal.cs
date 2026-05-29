@@ -82,10 +82,18 @@ public sealed class Loyal : YuWanEnchantmentModel
             return;
         }
 
-        await CardPileCmd.Add(Card, PileType.Hand, skipVisuals: true);
+        for (int i = 0; i < Amount; i++)
+        {
+            if (CombatManager.Instance.IsOverOrEnding || Card.HasBeenRemovedFromState)
+            {
+                break;
+            }
 
-        var target = GetTargetForCard(Card, player.Creature.CombatState);
-        await CardCmd.AutoPlay(choiceContext, Card, target, AutoPlayType.Default, skipXCapture: true, skipCardPileVisuals: true);
+            await CardPileCmd.Add(Card, PileType.Hand, skipVisuals: true);
+
+            var target = GetTargetForCard(Card, player.Creature.CombatState);
+            await CardCmd.AutoPlay(choiceContext, Card, target, AutoPlayType.Default, skipXCapture: true, skipCardPileVisuals: true);
+        }
     }
 
     private Creature? GetTargetForCard(CardModel card, CombatState? combatState)
