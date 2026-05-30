@@ -313,14 +313,16 @@ const RELIC_POOL_NAMES = {
     pig: '猪猪',
     event: '事件',
     whatif: '假如',
-    regent: '储君'
+    regent: '储君',
+    hextech_pig: '猪猪海克斯'
   },
   eng: {
     shared: 'Shared',
     pig: 'Pig',
     event: 'Event',
     whatif: 'What If',
-    regent: 'Regent'
+    regent: 'Regent',
+    hextech_pig: 'Piggy Hextech'
   }
 }
 

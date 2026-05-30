@@ -1,62 +1,78 @@
 using Godot;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.RestSite;
+using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Core.Patches.UI;
 
 namespace YuWanCard.Core.Abstracts;
 
 public abstract class YuWanCharacterModel : CharacterModel, IYuWanCharacter
 {
+    public override int StartingGold => 99;
+    public override float AttackAnimDelay => 0.15f;
+    public override float CastAnimDelay => 0.25f;
+    protected override CharacterModel? UnlocksAfterRunAs => null;
+
+    public virtual string PlaceholderID => "ironclad";
+
     public virtual IReadOnlyList<RelicModel> MultiplayerStartingRelics => [];
-    public virtual string? CustomIconTexturePath => null;
-    public virtual string? CustomCharacterSelectIconPath => null;
-    public virtual string? CustomEnergyCounterPath => null;
-    public virtual string? CustomCharacterSelectLockedIconPath => null;
-    public virtual string? CustomVisualPath => null;
-    public virtual string? CustomTrailPath => null;
-    public virtual string? CustomIconPath => null;
+    public virtual string? CustomIconTexturePath => ImageHelper.GetImagePath("ui/top_panel/character_icon_" + PlaceholderID + ".png");
+    public virtual string? CustomCharacterSelectIconPath => ImageHelper.GetImagePath("packed/character_select/char_select_" + PlaceholderID + ".png");
+    public virtual string? CustomEnergyCounterPath => SceneHelper.GetScenePath("combat/energy_counters/" + PlaceholderID + "_energy_counter");
+    public virtual string? CustomCharacterSelectLockedIconPath => ImageHelper.GetImagePath("packed/character_select/char_select_" + PlaceholderID + "_locked.png");
+    public virtual string? CustomVisualPath => SceneHelper.GetScenePath("creature_visuals/" + PlaceholderID);
+    public virtual string? CustomTrailPath => SceneHelper.GetScenePath("vfx/card_trail_" + PlaceholderID);
+    public virtual string? CustomIconPath => SceneHelper.GetScenePath("ui/character_icons/" + PlaceholderID + "_icon");
     public virtual string? CustomIconOutlineTexturePath => null;
-    public virtual string? CustomRestSiteAnimPath => null;
-    public virtual string? CustomMerchantAnimPath => null;
-    public virtual string? CustomArmPointingTexturePath => null;
-    public virtual string? CustomArmRockTexturePath => null;
-    public virtual string? CustomArmPaperTexturePath => null;
-    public virtual string? CustomArmScissorsTexturePath => null;
-    public virtual string? CustomCharacterSelectBg => null;
-    public virtual string? CustomCharacterSelectTransitionPath => null;
-    public virtual string? CustomMapMarkerPath => null;
-    public virtual string? CustomAttackSfx => null;
-    public virtual string? CustomCastSfx => null;
-    public virtual string? CustomDeathSfx => null;
+    public virtual string? CustomRestSiteAnimPath => SceneHelper.GetScenePath("rest_site/characters/" + PlaceholderID + "_rest_site");
+    public virtual string? CustomMerchantAnimPath => SceneHelper.GetScenePath("merchant/characters/" + PlaceholderID + "_merchant");
+    public virtual string? CustomArmPointingTexturePath => ImageHelper.GetImagePath("ui/hands/" + PlaceholderID + "_arm_point.png");
+    public virtual string? CustomArmRockTexturePath => ImageHelper.GetImagePath("ui/hands/" + PlaceholderID + "_arm_rock.png");
+    public virtual string? CustomArmPaperTexturePath => ImageHelper.GetImagePath("ui/hands/" + PlaceholderID + "_arm_paper.png");
+    public virtual string? CustomArmScissorsTexturePath => ImageHelper.GetImagePath("ui/hands/" + PlaceholderID + "_arm_scissors.png");
+    public virtual string? CustomCharacterSelectBg => SceneHelper.GetScenePath("screens/char_select/char_select_bg_" + PlaceholderID);
+    public virtual string? CustomCharacterSelectTransitionPath => "res://materials/transitions/" + PlaceholderID + "_transition_mat.tres";
+    public virtual string? CustomMapMarkerPath => ImageHelper.GetImagePath("packed/map/icons/map_marker_" + PlaceholderID + ".png");
+    public virtual string? CustomAttackSfx => $"event:/sfx/characters/{PlaceholderID}/{PlaceholderID}_attack";
+    public virtual string? CustomCastSfx => $"event:/sfx/characters/{PlaceholderID}/{PlaceholderID}_cast";
+    public virtual string? CustomDeathSfx => $"event:/sfx/characters/{PlaceholderID}/{PlaceholderID}_die";
     public virtual RelicIconData? CustomYummyCookie => null;
 
     public virtual CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller) => null;
 
-    IReadOnlyList<RelicModel> IYuWanCharacter.MultiplayerStartingRelics => MultiplayerStartingRelics;
-    string? IYuWanCharacter.CustomIconTexturePath => CustomIconTexturePath;
-    string? IYuWanCharacter.CustomCharacterSelectIconPath => CustomCharacterSelectIconPath;
-    string? IYuWanCharacter.CustomEnergyCounterPath => CustomEnergyCounterPath;
-    string? IYuWanCharacter.CustomCharacterSelectLockedIconPath => CustomCharacterSelectLockedIconPath;
-    string? IYuWanCharacter.CustomVisualPath => CustomVisualPath;
-    string? IYuWanCharacter.CustomTrailPath => CustomTrailPath;
-    string? IYuWanCharacter.CustomIconPath => CustomIconPath;
-    string? IYuWanCharacter.CustomIconOutlineTexturePath => CustomIconOutlineTexturePath;
-    string? IYuWanCharacter.CustomRestSiteAnimPath => CustomRestSiteAnimPath;
-    string? IYuWanCharacter.CustomMerchantAnimPath => CustomMerchantAnimPath;
-    string? IYuWanCharacter.CustomArmPointingTexturePath => CustomArmPointingTexturePath;
-    string? IYuWanCharacter.CustomArmRockTexturePath => CustomArmRockTexturePath;
-    string? IYuWanCharacter.CustomArmPaperTexturePath => CustomArmPaperTexturePath;
-    string? IYuWanCharacter.CustomArmScissorsTexturePath => CustomArmScissorsTexturePath;
-    string? IYuWanCharacter.CustomCharacterSelectBg => CustomCharacterSelectBg;
-    string? IYuWanCharacter.CustomCharacterSelectTransitionPath => CustomCharacterSelectTransitionPath;
-    string? IYuWanCharacter.CustomMapMarkerPath => CustomMapMarkerPath;
-    string? IYuWanCharacter.CustomAttackSfx => CustomAttackSfx;
-    string? IYuWanCharacter.CustomCastSfx => CustomCastSfx;
-    string? IYuWanCharacter.CustomDeathSfx => CustomDeathSfx;
+    protected YuWanCharacterModel()
+    {
+        RegisterSceneConversions();
+    }
+
+    /// <summary>
+    /// Auto-registers scene paths for type conversion, matching BaseLib's
+    /// ISceneConversions pattern. This allows modders to use plain Node2D/Control
+    /// root nodes in their scenes; the SceneConversionPatch converts them to the
+    /// game-expected types at instantiation time.
+    /// </summary>
+    protected virtual void RegisterSceneConversions()
+    {
+        if (CustomVisualPath != null)
+            NodeFactory.RegisterSceneType<NCreatureVisuals>(CustomVisualPath);
+        if (CustomEnergyCounterPath != null)
+            NodeFactory.RegisterSceneType<NEnergyCounter>(CustomEnergyCounterPath);
+        if (CustomMerchantAnimPath != null)
+            NodeFactory.RegisterSceneType<NMerchantCharacter>(CustomMerchantAnimPath);
+        if (CustomRestSiteAnimPath != null)
+            NodeFactory.RegisterSceneType<NRestSiteCharacter>(CustomRestSiteAnimPath);
+    }
+
     Control? IYuWanCharacter.CustomIcon => null;
-    NCreatureVisuals? IYuWanCharacter.CreateCustomVisuals() => null;
+    NCreatureVisuals? IYuWanCharacter.CreateCustomVisuals()
+    {
+        if (CustomVisualPath == null) return null;
+        return NodeFactory.CreateFromScene<NCreatureVisuals>(CustomVisualPath);
+    }
     CreatureAnimator? IYuWanCharacter.SetupCustomAnimationStates(MegaSprite controller) => SetupCustomAnimationStates(controller);
 
     protected static CreatureAnimator SetupAnimationState(MegaSprite controller, string idleName,

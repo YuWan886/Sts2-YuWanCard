@@ -39,6 +39,9 @@
   --rarity-ancient: #7c3aed;
   --rarity-event: #db2777;
   --rarity-shop: #0d9488;
+  --rarity-hextech-silver: #94a3b8;
+  --rarity-hextech-gold: #f59e0b;
+  --rarity-hextech-prismatic: #e040fb;
 
   /* Card type colors */
   --type-attack: #c0392b;
@@ -129,6 +132,9 @@ html.dark {
   --rarity-ancient: #a78bfa;
   --rarity-event: #f472b6;
   --rarity-shop: #2dd4bf;
+  --rarity-hextech-silver: #94a3b8;
+  --rarity-hextech-gold: #fbbf24;
+  --rarity-hextech-prismatic: #e879f9;
 
   /* Card type colors */
   --type-attack: #e74c3c;
@@ -275,6 +281,9 @@ html.dark {
 .badge-rarity-ancient  { background: rgba(139, 92, 246, 0.2); color: var(--rarity-ancient); }
 .badge-rarity-event    { background: rgba(224, 85, 136, 0.2); color: var(--rarity-event); }
 .badge-rarity-shop     { background: rgba(32, 178, 170, 0.2); color: var(--rarity-shop); }
+.badge-rarity-silver   { background: rgba(148, 163, 184, 0.2); color: var(--rarity-hextech-silver); }
+.badge-rarity-gold     { background: rgba(245, 158, 11, 0.2); color: var(--rarity-hextech-gold); }
+.badge-rarity-prismatic { background: rgba(224, 64, 251, 0.2); color: var(--rarity-hextech-prismatic); }
 
 /* Solid (filled) badges */
 .badge-filled-basic    { background: var(--rarity-basic); color: #fff; }
@@ -337,6 +346,9 @@ html.dark {
 .rarity-starter   { background: rgba(34, 197, 94, 0.2); color: var(--rarity-starter); }
 .rarity-ancient   { background: rgba(139, 92, 246, 0.2); color: var(--rarity-ancient); }
 .rarity-event     { background: rgba(224, 85, 136, 0.2); color: var(--rarity-event); }
+.rarity-silver    { background: rgba(148, 163, 184, 0.2); color: var(--rarity-hextech-silver); }
+.rarity-gold      { background: rgba(245, 158, 11, 0.2); color: var(--rarity-hextech-gold); }
+.rarity-prismatic { background: rgba(224, 64, 251, 0.2); color: var(--rarity-hextech-prismatic); }
 .rarity-shop      { background: rgba(32, 178, 170, 0.2); color: var(--rarity-shop); }
 
 .type-attack { background: rgba(192, 57, 43, 0.2); color: var(--type-attack); }
@@ -490,6 +502,33 @@ html.dark {
 .filter-select {
   min-width: 110px;
 }
+
+/* Filter text search */
+.filter-search-group {
+  position: relative;
+  flex: 0 1 240px;
+  min-width: 160px;
+}
+.search-input-icon {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  opacity: 0.4; pointer-events: none;
+}
+.filter-search-input {
+  width: 100%; padding: 6px 28px 6px 32px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-secondary); color: var(--text-primary);
+  font-size: 0.82rem; font-family: var(--font-body);
+  outline: none; transition: border-color var(--transition-fast);
+}
+.filter-search-input:focus { border-color: var(--accent-gold); }
+.filter-search-input::placeholder { color: var(--text-muted); }
+.filter-search-clear {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  border: none; background: transparent; color: var(--text-muted);
+  cursor: pointer; font-size: 1.1rem; padding: 2px 6px; line-height: 1;
+}
+.filter-search-clear:hover { color: var(--text-primary); }
 
 /* ---- TOOLBAR (sort, view toggle, count) ---- */
 .browser-toolbar {
@@ -813,6 +852,11 @@ img[loading="lazy"]:is([src]) { animation: none; background: none; }
   .filter-bar::-webkit-scrollbar { display: none; }
   .filter-group { flex-shrink: 0; }
   .filter-select { min-width: 88px; }
+  .filter-search-group { flex: 0 1 180px; min-width: 120px; }
+}
+
+@media (max-width: 480px) {
+  .filter-search-group { flex: 1 1 100%; min-width: 0; }
 }
 
 /* ---- Print styles ---- */

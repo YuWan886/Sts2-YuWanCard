@@ -114,24 +114,25 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
     /// </summary>
     protected virtual bool ShouldGlowRedInHand => false;
 
-    protected sealed override bool ShouldGlowGoldInternal =>
+    protected override bool ShouldGlowGoldInternal =>
         ShouldGlowGoldInHand || _constructedHandGlowRules.MatchesGold(this);
 
-    protected sealed override bool ShouldGlowRedInternal =>
+    protected override bool ShouldGlowRedInternal =>
         ShouldGlowRedInHand || _constructedHandGlowRules.MatchesRed(this);
 
-    protected sealed override IEnumerable<DynamicVar> CanonicalVars => _constructedDynamicVars;
-    public sealed override IEnumerable<CardKeyword> CanonicalKeywords => _cardKeywords;
-    protected sealed override HashSet<CardTag> CanonicalTags => _constructedTags;
+    protected override IEnumerable<DynamicVar> CanonicalVars => _constructedDynamicVars;
+    public override IEnumerable<CardKeyword> CanonicalKeywords => _cardKeywords;
+    protected override HashSet<CardTag> CanonicalTags => _constructedTags;
 
-    protected sealed override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         _hoverTips.Select(t => t(this))
             .Concat(_multiHoverTips.SelectMany(mt => mt(this)));
 
     protected YuWanCardModel(int baseCost, CardType type, CardRarity rarity, TargetType target,
-        bool showInCardLibrary = true)
+        bool showInCardLibrary = true, bool autoAdd = true)
         : base(baseCost, type, rarity, target, showInCardLibrary)
     {
+        if (autoAdd) ContentRegistry.AddModel(GetType());
     }
 
     protected YuWanCardModel WithVars(params DynamicVar[] vars)

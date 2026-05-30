@@ -14,7 +14,7 @@ public class PigTribulation : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.AllEnemies)
     {
-        WithDamage(3);
+        WithDamage(4);
     }
 
     protected override void OnUpgrade()

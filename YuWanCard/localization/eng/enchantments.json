@@ -10,5 +10,5 @@
   "YUWANCARD-BITE.title": "Bite",
   "YUWANCARD-BITE.description": "On play, apply [blue]{Poison}[/blue] [gold]Poison[/gold] to target.",
   "YUWANCARD-SNAKE.title": "Snake",
-  "YUWANCARD-SNAKE.description": "Each time this card is played, add [blue]{Cards}[/blue] [gold]Snakebite[/gold] to your hand."
+  "YUWANCARD-SNAKE.description": "Each time this card is played, add [blue]{Amount}[/blue] [gold]Snakebite[/gold] to your hand."
 }

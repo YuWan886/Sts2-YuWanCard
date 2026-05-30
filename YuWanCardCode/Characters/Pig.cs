@@ -88,13 +88,13 @@ public class Pig : CharacterModel, IYuWanCharacter
         ModelDb.Card<PigStrike>(),
         ModelDb.Card<PigStrike>(),
         ModelDb.Card<PigStrike>(),
-        ModelDb.Card<PigStrike>(),
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigDefend>(),
         ModelDb.Card<PigFriends>(),
-        ModelDb.Card<PigShelter>()
+        ModelDb.Card<PigShelter>(),
+        ModelDb.Card<PigMissYou>()
     ];
 
     public override IReadOnlyList<RelicModel> StartingRelics => [ModelDb.Relic<PigCarrot>()];
@@ -130,6 +130,12 @@ public class Pig : CharacterModel, IYuWanCharacter
             NextState = new AnimState("idle_loop", true)
         };
         animator.AddAnyState("Tf", tfAnim);
+
+        var tf2Anim = new AnimState("tf2", false)
+        {
+            NextState = new AnimState("idle_loop", true)
+        };
+        animator.AddAnyState("Tf2", tf2Anim);
 
         return animator;
     }

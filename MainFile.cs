@@ -9,9 +9,10 @@ using YuWanCard.Characters;
 using YuWanCard.Config;
 using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
+using YuWanCard.Core.Transcendence;
 using YuWanCard.Multiplayer;
-using YuWanCard.Patches;
 using YuWanCard.Utils;
+using YuWanCard.Hextech;
 
 namespace YuWanCard;
 
@@ -45,8 +46,6 @@ public partial class MainFile : Node
 
         // Phase 2: Platform-conditional patches (wrapped to survive mobile)
         patcher.ApplySingle(
-            h => EndlessModePatch.ApplyMapPointTypeCountsPatches(h), "EndlessMode");
-        patcher.ApplySingle(
             h => Core.Patches.AutoSlayCharacterPatch.ApplyPatch(h), "AutoSlayCharacter");
         patcher.ApplySingle(
             h => Core.Patches.AutoSlayOptionsPatch.ApplyPatch(h), "AutoSlayOptions");
@@ -54,6 +53,8 @@ public partial class MainFile : Node
             h => Core.Patches.CustomEnergyIconPatches.Apply(h), "CustomEnergyIcons");
         patcher.ApplySingle(
             h => ModInteropProcessor.Process(h, Assembly.GetExecutingAssembly()), "ModInterop");
+        patcher.ApplySingle(
+            HextechRuntimeCompat.TryInstall, "HextechRuntimeCompat");
 
         // Desktop-only patches — skip on Android to avoid triggering NDailyRunScreen
         // static constructor which has a known NRE bug on Mono AOT
@@ -71,6 +72,7 @@ public partial class MainFile : Node
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
         SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
+        TranscendenceRegistry.RegisterDefaults();
         CustomBadgeRegistry.Register((run, playerId, won) => new PigTycoonBadge(run, playerId, won));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 
@@ -114,6 +116,7 @@ public static class NMainMenu_ConfigRegisterPatch
     public static void Postfix()
     {
         ConfigRegistrar.TryDeferredRegister();
+        HextechRuntimeCompat.TryInstallIfAvailable();
     }
 }
 
@@ -123,5 +126,6 @@ public static class NGame_Ready_ConfigPreloadPatch
     public static void Prefix()
     {
         ConfigRegistrar.TryDeferredRegister();
+        HextechRuntimeCompat.TryInstallIfAvailable();
     }
 }

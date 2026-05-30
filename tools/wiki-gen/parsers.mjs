@@ -368,6 +368,9 @@ export function parseRelicFile(filepath) {
   const content = readFile(filepath)
   if (!content) return null
 
+  // Skip abstract base classes
+  if (content.match(/abstract\s+class\s+\w+/)) return null
+
   const poolMatch = content.match(/\[Pool\(typeof\((\w+)\)\)\]/)
   const pool = poolMatch ? poolMatch[1].toLowerCase().replace('relicpool', '').replace('pool', '') : 'shared'
   const rarityMatch = content.match(/Rarity\s*(?:=>|{ get; set; })\s*(?:=>)?\s*RelicRarity\.(\w+)/)
@@ -458,6 +461,40 @@ export function parseModifierFile(filepath) {
   const className = basename(filepath, '.cs')
   return { id: pascalToSnake(className.replace(/Modifier$/, '')), className, type: 'modifier' }
 }
+
+// ---- Hextech Integration Relic ----
+
+export function parseHextechRelicFile(filepath) {
+  const content = readFile(filepath)
+  if (!content) return null
+
+  const className = basename(filepath, '.cs')
+
+  // Skip abstract base classes
+  if (content.match(/abstract\s+class\s+\w+/)) return null
+
+  const entityId = pascalToSnake(className)
+
+  // Determine pool from base class
+  let pool = 'hextech_pig'
+  if (content.includes('HextechSharedRuneBase')) pool = 'shared'
+  else if (content.includes('HextechPigRuneBase')) pool = 'hextech_pig'
+  else if (content.includes('HextechPigForgeBase')) pool = 'hextech_pig'
+
+  // Extract HextechRarity (from either HextechRuneRarity or HextechForgeRarity)
+  const rarityMatch = content.match(/HextechRuneRarity\.(\w+)/) || content.match(/HextechForgeRarity\.(\w+)/)
+  let rarity = rarityMatch ? rarityMatch[1] : null // Silver, Gold, Prismatic
+
+  const constants = buildConstants(content)
+  const variables = parseCanonicalVars(content, constants)
+
+  return {
+    id: entityId, className, type: 'relic', pool, rarity, variables,
+    isHextech: true
+  }
+}
+
+// ---- Character ----
 
 export function parseCharacterFile(filepath) {
   const content = readFile(filepath)

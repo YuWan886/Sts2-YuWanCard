@@ -21,5 +21,7 @@ public abstract class YuWanCardPoolModel : CardPoolModel, IYuWanContent
     public virtual string? BigEnergyIconPath => null;
     public virtual string? TextEnergyIconPath => null;
 
+    public virtual Texture2D? CustomFrame(CardModel card) => null;
+
     protected override CardModel[] GenerateAllCards() => [];
 }

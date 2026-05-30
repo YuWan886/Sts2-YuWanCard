@@ -11,9 +11,9 @@ namespace YuWanCard.Cards;
 public class PigMissYou : YuWanCardModel
 {
     public PigMissYou() : base(
-        baseCost: 0,
+        baseCost: 1,
         type: CardType.Skill,
-        rarity: CardRarity.Uncommon,
+        rarity: CardRarity.Basic,
         target: TargetType.Self)
     {
         WithPower<PigFriendsPower>(1);

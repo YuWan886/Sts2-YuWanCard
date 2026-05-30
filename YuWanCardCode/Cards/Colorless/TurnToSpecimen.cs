@@ -1,4 +1,5 @@
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Powers.MaliceTraits;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -7,6 +8,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using YuWanCard.Powers;
+using MegaCrit.Sts2.Core.Models;
 
 namespace YuWanCard.Cards;
 
@@ -19,13 +22,23 @@ public class TurnToSpecimen : YuWanCardModel
         typeof(PersonalHivePower),
         typeof(ReattachPower),
         typeof(SkittishPower),
+
+        // Malice Trait 基类
+        typeof(MaliceTraitPowerBase),
+        typeof(MaliceTraitMarkerPower),
     };
 
+    private static bool IsBlacklisted(PowerModel power)
+    {
+        var powerType = power.GetType();
+        return s_powerBlacklist.Any(t => t.IsAssignableFrom(powerType));
+    }
+
     public TurnToSpecimen() : base(
-        baseCost: 1,
-        type: CardType.Skill,
-        rarity: CardRarity.Uncommon,
-        target: TargetType.AllEnemies)
+            baseCost: 1,
+            type: CardType.Skill,
+            rarity: CardRarity.Uncommon,
+            target: TargetType.AllEnemies)
     {
         WithKeywords(CardKeyword.Exhaust);
     }
@@ -43,7 +56,7 @@ public class TurnToSpecimen : YuWanCardModel
         foreach (var enemy in CombatState.Enemies)
         {
             var powersToRemove = enemy.Powers
-                .Where(p => p.Type == PowerType.Buff && !s_powerBlacklist.Contains(p.GetType()))
+                .Where(p => p.Type == PowerType.Buff && !IsBlacklisted(p))
                 .ToList();
 
             foreach (var buff in powersToRemove)

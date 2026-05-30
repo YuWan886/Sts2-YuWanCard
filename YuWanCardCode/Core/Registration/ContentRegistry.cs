@@ -1,6 +1,7 @@
 using System.Reflection;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Modding;
+using YuWanCard.Core.Patches.Content;
 
 namespace YuWanCard.Core.Registration;
 
@@ -135,6 +136,9 @@ public static class ContentRegistry
                 attrCount++;
             }
         }
+
+        // Scan for [CustomEnum] fields and initialize them
+        CustomKeywordRegistry.InitializeCustomEnumFields(assembly);
 
         if (poolCount > 0 || attrCount > 0)
             MainFile.Logger.Info(

@@ -48,9 +48,16 @@ public sealed class Blacksmith : YuWanEventModel
 
     private async Task UpgradeCards()
     {
+        var upgradeableCards = Owner!.Deck.Cards.Where(c => c.IsUpgradable).ToList();
+        if (upgradeableCards.Count == 0)
+        {
+            SetEventFinished(L10NLookup($"{Id.Entry}.pages.CANCELLED.description"));
+            return;
+        }
+
         var cardsToUpgrade = await CardSelectCmd.FromDeckForUpgrade(
             Owner!,
-            new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, 1, 2)
+            new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, 1, Math.Min(2, upgradeableCards.Count))
         );
 
         var cardList = cardsToUpgrade.ToList();

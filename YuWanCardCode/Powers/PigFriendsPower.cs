@@ -91,7 +91,7 @@ public class PigFriendsPower : YuWanPowerModel
             _summonedPig = existingPig;
             if (Owner.HasPower<PigDemonFormPower>())
             {
-                PigDemonFormPower.SwitchCreatureSkin(_summonedPig, "demon");
+                CreatureVisualUtils.SwitchCreatureSkin(_summonedPig, "demon");
             }
             return;
         }
@@ -105,7 +105,7 @@ public class PigFriendsPower : YuWanPowerModel
 
         if (_summonedPig != null && Owner.HasPower<PigDemonFormPower>())
         {
-            PigDemonFormPower.SwitchCreatureSkin(_summonedPig, "demon");
+            CreatureVisualUtils.SwitchCreatureSkin(_summonedPig, "demon");
         }
     }
 }

@@ -13,7 +13,7 @@ namespace YuWanCard.Enchantments;
 public sealed class Loyal : YuWanEnchantmentModel
 {
     public override bool ShowAmount => true;
-    public override bool IsStackable => false;
+    public override bool IsStackable => true;
 
     public override bool CanEnchant(CardModel card)
     {
@@ -33,6 +33,11 @@ public sealed class Loyal : YuWanEnchantmentModel
         }
 
         if (card.Keywords.Contains(CardKeyword.Unplayable))
+        {
+            return false;
+        }
+
+        if (card.Keywords.Contains(CardKeyword.Exhaust))
         {
             return false;
         }
@@ -77,10 +82,18 @@ public sealed class Loyal : YuWanEnchantmentModel
             return;
         }
 
-        await CardPileCmd.Add(Card, PileType.Hand, skipVisuals: true);
+        for (int i = 0; i < Amount; i++)
+        {
+            if (CombatManager.Instance.IsOverOrEnding || Card.HasBeenRemovedFromState)
+            {
+                break;
+            }
 
-        var target = GetTargetForCard(Card, player.Creature.CombatState);
-        await CardCmd.AutoPlay(choiceContext, Card, target, AutoPlayType.Default, skipXCapture: true, skipCardPileVisuals: true);
+            await CardPileCmd.Add(Card, PileType.Hand, skipVisuals: true);
+
+            var target = GetTargetForCard(Card, player.Creature.CombatState);
+            await CardCmd.AutoPlay(choiceContext, Card, target, AutoPlayType.Default, skipXCapture: true, skipCardPileVisuals: true);
+        }
     }
 
     private Creature? GetTargetForCard(CardModel card, ICombatState? combatState)

@@ -115,7 +115,7 @@ public static class NodeFactory
         if (targetType == typeof(NMerchantCharacter))
             return ConvertToMerchantCharacter(source);
         if (targetType == typeof(NRestSiteCharacter))
-            return ConvertToSimple<Node2D, NRestSiteCharacter>(source);
+            return ConvertToNRestSiteCharacter(source);
 
         return null;
     }
@@ -164,6 +164,48 @@ public static class NodeFactory
         return target;
     }
 
+    private static NRestSiteCharacter ConvertToNRestSiteCharacter(Node source)
+    {
+        var target = new NRestSiteCharacter { Name = source.Name };
+
+        if (source is CanvasItem srcCI)
+        {
+            target.Visible = srcCI.Visible;
+            target.Modulate = srcCI.Modulate;
+            target.SelfModulate = srcCI.SelfModulate;
+        }
+
+        if (source is Node2D src2D)
+        {
+            target.Position = src2D.Position;
+        }
+
+        TransferChildren(source, target);
+
+        // NRestSiteCharacter._Ready() requires %SelectionReticle to be NSelectionReticle.
+        // Replace plain Control nodes with the correct type.
+        var reticle = target.GetNodeOrNull<Control>("ControlRoot/SelectionReticle");
+        if (reticle != null && reticle is not NSelectionReticle)
+        {
+            var newReticle = new NSelectionReticle
+            {
+                Name = "SelectionReticle",
+                UniqueNameInOwner = true,
+                OffsetLeft = reticle.OffsetLeft,
+                OffsetTop = reticle.OffsetTop,
+                OffsetRight = reticle.OffsetRight,
+                OffsetBottom = reticle.OffsetBottom,
+                Size = reticle.Size,
+                MouseFilter = reticle.MouseFilter
+            };
+            reticle.ReplaceBy(newReticle);
+            reticle.QueueFree();
+        }
+
+        source.QueueFree();
+        return target;
+    }
+
     private static NCreatureVisuals ConvertToNCreatureVisuals(Node source)
     {
         var visuals = new NCreatureVisuals { Name = source.Name };
@@ -174,6 +216,15 @@ public static class NodeFactory
 
         // Transfer all children and set ownership for unique name resolution
         TransferChildren(source, visuals);
+
+        // Mark transferred key nodes as uniquely named so NCreatureVisuals._Ready()
+        // can find them via %Visuals, %Bounds, %CenterPos, %IntentPos.
+        foreach (var name in new[] { "Visuals", "Bounds", "CenterPos", "IntentPos" })
+        {
+            var child = visuals.GetNodeOrNull<Node>(name);
+            if (child != null && !child.UniqueNameInOwner)
+                child.UniqueNameInOwner = true;
+        }
 
         // Generate missing required nodes that NCreatureVisuals._Ready() expects
         var bounds = visuals.GetNodeOrNull<Control>("%Bounds");

@@ -1,5 +1,9 @@
 using YuWanCard.Core.Abstracts;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 
@@ -9,7 +13,7 @@ public class HorizonPower : YuWanPowerModel
 {
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.None;
+    public override PowerStackType StackType => PowerStackType.Counter;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("HorizonPower", 1m)];
 
@@ -21,8 +25,16 @@ public class HorizonPower : YuWanPowerModel
             return false;
         }
 
-        var reduction = Amount;
+        var reduction = DynamicVars["HorizonPower"].IntValue;
         modifiedCost = Math.Max(0m, originalCost - reduction);
         return true;
+    }
+
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    {
+        if (side == Owner.Side)
+        {
+            await PowerCmd.Decrement(this);
+        }
     }
 }

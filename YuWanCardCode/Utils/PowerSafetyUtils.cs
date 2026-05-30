@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Exceptions;
 using YuWanCard.Powers;
+using YuWanCard.Powers.MaliceTraits;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.Powers.Mocks;
 
@@ -28,7 +29,11 @@ public static class PowerSafetyUtils
         ModelDb.Power<RampartPower>,
         ModelDb.Power<GalvanicPower>,
         ModelDb.Power<EscapeArtistPower>,
-        
+
+        // Malice Traits
+        ModelDb.Power<MaliceTraitMarkerPower>,
+        ModelDb.Power<MaliceTraitPowerBase>,
+
         // Mock Powers
         ModelDb.Power<MockCloneCardsOnPlayPower>,
         ModelDb.Power<MockFreeCardsPower>,
@@ -58,7 +63,7 @@ public static class PowerSafetyUtils
             return false;
         }
 
-        if (UnsafePowerTypes.Any(func => func.Method.GetGenericArguments()[0] == powerType))
+        if (UnsafePowerTypes.Any(func => func.Method.GetGenericArguments()[0].IsAssignableFrom(powerType)))
         {
             return false;
         }

@@ -4,13 +4,27 @@ public class ShoppingCartData
 {
     public const int MaxCapacity = 5;
 
+    private int _capacity = MaxCapacity;
+
+    public int Capacity
+    {
+        get => _capacity;
+        set => _capacity = Math.Max(0, value);
+    }
+
+    /// <summary>
+    /// Multiplier applied to item prices when added to the cart.
+    /// 1.0 = no discount, 0.8 = 20% off.
+    /// </summary>
+    public double DiscountMultiplier { get; set; } = 1.0;
+
     private List<ShoppingCartItem> _items = new();
 
     public IReadOnlyList<ShoppingCartItem> Items => _items.AsReadOnly();
 
     public int Count => _items.Count;
 
-    public bool IsFull => _items.Count >= MaxCapacity;
+    public bool IsFull => _items.Count >= Capacity;
 
     public bool IsEmpty => _items.Count == 0;
 
@@ -24,7 +38,7 @@ public class ShoppingCartData
     {
         if (IsFull)
         {
-            MainFile.Logger.Warn($"ShoppingCart: Cannot add item, cart is full ({MaxCapacity} items max)");
+            MainFile.Logger.Warn($"ShoppingCart: Cannot add item, cart is full ({Capacity} items max)");
             return false;
         }
 
@@ -32,6 +46,13 @@ public class ShoppingCartData
         {
             MainFile.Logger.Warn($"ShoppingCart: Item already in cart: {item.ItemId}");
             return false;
+        }
+
+        if (DiscountMultiplier < 1.0)
+        {
+            var originalPrice = item.Price;
+            item.Price = (int)Math.Floor(item.Price * DiscountMultiplier);
+            MainFile.Logger.Info($"ShoppingCart: Applied {((1.0 - DiscountMultiplier) * 100):0}% discount: {originalPrice} → {item.Price}");
         }
 
         _items.Add(item);
@@ -80,6 +101,7 @@ public class ShoppingCartData
 
     public void Deserialize(string data)
     {
+        CartCleared?.Invoke();
         _items.Clear();
 
         if (string.IsNullOrEmpty(data))
@@ -88,6 +110,12 @@ public class ShoppingCartData
         var itemStrings = data.Split(';', StringSplitOptions.RemoveEmptyEntries);
         foreach (var itemString in itemStrings)
         {
+            if (IsFull)
+            {
+                MainFile.Logger.Warn($"ShoppingCart: Deserialization stopped at capacity limit ({Capacity} items max)");
+                break;
+            }
+
             var item = ShoppingCartItem.Deserialize(itemString);
             if (item != null)
             {

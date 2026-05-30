@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Localization.Formatters;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Hextech;
 
 namespace YuWanCard.Core.Patches;
 
@@ -28,6 +29,10 @@ public static class CustomEnergyIconPatches
         harmony.Patch(
             original: AccessTools.Method(typeof(EnergyIconsFormatter), nameof(EnergyIconsFormatter.TryEvaluateFormat)),
             prefix: new HarmonyMethod(typeof(CustomEnergyIconPatches), nameof(EnergyIconsFormatterTryEvaluateFormatPrefix)));
+
+        harmony.Patch(
+            original: AccessTools.Method(typeof(EnergyIconHelper), nameof(EnergyIconHelper.GetPrefix), [typeof(AbstractModel)]),
+            prefix: new HarmonyMethod(typeof(CustomEnergyIconPatches), nameof(EnergyIconHelperGetPrefixPrefix)));
     }
 
     /// <summary>
@@ -161,5 +166,22 @@ public static class CustomEnergyIconPatches
         WriteFormattingInfo(formattingInfo, output);
         __result = true;
         return false;
+    }
+
+    /// <summary>
+    /// Short-circuit <see cref="EnergyIconHelper.GetPrefix"/> for hextech pig/shared runes
+    /// whose <see cref="RelicModel.Pool"/> calls .First() on AllRelicPools and throws
+    /// when the rune isn't in any vanilla pool. Returns the pig card-pool energy prefix
+    /// so the original GetPool (which would throw) is skipped entirely.
+    /// </summary>
+    public static bool EnergyIconHelperGetPrefixPrefix(AbstractModel model, ref string __result)
+    {
+        if (model is RelicModel relic && HextechPigRuneRegistry.IsPigOrSharedRune(relic))
+        {
+            __result = ModelDb.CardPool<Characters.PigCardPool>().EnergyColorName;
+            return false;
+        }
+
+        return true;
     }
 }

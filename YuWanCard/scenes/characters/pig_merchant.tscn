@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bbjjco06isjev"]
 
-[ext_resource type="SpineSkeletonDataResource" uid="uid://desb515e3wcdo" path="res://YuWanCard/animations/pig/pig_skeleton_data_resource.tres" id="1_mnxdv"]
+[ext_resource type="SpineSkeletonDataResource" uid="uid://bhtytso2pjpdo" path="res://YuWanCard/animations/pig/pig_skeleton_data_resource.tres" id="1_mnxdv"]
 [ext_resource type="Texture2D" uid="uid://srptda76db1q" path="res://YuWanCard/images/characters/pig.png" id="1_pig"]
 [ext_resource type="Script" uid="uid://bodwh5p76ay5c" path="res://YuWanCard/scripts/characters/spine_skin_setter.gd" id="2_tf4mu"]
 

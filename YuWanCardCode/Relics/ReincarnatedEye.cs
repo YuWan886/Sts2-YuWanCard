@@ -107,6 +107,12 @@ public class ReincarnatedEye : YuWanRelicModel
             }
         }
 
+        if (cardToCopy.Enchantment != null)
+        {
+            EnchantmentModel enchantmentModel = (EnchantmentModel)cardToCopy.Enchantment.MutableClone();
+            CardCmd.Enchant(enchantmentModel, copiedCard, enchantmentModel.Amount);
+        }
+
         // 检查手牌是否已满（最大手牌数为 10）
         var hand = PileType.Hand.GetPile(Owner);
         bool isHandFull = hand.Cards.Count >= 10;

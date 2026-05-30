@@ -32,6 +32,10 @@
         <Publicize Include="sts2" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false" />
     </ItemGroup>
 
+    <ItemGroup Condition="!Exists('$(Sts2DataDir)/sts2.dll')">
+        <PackageReference Include="BSchneppe.Sts2.ReferenceAssemblies" Version="0.103.*" PrivateAssets="All" />
+    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="All" />
         <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="*" />
@@ -79,7 +83,7 @@
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(AssemblyName).json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
-        <Copy SourceFiles="README.md" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
+        <Copy SourceFiles="README.md" DestinationFolder="$(ModsPath)/" />
         <Copy SourceFiles="posthog.analytics.local.yaml"
               DestinationFolder="$(ModsPath)$(MSBuildProjectName)/"
               Condition="Exists('posthog.analytics.local.yaml')" />

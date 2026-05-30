@@ -26,7 +26,7 @@ const itemsWithDesc = computed(() =>
   }))
 )
 
-const rarityOrder = { Starter: 0, Common: 1, Uncommon: 2, Rare: 3, Shop: 4, Event: 5, Ancient: 6 }
+const rarityOrder = { Starter: 0, Common: 1, Uncommon: 2, Rare: 3, Shop: 4, Event: 5, Ancient: 6, Silver: 7, Gold: 8, Prismatic: 9 }
 
 const rarityLabels = {
   Starter: { zhs: '初始', eng: 'Starter' },
@@ -35,13 +35,17 @@ const rarityLabels = {
   Rare: { zhs: '稀有', eng: 'Rare' },
   Shop: { zhs: '商店', eng: 'Shop' },
   Event: { zhs: '事件', eng: 'Event' },
-  Ancient: { zhs: '先古', eng: 'Ancient' }
+  Ancient: { zhs: '先古', eng: 'Ancient' },
+  Silver: { zhs: '白银', eng: 'Silver' },
+  Gold: { zhs: '黄金', eng: 'Gold' },
+  Prismatic: { zhs: '棱彩', eng: 'Prismatic' }
 }
 
-const poolOrder = { shared: 0, pig: 1, event: 2, whatif: 3, regent: 4 }
+const poolOrder = { shared: 0, pig: 1, hextech_pig: 2, event: 3, whatif: 4, regent: 5 }
 const poolLabels = {
   shared: { zhs: '共享', eng: 'Shared' },
   pig: { zhs: '猪猪', eng: 'Pig' },
+  hextech_pig: { zhs: '猪猪海克斯', eng: 'Piggy Hextech' },
   event: { zhs: '事件', eng: 'Event' },
   whatif: { zhs: '假如', eng: 'What If' },
   regent: { zhs: '储君', eng: 'Regent' }
@@ -74,7 +78,10 @@ const filterGroupConfig = computed(() => [
       { key: 'Rare', label: labelFor(rarityLabels, 'Rare') },
       { key: 'Shop', label: labelFor(rarityLabels, 'Shop') },
       { key: 'Event', label: labelFor(rarityLabels, 'Event') },
-      { key: 'Ancient', label: labelFor(rarityLabels, 'Ancient') }
+      { key: 'Ancient', label: labelFor(rarityLabels, 'Ancient') },
+      { key: 'Silver', label: labelFor(rarityLabels, 'Silver') },
+      { key: 'Gold', label: labelFor(rarityLabels, 'Gold') },
+      { key: 'Prismatic', label: labelFor(rarityLabels, 'Prismatic') }
     ],
     filterFn: (item, key) => item.rarity === key
   }
