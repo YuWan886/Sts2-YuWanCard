@@ -18,7 +18,6 @@ internal static class ConfigRegistrar
         "EnableDeathEffect",
         "BypassModelDbHashCheck",
         "EnableAutoUpdateCheck",
-        "EnableAutoSlay",
         "EnableSevenCursesRing",
         "EnableWhatIfRelics",
     ];
@@ -28,7 +27,6 @@ internal static class ConfigRegistrar
         ("EnableDeathEffect", "显示设置"),
         ("BypassModelDbHashCheck", "多人游戏设置"),
         ("EnableAutoUpdateCheck", "更新设置"),
-        ("EnableAutoSlay", "自动爬塔设置"),
         ("EnableSevenCursesRing", "游戏设置"),
         ("EnableWhatIfRelics", "游戏设置"),
     ];
@@ -39,7 +37,6 @@ internal static class ConfigRegistrar
         ("EnableDeathEffect", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效"),
         ("BypassModelDbHashCheck", "bypass_modeldb_check", "config_bypass_modeldb_hash_check", "跳过哈希检查", "多人模式下跳过ModelDb哈希校验"),
         ("EnableAutoUpdateCheck", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新"),
-        ("EnableAutoSlay", "enable_auto_slay", "config_enable_auto_slay", "自动爬塔", "自动进行角色选择并开始爬塔"),
         ("EnableSevenCursesRing", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒"),
         ("EnableWhatIfRelics", "enable_what_if_relics", "config_enable_what_if_relics", "假如遗物", "在Neow处可选择假如系列遗物"),
     ];

@@ -236,7 +236,7 @@
   "YUWANCARD-YANG_SWORD_GOURD.description": "在你的回合开始时，获得[blue]{Forge}[/blue]点[gold]铸造[/gold]。",
   "YUWANCARD-YANG_SWORD_GOURD.flavor": "剑意久藏，出鞘惊人。",
   "YUWANCARD-THOUSAND_CURSE_SCROLL.title": "千咒卷轴",
-  "YUWANCARD-THOUSAND_CURSE_SCROLL.description": "回合开始时，手牌中每拥有1张[gold]诅咒牌[/gold]，就获得1点仅在本回合生效的[gold]力量[/gold]和[gold]敏捷[/gold]。",
+  "YUWANCARD-THOUSAND_CURSE_SCROLL.description": "在你的回合开始时，手牌中每拥有1张[gold]诅咒牌[/gold]，就获得1点临时[gold]力量[/gold]和临时[gold]敏捷[/gold]。",
   "YUWANCARD-THOUSAND_CURSE_SCROLL.flavor": "只有承受七咒之人才能驾驭此物。",
   "YUWANCARD-WHAT_IF_SHA.title": "假如只有杀",
   "YUWANCARD-WHAT_IF_SHA.description": "拾起时，将卡组中的所有卡牌都变化为[gold]杀[/gold]。\n卡牌奖励只有[gold]杀[/gold]。",
