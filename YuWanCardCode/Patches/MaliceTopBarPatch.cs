@@ -42,7 +42,10 @@ public static class MaliceTopBarPortraitTipPatch
 
         var hoverTips = new IHoverTip[] { ascensionTip, maliceTip };
         var tipSet = NHoverTipSet.CreateAndShow(__instance, hoverTips);
-        tipSet.GlobalPosition = __instance.GlobalPosition + new Vector2(0f, __instance.Size.Y + 20f);
+        if (tipSet != null)
+        {
+            tipSet.GlobalPosition = __instance.GlobalPosition + new Vector2(0f, __instance.Size.Y + 20f);
+        }
     }
 
     private static RunState? GetCurrentRunState()
