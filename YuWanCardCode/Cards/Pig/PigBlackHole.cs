@@ -10,9 +10,9 @@ using YuWanCard.Utils;
 namespace YuWanCard.Cards;
 
 [Pool(typeof(PigCardPool))]
-public class BlackHole : YuWanCardModel
+public class PigBlackHole : YuWanCardModel
 {
-    public BlackHole() : base(
+    public PigBlackHole() : base(
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
