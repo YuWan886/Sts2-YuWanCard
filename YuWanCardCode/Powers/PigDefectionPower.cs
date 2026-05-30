@@ -7,12 +7,16 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.MonsterMoves.Intents;
+using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YuWanCard.Powers;
 
 public class PigDefectionPower : YuWanPowerModel
 {
+    private const int AttackDamage = 6;
+
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
@@ -22,6 +26,12 @@ public class PigDefectionPower : YuWanPowerModel
     ];
 
     private decimal _storedBlockToUse = 0m;
+
+    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
+    {
+        SetAttackIntent();
+        return Task.CompletedTask;
+    }
 
     public override Creature ModifyUnblockedDamageTarget(Creature target, decimal _, ValueProp props, Creature? __)
     {
@@ -90,9 +100,25 @@ public class PigDefectionPower : YuWanPowerModel
         Flash();
 
         var strengthPower = Owner.GetPower<StrengthPower>();
-        int damage = 7 + (strengthPower?.Amount ?? 0);
+        int damage = AttackDamage + (strengthPower?.Amount ?? 0);
 
         await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), target, damage, ValueProp.Move, Owner);
+
+        SetAttackIntent();
+    }
+
+    private void SetAttackIntent()
+    {
+        if (Owner.Monster == null) return;
+
+        var attackMove = new MoveState(
+            "ATTACK_MOVE",
+            _ => Task.CompletedTask,
+            new SingleAttackIntent(() => AttackDamage + (Owner?.GetPower<StrengthPower>()?.Amount ?? 0))
+        );
+        attackMove.FollowUpState = attackMove;
+
+        Owner.Monster.SetMoveImmediate(attackMove, forceTransition: true);
     }
 
     public override bool ShouldCreatureBeRemovedFromCombatAfterDeath(Creature creature)

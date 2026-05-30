@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
@@ -92,8 +91,7 @@ public static class PetManager
             null
         );
 
-        owner.Creature.CombatState.AddCreature(defectedCreature);
-        owner.PlayerCombatState?.AddPetInternal(defectedCreature);
+        await PlayerCmd.AddPet(defectedCreature, owner);
 
         await CreatureCompat.SetMaxHp(defectedCreature, maxHp);
         if (currentHp > 0)
@@ -102,10 +100,6 @@ public static class PetManager
         }
 
         await PowerCmd.Apply<PigDefectionPower>(defectedCreature, 1, owner.Creature, null);
-
-        NCombatRoom.Instance?.AddCreature(defectedCreature);
-        await CombatManager.Instance.AfterCreatureAdded(defectedCreature);
-        await Hook.AfterCreatureAddedToCombat(owner.Creature.CombatState, defectedCreature);
 
         PositionAllPets(owner.Creature, true);
 

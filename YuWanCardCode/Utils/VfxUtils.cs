@@ -11,6 +11,9 @@ public static class VfxUtils
 {
     private static readonly ConcurrentDictionary<string, PackedScene> SceneCache = new();
     private static readonly ConcurrentDictionary<string, Texture2D[]> FrameCache = new();
+    private static readonly ConcurrentDictionary<string, Texture2D> TextureCache = new();
+    private const float DefaultStaticImageSize = 256f * 0.6f;
+    private const float DefaultStaticImageDuration = 1.5f;
 
     public static IReadOnlyList<Texture2D>? GetCachedFrames(string framePathPrefix)
     {
@@ -37,6 +40,83 @@ public static class VfxUtils
 
         SceneCache[scenePath] = scene;
         return scene;
+    }
+
+    private static Texture2D? GetOrLoadTexture(string texturePath)
+    {
+        if (TextureCache.TryGetValue(texturePath, out var cachedTexture))
+        {
+            return cachedTexture;
+        }
+
+        var texture = ResourceLoader.Load<Texture2D>(texturePath);
+        if (texture == null)
+        {
+            MainFile.Logger.Warn($"VfxUtils: Failed to load texture: {texturePath}");
+            return null;
+        }
+
+        TextureCache[texturePath] = texture;
+        return texture;
+    }
+
+    private static float GetStaticImageScale(Texture2D texture)
+    {
+        var size = texture.GetSize();
+        var maxDimension = Mathf.Max(size.X, size.Y);
+        if (maxDimension <= 0)
+        {
+            return 0.6f;
+        }
+
+        return DefaultStaticImageSize / maxDimension;
+    }
+
+    private static void ScheduleAutoFree(Node node, float? durationSeconds)
+    {
+        var duration = durationSeconds ?? DefaultStaticImageDuration;
+        if (duration <= 0)
+        {
+            return;
+        }
+
+        var tree = node.GetTree();
+        if (tree == null)
+        {
+            return;
+        }
+
+        tree.CreateTimer(duration).Timeout += () =>
+        {
+            if (GodotObject.IsInstanceValid(node))
+            {
+                node.QueueFree();
+            }
+        };
+    }
+
+    private static Sprite2D? SpawnStaticImage(Texture2D texture, float? durationSeconds)
+    {
+        var vfxContainer = NCombatRoom.Instance?.CombatVfxContainer;
+        if (vfxContainer == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: CombatVfxContainer not found, cannot play texture");
+            return null;
+        }
+
+        var sprite = new Sprite2D
+        {
+            Texture = texture,
+            Centered = true,
+            ZIndex = 100
+        };
+
+        var scale = GetStaticImageScale(texture);
+        sprite.Scale = new Vector2(scale, scale);
+
+        vfxContainer.AddChildSafely(sprite);
+        ScheduleAutoFree(sprite, durationSeconds);
+        return sprite;
     }
 
     public static Control? PlayCentered(string scenePath)
@@ -91,6 +171,41 @@ public static class VfxUtils
         return instance as Control;
     }
 
+    public static Sprite2D? PlayTextureCentered(string texturePath, float? durationSeconds = null)
+    {
+        var texture = GetOrLoadTexture(texturePath);
+        if (texture == null)
+        {
+            return null;
+        }
+
+        var sprite = SpawnStaticImage(texture, durationSeconds);
+        if (sprite == null)
+        {
+            return null;
+        }
+
+        var viewportSize = NGame.Instance?.GetViewportRect().Size ?? Vector2.Zero;
+        sprite.Position = viewportSize * 0.5f;
+
+        MainFile.Logger.Debug($"VfxUtils: Played centered texture: {texturePath}");
+        return sprite;
+    }
+
+    public static Sprite2D? PlayTextureCentered(Texture2D texture, float? durationSeconds = null)
+    {
+        var sprite = SpawnStaticImage(texture, durationSeconds);
+        if (sprite == null)
+        {
+            return null;
+        }
+
+        var viewportSize = NGame.Instance?.GetViewportRect().Size ?? Vector2.Zero;
+        sprite.Position = viewportSize * 0.5f;
+        MainFile.Logger.Debug("VfxUtils: Played centered texture instance");
+        return sprite;
+    }
+
     public static Control? PlayAt(string scenePath, Vector2 position)
     {
         var vfxContainer = NCombatRoom.Instance?.CombatVfxContainer;
@@ -126,6 +241,38 @@ public static class VfxUtils
 
         MainFile.Logger.Debug($"VfxUtils: Played effect at position {position}: {scenePath}");
         return instance as Control;
+    }
+
+    public static Sprite2D? PlayTextureAt(string texturePath, Vector2 position, float? durationSeconds = null)
+    {
+        var texture = GetOrLoadTexture(texturePath);
+        if (texture == null)
+        {
+            return null;
+        }
+
+        var sprite = SpawnStaticImage(texture, durationSeconds);
+        if (sprite == null)
+        {
+            return null;
+        }
+
+        sprite.GlobalPosition = position;
+        MainFile.Logger.Debug($"VfxUtils: Played texture at position {position}: {texturePath}");
+        return sprite;
+    }
+
+    public static Sprite2D? PlayTextureAt(Texture2D texture, Vector2 position, float? durationSeconds = null)
+    {
+        var sprite = SpawnStaticImage(texture, durationSeconds);
+        if (sprite == null)
+        {
+            return null;
+        }
+
+        sprite.GlobalPosition = position;
+        MainFile.Logger.Debug($"VfxUtils: Played texture at position {position}");
+        return sprite;
     }
 
     public static Node2D? PlayAtCreature(string scenePath, Creature creature)
@@ -228,6 +375,72 @@ public static class VfxUtils
 
         MainFile.Logger.Debug($"VfxUtils: Played effect at creature position {globalPos}: {scenePath}");
         return instance as Node2D;
+    }
+
+    public static Sprite2D? PlayTextureAtCreature(string texturePath, Creature creature, float? durationSeconds = null)
+    {
+        if (creature == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Creature is null, cannot play texture at creature position");
+            return null;
+        }
+
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Could not get creature node for creature");
+            return null;
+        }
+
+        var texture = GetOrLoadTexture(texturePath);
+        if (texture == null)
+        {
+            return null;
+        }
+
+        var sprite = SpawnStaticImage(texture, durationSeconds);
+        if (sprite == null)
+        {
+            return null;
+        }
+
+        var globalPos = creatureNode.GetBottomOfHitbox();
+        var scale = GetStaticImageScale(texture);
+        var scaledHeight = texture.GetSize().Y * scale;
+        sprite.GlobalPosition = globalPos - new Vector2(0, scaledHeight * 0.5f);
+
+        MainFile.Logger.Debug($"VfxUtils: Played texture at creature position {globalPos}: {texturePath}");
+        return sprite;
+    }
+
+    public static Sprite2D? PlayTextureAtCreature(Texture2D texture, Creature creature, float? durationSeconds = null)
+    {
+        if (creature == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Creature is null, cannot play texture at creature position");
+            return null;
+        }
+
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Could not get creature node for creature");
+            return null;
+        }
+
+        var sprite = SpawnStaticImage(texture, durationSeconds);
+        if (sprite == null)
+        {
+            return null;
+        }
+
+        var globalPos = creatureNode.GetBottomOfHitbox();
+        var scale = GetStaticImageScale(texture);
+        var scaledHeight = texture.GetSize().Y * scale;
+        sprite.GlobalPosition = globalPos - new Vector2(0, scaledHeight * 0.5f);
+
+        MainFile.Logger.Debug($"VfxUtils: Played texture at creature position {globalPos}");
+        return sprite;
     }
 
     public static Node2D? PlayAtCreatureTop(string scenePath, Creature creature)
@@ -336,6 +549,72 @@ public static class VfxUtils
         return instance as Node2D;
     }
 
+    public static Sprite2D? PlayTextureAtCreatureTop(string texturePath, Creature creature, float? durationSeconds = null)
+    {
+        if (creature == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Creature is null, cannot play texture at creature top");
+            return null;
+        }
+
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Could not get creature node for creature");
+            return null;
+        }
+
+        var texture = GetOrLoadTexture(texturePath);
+        if (texture == null)
+        {
+            return null;
+        }
+
+        var sprite = SpawnStaticImage(texture, durationSeconds);
+        if (sprite == null)
+        {
+            return null;
+        }
+
+        var topPos = creatureNode.GetTopOfHitbox();
+        var scale = GetStaticImageScale(texture);
+        var scaledHeight = texture.GetSize().Y * scale;
+        sprite.GlobalPosition = topPos - new Vector2(0, scaledHeight * 0.5f);
+
+        MainFile.Logger.Debug($"VfxUtils: Played texture at creature top {topPos}: {texturePath}");
+        return sprite;
+    }
+
+    public static Sprite2D? PlayTextureAtCreatureTop(Texture2D texture, Creature creature, float? durationSeconds = null)
+    {
+        if (creature == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Creature is null, cannot play texture at creature top");
+            return null;
+        }
+
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null)
+        {
+            MainFile.Logger.Warn("VfxUtils: Could not get creature node for creature");
+            return null;
+        }
+
+        var sprite = SpawnStaticImage(texture, durationSeconds);
+        if (sprite == null)
+        {
+            return null;
+        }
+
+        var topPos = creatureNode.GetTopOfHitbox();
+        var scale = GetStaticImageScale(texture);
+        var scaledHeight = texture.GetSize().Y * scale;
+        sprite.GlobalPosition = topPos - new Vector2(0, scaledHeight * 0.5f);
+
+        MainFile.Logger.Debug($"VfxUtils: Played texture at creature top {topPos}");
+        return sprite;
+    }
+
     public static (Control? effect, AudioStreamPlayer? audioPlayer) PlayWithSound(string scenePath, string soundPath)
     {
         var effect = PlayCentered(scenePath);
@@ -408,6 +687,7 @@ public static class VfxUtils
     {
         SceneCache.Clear();
         FrameCache.Clear();
+        TextureCache.Clear();
         MainFile.Logger.Info("VfxUtils: Scene cache cleared");
     }
 
@@ -445,5 +725,19 @@ public static class VfxUtils
             FrameCache[framePathPrefix] = frames;
             MainFile.Logger.Info($"VfxUtils: Preloaded {loadedCount}/{totalFrames} frames for {framePathPrefix}");
         }
+    }
+
+    public static void PreloadTextures(params string[] texturePaths)
+    {
+        var loadedCount = 0;
+        foreach (var path in texturePaths)
+        {
+            if (GetOrLoadTexture(path) != null)
+            {
+                loadedCount++;
+            }
+        }
+
+        MainFile.Logger.Info($"VfxUtils: Preloaded {loadedCount}/{texturePaths.Length} textures");
     }
 }
