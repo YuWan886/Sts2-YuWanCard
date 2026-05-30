@@ -17,6 +17,6 @@ public sealed class ReflectTrait : MaliceTraitPowerBase
         }
 
         Flash();
-        await CreatureCmd.Damage(choiceContext, dealer, 3, ValueProp.Unpowered, Owner, null);
+        await CreatureCmd.Damage(choiceContext, dealer, 2, ValueProp.Unpowered, Owner, null);
     }
 }
