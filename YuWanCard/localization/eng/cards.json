@@ -148,7 +148,7 @@
   "YUWANCARD-PIG_SLAM.title": "Pig Slam",
   "YUWANCARD-PIG_SLAM.description": "Deal {Damage:diff()} damage {Repeat:diff()} times. If the target enemy has any Buff, hit an additional time.",
   "YUWANCARD-PIG_ROAR.title": "Pig Roar",
-  "YUWANCARD-PIG_ROAR.description": "Apply {WeakPower:diff()} [gold]Weak[/gold] to all enemies.",
+  "YUWANCARD-PIG_ROAR.description": "Apply {StranglePower:diff()} [gold]Strangle[/gold] to all enemies.",
   "YUWANCARD-PIG_ROLL.title": "Pig Roll",
   "YUWANCARD-PIG_ROLL.description": "Deal {Damage:diff()} damage. Gain {Block:diff()} [gold]Block[/gold].",
   "YUWANCARD-PIG_EAT.title": "Pig Eat",

@@ -148,7 +148,7 @@
   "YUWANCARD-PIG_SLAM.title": "猪猛击",
   "YUWANCARD-PIG_SLAM.description": "造成{Damage:diff()}点伤害{Repeat:diff()}次。如果目标敌人有增益效果，则额外命中一次。",
   "YUWANCARD-PIG_ROAR.title": "猪咆哮",
-  "YUWANCARD-PIG_ROAR.description": "对所有敌人施加{WeakPower:diff()}层[gold]虚弱[/gold]。",
+  "YUWANCARD-PIG_ROAR.description": "对所有敌人施加{StranglePower:diff()}层[gold]紧勒[/gold]。",
   "YUWANCARD-PIG_ROLL.title": "猪翻滚",
   "YUWANCARD-PIG_ROLL.description": "造成{Damage:diff()}点伤害。获得{Block:diff()}点[gold]格挡[/gold]。",
   "YUWANCARD-PIG_EAT.title": "猪吃一点",
