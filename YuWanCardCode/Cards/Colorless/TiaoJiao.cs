@@ -3,8 +3,10 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Powers;
 
 namespace YuWanCard.Cards;
@@ -20,7 +22,7 @@ public class TiaoJiao : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyAlly)
     {
-        WithDamage(4);
+        WithVar(new DamageVar(4, ValueProp.Move | ValueProp.Unpowered));
         WithPower<TrainYouWellPower>(3);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<StrengthPower>()));
         WithKeywords(CardKeyword.Exhaust);
