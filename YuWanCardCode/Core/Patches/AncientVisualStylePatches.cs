@@ -167,9 +167,16 @@ static class NCardAncientVisualOverlayPatch
             tr.Field<Control?>("_cardOverlay").Value = null;
         }
 
-        tr.Field<TextureRect>("_frame").Value.Visible = false;
-        tr.Field<TextureRect>("_ancientBorder").Value.Visible = true;
-        tr.Field<CanvasItem>("_ancientHighlight").Value.Visible = true;
+        var frame = tr.Field<TextureRect>("_frame").Value;
+        var ancientBorder = tr.Field<TextureRect>("_ancientBorder").Value;
+        var ancientHighlight = tr.Field<CanvasItem>("_ancientHighlight").Value;
+
+        if (frame != null)
+            frame.Visible = false;
+        if (ancientBorder != null)
+            ancientBorder.Visible = true;
+        if (ancientHighlight != null)
+            ancientHighlight.Visible = true;
 
         Control? newOverlay = null;
         var model = __instance.Model;
