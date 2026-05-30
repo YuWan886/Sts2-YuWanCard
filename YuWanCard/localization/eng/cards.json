@@ -282,5 +282,11 @@
   "YUWANCARD-YOU_ARE_DUMB_CRY.title": "You Are Dumb Cry",
   "YUWANCARD-YOU_ARE_DUMB_CRY.description": "Gain {Energy:energyIcons()}. \nTarget teammate gets {CryCount} [gold]Pig Always Cry[/gold].",
   "YUWANCARD-PIG_ALWAYS_CRY.title": "Pig Always Cry",
-  "YUWANCARD-PIG_ALWAYS_CRY.description": ""
+  "YUWANCARD-PIG_ALWAYS_CRY.description": "",
+  "YUWANCARD-PIG_GAZE.title": "Pig Gaze",
+  "YUWANCARD-PIG_GAZE.description": "Gain {Energy:energyIcons()}. You cannot draw extra cards during your turn.",
+  "YUWANCARD-PIG_RISING_FIST.title": "Pig Rising Fist",
+  "YUWANCARD-PIG_RISING_FIST.description": "Gain {FreeAttackPower:diff()} [gold]Free Attack[/gold], {GigantificationPower:diff()} [gold]Gigantification[/gold], {OneTwoPunchPower:diff()} [gold]One-Two Punch[/gold].\n[exhaust]",
+  "YUWANCARD-PIG_DESIRE.title": "Pig Desire",
+  "YUWANCARD-PIG_DESIRE.description": "Copy your teammate's [gold]Buff[/gold] effects.\n[exhaust]"
 }

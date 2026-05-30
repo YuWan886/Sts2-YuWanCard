@@ -19,7 +19,7 @@ public sealed class SlothMalice : MaliceRelicModel
 
     public override async Task AfterDamageGiven(PlayerChoiceContext choiceContext, Creature? dealer, DamageResult result, ValueProp props, Creature target, CardModel? cardSource)
     {
-        if (dealer != Owner?.Creature || Owner?.Creature == null || result.TotalDamage <= 0)
+        if (dealer != Owner?.Creature || Owner?.Creature == null || result.TotalDamage <= 0 || cardSource == null)
         {
             return;
         }
