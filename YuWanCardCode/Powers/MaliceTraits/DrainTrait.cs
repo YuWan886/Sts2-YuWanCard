@@ -27,7 +27,7 @@ public sealed class DrainTrait : MaliceTraitPowerBase
 
             PowerModel? randomBuff = result.Receiver.Powers
                 .Where(p => p.Type == PowerType.Buff && p.IsVisible)
-                .OrderBy(_ => CombatState?.RunState.Rng.Shuffle.NextFloat() ?? 0f)
+                .OrderBy(_ => CombatState?.RunState.Rng.UpFront.NextFloat() ?? 0f)
                 .FirstOrDefault();
 
             if (randomBuff != null)

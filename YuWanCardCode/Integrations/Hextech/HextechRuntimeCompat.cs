@@ -1,9 +1,11 @@
 using System.Reflection;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Core.Interop;
 using YuWanCard.Relics;
 using YuWanCard.Hextech.Relics;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Hextech;
 
@@ -12,6 +14,8 @@ public static class HextechRuntimeCompat
     private const string HextechModId = "HextechRunes";
     private const string HextechCatalogTypeName = "HextechRunes.HextechCatalog";
     private const string HextechRuneGrantHelperTypeName = "HextechRunes.HextechRuneGrantHelper";
+    private const string HextechForgeGrantHelperTypeName = "HextechRunes.HextechForgeGrantHelper";
+    private const string RandomForgeShopRelicTypeName = "HextechRunes.RandomForgeShopRelic";
     private const string HextechRuneSelectionCoordinatorTypeName = "HextechRunes.HextechRuneSelectionCoordinator";
     private const string HextechMayhemModifierTypeName = "HextechRunes.HextechMayhemModifier";
     private const string HextechTelemetryTypeName = "HextechRunes.HextechTelemetry";
@@ -20,6 +24,9 @@ public static class HextechRuntimeCompat
     private const string EnergyIconHelperTypeName = "MegaCrit.Sts2.Core.Helpers.EnergyIconHelper";
     private static bool _installed;
     private static readonly AsyncLocal<int> OwnedRuneRecognitionScopeDepth = new();
+
+    private static Type? _randomForgeShopRelicType;
+    private static MethodInfo? _tryCreateRandomForgeMethod;
 
     public static void TryInstall(Harmony harmony)
     {
@@ -39,6 +46,7 @@ public static class HextechRuntimeCompat
         PatchHextechCatalog(harmony, context);
         PatchScopedRuntimeRecognition(harmony, context);
         PatchCompendiumDisplayCompat(harmony);
+        RegisterShoppingCartForgeResolver(context);
     }
 
     public static void TryInstallIfAvailable()
@@ -388,6 +396,61 @@ public static class HextechRuntimeCompat
     {
         PropertyInfo? keyProperty = group.GetType().GetProperty("LocalizationKey");
         return string.Equals(keyProperty?.GetValue(group) as string, "CHARACTER.PIG", StringComparison.Ordinal);
+    }
+
+    private static void RegisterShoppingCartForgeResolver(ModCompatContext context)
+    {
+        _randomForgeShopRelicType = context.ResolveType(RandomForgeShopRelicTypeName);
+        Type? forgeHelperType = context.ResolveType(HextechForgeGrantHelperTypeName);
+
+        if (_randomForgeShopRelicType != null && forgeHelperType != null)
+        {
+            _tryCreateRandomForgeMethod = forgeHelperType.GetMethod("TryCreateRandomForge",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            if (_tryCreateRandomForgeMethod != null)
+            {
+                ShoppingCartManager.ResolveShopProxyRelic = ResolveRandomForgeProxy;
+                MainFile.Logger.Info("HextechRuntimeCompat: Registered shopping cart forge resolver");
+            }
+            else
+            {
+                MainFile.Logger.Warn("HextechRuntimeCompat: TryCreateRandomForge method not found on HextechForgeGrantHelper");
+            }
+        }
+        else
+        {
+            MainFile.Logger.Warn("HextechRuntimeCompat: Could not resolve forge types for shopping cart resolver");
+        }
+    }
+
+    private static Task<RelicModel?> ResolveRandomForgeProxy(RelicModel relicModel, Player player)
+    {
+        if (_randomForgeShopRelicType == null || _tryCreateRandomForgeMethod == null)
+            return Task.FromResult<RelicModel?>(null);
+
+        // Only handle RandomForgeShopRelic instances
+        if (relicModel.GetType() != _randomForgeShopRelicType)
+            return Task.FromResult<RelicModel?>(null);
+
+        try
+        {
+            // HextechForgeGrantHelper.TryCreateRandomForge(Player player, Rng rng, out RelicModel? forge)
+            // The out parameter value is written back into the argument array after invocation
+            object?[] parameters = [player, player.PlayerRng.Shops, null];
+            bool success = (bool)_tryCreateRandomForgeMethod.Invoke(null, parameters)!;
+            if (!success || parameters[2] == null)
+            {
+                MainFile.Logger.Warn("HextechRuntimeCompat: TryCreateRandomForge returned no forge");
+                return Task.FromResult<RelicModel?>(null);
+            }
+
+            return Task.FromResult((RelicModel?)parameters[2]);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"HextechRuntimeCompat: Failed to resolve random forge proxy: {ex.Message}");
+            return Task.FromResult<RelicModel?>(null);
+        }
     }
 
 }

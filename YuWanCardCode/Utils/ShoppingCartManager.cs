@@ -238,6 +238,20 @@ public static class ShoppingCartManager
             return false;
         }
 
+        // Resolve shop proxy relics (e.g. RandomForgeShopRelic) into actual obtainable relics.
+        // Shop proxy relics exist only in the merchant and should not be obtained directly.
+        // The resolver (registered by HextechRuntimeCompat) detects proxy types and generates
+        // the actual relic. If no resolver is registered or the model is not a proxy, this is a no-op.
+        if (ResolveShopProxyRelic != null)
+        {
+            var resolved = await ResolveShopProxyRelic(relicModel, player);
+            if (resolved != null)
+            {
+                MainFile.Logger.Info($"ShoppingCartManager: Resolved shop proxy {item.ItemId} → {resolved.Id.Entry}");
+                relicModel = resolved;
+            }
+        }
+
         var mutableRelic = relicModel.ToMutable();
 
         await PlayerCmd.LoseGold(item.Price, player, MegaCrit.Sts2.Core.Entities.Gold.GoldLossType.Spent);
@@ -305,6 +319,14 @@ public static class ShoppingCartManager
 
         return player.Gold >= item.Price;
     }
+
+    /// <summary>
+    /// Resolves a shop proxy relic (e.g. RandomForgeShopRelic) into an actual obtainable relic.
+    /// Returns the resolved relic, or null if the proxy cannot be resolved.
+    /// Registered by cross-mod integrations (HextechRuntimeCompat) to handle special shop entries
+    /// that should not be obtained directly.
+    /// </summary>
+    public static Func<RelicModel, Player, Task<RelicModel?>>? ResolveShopProxyRelic;
 
     public static CardModel? GetCardModel(ShoppingCartItem item)
     {

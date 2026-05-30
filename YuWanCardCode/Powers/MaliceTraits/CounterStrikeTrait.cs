@@ -23,7 +23,7 @@ public sealed class CounterStrikeTrait : MaliceTraitPowerBase
             return 1m;
         }
 
-        float roll = CombatState?.RunState.Rng.Shuffle.NextFloat() ?? 1f;
+        float roll = CombatState?.RunState.Rng.UpFront.NextFloat() ?? 1f;
         if (roll > 0.3f)
         {
             return 1m;
