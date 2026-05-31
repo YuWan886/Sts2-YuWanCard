@@ -10,6 +10,8 @@ public abstract class MaliceTraitPowerBase : YuWanPowerModel
     public sealed override PowerType Type => PowerType.Buff;
     public sealed override PowerStackType StackType => PowerStackType.Counter;
 
+    public override bool ShouldPowerBeRemovedAfterOwnerDeath() => false;
+
     /// <summary>
     /// DynamicVar names that should be auto-updated to (initialValue × Amount) when the power amount changes.
     /// </summary>

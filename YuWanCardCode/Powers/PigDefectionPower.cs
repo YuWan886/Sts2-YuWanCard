@@ -62,14 +62,6 @@ public class PigDefectionPower : YuWanPowerModel
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (dealer != Owner) return 1m;
-        if (target == null) return 1m;
-
-        if (target.Side == CombatSide.Player)
-        {
-            return 0m;
-        }
-
         return 1m;
     }
 

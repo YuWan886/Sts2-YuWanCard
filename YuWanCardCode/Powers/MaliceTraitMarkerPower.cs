@@ -11,6 +11,8 @@ public sealed class MaliceTraitMarkerPower : YuWanPowerModel
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
+    public override bool ShouldPowerBeRemovedAfterOwnerDeath() => false;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DynamicVar("TraitCount", 1)
