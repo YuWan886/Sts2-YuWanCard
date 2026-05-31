@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -34,5 +35,7 @@ public class FatPig : YuWanCardModel
             DynamicVars["PlatingPower"].IntValue, 
             Owner.Creature, 
             this);
+        
+        VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
     }
 }

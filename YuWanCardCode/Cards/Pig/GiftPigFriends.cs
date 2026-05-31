@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using YuWanCard.Characters;
 using YuWanCard.Powers;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -36,5 +37,7 @@ public class GiftPigFriends : YuWanCardModel
             if (player?.Creature == null || player.Creature.IsDead) continue;
             await PowerCmd.Apply<PigFriendsPower>(player.Creature, DynamicVars["PigFriendsPower"].IntValue, Owner.Creature, this);
         }
+
+        VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
     }
 }

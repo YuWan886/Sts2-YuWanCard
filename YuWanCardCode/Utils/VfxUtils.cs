@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using System.Text;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Helpers;
@@ -12,8 +14,10 @@ public static class VfxUtils
     private static readonly ConcurrentDictionary<string, PackedScene> SceneCache = new();
     private static readonly ConcurrentDictionary<string, Texture2D[]> FrameCache = new();
     private static readonly ConcurrentDictionary<string, Texture2D> TextureCache = new();
+    private const string StaticVfxTexturePathPrefix = "res://YuWanCard/images/vfx/vfx_";
     private const float DefaultStaticImageSize = 256f * 0.6f;
     private const float DefaultStaticImageDuration = 1.5f;
+    private const float CreatureTopTextureYOffset = 20f;
 
     public static IReadOnlyList<Texture2D>? GetCachedFrames(string framePathPrefix)
     {
@@ -70,6 +74,49 @@ public static class VfxUtils
         }
 
         return DefaultStaticImageSize / maxDimension;
+    }
+
+    private static string GetStaticVfxTexturePath(string vfxName)
+    {
+        return $"{StaticVfxTexturePathPrefix}{vfxName}.png";
+    }
+
+    private static string GetStaticVfxTexturePathFromCaller([CallerFilePath] string callerFilePath = "")
+    {
+        var fileName = Path.GetFileNameWithoutExtension(callerFilePath);
+        return GetStaticVfxTexturePath(ToSnakeCase(fileName));
+    }
+
+    private static string ToSnakeCase(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        var builder = new StringBuilder(value.Length + 8);
+        foreach (var ch in value)
+        {
+            if (char.IsUpper(ch))
+            {
+                if (builder.Length > 0 && builder[^1] != '_')
+                {
+                    builder.Append('_');
+                }
+
+                builder.Append(char.ToLowerInvariant(ch));
+            }
+            else if (char.IsLetterOrDigit(ch))
+            {
+                builder.Append(char.ToLowerInvariant(ch));
+            }
+            else if (builder.Length > 0 && builder[^1] != '_')
+            {
+                builder.Append('_');
+            }
+        }
+
+        return builder.ToString().Trim('_');
     }
 
     private static void ScheduleAutoFree(Node node, float? durationSeconds)
@@ -331,13 +378,13 @@ public static class VfxUtils
         }
         else if (instance is Node2D node2D)
         {
+            node2D.GlobalPosition = globalPos;
             var animatedSprite = node2D.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
             if (animatedSprite != null && animatedSprite.SpriteFrames != null)
             {
                 var texture = animatedSprite.SpriteFrames.GetFrameTexture("default", 0);
                 if (texture != null)
                 {
-                    node2D.GlobalPosition = globalPos;
                     node2D.GlobalPosition -= new Vector2(0, texture.GetHeight() * 0.5f);
                 }
             }
@@ -579,10 +626,20 @@ public static class VfxUtils
         var topPos = creatureNode.GetTopOfHitbox();
         var scale = GetStaticImageScale(texture);
         var scaledHeight = texture.GetSize().Y * scale;
-        sprite.GlobalPosition = topPos - new Vector2(0, scaledHeight * 0.5f);
+        sprite.GlobalPosition = topPos - new Vector2(0, scaledHeight * 0.5f + CreatureTopTextureYOffset);
 
         MainFile.Logger.Debug($"VfxUtils: Played texture at creature top {topPos}: {texturePath}");
         return sprite;
+    }
+
+    public static Sprite2D? PlayStaticVfxAtCreatureTop(string vfxName, Creature creature, float? durationSeconds = null)
+    {
+        return PlayTextureAtCreatureTop(GetStaticVfxTexturePath(vfxName), creature, durationSeconds);
+    }
+
+    public static Sprite2D? PlayStaticVfxAtCreatureTop(Creature creature, float? durationSeconds = null, [CallerFilePath] string callerFilePath = "")
+    {
+        return PlayTextureAtCreatureTop(GetStaticVfxTexturePathFromCaller(callerFilePath), creature, durationSeconds);
     }
 
     public static Sprite2D? PlayTextureAtCreatureTop(Texture2D texture, Creature creature, float? durationSeconds = null)
@@ -609,7 +666,7 @@ public static class VfxUtils
         var topPos = creatureNode.GetTopOfHitbox();
         var scale = GetStaticImageScale(texture);
         var scaledHeight = texture.GetSize().Y * scale;
-        sprite.GlobalPosition = topPos - new Vector2(0, scaledHeight * 0.5f);
+        sprite.GlobalPosition = topPos - new Vector2(0, scaledHeight * 0.5f + CreatureTopTextureYOffset);
 
         MainFile.Logger.Debug($"VfxUtils: Played texture at creature top {topPos}");
         return sprite;

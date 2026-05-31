@@ -35,6 +35,6 @@ public class PigThink : YuWanCardModel
             await PlayerCmd.GainEnergy(DynamicVars["Energy"].IntValue, teammate.Player!);
         }
 
-        VfxUtils.PlayTextureAtCreatureTop("res://YuWanCard/images/vfx/vfx_pig_think.png", Owner.Creature);
+        VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
     }
 }

@@ -1,9 +1,12 @@
+using System;
 using MegaCrit.Sts2.Core.Map;
 
 namespace YuWanCard.Relics;
 
 public class ScaledActMap : ActMap
 {
+    private const int MaxSerializedMapCoordRow = byte.MaxValue;
+
     private readonly MapPoint?[,] _grid;
     private readonly MapPoint _bossPoint;
     private readonly MapPoint _startingPoint;
@@ -11,9 +14,21 @@ public class ScaledActMap : ActMap
 
     public ScaledActMap(ActMap original, int multiplier = 2)
     {
+        if (multiplier < 1)
+            throw new ArgumentOutOfRangeException(nameof(multiplier), multiplier, "Map length multiplier must be at least 1.");
+
         int cols = original.GetColumnCount();
         int origRows = original.GetRowCount();
         int newRows = origRows * multiplier;
+        int maxRegularRows = original.SecondBossMapPoint != null
+            ? MaxSerializedMapCoordRow - 1
+            : MaxSerializedMapCoordRow;
+        if (newRows > maxRegularRows)
+        {
+            throw new InvalidOperationException(
+                $"Scaled map row count {newRows} exceeds the serialized map row limit {maxRegularRows}. " +
+                "This would corrupt saved map coords and break run history.");
+        }
 
         _grid = new MapPoint[cols, newRows];
 
@@ -96,9 +111,10 @@ public class ScaledActMap : ActMap
             }
         }
 
-        _startingPoint = new MapPoint(cols / 2, 0)
+        _startingPoint = new MapPoint(original.StartingMapPoint.coord.col, original.StartingMapPoint.coord.row)
         {
-            PointType = MapPointType.Ancient
+            PointType = original.StartingMapPoint.PointType,
+            CanBeModified = original.StartingMapPoint.CanBeModified
         };
 
         for (int c = 0; c < cols; c++)
