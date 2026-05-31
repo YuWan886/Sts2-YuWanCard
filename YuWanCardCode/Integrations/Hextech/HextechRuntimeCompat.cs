@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -405,8 +406,11 @@ public static class HextechRuntimeCompat
 
         if (_randomForgeShopRelicType != null && forgeHelperType != null)
         {
-            _tryCreateRandomForgeMethod = forgeHelperType.GetMethod("TryCreateRandomForge",
-                BindingFlags.Static | BindingFlags.NonPublic);
+            // Use GetMethods + filter to avoid AmbiguousMatchException if HextechRunes
+            // adds multiple overloads of TryCreateRandomForge
+            _tryCreateRandomForgeMethod = forgeHelperType
+                .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+                .SingleOrDefault(m => m.Name == "TryCreateRandomForge" && m.GetParameters().Length == 3);
             if (_tryCreateRandomForgeMethod != null)
             {
                 ShoppingCartManager.ResolveShopProxyRelic = ResolveRandomForgeProxy;
