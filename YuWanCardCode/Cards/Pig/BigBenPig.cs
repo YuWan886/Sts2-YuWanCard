@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using YuWanCard.Characters;
 using YuWanCard.Powers;
 using MegaCrit.Sts2.Core.Models;
-using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -38,8 +37,6 @@ public class BigBenPig : YuWanCardModel
 
 
         var benPig = CombatState!.CreateCard(ModelDb.Card<SmallBenPig>(), Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(benPig, PileType.Draw, addedByPlayer: true);
-
-        VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
+        await CardPileCmd.AddGeneratedCardToCombat(benPig, PileType.Draw, null);
     }
 }

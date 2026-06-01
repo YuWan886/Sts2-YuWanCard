@@ -2,7 +2,6 @@ using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Characters;
 
@@ -19,7 +18,6 @@ public class PigNineLegs : YuWanCardModel
     {
         WithDamage(29);
         WithPower<StranglePower>(9);
-        WithTip(new TooltipSource(_ => HoverTipFactory.Static(StaticHoverTip.Fatal)));
     }
 
     protected override void OnUpgrade()
@@ -32,14 +30,13 @@ public class PigNineLegs : YuWanCardModel
         if (cardPlay.Target == null)
             return;
 
-        bool shouldTriggerFatal = cardPlay.Target.Powers.All(power => power.ShouldOwnerDeathTriggerFatal());
         var attackCommand = await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
 
-        if (!shouldTriggerFatal || !attackCommand.Results.Any(result => result.WasTargetKilled) || CombatState == null)
+        if (cardPlay.Target.IsAlive || CombatState == null)
             return;
 
         var otherEnemies = CombatState.HittableEnemies

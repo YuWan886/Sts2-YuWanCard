@@ -44,12 +44,7 @@ public class PigDesire : YuWanCardModel
             var canonical = ModelDb.GetById<PowerModel>(power.Id);
             if (canonical != null)
             {
-                await PowerCmd.Apply(canonical.ToMutable(), Owner.Creature, power.Amount, Owner.Creature, null);
-
-                VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
-
-                VfxUtils.PlayAtCreature("res://scenes/vfx/vfx_bite.tscn", teammate);
-                AudioUtils.Play("res://debug_audio/blunt_attack.mp3");
+                await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), canonical.ToMutable(), Owner.Creature, power.Amount, Owner.Creature, null);
             }
         }
     }
