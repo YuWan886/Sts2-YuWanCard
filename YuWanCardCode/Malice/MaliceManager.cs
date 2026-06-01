@@ -183,7 +183,11 @@ public static class MaliceManager
     private static int GetAscensionCap(ModelId characterId)
     {
         var stats = SaveManager.Instance.Progress.GetStatsForCharacter(characterId);
-        return ClampLevel(stats?.MaxAscension ?? 0, MaxMaliceLevel);
+        int rawAscension = stats?.MaxAscension ?? 0;
+        // Ensure malice can progress independently at low ascension levels.
+        // Minimum cap of 2 allows malice 1-2 to unlock regardless of ascension.
+        int effectiveCap = rawAscension > 0 ? Math.Max(rawAscension, 2) : 0;
+        return ClampLevel(effectiveCap, MaxMaliceLevel);
     }
 
     private static int ClampLevel(int level, int max)

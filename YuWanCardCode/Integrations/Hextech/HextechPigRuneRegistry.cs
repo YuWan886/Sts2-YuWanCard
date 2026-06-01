@@ -34,7 +34,7 @@ public static class HextechPigRuneRegistry
 
     private static readonly IReadOnlyList<Type> SharedSilverRunes =
     [
-        typeof(PiggyBankRune),
+        typeof(SavingsAccountRune),
         typeof(HeartyMealRune)
     ];
 

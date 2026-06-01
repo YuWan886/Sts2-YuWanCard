@@ -322,7 +322,7 @@ YuWanCardCode/Integrations/Hextech/
 │   ├── HextechSharedRuneBase.cs       # 共享符文基类（SharedRelicPool）
 │   ├── HextechPigForgeBase.cs         # 猪猪锻造基类（复用海克斯图标）
 │   ├── PigletDashRune.cs ~ PerpetualPigRune.cs   # 15 个猪猪符文
-│   ├── PiggyBankRune.cs, HeartyMealRune.cs       # 2 个共享符文
+│   ├── SavingsAccountRune.cs, HeartyMealRune.cs       # 2 个共享符文
 │   ├── SinOfGluttonyRune.cs ~ SinOfWrathRune.cs   # 7 个七宗罪共享符文
 │   └── PigletCollarForge.cs           # 1 个锻造
 └── Powers/

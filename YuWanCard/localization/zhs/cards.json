@@ -188,7 +188,7 @@
   "YUWANCARD-GIFT_PIG_FRIENDS.title": "赠人猪猪",
   "YUWANCARD-GIFT_PIG_FRIENDS.description": "所有玩家获得{PigFriendsPower:diff()}层[gold]猪朋猪友[/gold]。",
   "YUWANCARD-PIG_NINE_LEGS.title": "猪九足",
-  "YUWANCARD-PIG_NINE_LEGS.description": "造成{Damage:diff()}点伤害。斩杀时，给其它敌人{StranglePower:diff()}层[gold]紧勒[/gold]。",
+  "YUWANCARD-PIG_NINE_LEGS.description": "造成{Damage:diff()}点伤害。[gold]斩杀[/gold]时，给其它敌人{StranglePower:diff()}层[gold]紧勒[/gold]。",
   "YUWANCARD-THIN_PIG.title": "瘦猪",
   "YUWANCARD-THIN_PIG.description": "获得{IntangiblePower:diff()}层[gold]无实体[/gold]。",
   "YUWANCARD-PIG_REGENERATION.title": "猪再生",

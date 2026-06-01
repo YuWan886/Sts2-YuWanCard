@@ -127,3 +127,16 @@ static class InitDeDuplicationPatch
         }
     }
 }
+
+/// <summary>
+/// Deduplicates AllAbstractModelSubtypes to prevent "Two AbstractModels ... share an ID" warnings
+/// in ModelIdSerializationCache when the same type appears both in the base assembly and mods.
+/// </summary>
+[HarmonyPatch(typeof(ModelDb), "AllAbstractModelSubtypes", MethodType.Getter)]
+static class AllAbstractModelSubtypesDedupPatch
+{
+    static void Postfix(ref Type[] __result)
+    {
+        __result = __result.Distinct().ToArray();
+    }
+}

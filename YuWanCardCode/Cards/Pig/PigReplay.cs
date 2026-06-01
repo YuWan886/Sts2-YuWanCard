@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -41,5 +42,7 @@ public class PigReplay : YuWanCardModel
             selectedCard.BaseReplayCount += replayCount;
             MainFile.Logger.Info($"PigReplay: Added Replay {replayCount} to {selectedCard.Id}");
         }
+
+        VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
     }
 }

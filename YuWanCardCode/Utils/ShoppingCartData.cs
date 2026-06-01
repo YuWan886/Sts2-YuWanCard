@@ -101,8 +101,8 @@ public class ShoppingCartData
 
     public void Deserialize(string data)
     {
-        CartCleared?.Invoke();
         _items.Clear();
+        CartCleared?.Invoke();
 
         if (string.IsNullOrEmpty(data))
             return;

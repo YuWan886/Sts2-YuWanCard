@@ -188,7 +188,7 @@
   "YUWANCARD-GIFT_PIG_FRIENDS.title": "Gift Pig Friends",
   "YUWANCARD-GIFT_PIG_FRIENDS.description": "All players gain {PigFriendsPower:diff()} [gold]Pig Friends[/gold].",
   "YUWANCARD-PIG_NINE_LEGS.title": "Pig Nine Legs",
-  "YUWANCARD-PIG_NINE_LEGS.description": "Deal {Damage:diff()} damage. If it kills, apply {StranglePower:diff()} [gold]Strangle[/gold] to all other enemies.",
+  "YUWANCARD-PIG_NINE_LEGS.description": "Deal {Damage:diff()} damage. If [gold]Fatal[/gold], apply {StranglePower:diff()} [gold]Strangle[/gold] to all other enemies.",
   "YUWANCARD-THIN_PIG.title": "Thin Pig",
   "YUWANCARD-THIN_PIG.description": "Gain {IntangiblePower:diff()} [gold]Intangible[/gold].",
   "YUWANCARD-PIG_REGENERATION.title": "Pig Regeneration",

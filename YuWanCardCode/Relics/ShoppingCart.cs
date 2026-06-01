@@ -17,22 +17,27 @@ public class ShoppingCart : YuWanRelicModel
     }
 
     private string _shoppingCartData = string.Empty;
-    
+    private ShoppingCartData? _cartData;
+    private bool _isDeserializing;
+
     [SavedProperty]
-    public string YuWanCard_ShoppingCartData 
-    { 
+    public string YuWanCard_ShoppingCartData
+    {
         get => _shoppingCartData;
         set
         {
             if (_shoppingCartData != value)
             {
                 _shoppingCartData = value;
-                _cartData = null;
+                if (_cartData != null)
+                {
+                    _isDeserializing = true;
+                    try { _cartData.Deserialize(value); }
+                    finally { _isDeserializing = false; }
+                }
             }
         }
     }
-
-    private ShoppingCartData? _cartData;
 
     public override RelicRarity Rarity => RelicRarity.Uncommon;
 
@@ -60,12 +65,12 @@ public class ShoppingCart : YuWanRelicModel
 
     private void OnCartItemChanged(ShoppingCartItem _)
     {
-        SaveCartData();
+        if (!_isDeserializing) SaveCartData();
     }
 
     private void OnCartCleared()
     {
-        SaveCartData();
+        if (!_isDeserializing) SaveCartData();
     }
 
     public void SaveCartData()
@@ -75,7 +80,15 @@ public class ShoppingCart : YuWanRelicModel
             var newData = _cartData.Serialize();
             if (_shoppingCartData != newData)
             {
-                _shoppingCartData = newData;
+                _isDeserializing = true;
+                try
+                {
+                    YuWanCard_ShoppingCartData = newData;
+                }
+                finally
+                {
+                    _isDeserializing = false;
+                }
                 MainFile.Logger.Debug($"ShoppingCart: Saved cart data ({_cartData.Count} items)");
             }
         }

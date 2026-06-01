@@ -30,53 +30,29 @@ public class ChefPigPower : YuWanPowerModel
 
         if (transformableCards.Count == 0) return;
 
-        if (player.Creature.CombatState == null) return;
-
         Flash();
 
         int count = Math.Min(Amount, transformableCards.Count);
-        var transformations = new List<CardTransformation>();
-        var selectedCardSet = new HashSet<CardModel>();
+        var prefs = new CardSelectorPrefs(
+            new LocString("powers", $"{Id.Entry}.selectionScreenPrompt"),
+            count
+        );
+        var selectedCards = (await CardSelectCmd.FromHand(
+            context: choiceContext,
+            player: player,
+            prefs: prefs,
+            filter: c => c.IsTransformable,
+            source: this
+        )).ToList();
 
-        for (int i = 0; i < count; i++)
+        foreach (var selectedCard in selectedCards)
         {
-            var remaining = PileType.Hand.GetPile(player).Cards
-                .Where(c => c.IsTransformable && !selectedCardSet.Contains(c))
-                .ToList();
+            var cardScope = selectedCard.CardScope;
+            if (cardScope == null) continue;
 
-            if (remaining.Count == 0) break;
-
-            List<CardModel> selectedCards;
-            if (remaining.Count == 1)
-            {
-                selectedCards = remaining;
-            }
-            else
-            {
-                var prefs = new CardSelectorPrefs(
-                    new LocString("powers", $"{Id.Entry}.selectionScreenPrompt"),
-                    1
-                );
-                selectedCards = (await CardSelectCmd.FromHand(
-                    context: choiceContext,
-                    player: player,
-                    prefs: prefs,
-                    filter: c => c.IsTransformable && !selectedCardSet.Contains(c),
-                    source: this
-                )).ToList();
-            }
-
-            if (selectedCards.Count == 0) break;
-
-            selectedCardSet.Add(selectedCards[0]);
             var canonicalFoodCard = CardUtils.GetRandomFoodPigCardCanonical(player);
-            var combatCard = player.Creature.CombatState.CreateCard(canonicalFoodCard, player);
-            transformations.Add(new CardTransformation(selectedCards[0], combatCard));
-        }
-
-        if (transformations.Count > 0)
-        {
-            await CardCmd.Transform(transformations, player.RunState.Rng.CombatCardGeneration);
+            var replacementCard = cardScope.CreateCard(canonicalFoodCard, player);
+            await CardCmd.Transform(selectedCard, replacementCard);
         }
     }
 }

@@ -16,6 +16,11 @@ public sealed class SplitTrait : MaliceTraitPowerBase
             return;
         }
 
+        if (!MegaCrit.Sts2.Core.Hooks.Hook.ShouldCreatureBeRemovedFromCombatAfterDeath(CombatState, creature))
+        {
+            return;
+        }
+
         MonsterModel canonical = ModelDb.GetById<MonsterModel>(Owner.Monster.Id);
         int splitHp = Math.Max(1, Owner.MaxHp / 4);
 
