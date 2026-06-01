@@ -5,6 +5,8 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Characters;
+using YuWanCard.Modifiers;
+using YuWanCard.Relics;
 
 namespace YuWanCard.Utils;
 
@@ -97,6 +99,7 @@ public static class CloudAnalyticsService
         }
 
         TryRegisterRunStart(runState, requirePendingNewRun: true);
+        CaptureRunEndState(runState);
 
         ActiveRunTelemetry? runToReport;
         lock (SyncRoot)
@@ -308,9 +311,47 @@ public static class CloudAnalyticsService
         {
             properties["result"] = result;
             properties["duration_seconds"] = Math.Max(0, (int)(DateTime.UtcNow - run.StartedAtUtc).TotalSeconds);
+            properties["has_ring_of_seven_curses"] = run.HasRingOfSevenCursesAtEnd;
+            properties["malice_level"] = run.MaliceLevelAtEnd;
         }
 
         return properties;
+    }
+
+    private static void CaptureRunEndState(RunState? runState)
+    {
+        if (runState == null)
+        {
+            return;
+        }
+
+        lock (SyncRoot)
+        {
+            if (_activeRun == null || _activeRun.HasReportedEnd)
+            {
+                return;
+            }
+
+            Player? trackedPlayer = ResolveTrackedPlayer(runState, _activeRun.CharacterId);
+            if (trackedPlayer?.Character == null)
+            {
+                return;
+            }
+
+            _activeRun.HasRingOfSevenCursesAtEnd = trackedPlayer.GetRelic<RingOfSevenCurses>() != null;
+            _activeRun.MaliceLevelAtEnd = MaliceModifier.GetMaliceModifier(runState)?.EffectiveMaliceLevel ?? 0;
+        }
+    }
+
+    private static Player? ResolveTrackedPlayer(RunState runState, string characterId)
+    {
+        Player? localPlayer = LocalContext.GetMe(runState);
+        if (localPlayer?.Character != null)
+        {
+            return localPlayer;
+        }
+
+        return runState.Players.FirstOrDefault(player => player.Character?.Id.Entry == characterId);
     }
 
     private static void SendIdentifySnapshot()
@@ -864,5 +905,7 @@ public static class CloudAnalyticsService
         public bool HasReportedEnd { get; set; }
         public int PlayerCount { get; set; }
         public int AscensionLevel { get; set; }
+        public bool HasRingOfSevenCursesAtEnd { get; set; }
+        public int MaliceLevelAtEnd { get; set; }
     }
 }

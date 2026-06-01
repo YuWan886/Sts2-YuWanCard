@@ -36,6 +36,10 @@ public class BigBenPig : YuWanCardModel
         await PowerCmd.Apply<BigBenPigPower>(Owner.Creature, amount, Owner.Creature, this);
 
         var benPig = CombatState!.CreateCard(ModelDb.Card<SmallBenPig>(), Owner);
+        if (IsUpgraded)
+        {
+            CardCmd.Upgrade(benPig);
+        }
         await CardPileCmd.AddGeneratedCardToCombat(benPig, PileType.Draw, addedByPlayer: true);
 
         VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);

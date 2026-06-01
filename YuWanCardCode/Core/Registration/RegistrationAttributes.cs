@@ -8,6 +8,24 @@ namespace YuWanCard.Core.Registration;
 public class RegisterEventAttribute : Attribute;
 
 /// <summary>
+/// Auto-registers a boss encounter into a target act's boss pool and discovery order.
+/// Intended for EncounterModel types whose RoomType is Boss.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
+public sealed class RegisterBossAttribute : Attribute
+{
+    public Type ActType { get; }
+
+    public bool IncludeInDiscoveryOrder { get; }
+
+    public RegisterBossAttribute(Type actType, bool includeInDiscoveryOrder = true)
+    {
+        ActType = actType;
+        IncludeInDiscoveryOrder = includeInDiscoveryOrder;
+    }
+}
+
+/// <summary>
 /// Auto-registers an ancient model. The canonical instance created during
 /// ModelDb.Init is registered with CustomAncientRegistry.
 /// Replaces the need for constructor-based registration in YuWanAncientModel.

@@ -34,6 +34,7 @@ public static class ContentRegistry
     internal static readonly HashSet<Type> CharacterTypes = [];
     internal static readonly HashSet<Type> EventTypes = [];
     internal static readonly HashSet<Type> RelicPoolTypes = [];
+    internal static readonly List<RegisteredBossType> BossRegistrations = [];
 
     public static bool IsFrozen
     {
@@ -119,6 +120,26 @@ public static class ContentRegistry
             if (type.HasAttribute<RegisterEventAttribute>())
                 { EventTypes.Add(type); attrCount++; }
 
+            foreach (var bossAttr in type.GetCustomAttributes<RegisterBossAttribute>())
+            {
+                if (!typeof(EncounterModel).IsAssignableFrom(type))
+                {
+                    MainFile.Logger.Warn(
+                        $"ContentRegistry: [RegisterBoss] ignored on non-encounter type {type.Name}");
+                    continue;
+                }
+
+                if (!typeof(ActModel).IsAssignableFrom(bossAttr.ActType))
+                {
+                    MainFile.Logger.Warn(
+                        $"ContentRegistry: [RegisterBoss] on {type.Name} targets non-act type {bossAttr.ActType.Name}");
+                    continue;
+                }
+
+                BossRegistrations.Add(new RegisteredBossType(type, bossAttr.ActType, bossAttr.IncludeInDiscoveryOrder));
+                attrCount++;
+            }
+
             // Backward compat: auto-detect events without explicit [RegisterEvent]
             if (typeof(EventModel).IsAssignableFrom(type) &&
                 !typeof(AncientEventModel).IsAssignableFrom(type) &&
@@ -172,3 +193,8 @@ public static class ContentRegistry
         return type.GetCustomAttribute<T>() != null;
     }
 }
+
+internal readonly record struct RegisteredBossType(
+    Type EncounterType,
+    Type ActType,
+    bool IncludeInDiscoveryOrder);

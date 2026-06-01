@@ -75,7 +75,7 @@
   "YUWANCARD-SHARE_THE_FOOD_RUNE.description": "In multiplayer, whenever you play a [gold]FoodPig[/gold] card, all teammates gain 1 temporary [gold]Strength[/gold] this turn.",
   "YUWANCARD-SHARE_THE_FOOD_RUNE.flavor": "No teammate gets left hungry.",
   "YUWANCARD-PIG_BREEDER_RUNE.title": "Pig Breeder",
-  "YUWANCARD-PIG_BREEDER_RUNE.description": "Your pig minion limit is increased by 1. Whenever you summon a pig minion, trigger one extra upgrade.",
+  "YUWANCARD-PIG_BREEDER_RUNE.description": "Whenever you summon a pig minion, trigger one extra upgrade.",
   "YUWANCARD-PIG_BREEDER_RUNE.flavor": "Scaled, standardized, industrialized.",
   "YUWANCARD-ENDLESS_BUFFET_RUNE.title": "Endless Buffet",
   "YUWANCARD-ENDLESS_BUFFET_RUNE.description": "Your [gold]FoodPig[/gold] cards have a 50% chance to return to your hand after being played.",

@@ -1,9 +1,7 @@
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Hextech;
 using YuWanCard.Monsters;
-using YuWanCard.Powers;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
@@ -37,13 +35,4 @@ public sealed class PigBreederRune : HextechPigRuneBase
         await PetManager.UpgradePigMinion(creature, DynamicVars["ExtraUpgrade"].IntValue, Owner.Creature);
     }
 
-    public override decimal ModifySummonAmount(MegaCrit.Sts2.Core.Entities.Players.Player summoner, decimal amount, AbstractModel? source)
-    {
-        if (summoner != Owner || source is not PigFriendsPower)
-        {
-            return amount;
-        }
-
-        return amount + 1;
-    }
 }
