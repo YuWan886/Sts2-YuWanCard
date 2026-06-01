@@ -226,11 +226,11 @@ public static class MaliceTraitDistributor
 
         if (weighted.Count == 0)
         {
-            return creature.CombatState!.RunState.Rng.UpFront.NextInt(available.Count);
+            return creature.CombatState!.RunState.Rng.CombatCardGeneration.NextInt(available.Count);
         }
 
         int totalWeight = weighted.Sum(x => x.Weight);
-        int roll = creature.CombatState!.RunState.Rng.UpFront.NextInt(totalWeight);
+        int roll = creature.CombatState!.RunState.Rng.CombatCardGeneration.NextInt(totalWeight);
         int cumulative = 0;
         foreach (var entry in weighted)
         {

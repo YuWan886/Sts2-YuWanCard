@@ -25,10 +25,11 @@ public sealed class DrainTrait : MaliceTraitPowerBase
                 continue;
             }
 
-            PowerModel? randomBuff = result.Receiver.Powers
+            var buffs = result.Receiver.Powers
                 .Where(p => p.Type == PowerType.Buff && p.IsVisible)
-                .OrderBy(_ => CombatState?.RunState.Rng.UpFront.NextFloat() ?? 0f)
-                .FirstOrDefault();
+                .ToList();
+
+            PowerModel? randomBuff = CombatState?.RunState.Rng.CombatCardSelection.NextItem(buffs);
 
             if (randomBuff != null)
             {

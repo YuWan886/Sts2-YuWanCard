@@ -33,7 +33,7 @@ public sealed class LustMalice : MaliceRelicModel
             return false;
         }
 
-        float roll = runState.Rng.UpFront.NextFloat();
+        float roll = runState.Rng.Niche.NextFloat();
         if (roll > 0.4f)
         {
             return false;

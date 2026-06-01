@@ -39,7 +39,7 @@ public sealed class MasterTrait : MaliceTraitPowerBase
             return;
         }
 
-        int index = combatState.RunState.Rng.UpFront.NextInt(_actMonsterPool.Count);
+        int index = combatState.RunState.Rng.CombatCardGeneration.NextInt(_actMonsterPool.Count);
         MonsterModel monster = _actMonsterPool[index].ToMutable();
 
         // Find a free slot to prevent hitbox overlap (null if encounter has no slots)
