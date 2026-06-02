@@ -269,5 +269,11 @@
   "YUWANCARD-GLUTTONY_MALICE.flavor": "连恶意也能吃下去。",
   "YUWANCARD-LUST_MALICE.title": "恶意·色欲",
   "YUWANCARD-LUST_MALICE.description": "若本场战斗击杀过词条敌人，有40%概率额外获得一件遗物。",
-  "YUWANCARD-LUST_MALICE.flavor": "总觉得还能再多拿一点。"
+  "YUWANCARD-LUST_MALICE.flavor": "总觉得还能再多拿一点。",
+  "YUWANCARD-RECYCLE_BIN.title": "回收站",
+  "YUWANCARD-RECYCLE_BIN.description": "跳过奖励中的卡牌、药水、遗物时，记录其商店价格30%的金币。\n进入下一个房间时，获得记录的金币。",
+  "YUWANCARD-RECYCLE_BIN.flavor": "先丢进去，过会儿再折现。",
+  "YUWANCARD-WHAT_IF_INFINITE_UPGRADES.title": "假如我能无限升级",
+  "YUWANCARD-WHAT_IF_INFINITE_UPGRADES.description": "所有卡牌都能无限升级。",
+  "YUWANCARD-WHAT_IF_INFINITE_UPGRADES.flavor": "再来一次，还能再来一次。"
 }

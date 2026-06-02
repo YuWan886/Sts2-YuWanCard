@@ -85,8 +85,8 @@
   "YUWANCARD-CHEF_PIG_POWER.smartDescription": "At the start of each turn, choose {ChefPigPower} card(s) from your hand to [gold]transform[/gold] into [gold]Food Pig[/gold] cards.",
   "YUWANCARD-CHEF_PIG_POWER.selectionScreenPrompt": "Choose 1 card from hand to transform into a Food Pig card",
   "YUWANCARD-HORIZON_POWER.title": "Horizon",
-  "YUWANCARD-HORIZON_POWER.description": "All cards cost 1 less this combat.",
-  "YUWANCARD-HORIZON_POWER.smartDescription": "All cards cost {Amount} less this combat.",
+  "YUWANCARD-HORIZON_POWER.description": "All cards cost 1 less within 3 turns",
+  "YUWANCARD-HORIZON_POWER.smartDescription": "All cards cost 1 less within {Amount} turns",
   "YUWANCARD-GROUP_FRIEND_FORM_POWER.title": "Group Friend Form",
   "YUWANCARD-GROUP_FRIEND_FORM_POWER.description": "Each time you play a card, add 1 copy of that card to your draw pile.",
   "YUWANCARD-GROUP_FRIEND_FORM_POWER.smartDescription": "Each time you play a card, add 1 copy of that card to your draw pile.",
@@ -203,5 +203,9 @@
   "YUWANCARD-ABSORPTION_POWER.title": "Absorption",
   "YUWANCARD-ABSORPTION_POWER.description": "Temporary HP buffer. Absorbs an equal amount of HP damage after block is bypassed. Removed at end of turn.",
   "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.title": "Piglet Guard Marker",
-  "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.description": "Tracks the remaining number of attacks the Piglet Guard minion can absorb."
+  "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.description": "Tracks the remaining number of attacks the Piglet Guard minion can absorb.",
+  "YUWANCARD-OLD_PIG_CALENDAR_DOUBLE_DAMAGE_POWER.title": "Old Pig Calendar",
+  "YUWANCARD-OLD_PIG_CALENDAR_DOUBLE_DAMAGE_POWER.description": "Deals double damage this turn.",
+  "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.title": "Damage Lock",
+  "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.description": "Cannot deal damage this turn."
 }

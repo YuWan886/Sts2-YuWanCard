@@ -288,5 +288,9 @@
   "YUWANCARD-PIG_RISING_FIST.title": "Pig Rising Fist",
   "YUWANCARD-PIG_RISING_FIST.description": "Gain {FreeAttackPower:diff()} [gold]Free Attack[/gold], {GigantificationPower:diff()} [gold]Gigantification[/gold], {OneTwoPunchPower:diff()} [gold]One-Two Punch[/gold].\n[exhaust]",
   "YUWANCARD-PIG_DESIRE.title": "Pig Desire",
-  "YUWANCARD-PIG_DESIRE.description": "Copy your teammate's [gold]Buff[/gold] effects.\n[exhaust]"
+  "YUWANCARD-PIG_DESIRE.description": "Copy your teammate's [gold]Buff[/gold] effects.\n[exhaust]",
+  "YUWANCARD-OLD_PIG_CALENDAR.title": "Old Pig Calendar",
+  "YUWANCARD-OLD_PIG_CALENDAR.description": "Steal all visible [gold]Buffs[/gold] from a teammate. You and that teammate deal double damage this turn. Other teammates cannot deal damage this turn.",
+  "YUWANCARD-KOU_KOU_SPACE.title": "QQ Space",
+  "YUWANCARD-KOU_KOU_SPACE.description": "{IfUpgraded:show:Apply 1 [gold]Weak[/gold] to all teammates. Gain random potions equal to your teammate count.|Apply 1 [gold]Weak[/gold] to a teammate. Gain 1 random potion.}"
 }

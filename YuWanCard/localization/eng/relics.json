@@ -269,5 +269,11 @@
   "YUWANCARD-GLUTTONY_MALICE.flavor": "Even malice can be consumed.",
   "YUWANCARD-LUST_MALICE.title": "Relic of Lust",
   "YUWANCARD-LUST_MALICE.description": "If you killed any trait enemy this combat, gain a 25% chance for an extra relic reward.",
-  "YUWANCARD-LUST_MALICE.flavor": "There is always room for more."
+  "YUWANCARD-LUST_MALICE.flavor": "There is always room for more.",
+  "YUWANCARD-RECYCLE_BIN.title": "Recycle Bin",
+  "YUWANCARD-RECYCLE_BIN.description": "When you skip card, potion, or relic rewards, store gold equal to 30% of their shop value. \nGain the stored gold when you enter the next room.",
+  "YUWANCARD-RECYCLE_BIN.flavor": "Trash first, cash out later.",
+  "YUWANCARD-WHAT_IF_INFINITE_UPGRADES.title": "What If I Could Upgrade Forever",
+  "YUWANCARD-WHAT_IF_INFINITE_UPGRADES.description": "All cards can be upgraded infinitely.",
+  "YUWANCARD-WHAT_IF_INFINITE_UPGRADES.flavor": "One more upgrade. Then one more."
 }

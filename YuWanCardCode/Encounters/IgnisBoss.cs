@@ -17,6 +17,9 @@ public sealed class IgnisBoss : YuWanEncounterModel
 
     public override string CustomBgm => "event:/music/act3_boss_queen";
 
+    public override string? CustomBackgroundScenePath =>
+        "res://YuWanCard/scenes/backgrounds/ignis_boss/ignis_boss_background.tscn";
+
     public override string BossNodePath => "res://YuWanCard/images/map/placeholder/ignis_boss_icon";
 
     public override MegaSkeletonDataResource? BossNodeSpineResource => null;

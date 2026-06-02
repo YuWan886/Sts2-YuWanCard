@@ -86,7 +86,7 @@
   "YUWANCARD-CHEF_PIG_POWER.selectionScreenPrompt": "选择1张手牌变化为的食物猪卡牌",
   "YUWANCARD-HORIZON_POWER.title": "天涯海角",
   "YUWANCARD-HORIZON_POWER.description": "3回合内所有卡牌的耗能减1。",
-  "YUWANCARD-HORIZON_POWER.smartDescription": "3回合内所有卡牌的耗能减{Amount}。",
+  "YUWANCARD-HORIZON_POWER.smartDescription": "{Amount}回合内所有卡牌的耗能减1。",
   "YUWANCARD-GROUP_FRIEND_FORM_POWER.title": "群友形态",
   "YUWANCARD-GROUP_FRIEND_FORM_POWER.description": "你每打出1张牌，就将该牌复制1张加入[gold]抽牌堆[/gold]。\n[gold]能力牌[/gold]除外。",
   "YUWANCARD-GROUP_FRIEND_FORM_POWER.smartDescription": "你每打出1张牌，就将该牌复制1张加入[gold]抽牌堆[/gold]。\n[gold]能力牌[/gold]除外。",
@@ -203,5 +203,9 @@
   "YUWANCARD-ABSORPTION_POWER.title": "伤害吸收",
   "YUWANCARD-ABSORPTION_POWER.description": "在护甲穿透后吸收伤害。",
   "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.title": "小猪护卫",
-  "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.description": "小猪护卫可吸收的攻击次数。"
+  "YUWANCARD-HEXTECH_PIGLET_GUARD_MINION_POWER.description": "小猪护卫可吸收的攻击次数。",
+  "YUWANCARD-OLD_PIG_CALENDAR_DOUBLE_DAMAGE_POWER.title": "老猪历",
+  "YUWANCARD-OLD_PIG_CALENDAR_DOUBLE_DAMAGE_POWER.description": "本回合造成的伤害翻倍。",
+  "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.title": "小猪历",
+  "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.description": "本回合无法造成伤害。"
 }

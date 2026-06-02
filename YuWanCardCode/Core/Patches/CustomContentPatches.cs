@@ -3,6 +3,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 
 namespace YuWanCard.Core.Patches;
 
@@ -216,6 +217,23 @@ static class CustomEncounterScenePath
             __result = e.CustomScenePath;
             return false;
         }
+        return true;
+    }
+}
+
+[HarmonyPriority(Priority.High)]
+[HarmonyPatch(typeof(EncounterModel), nameof(EncounterModel.CreateBackground))]
+static class CustomEncounterBackgroundScenePatch
+{
+    static bool Prefix(EncounterModel __instance, ref NCombatBackground __result)
+    {
+        if (__instance is YuWanCard.Core.Abstracts.YuWanEncounterModel e && e.CustomBackgroundScenePath != null)
+        {
+            __result = PreloadManager.Cache.GetScene(e.CustomBackgroundScenePath)
+                .Instantiate<NCombatBackground>(PackedScene.GenEditState.Disabled);
+            return false;
+        }
+
         return true;
     }
 }
