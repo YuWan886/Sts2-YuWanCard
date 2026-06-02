@@ -17,7 +17,13 @@ public static class WhatIfInfiniteUpgradesPatch
     [HarmonyPatch(typeof(CardModel), nameof(CardModel.MaxUpgradeLevel), MethodType.Getter)]
     public static void CardModel_MaxUpgradeLevel_Postfix(CardModel __instance, ref int __result)
     {
-        if (IsLoadOverrideActive || __instance.Owner?.GetRelic<WhatIfInfiniteUpgrades>() != null)
+        if (IsLoadOverrideActive)
+        {
+            __result = int.MaxValue;
+            return;
+        }
+
+        if (!__instance.IsCanonical && __instance.Owner?.GetRelic<WhatIfInfiniteUpgrades>() != null)
         {
             __result = int.MaxValue;
         }
