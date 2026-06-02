@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -79,5 +80,7 @@ public class KouKouSpace : YuWanCardModel
 
             await PotionCmd.TryToProcure(potion.ToMutable(), Owner);
         }
+
+        VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
     }
 }

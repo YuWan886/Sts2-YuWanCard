@@ -285,6 +285,8 @@
   "YUWANCARD-PIG_ALWAYS_CRY.description": "",
   "YUWANCARD-PIG_GAZE.title": "Pig Gaze",
   "YUWANCARD-PIG_GAZE.description": "Gain {Energy:energyIcons()}. You cannot draw extra cards during your turn.",
+  "YUWANCARD-YU_WAN_FORGOT.title": "YuWan Forgot",
+  "YUWANCARD-YU_WAN_FORGOT.description": "Can only be played if there are no other cards in your hand. Gain {Energy:energyIcons()}. Draw {Cards:diff()} cards.",
   "YUWANCARD-PIG_RISING_FIST.title": "Pig Rising Fist",
   "YUWANCARD-PIG_RISING_FIST.description": "Gain {FreeAttackPower:diff()} [gold]Free Attack[/gold], {GigantificationPower:diff()} [gold]Gigantification[/gold], {OneTwoPunchPower:diff()} [gold]One-Two Punch[/gold].\n[exhaust]",
   "YUWANCARD-PIG_DESIRE.title": "Pig Desire",
@@ -292,5 +294,5 @@
   "YUWANCARD-OLD_PIG_CALENDAR.title": "Old Pig Calendar",
   "YUWANCARD-OLD_PIG_CALENDAR.description": "Steal all visible [gold]Buffs[/gold] from a teammate. You and that teammate deal double damage this turn. Other teammates cannot deal damage this turn.",
   "YUWANCARD-KOU_KOU_SPACE.title": "QQ Space",
-  "YUWANCARD-KOU_KOU_SPACE.description": "{IfUpgraded:show:Apply 1 [gold]Weak[/gold] to all teammates. Gain random potions equal to your teammate count.|Apply 1 [gold]Weak[/gold] to a teammate. Gain 1 random potion.}"
+  "YUWANCARD-KOU_KOU_SPACE.description": "Apply 1 [gold]Weak[/gold] to {IfUpgraded:show:all teammates|a teammate}. Gain {IfUpgraded:show:random potions equal to your teammate count|1 random potion}."
 }

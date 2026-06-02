@@ -285,6 +285,8 @@
   "YUWANCARD-PIG_ALWAYS_CRY.description": "",
   "YUWANCARD-PIG_GAZE.title": "猪凝视",
   "YUWANCARD-PIG_GAZE.description": "获得{Energy:energyIcons()}。\n在你的回合内你无法额外抽牌。",
+  "YUWANCARD-YU_WAN_FORGOT.title": "鱼丸忘记了",
+  "YUWANCARD-YU_WAN_FORGOT.description": "只有当你的[gold]手牌[/gold]中没有其他牌时才能打出。获得{Energy:energyIcons()}，抽{Cards:diff()}张牌。",
   "YUWANCARD-PIG_RISING_FIST.title": "升猪拳",
   "YUWANCARD-PIG_RISING_FIST.description": "获得{FreeAttackPower:diff()}层[gold]免费攻击[/gold]、{GigantificationPower:diff()}层[gold]超巨化[/gold]、{OneTwoPunchPower:diff()}层[gold]连环拳[/gold]。",
   "YUWANCARD-PIG_DESIRE.title": "猪想要",
@@ -292,5 +294,5 @@
   "YUWANCARD-OLD_PIG_CALENDAR.title": "老猪历",
   "YUWANCARD-OLD_PIG_CALENDAR.description": "窃取一名队友所有[gold]增益[/gold]效果。你与其本回合造成的伤害翻倍。本回合除你们外的队友无法造成伤害。",
   "YUWANCARD-KOU_KOU_SPACE.title": "扣扣空间",
-  "YUWANCARD-KOU_KOU_SPACE.description": "{IfUpgraded:show:使所有队友获得1层[gold]虚弱[/gold]。获得等同于队友数量的随机药水。|使1名队友获得1层[gold]虚弱[/gold]。获得1瓶随机药水。}"
+  "YUWANCARD-KOU_KOU_SPACE.description": "使{IfUpgraded:show:所有|一名}队友获得1层[gold]虚弱[/gold]。获得{IfUpgraded:show:等同于队友数量的|1瓶}随机药水。"
 }

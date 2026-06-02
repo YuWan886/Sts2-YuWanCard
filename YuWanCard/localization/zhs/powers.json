@@ -188,7 +188,7 @@
   "YUWANCARD-BLINDNESS_TRAIT.description": "攻击对玩家造成伤害时，向其抽牌堆中塞入2张[gold]晕眩[/gold]。",
   "YUWANCARD-BLINDNESS_TRAIT.smartDescription": "攻击对玩家造成伤害时，向其抽牌堆中塞入{DazedCount}张[gold]晕眩[/gold]。",
   "YUWANCARD-SHULKER_TRAIT.title": "潜影",
-  "YUWANCARD-SHULKER_TRAIT.description": "在你的回合开始时，获得2层[gold]滑溜[/gold]。\n最多获得4层。",
+  "YUWANCARD-SHULKER_TRAIT.description": "在你的回合开始时，获得1层[gold]滑溜[/gold]。\n最多获得3层。",
   "YUWANCARD-INVISIBLE_TRAIT.title": "隐形",
   "YUWANCARD-INVISIBLE_TRAIT.description": "在你的回合开始时，若没有缓冲则获得[gold]缓冲[/gold]。",
   "YUWANCARD-INVISIBLE_TRAIT.smartDescription": "在你的回合开始时，若没有缓冲则获得{Amount}层[gold]缓冲[/gold]。",

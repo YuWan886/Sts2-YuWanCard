@@ -188,7 +188,7 @@
   "YUWANCARD-BLINDNESS_TRAIT.description": "When dealing unblocked damage, shuffle Dazed into the player's draw pile.",
   "YUWANCARD-BLINDNESS_TRAIT.smartDescription": "When dealing unblocked damage, shuffle {DazedCount} [gold]Dazed[/gold] into the player's draw pile.",
   "YUWANCARD-SHULKER_TRAIT.title": "Shulker",
-  "YUWANCARD-SHULKER_TRAIT.description": "At the start of its side's turn, gain 2 [gold]Slippery[/gold].",
+  "YUWANCARD-SHULKER_TRAIT.description": "At the start of its side's turn, gain 1 [gold]Slippery[/gold]. \nMax 3 stacks.",
   "YUWANCARD-INVISIBLE_TRAIT.title": "Invisible",
   "YUWANCARD-INVISIBLE_TRAIT.description": "At the start of its side's turn, gain Buffer if it doesn't have one.",
   "YUWANCARD-INVISIBLE_TRAIT.smartDescription": "At the start of its side's turn, gain {Amount} Buffer if it doesn't have one.",
