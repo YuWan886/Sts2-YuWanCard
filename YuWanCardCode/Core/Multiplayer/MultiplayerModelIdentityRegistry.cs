@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Core.Multiplayer;
 
@@ -146,6 +147,19 @@ internal static class MultiplayerModelIdentityRegistry
         foreach (var relic in player.Relics)
         {
             EnsureRegistered(relic);
+        }
+    }
+
+    public static void RegisterRunModifiers(RunState? runState)
+    {
+        if (runState == null)
+        {
+            return;
+        }
+
+        foreach (ModifierModel modifier in runState.Modifiers)
+        {
+            EnsureRegistered(modifier);
         }
     }
 

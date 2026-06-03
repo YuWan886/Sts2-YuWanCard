@@ -177,13 +177,13 @@ class NeowSevenCursesPatch
     }
 }
 
-[HarmonyPatch(typeof(AncientEventModel), "SetInitialEventState")]
+[HarmonyPatch(typeof(Neow), "GenerateInitialOptions")]
 static class NeowRuntimeModifierFilterPatch
 {
     [HarmonyPrefix]
-    static void Prefix(AncientEventModel __instance)
+    static void Prefix(Neow __instance)
     {
-        if (__instance is not Neow || __instance.Owner?.RunState == null)
+        if (__instance.Owner?.RunState == null)
         {
             return;
         }
@@ -199,23 +199,28 @@ static class NeowRuntimeModifierFilterPatch
             return;
         }
 
+        MainFile.Logger.Info(
+            $"[BalatroDebug] NeowRuntimeModifierFilter prefix original=[{string.Join(", ", originalModifiers.Select(static m => m.Id.Entry))}] filtered=[{string.Join(", ", optionModifiers.Select(static m => m.Id.Entry))}]");
         NeowSevenCursesPatch.StoreOriginalModifiers(__instance, originalModifiers);
         YuWanReflectionHelper.SetPrivateField(runState, "<Modifiers>k__BackingField", optionModifiers);
     }
 
-    [HarmonyPostfix]
-    static void Postfix(AncientEventModel __instance)
+    [HarmonyFinalizer]
+    static Exception? Finalizer(Neow __instance, Exception? __exception)
     {
         if (__instance.Owner?.RunState == null)
         {
-            return;
+            return __exception;
         }
 
         if (!NeowSevenCursesPatch.TryTakeOriginalModifiers(__instance, out var originalModifiers))
         {
-            return;
+            return __exception;
         }
 
         YuWanReflectionHelper.SetPrivateField(__instance.Owner.RunState, "<Modifiers>k__BackingField", originalModifiers);
+        MainFile.Logger.Info(
+            $"[BalatroDebug] NeowRuntimeModifierFilter restore modifiers=[{string.Join(", ", originalModifiers.Select(static m => m.Id.Entry))}] exception={__exception?.GetType().Name ?? "null"}");
+        return __exception;
     }
 }

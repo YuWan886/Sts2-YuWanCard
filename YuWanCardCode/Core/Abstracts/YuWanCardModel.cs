@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Godot;
 using MegaCrit.Sts2.Core.Assets;
@@ -5,9 +6,13 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
+using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
+using YuWanCard.Balatro;
 using YuWanCard.Core.Extensions;
 using TooltipSource = YuWanCard.Core.Utils.TooltipSource;
 
@@ -25,6 +30,7 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
     private readonly List<Func<CardModel, IEnumerable<IHoverTip>>> _multiHoverTips = [];
     private readonly HashSet<CardTag> _constructedTags = [];
     private CardHandGlowRules _constructedHandGlowRules;
+    private CardPoolModel? _resolvedPool;
 
     protected enum UpgradeType
     {
@@ -101,6 +107,41 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
         UseAncientVisualStyle
             ? PreloadManager.Cache.GetMaterial(AncientBannerMaterialPath)
             : null;
+
+    public override CardPoolModel Pool
+    {
+        get
+        {
+            if (_resolvedPool != null)
+            {
+                return _resolvedPool;
+            }
+
+            Type? poolType = GetType().GetCustomAttribute<PoolAttribute>()?.PoolType;
+            if (poolType != null)
+            {
+                CardPoolModel? mappedPool = ModelDb.AllCardPools.FirstOrDefault(pool => pool.GetType() == poolType);
+                if (mappedPool != null)
+                {
+                    _resolvedPool = mappedPool;
+                    return mappedPool;
+                }
+            }
+
+            CardPoolModel? discoveredPool = ModelDb.AllCardPools
+                .FirstOrDefault(pool => pool is not MockCardPool && pool.AllCardIds.Contains(Id));
+            if (discoveredPool != null)
+            {
+                _resolvedPool = discoveredPool;
+                return discoveredPool;
+            }
+
+            _resolvedPool = Rarity == CardRarity.Token
+                ? ModelDb.CardPool<TokenCardPool>()
+                : ModelDb.CardPool<ColorlessCardPool>();
+            return _resolvedPool;
+        }
+    }
 
     /// <summary>
     /// Override for card-specific gold glow logic when the stronger bonus line is active.
@@ -305,10 +346,87 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
 
     internal int? CostUpgrade;
 
+    [SavedProperty]
+    public int YUWANCARD_Edition { get; set; }
+
+    [SavedProperty]
+    public bool YUWANCARD_FoilApplied { get; set; }
+
+    public BalatroCardEdition BalatroEdition =>
+        YUWANCARD_Edition is >= (int)BalatroCardEdition.Foil and <= (int)BalatroCardEdition.Negative
+            ? (BalatroCardEdition)YUWANCARD_Edition
+            : BalatroCardEdition.None;
+
+    public bool HasBalatroEdition => BalatroEdition != BalatroCardEdition.None;
+
     protected YuWanCardModel WithCostUpgradeBy(int amount)
     {
         CostUpgrade = amount;
         return this;
+    }
+
+    protected override void AfterDeserialized()
+    {
+        base.AfterDeserialized();
+
+        AddBalatroEditionKeywordIfNeeded();
+
+        if (BalatroEdition == BalatroCardEdition.Foil && !YUWANCARD_FoilApplied)
+        {
+            ApplyFoilEdition();
+        }
+    }
+
+    public bool CanApplyBalatroEdition(BalatroCardEdition edition)
+    {
+        if (edition == BalatroCardEdition.None || HasBalatroEdition)
+        {
+            return false;
+        }
+
+        return Type is not CardType.None and not CardType.Status and not CardType.Curse and not CardType.Quest;
+    }
+
+    public bool TryApplyBalatroEdition(BalatroCardEdition edition)
+    {
+        if (!CanApplyBalatroEdition(edition))
+        {
+            return false;
+        }
+
+        YUWANCARD_Edition = (int)edition;
+        AddBalatroEditionKeywordIfNeeded();
+        if (edition == BalatroCardEdition.Foil)
+        {
+            ApplyFoilEdition();
+        }
+
+        return true;
+    }
+
+    public int GetBalatroPlayCountBonus()
+    {
+        return BalatroEdition == BalatroCardEdition.Polychrome ? 1 : 0;
+    }
+
+    private void AddBalatroEditionKeywordIfNeeded()
+    {
+        if (!HasBalatroEdition)
+        {
+            return;
+        }
+
+        CardKeyword keyword = BalatroCardEditionHelper.GetEditionKeyword(BalatroEdition);
+        if (keyword != CardKeyword.None && !Keywords.Contains(keyword))
+        {
+            AddKeyword(keyword);
+        }
+    }
+
+    private void ApplyFoilEdition()
+    {
+        BalatroCardEditionHelper.ApplyFoilEdition(this);
+        YUWANCARD_FoilApplied = true;
     }
 
     public void ConstructedUpgrade()

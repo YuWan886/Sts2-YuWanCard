@@ -74,6 +74,8 @@ public static class MaliceModifierPatchHelpers
     }
 
     private static readonly ConditionalWeakTable<StartRunLobby, PendingModifiersBox> PendingModifiers = [];
+    [ThreadStatic]
+    private static IReadOnlyList<ModifierModel>? PendingSingleplayerModifiers;
 
     public static IReadOnlyList<ModifierModel> EnsureMaliceModifier(IReadOnlyList<ModifierModel> modifiers, int level)
     {
@@ -143,7 +145,11 @@ public static class MaliceModifierPatchHelpers
 
     public static void SetPendingRunModifiers(StartRunLobby lobby, IReadOnlyList<ModifierModel> modifiers)
     {
-        PendingModifiers.GetOrCreateValue(lobby).Value = CloneModifiers(modifiers);
+        PendingModifiers.GetOrCreateValue(lobby).Value = modifiers.Count > 0
+            ? CloneModifiers(modifiers)
+            : null;
+        MainFile.Logger.Info(
+            $"[BalatroDebug] SetPendingRunModifiers net={lobby.NetService.Type} count={modifiers.Count} modifiers=[{string.Join(", ", modifiers.Select(static m => m.Id.Entry))}]");
     }
 
     public static IReadOnlyList<ModifierModel>? TakePendingRunModifiers(StartRunLobby lobby)
@@ -155,6 +161,26 @@ public static class MaliceModifierPatchHelpers
 
         var modifiers = box.Value;
         box.Value = null;
+        MainFile.Logger.Info(
+            $"[BalatroDebug] TakePendingRunModifiers net={lobby.NetService.Type} count={modifiers?.Count ?? 0} modifiers=[{string.Join(", ", modifiers?.Select(static m => m.Id.Entry) ?? [])}]");
+        return modifiers;
+    }
+
+    public static void SetPendingSingleplayerModifiers(IReadOnlyList<ModifierModel> modifiers)
+    {
+        PendingSingleplayerModifiers = modifiers.Count > 0
+            ? CloneModifiers(modifiers)
+            : null;
+        MainFile.Logger.Info(
+            $"[BalatroDebug] SetPendingSingleplayerModifiers count={modifiers.Count} modifiers=[{string.Join(", ", modifiers.Select(static m => m.Id.Entry))}]");
+    }
+
+    public static IReadOnlyList<ModifierModel>? TakePendingSingleplayerModifiers()
+    {
+        var modifiers = PendingSingleplayerModifiers;
+        PendingSingleplayerModifiers = null;
+        MainFile.Logger.Info(
+            $"[BalatroDebug] TakePendingSingleplayerModifiers count={modifiers?.Count ?? 0} modifiers=[{string.Join(", ", modifiers?.Select(static m => m.Id.Entry) ?? [])}]");
         return modifiers;
     }
 }
@@ -172,6 +198,8 @@ public static class MaliceStartNewMultiplayerRunPatch
 
         if (MaliceModifierPatchHelpers.TakePendingRunModifiers(lobby) is { Count: > 0 } pendingModifiers)
         {
+            MainFile.Logger.Info(
+                $"[BalatroDebug] StartNewMultiplayerRun injected pending modifiers=[{string.Join(", ", pendingModifiers.Select(static m => m.Id.Entry))}]");
             modifiers = pendingModifiers;
             return;
         }
@@ -179,6 +207,33 @@ public static class MaliceStartNewMultiplayerRunPatch
         if (lobby.Modifiers.Count > 0)
         {
             modifiers = MaliceModifierPatchHelpers.CloneModifiers(lobby.Modifiers);
+            MainFile.Logger.Info(
+                $"[BalatroDebug] StartNewMultiplayerRun cloned lobby modifiers=[{string.Join(", ", modifiers.Select(static m => m.Id.Entry))}]");
+        }
+    }
+}
+
+[HarmonyPatch(typeof(NGame), nameof(NGame.StartNewSingleplayerRun))]
+public static class MaliceStartNewSingleplayerRunPatch
+{
+    [HarmonyPrefix]
+    public static void Prefix(ref IReadOnlyList<ModifierModel> modifiers, GameMode gameMode)
+    {
+        if (gameMode != GameMode.Standard)
+        {
+            return;
+        }
+
+        if (MaliceModifierPatchHelpers.TakePendingSingleplayerModifiers() is { Count: > 0 } pendingModifiers)
+        {
+            MainFile.Logger.Info(
+                $"[BalatroDebug] StartNewSingleplayerRun injected pending modifiers=[{string.Join(", ", pendingModifiers.Select(static m => m.Id.Entry))}]");
+            modifiers = pendingModifiers;
+        }
+        else
+        {
+            MainFile.Logger.Info(
+                $"[BalatroDebug] StartNewSingleplayerRun no pending modifiers; incoming modifiers=[{string.Join(", ", modifiers.Select(static m => m.Id.Entry))}]");
         }
     }
 }

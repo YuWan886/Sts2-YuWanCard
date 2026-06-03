@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Core.Multiplayer;
 
@@ -85,6 +86,9 @@ internal static class SavedPropertyMultiplayerSync
             case RelicModel relic:
                 MultiplayerModelIdentityRegistry.EnsureRegistered(relic);
                 break;
+            case ModifierModel modifier:
+                MultiplayerModelIdentityRegistry.EnsureRegistered(modifier);
+                break;
         }
     }
 
@@ -94,6 +98,7 @@ internal static class SavedPropertyMultiplayerSync
         {
             MegaCrit.Sts2.Core.Models.CardModel card => card.Owner,
             RelicModel relic => relic.Owner,
+            ModifierModel modifier => ResolveModifierOwner(modifier),
             _ => null
         })!;
 
@@ -106,6 +111,17 @@ internal static class SavedPropertyMultiplayerSync
         return netService is { IsConnected: true }
                && netService.Type is not MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType.Singleplayer
                and not MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType.Replay;
+    }
+
+    private static Player? ResolveModifierOwner(ModifierModel modifier)
+    {
+        RunState? runState = (modifier as YuWanModifierModel)?.SafeRunState;
+        if (runState == null)
+        {
+            return null;
+        }
+
+        return LocalContext.GetMe(runState) ?? runState.Players.FirstOrDefault();
     }
 
     private static void InvokeAfterDeserialized(AbstractModel model)

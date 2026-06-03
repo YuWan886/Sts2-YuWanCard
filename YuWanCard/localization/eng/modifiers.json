@@ -31,5 +31,9 @@
   "YUWANCARD-MALICE.LEVEL_09.title": "Gate of Hell",
   "YUWANCARD-MALICE.LEVEL_09.description": "Unlock legendary traits.",
   "YUWANCARD-MALICE.LEVEL_10.title": "Final Malice",
-  "YUWANCARD-MALICE.LEVEL_10.description": "Boss trait cap +1 again."
+  "YUWANCARD-MALICE.LEVEL_10.description": "Boss trait cap +1 again.",
+  "YUWANCARD-BALATRO.title": "Balatro",
+  "YUWANCARD-BALATRO.description": "Enable the Balatro systems: Combo multiplier, Joker slots, interest, card editions, and Balatro-specific cards and relics.",
+  "YUWANCARD-BALATRO.neow_title": "Balatro Mode",
+  "YUWANCARD-BALATRO.neow_description": "Enable the Balatro systems: Combo multiplier, Joker slots, interest, card editions, and Balatro-specific cards and relics."
 }

@@ -33,6 +33,27 @@ public static class MultiplayerModelIdentityRunStatePatch
     }
 
     [HarmonyPostfix]
+    [HarmonyPatch(nameof(RunState.CreateForNewRun))]
+    private static void AfterCreateForNewRun(RunState __result)
+    {
+        MultiplayerModelIdentityRegistry.RegisterRunModifiers(__result);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(RunState.FromSerializable))]
+    private static void AfterFromSerializable(RunState __result)
+    {
+        MultiplayerModelIdentityRegistry.RegisterRunModifiers(__result);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(RunState.CreateForTest))]
+    private static void AfterCreateForTest(RunState __result)
+    {
+        MultiplayerModelIdentityRegistry.RegisterRunModifiers(__result);
+    }
+
+    [HarmonyPostfix]
     [HarmonyPatch(nameof(RunState.AddCard), new[] { typeof(CardModel), typeof(Player) })]
     private static void AfterRunStateAddOwnedCard(CardModel card)
     {
@@ -44,6 +65,13 @@ public static class MultiplayerModelIdentityRunStatePatch
     private static void AfterRunStateAddCard(CardModel card)
     {
         MultiplayerModelIdentityRegistry.RegisterCardTree(card);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(RunState.AddModifierDebug))]
+    private static void AfterAddModifierDebug(ModifierModel modifier)
+    {
+        MultiplayerModelIdentityRegistry.EnsureRegistered(modifier);
     }
 }
 

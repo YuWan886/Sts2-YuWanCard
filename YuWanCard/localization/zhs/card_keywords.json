@@ -1,0 +1,10 @@
+{
+  "YUWANCARD-FOIL.title": "铝箔",
+  "YUWANCARD-FOIL.description": "这张牌的正数数值提高20%（至少+1）。",
+  "YUWANCARD-HOLOGRAPHIC.title": "全息",
+  "YUWANCARD-HOLOGRAPHIC.description": "这张牌在战斗中的耗能减少1。",
+  "YUWANCARD-POLYCHROME.title": "多彩",
+  "YUWANCARD-POLYCHROME.description": "这张牌打出时会额外触发1次。",
+  "YUWANCARD-NEGATIVE.title": "负片",
+  "YUWANCARD-NEGATIVE.description": "这张牌带有负片修饰器，并会被视为一张带修饰器的卡牌来触发Balatro联动。"
+}

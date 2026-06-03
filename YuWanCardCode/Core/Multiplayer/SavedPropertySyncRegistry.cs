@@ -22,7 +22,6 @@ internal static class SavedPropertySyncRegistry
 
         var properties = type
             .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-            .Where(property => property.DeclaringType == type)
             .Where(property => property.GetCustomAttribute<SavedPropertyAttribute>() != null)
             .Where(property => property.CanRead && property.SetMethod != null)
             .Where(property => property.GetIndexParameters().Length == 0)
@@ -40,7 +39,7 @@ internal static class SavedPropertySyncRegistry
 
             foreach (PropertyInfo property in properties)
             {
-                MethodInfo? setter = property.SetMethod;
+                MethodInfo? setter = GetDeclaredSetter(property);
                 if (setter == null || !PatchedSetters.Add(setter))
                 {
                     continue;
@@ -72,10 +71,26 @@ internal static class SavedPropertySyncRegistry
         }
     }
 
+    private static MethodInfo? GetDeclaredSetter(PropertyInfo property)
+    {
+        Type? declaringType = property.DeclaringType;
+        if (declaringType == null)
+        {
+            return property.SetMethod;
+        }
+
+        return declaringType
+            .GetProperty(
+                property.Name,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+            ?.SetMethod;
+    }
+
     private static bool ShouldRegisterType(Type type)
     {
         return typeof(MegaCrit.Sts2.Core.Models.CardModel).IsAssignableFrom(type)
-               || typeof(MegaCrit.Sts2.Core.Models.RelicModel).IsAssignableFrom(type);
+               || typeof(MegaCrit.Sts2.Core.Models.RelicModel).IsAssignableFrom(type)
+               || typeof(MegaCrit.Sts2.Core.Models.ModifierModel).IsAssignableFrom(type);
     }
 
     private sealed record SavedPropertySyncMetadata(Type Type, IReadOnlyList<PropertyInfo> Properties);

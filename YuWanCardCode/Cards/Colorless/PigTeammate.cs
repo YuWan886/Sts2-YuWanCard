@@ -40,14 +40,7 @@ public class PigTeammate : YuWanCardModel
         {
             await CardPileCmd.RemoveFromCombat(card);
 
-            var newCard = CombatState!.CreateCard(card.CanonicalInstance, Owner);
-            if (card.CurrentUpgradeLevel > 0)
-            {
-                for (int i = 0; i < card.CurrentUpgradeLevel; i++)
-                {
-                    CardCmd.Upgrade(newCard);
-                }
-            }
+            var newCard = CardCopyHelper.CreateCopy(card, Owner);
             await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, addedByPlayer: true);
         }
 

@@ -27,6 +27,8 @@ public static class HextechRuntimeCompat
 
     private static Type? _randomForgeShopRelicType;
     private static MethodInfo? _tryCreateRandomForgeMethod;
+    private static MethodInfo? _isHextechCustomRelicMethod;
+    private static bool _resolvedHextechCatalogLookupMethods;
 
     public static void TryInstall(Harmony harmony)
     {
@@ -392,10 +394,69 @@ public static class HextechRuntimeCompat
         }
     }
 
+    public static bool TryGetSafeEnergyPrefix(RelicModel? relic, out string prefix)
+    {
+        prefix = string.Empty;
+        if (relic == null)
+        {
+            return false;
+        }
+
+        if (HextechPigRuneRegistry.IsPigOrSharedRune(relic))
+        {
+            prefix = ModelDb.CardPool<Characters.PigCardPool>().EnergyColorName;
+            return true;
+        }
+
+        if (IsOfficialHextechCustomRelic(relic))
+        {
+            prefix = "red";
+            return true;
+        }
+
+        return false;
+    }
+
     private static bool HasPigCharacterGroup(object group)
     {
         PropertyInfo? keyProperty = group.GetType().GetProperty("LocalizationKey");
         return string.Equals(keyProperty?.GetValue(group) as string, "CHARACTER.PIG", StringComparison.Ordinal);
+    }
+
+    private static bool IsOfficialHextechCustomRelic(RelicModel relic)
+    {
+        EnsureHextechCatalogLookupMethodsResolved();
+        if (_isHextechCustomRelicMethod == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            return _isHextechCustomRelicMethod.Invoke(null, [relic]) as bool? == true;
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"HextechRuntimeCompat: failed to query IsHextechCustomRelic for {relic.Id.Entry}: {ex.Message}");
+            return false;
+        }
+    }
+
+    private static void EnsureHextechCatalogLookupMethodsResolved()
+    {
+        if (_resolvedHextechCatalogLookupMethods)
+        {
+            return;
+        }
+
+        _resolvedHextechCatalogLookupMethods = true;
+        Type? catalogType = AccessTools.TypeByName(HextechCatalogTypeName);
+        if (catalogType == null)
+        {
+            return;
+        }
+
+        _isHextechCustomRelicMethod = AccessTools.Method(catalogType, "IsHextechCustomRelic", [typeof(RelicModel)]);
     }
 
     private static void RegisterShoppingCartForgeResolver(ModCompatContext context)

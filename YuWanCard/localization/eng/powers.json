@@ -207,5 +207,14 @@
   "YUWANCARD-OLD_PIG_CALENDAR_DOUBLE_DAMAGE_POWER.title": "Old Pig Calendar",
   "YUWANCARD-OLD_PIG_CALENDAR_DOUBLE_DAMAGE_POWER.description": "Deals double damage this turn.",
   "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.title": "Damage Lock",
-  "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.description": "Cannot deal damage this turn."
+  "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.description": "Cannot deal damage this turn.",
+  "YUWANCARD-COMPOUND_INTEREST_POWER.title": "Compound Interest",
+  "YUWANCARD-COMPOUND_INTEREST_POWER.description": "Your interest cap is increased.",
+  "YUWANCARD-COMPOUND_INTEREST_POWER.smartDescription": "Increase your interest cap by {Amount} Gold each floor.",
+  "YUWANCARD-INFLATION_POWER.title": "Inflation",
+  "YUWANCARD-INFLATION_POWER.description": "Whenever you gain Gold, gain more Gold, and your non-X-cost cards cost 1 more.",
+  "YUWANCARD-INFLATION_POWER.smartDescription": "Whenever you gain Gold, gain {Amount}% more. Your non-X-cost cards cost 1 more.",
+  "YUWANCARD-INERTIA_POWER.title": "Inertia",
+  "YUWANCARD-INERTIA_POWER.description": "Retain 10% of your Combo until the start of next turn, then remove this.",
+  "YUWANCARD-INERTIA_POWER.smartDescription": "Retain 10% of your Combo until the start of next turn, then remove this."
 }

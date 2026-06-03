@@ -259,14 +259,18 @@ public static class MaliceCharacterSelectBeginRunPatch
     [HarmonyPrefix]
     public static void Prefix(NCharacterSelectScreen __instance, ref IReadOnlyList<ModifierModel> modifiers)
     {
-        if (__instance.Lobby.GameMode != MegaCrit.Sts2.Core.Runs.GameMode.Standard || modifiers.Count == 0)
+        if (__instance.Lobby.GameMode != MegaCrit.Sts2.Core.Runs.GameMode.Standard)
         {
             return;
         }
 
         MaliceModifierPatchHelpers.SetPendingRunModifiers(__instance.Lobby, modifiers);
+        if (__instance.Lobby.NetService.Type is not NetGameType.Host and not NetGameType.Client)
+        {
+            MaliceModifierPatchHelpers.SetPendingSingleplayerModifiers(modifiers);
+        }
 
-        if (modifiers.All(modifier => modifier is MaliceModifier))
+        if (modifiers.Count > 0)
         {
             modifiers = Array.Empty<ModifierModel>();
         }
@@ -280,6 +284,7 @@ public static class MaliceCharacterSelectModifiersChangedPatch
     public static bool Prefix(NCharacterSelectScreen __instance)
     {
         MaliceCharacterSelectSyncPatch.SyncMalicePanel(__instance);
+        BalatroCharacterSelectSyncPatch.SyncButton(__instance);
         return false;
     }
 }

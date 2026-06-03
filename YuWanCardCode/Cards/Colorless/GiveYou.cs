@@ -46,13 +46,8 @@ public class GiveYou : YuWanCardModel
         var selectedCard = selectedCards.FirstOrDefault();
         if (selectedCard != null)
         {
-            int upgradeLevel = selectedCard.CurrentUpgradeLevel;
             await CardPileCmd.RemoveFromCombat(selectedCard);
-            var newCard = CombatState!.CreateCard(selectedCard.CanonicalInstance, targetPlayer);
-            for (int i = 0; i < upgradeLevel; i++)
-            {
-                CardCmd.Upgrade(newCard);
-            }
+            var newCard = CardCopyHelper.CreateCopy(selectedCard, targetPlayer);
             await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, addedByPlayer: true);
         }
     }

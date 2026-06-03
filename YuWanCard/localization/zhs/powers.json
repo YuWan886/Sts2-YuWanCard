@@ -207,5 +207,15 @@
   "YUWANCARD-OLD_PIG_CALENDAR_DOUBLE_DAMAGE_POWER.title": "老猪历",
   "YUWANCARD-OLD_PIG_CALENDAR_DOUBLE_DAMAGE_POWER.description": "本回合造成的伤害翻倍。",
   "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.title": "小猪历",
-  "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.description": "本回合无法造成伤害。"
+  "YUWANCARD-OLD_PIG_CALENDAR_NO_DAMAGE_POWER.description": "本回合无法造成伤害。",
+  "========== Balatro ==========": "========== Balatro ==========",
+  "YUWANCARD-COMPOUND_INTEREST_POWER.title": "复利",
+  "YUWANCARD-COMPOUND_INTEREST_POWER.description": "你的利息上限提高。",
+  "YUWANCARD-COMPOUND_INTEREST_POWER.smartDescription": "你的每层利息上限额外提高{Amount}金币。",
+  "YUWANCARD-INFLATION_POWER.title": "通货膨胀",
+  "YUWANCARD-INFLATION_POWER.description": "你获得金币时会额外获得更多金币，且你的非X费卡牌耗能+1。",
+  "YUWANCARD-INFLATION_POWER.smartDescription": "每次获得金币时，额外获得{Amount}%的金币。你的非X费卡牌耗能+1。",
+  "YUWANCARD-INERTIA_POWER.title": "惯性",
+  "YUWANCARD-INERTIA_POWER.description": "将保留10%的连击到下回合开始时，然后移除。",
+  "YUWANCARD-INERTIA_POWER.smartDescription": "将保留10%的连击到下回合开始时，然后移除。"
 }
