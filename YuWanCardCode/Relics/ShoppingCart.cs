@@ -17,7 +17,9 @@ public class ShoppingCart : YuWanRelicModel
     }
 
     private string _shoppingCartData = string.Empty;
+    private string _consumedReservationData = string.Empty;
     private ShoppingCartData? _cartData;
+    private HashSet<string>? _consumedReservationKeys;
     private bool _isDeserializing;
 
     [SavedProperty]
@@ -35,6 +37,23 @@ public class ShoppingCart : YuWanRelicModel
                     try { _cartData.Deserialize(value); }
                     finally { _isDeserializing = false; }
                 }
+
+                RefreshDerivedUi();
+            }
+        }
+    }
+
+    [SavedProperty]
+    public string YuWanCard_ShoppingCartConsumedReservations
+    {
+        get => _consumedReservationData;
+        set
+        {
+            if (_consumedReservationData != value)
+            {
+                _consumedReservationData = value;
+                _consumedReservationKeys = DeserializeReservationKeys(value);
+                RefreshDerivedUi();
             }
         }
     }
@@ -99,10 +118,69 @@ public class ShoppingCart : YuWanRelicModel
         await base.AfterObtained();
         MainFile.Logger.Info("ShoppingCart: Relic obtained, initializing cart data");
         GetCartData();
-        NTopBar_ShoppingCartPatch.RefreshButtonVisibility();
+        RefreshDerivedUi();
     }
 
     public override bool ShowCounter => GetCartData().Count > 0;
 
     public override int DisplayAmount => GetCartData().Count;
+
+    internal bool IsReservationConsumed(string? reservationKey)
+    {
+        return !string.IsNullOrEmpty(reservationKey) && GetConsumedReservationKeys().Contains(reservationKey);
+    }
+
+    internal void MarkReservationConsumed(string? reservationKey)
+    {
+        if (string.IsNullOrEmpty(reservationKey))
+        {
+            return;
+        }
+
+        if (GetConsumedReservationKeys().Add(reservationKey))
+        {
+            SaveConsumedReservationKeys();
+        }
+    }
+
+    private void RefreshDerivedUi()
+    {
+        InvokeDisplayAmountChanged();
+        NMerchantSlot_ShoppingCartPatch.RefreshOpenMerchantInventories();
+
+        if (Owner != null && LocalContext.IsMe(Owner))
+        {
+            NTopBar_ShoppingCartPatch.RefreshButtonVisibility();
+        }
+    }
+
+    private HashSet<string> GetConsumedReservationKeys()
+    {
+        return _consumedReservationKeys ??= DeserializeReservationKeys(_consumedReservationData);
+    }
+
+    private void SaveConsumedReservationKeys()
+    {
+        string newData = string.Join(";", GetConsumedReservationKeys().OrderBy(key => key, StringComparer.Ordinal));
+        if (_consumedReservationData == newData)
+        {
+            return;
+        }
+
+        _isDeserializing = true;
+        try
+        {
+            YuWanCard_ShoppingCartConsumedReservations = newData;
+        }
+        finally
+        {
+            _isDeserializing = false;
+        }
+    }
+
+    private static HashSet<string> DeserializeReservationKeys(string data)
+    {
+        return data.Split(';', StringSplitOptions.RemoveEmptyEntries)
+            .ToHashSet(StringComparer.Ordinal);
+    }
 }

@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Utils;
 
@@ -19,6 +20,7 @@ public class ShoppingCartItem
     public DateTime AddedTime { get; set; }
     
     public ModelId? ModelId { get; set; }
+    public string ReservationKey { get; set; } = string.Empty;
 
     public ShoppingCartItem() { }
 
@@ -30,6 +32,7 @@ public class ShoppingCartItem
         IsOnSale = cardEntry.IsOnSale;
         AddedTime = DateTime.UtcNow;
         ModelId = cardEntry.CreationResult?.Card?.Id;
+        ReservationKey = CreateReservationKey(cardEntry);
     }
 
     public ShoppingCartItem(MerchantRelicEntry relicEntry)
@@ -40,6 +43,7 @@ public class ShoppingCartItem
         IsOnSale = false;
         AddedTime = DateTime.UtcNow;
         ModelId = relicEntry.Model?.Id;
+        ReservationKey = CreateReservationKey(relicEntry);
     }
 
     public ShoppingCartItem(MerchantPotionEntry potionEntry)
@@ -50,11 +54,12 @@ public class ShoppingCartItem
         IsOnSale = false;
         AddedTime = DateTime.UtcNow;
         ModelId = potionEntry.Model?.Id;
+        ReservationKey = CreateReservationKey(potionEntry);
     }
 
     public string Serialize()
     {
-        return $"{(int)ItemType}|{ItemId}|{Price}|{IsOnSale}|{AddedTime.Ticks}|{ModelId?.Category ?? ""}|{ModelId?.Entry ?? ""}";
+        return $"{(int)ItemType}|{ItemId}|{Price}|{IsOnSale}|{AddedTime.Ticks}|{ModelId?.Category ?? ""}|{ModelId?.Entry ?? ""}|{ReservationKey}";
     }
 
     public static ShoppingCartItem? Deserialize(string data)
@@ -82,6 +87,11 @@ public class ShoppingCartItem
                 item.ModelId = new ModelId(parts[5], parts[6]);
             }
 
+            if (parts.Length >= 8)
+            {
+                item.ReservationKey = parts[7];
+            }
+
             return item;
         }
         catch
@@ -102,5 +112,53 @@ public class ShoppingCartItem
     public override int GetHashCode()
     {
         return HashCode.Combine(ItemType, ItemId);
+    }
+
+    public static string CreateReservationKey(MerchantEntry entry)
+    {
+        return entry switch
+        {
+            MerchantCardEntry cardEntry => CreateReservationKey(
+                ShoppingCartItemType.Card,
+                cardEntry.CreationResult?.Card?.Id,
+                cardEntry.Cost,
+                cardEntry.IsOnSale),
+            MerchantRelicEntry relicEntry => CreateReservationKey(
+                ShoppingCartItemType.Relic,
+                relicEntry.Model?.Id,
+                relicEntry.Cost,
+                false),
+            MerchantPotionEntry potionEntry => CreateReservationKey(
+                ShoppingCartItemType.Potion,
+                potionEntry.Model?.Id,
+                potionEntry.Cost,
+                false),
+            _ => string.Empty
+        };
+    }
+
+    private static string CreateReservationKey(
+        ShoppingCartItemType itemType,
+        ModelId? modelId,
+        int price,
+        bool isOnSale)
+    {
+        RunLocation? location = RunManager.Instance?.RunLocationTargetedBuffer?.CurrentLocation;
+        int actIndex = location?.mapLocation.actIndex ?? -1;
+        int col = location?.mapLocation.coord?.col ?? -1;
+        int row = location?.mapLocation.coord?.row ?? -1;
+        int roomId = location?.roomId ?? -1;
+
+        return string.Join(
+            "~",
+            actIndex,
+            col,
+            row,
+            roomId,
+            (int)itemType,
+            modelId?.Category ?? string.Empty,
+            modelId?.Entry ?? string.Empty,
+            price,
+            isOnSale ? 1 : 0);
     }
 }

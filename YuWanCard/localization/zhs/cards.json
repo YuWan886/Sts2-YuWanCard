@@ -294,5 +294,5 @@
   "YUWANCARD-OLD_PIG_CALENDAR.title": "老猪历",
   "YUWANCARD-OLD_PIG_CALENDAR.description": "窃取一名队友所有[gold]增益[/gold]效果。你与其本回合造成的伤害翻倍。本回合除你们外的队友无法造成伤害。",
   "YUWANCARD-KOU_KOU_SPACE.title": "扣扣空间",
-  "YUWANCARD-KOU_KOU_SPACE.description": "使{IfUpgraded:show:所有|一名}队友获得1层[gold]虚弱[/gold]。获得{IfUpgraded:show:等同于队友数量的|1瓶}随机药水。"
+  "YUWANCARD-KOU_KOU_SPACE.description": "使{IfUpgraded:show:所有存活|一名}队友获得1层[gold]虚弱[/gold]。获得{IfUpgraded:show:等同于存活队友数量的|1瓶}随机药水。"
 }

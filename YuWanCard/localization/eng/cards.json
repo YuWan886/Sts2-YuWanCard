@@ -294,5 +294,5 @@
   "YUWANCARD-OLD_PIG_CALENDAR.title": "Old Pig Calendar",
   "YUWANCARD-OLD_PIG_CALENDAR.description": "Steal all visible [gold]Buffs[/gold] from a teammate. You and that teammate deal double damage this turn. Other teammates cannot deal damage this turn.",
   "YUWANCARD-KOU_KOU_SPACE.title": "QQ Space",
-  "YUWANCARD-KOU_KOU_SPACE.description": "Apply 1 [gold]Weak[/gold] to {IfUpgraded:show:all teammates|a teammate}. Gain {IfUpgraded:show:random potions equal to your teammate count|1 random potion}."
+  "YUWANCARD-KOU_KOU_SPACE.description": "Apply 1 [gold]Weak[/gold] to {IfUpgraded:show:all living teammates|a teammate}. Gain {IfUpgraded:show:random potions equal to the number of living teammates|1 random potion}."
 }

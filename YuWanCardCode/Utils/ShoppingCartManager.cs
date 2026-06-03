@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
@@ -64,6 +65,63 @@ public static class ShoppingCartManager
     {
         var cart = GetShoppingCartRelic(player);
         return cart?.GetCartData();
+    }
+
+    public static bool IsEntryReserved(MerchantEntry? entry)
+    {
+        if (entry == null)
+        {
+            return false;
+        }
+
+        string reservationKey = ShoppingCartItem.CreateReservationKey(entry);
+        var modelId = GetEntryModelId(entry);
+        return IsReservationConsumed(reservationKey) || (modelId != null && IsItemReserved(modelId, reservationKey));
+    }
+
+    public static bool IsItemReserved(ModelId? modelId, string? reservationKey = null)
+    {
+        if (modelId == null)
+        {
+            return false;
+        }
+
+        var runState = RunManager.Instance?.State;
+        if (runState == null)
+        {
+            return false;
+        }
+
+        foreach (var player in runState.Players)
+        {
+            var cartData = GetCartData(player);
+            if (cartData == null || cartData.IsEmpty)
+            {
+                continue;
+            }
+
+            foreach (var item in cartData.Items)
+            {
+                if (item.ModelId == null || !item.ModelId.Equals(modelId))
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(reservationKey) && !string.IsNullOrEmpty(item.ReservationKey))
+                {
+                    if (item.ReservationKey == reservationKey)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public static bool AddToCart(MerchantCardEntry cardEntry, Player? player = null)
@@ -190,8 +248,9 @@ public static class ShoppingCartManager
 
         if (success)
         {
-            data.RemoveAt(index);
             var cart = GetShoppingCartRelic(player);
+            cart?.MarkReservationConsumed(item.ReservationKey);
+            data.RemoveAt(index);
             cart?.SaveCartData();
             MainFile.Logger.Info($"ShoppingCartManager: Purchased {item.ItemId} for {item.Price} gold");
         }
@@ -221,6 +280,13 @@ public static class ShoppingCartManager
         }
 
         await PlayerCmd.LoseGold(item.Price, player, MegaCrit.Sts2.Core.Entities.Gold.GoldLossType.Spent);
+        RunManager.Instance.RewardSynchronizer.SyncLocalGoldLost(item.Price);
+        RunManager.Instance.RewardSynchronizer.SyncLocalObtainedCard(mutableCard);
+
+        if (cardModel.Pool is ColorlessCardPool)
+        {
+            player.RunState.CurrentMapPointHistoryEntry?.GetEntry(player.NetId).BoughtColorless.Add(mutableCard.Id);
+        }
 
         MainFile.Logger.Info($"ShoppingCartManager: Purchased card {item.ItemId} for {item.Price} gold");
         return true;
@@ -292,6 +358,9 @@ public static class ShoppingCartManager
         }
 
         await PlayerCmd.LoseGold(item.Price, player, MegaCrit.Sts2.Core.Entities.Gold.GoldLossType.Spent);
+        player.RunState.CurrentMapPointHistoryEntry?.GetEntry(player.NetId).BoughtPotions.Add(mutablePotion.Id);
+        RunManager.Instance.RewardSynchronizer.SyncLocalGoldLost(item.Price);
+        RunManager.Instance.RewardSynchronizer.SyncLocalObtainedPotion(mutablePotion);
 
         MainFile.Logger.Info($"ShoppingCartManager: Purchased potion {item.ItemId} for {item.Price} gold");
         return true;
@@ -350,5 +419,40 @@ public static class ShoppingCartManager
             return null;
 
         return ModelDb.GetByIdOrNull<PotionModel>(item.ModelId);
+    }
+
+    private static ModelId? GetEntryModelId(MerchantEntry? entry)
+    {
+        return entry switch
+        {
+            MerchantCardEntry cardEntry => cardEntry.CreationResult?.Card?.Id,
+            MerchantRelicEntry relicEntry => relicEntry.Model?.Id,
+            MerchantPotionEntry potionEntry => potionEntry.Model?.Id,
+            _ => null
+        };
+    }
+
+    private static bool IsReservationConsumed(string reservationKey)
+    {
+        if (string.IsNullOrEmpty(reservationKey))
+        {
+            return false;
+        }
+
+        var runState = RunManager.Instance?.State;
+        if (runState == null)
+        {
+            return false;
+        }
+
+        foreach (var player in runState.Players)
+        {
+            if (GetShoppingCartRelic(player)?.IsReservationConsumed(reservationKey) == true)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

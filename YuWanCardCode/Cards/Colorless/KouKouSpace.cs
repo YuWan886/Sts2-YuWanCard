@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
@@ -13,6 +14,7 @@ namespace YuWanCard.Cards;
 public class KouKouSpace : YuWanCardModel
 {
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
+    public override TargetType TargetType => IsUpgraded ? TargetType.AllAllies : base.TargetType;
 
     public KouKouSpace() : base(
         baseCost: 1,
@@ -35,9 +37,7 @@ public class KouKouSpace : YuWanCardModel
             return;
         }
 
-        var aliveTeammates = CombatState!.GetTeammatesOf(Owner.Creature)
-            .Where(teammate => teammate.IsAlive && teammate.Player != null)
-            .ToList();
+        var aliveTeammates = GetAliveTeammates();
 
         if (IsUpgraded)
         {
@@ -82,5 +82,12 @@ public class KouKouSpace : YuWanCardModel
         }
 
         VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
+    }
+
+    private List<Creature> GetAliveTeammates()
+    {
+        return CombatState!.GetTeammatesOf(Owner.Creature)
+            .Where(teammate => teammate.IsAlive && teammate.Player != null)
+            .ToList();
     }
 }

@@ -39,7 +39,7 @@ public class RecycleBin : YuWanRelicModel
 
     public override async Task AfterRoomEntered(AbstractRoom room)
     {
-        if (Owner == null || !LocalContext.IsMe(Owner) || YUWANCARD_PendingRecycleGold <= 0)
+        if (Owner == null || YUWANCARD_PendingRecycleGold <= 0)
         {
             return;
         }
@@ -71,7 +71,13 @@ public class RecycleBin : YuWanRelicModel
             return;
         }
 
-        recycleBin.QueueMerchantValue(merchantValue, reward.GetType().Name);
+        int recycledGold = GetRecycledGold(merchantValue);
+        if (recycledGold <= 0)
+        {
+            return;
+        }
+
+        recycleBin.QueueRecycledGold(recycledGold, reward.GetType().Name);
     }
 
     private static RecycleBin? GetOwnedRelic(Player? player)
@@ -92,9 +98,8 @@ public class RecycleBin : YuWanRelicModel
         return null;
     }
 
-    private void QueueMerchantValue(decimal merchantValue, string rewardType)
+    private void QueueRecycledGold(int recycledGold, string rewardType)
     {
-        int recycledGold = (int)Math.Floor(merchantValue * RecoveryRate);
         if (recycledGold <= 0)
         {
             return;
@@ -105,6 +110,11 @@ public class RecycleBin : YuWanRelicModel
 
         MainFile.Logger.Info(
             $"RecycleBin: queued {recycledGold} gold from skipped {rewardType}. Pending={YUWANCARD_PendingRecycleGold}.");
+    }
+
+    private static int GetRecycledGold(decimal merchantValue)
+    {
+        return (int)Math.Floor(merchantValue * RecoveryRate);
     }
 
     private static decimal GetMerchantValue(Reward reward)

@@ -34,6 +34,8 @@ public class YuWanForgot : YuWanCardModel
     protected override void OnUpgrade()
     {
         AddKeyword(CardKeyword.Retain);
+        DynamicVars.Energy.UpgradeValueBy(1);
+        DynamicVars.Cards.UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

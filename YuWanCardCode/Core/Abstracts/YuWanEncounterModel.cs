@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Godot;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
