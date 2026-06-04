@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -583,6 +584,27 @@ public sealed class BalatroModifier : YuWanModifierModel
 
         RelicModel? relic = ResolveJokerModel(jokerId);
         return relic?.Title.GetFormattedText() ?? ResolveJokerShortName(jokerId);
+    }
+
+    public string GetJokerDescription(string jokerId)
+    {
+        if (string.IsNullOrWhiteSpace(jokerId))
+        {
+            return string.Empty;
+        }
+
+        RelicModel? relic = ResolveJokerModel(jokerId);
+        return relic?.DynamicDescription.GetFormattedText() ?? string.Empty;
+    }
+
+    public Texture2D? GetJokerIcon(string jokerId)
+    {
+        if (string.IsNullOrWhiteSpace(jokerId))
+        {
+            return null;
+        }
+
+        return ResolveJokerModel(jokerId)?.Icon;
     }
 
     public bool TryEquipBagJoker(string jokerId, int slotIndex)

@@ -24,6 +24,13 @@ public static class BalatroMerchantPatch
         EnsureExtension(__instance)?.RefreshForOpen();
     }
 
+    [HarmonyPostfix]
+    [HarmonyPatch("Close")]
+    public static void OnClose(NMerchantInventory __instance)
+    {
+        EnsureExtension(__instance)?.OnInventoryClosed();
+    }
+
     private static NBalatroMerchantExtension? EnsureExtension(NMerchantInventory inventory)
     {
         if (inventory.FindChild(ExtensionName, recursive: true, owned: false) is NBalatroMerchantExtension existing)

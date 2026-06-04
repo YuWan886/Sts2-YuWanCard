@@ -31,46 +31,26 @@ public partial class NBalatroHudPanel : PanelContainer
         Name = "YuWanBalatroHudPanel";
         MouseFilter = MouseFilterEnum.Stop;
         FocusMode = FocusModeEnum.None;
-        Size = new Vector2(420f, 122f);
+        Size = new Vector2(432f, 126f);
         CustomMinimumSize = Size;
-
-        StyleBoxFlat panelStyle = new()
-        {
-            BgColor = new Color(0.09f, 0.08f, 0.07f, 0.88f),
-            BorderColor = new Color(0.91f, 0.82f, 0.61f, 0.95f),
-            BorderWidthLeft = 2,
-            BorderWidthTop = 2,
-            BorderWidthRight = 2,
-            BorderWidthBottom = 2,
-            CornerRadiusTopLeft = 12,
-            CornerRadiusTopRight = 12,
-            CornerRadiusBottomRight = 12,
-            CornerRadiusBottomLeft = 12,
-            ShadowColor = new Color(0f, 0f, 0f, 0.35f),
-            ShadowSize = 5
-        };
-        AddThemeStyleboxOverride("panel", panelStyle);
+        AddThemeStyleboxOverride("panel", BalatroUiTheme.CreatePanelStyle());
 
         VBoxContainer root = new()
         {
             MouseFilter = MouseFilterEnum.Ignore,
-            OffsetLeft = 10f,
-            OffsetTop = 8f,
-            OffsetRight = -10f,
-            OffsetBottom = -8f
+            OffsetLeft = 12f,
+            OffsetTop = 10f,
+            OffsetRight = -12f,
+            OffsetBottom = -10f
         };
         root.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         root.AddThemeConstantOverride("separation", 6);
         AddChild(root);
 
-        Label titleLabel = new()
-        {
-            MouseFilter = MouseFilterEnum.Ignore,
-            Text = Loc("YUWANCARD-BALATRO_HUD.title"),
-            HorizontalAlignment = HorizontalAlignment.Left
-        };
-        titleLabel.AddThemeColorOverride("font_color", new Color(0.96f, 0.88f, 0.68f));
-        titleLabel.AddThemeFontSizeOverride("font_size", 14);
+        Label titleLabel = BalatroUiTheme.CreateTextLabel(
+            Loc("YUWANCARD-BALATRO_HUD.title"),
+            14,
+            BalatroUiTheme.Title);
         root.AddChild(titleLabel);
 
         _jokerBar = new NJokerSlotBar

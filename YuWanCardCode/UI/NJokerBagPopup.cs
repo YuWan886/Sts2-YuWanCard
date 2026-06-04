@@ -45,48 +45,44 @@ public partial class NJokerBagPopup : Control, IScreenContext
             AnchorRight = 0.5f,
             AnchorTop = 0.5f,
             AnchorBottom = 0.5f,
-            OffsetLeft = -360f,
-            OffsetRight = 360f,
-            OffsetTop = -260f,
-            OffsetBottom = 260f
+            OffsetLeft = -430f,
+            OffsetRight = 430f,
+            OffsetTop = -310f,
+            OffsetBottom = 310f
         };
-        StyleBoxFlat style = new()
-        {
-            BgColor = new Color(0.08f, 0.08f, 0.1f, 0.97f),
-            BorderColor = new Color(0.94f, 0.82f, 0.58f, 0.96f),
-            BorderWidthLeft = 2,
-            BorderWidthTop = 2,
-            BorderWidthRight = 2,
-            BorderWidthBottom = 2,
-            CornerRadiusTopLeft = 12,
-            CornerRadiusTopRight = 12,
-            CornerRadiusBottomLeft = 12,
-            CornerRadiusBottomRight = 12
-        };
-        panel.AddThemeStyleboxOverride("panel", style);
+        panel.AddThemeStyleboxOverride("panel", BalatroUiTheme.CreatePanelStyle());
         AddChild(panel);
 
-        VBoxContainer root = new();
-        root.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        root.OffsetLeft = 20f;
-        root.OffsetTop = 18f;
-        root.OffsetRight = -20f;
-        root.OffsetBottom = -18f;
-        root.AddThemeConstantOverride("separation", 12);
-        panel.AddChild(root);
+        MarginContainer margin = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        margin.AddThemeConstantOverride("margin_left", 24);
+        margin.AddThemeConstantOverride("margin_top", 22);
+        margin.AddThemeConstantOverride("margin_right", 24);
+        margin.AddThemeConstantOverride("margin_bottom", 22);
+        panel.AddChild(margin);
 
-        Label title = CreateLabel("YUWANCARD-BALATRO_JOKER_BAG.title", 26, new Color(1f, 0.89f, 0.66f));
-        root.AddChild(title);
+        VBoxContainer root = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        root.AddThemeConstantOverride("separation", 14);
+        margin.AddChild(root);
 
-        Label hint = CreateLabel("YUWANCARD-BALATRO_JOKER_BAG.hint", 15, new Color(0.92f, 0.92f, 0.92f));
+        root.AddChild(CreateLocLabel("YUWANCARD-BALATRO_JOKER_BAG.title", 28, BalatroUiTheme.Title));
+
+        Label hint = CreateLocLabel("YUWANCARD-BALATRO_JOKER_BAG.hint", 15, BalatroUiTheme.Body);
         hint.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         root.AddChild(hint);
 
         HBoxContainer slotRow = new()
         {
-            Alignment = BoxContainer.AlignmentMode.Center
+            Alignment = BoxContainer.AlignmentMode.Center,
+            MouseFilter = MouseFilterEnum.Ignore
         };
-        slotRow.AddThemeConstantOverride("separation", 8);
+        slotRow.AddThemeConstantOverride("separation", 10);
         root.AddChild(slotRow);
 
         for (int i = 0; i < 6; i++)
@@ -94,8 +90,9 @@ public partial class NJokerBagPopup : Control, IScreenContext
             int slotIndex = i;
             Button slotButton = new()
             {
-                CustomMinimumSize = new Vector2(104f, 72f),
-                FocusMode = FocusModeEnum.None
+                CustomMinimumSize = new Vector2(118f, 76f),
+                FocusMode = FocusModeEnum.None,
+                MouseFilter = MouseFilterEnum.Stop
             };
             slotButton.AddThemeFontSizeOverride("font_size", 13);
             slotButton.Pressed += () =>
@@ -110,51 +107,69 @@ public partial class NJokerBagPopup : Control, IScreenContext
             slotRow.AddChild(slotButton);
         }
 
-        _selectedLabel = CreateTextLabel(string.Empty, 16, new Color(0.95f, 0.84f, 0.42f));
-        root.AddChild(_selectedLabel);
-
         HBoxContainer actionRow = new()
         {
+            MouseFilter = MouseFilterEnum.Ignore,
             Alignment = BoxContainer.AlignmentMode.End
         };
+        actionRow.AddThemeConstantOverride("separation", 10);
         root.AddChild(actionRow);
+
+        _selectedLabel = BalatroUiTheme.CreateTextLabel(string.Empty, 15, BalatroUiTheme.Price);
+        _selectedLabel.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        actionRow.AddChild(_selectedLabel);
 
         _unequipButton = new Button
         {
             Text = new LocString("gameplay_ui", "YUWANCARD-BALATRO_JOKER_BAG.unequip").GetFormattedText(),
             CustomMinimumSize = new Vector2(180f, 40f),
-            FocusMode = FocusModeEnum.None
+            FocusMode = FocusModeEnum.None,
+            MouseFilter = MouseFilterEnum.Stop
         };
+        BalatroUiTheme.ApplyActionButtonStyle(_unequipButton);
         _unequipButton.Pressed += OnUnequipPressed;
         actionRow.AddChild(_unequipButton);
 
         Button closeButton = new()
         {
             Text = new LocString("gameplay_ui", "YUWANCARD-BALATRO_JOKER_BAG.close").GetFormattedText(),
-            CustomMinimumSize = new Vector2(120f, 40f),
-            FocusMode = FocusModeEnum.None
+            CustomMinimumSize = new Vector2(132f, 40f),
+            FocusMode = FocusModeEnum.None,
+            MouseFilter = MouseFilterEnum.Stop
         };
+        BalatroUiTheme.ApplyActionButtonStyle(closeButton, primary: true);
         closeButton.Pressed += Close;
         actionRow.AddChild(closeButton);
 
         ScrollContainer scroll = new()
         {
             SizeFlagsVertical = SizeFlags.ExpandFill,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            MouseFilter = MouseFilterEnum.Ignore
         };
         root.AddChild(scroll);
 
-        _bagGrid = new GridContainer
+        VBoxContainer bagContent = new()
         {
-            Columns = 3,
+            MouseFilter = MouseFilterEnum.Ignore,
             SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
-        _bagGrid.AddThemeConstantOverride("h_separation", 10);
-        _bagGrid.AddThemeConstantOverride("v_separation", 10);
-        scroll.AddChild(_bagGrid);
+        bagContent.AddThemeConstantOverride("separation", 12);
+        scroll.AddChild(bagContent);
 
-        _emptyLabel = CreateLabel("YUWANCARD-BALATRO_JOKER_BAG.empty", 16, new Color(0.85f, 0.85f, 0.85f));
-        root.AddChild(_emptyLabel);
+        _emptyLabel = CreateLocLabel("YUWANCARD-BALATRO_JOKER_BAG.empty", 16, BalatroUiTheme.Muted);
+        _emptyLabel.HorizontalAlignment = HorizontalAlignment.Center;
+        bagContent.AddChild(_emptyLabel);
+
+        _bagGrid = new GridContainer
+        {
+            Columns = 2,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        _bagGrid.AddThemeConstantOverride("h_separation", 14);
+        _bagGrid.AddThemeConstantOverride("v_separation", 14);
+        bagContent.AddChild(_bagGrid);
     }
 
     private void RefreshUi()
@@ -163,11 +178,14 @@ public partial class NJokerBagPopup : Control, IScreenContext
         for (int i = 0; i < _slotButtons.Count; i++)
         {
             Button button = _slotButtons[i];
-            if (!_modifier.IsJokerSlotUnlocked(i))
+            bool unlocked = _modifier.IsJokerSlotUnlocked(i);
+            BalatroUiTheme.ApplySlotButtonStyle(button, selected: i == _selectedSlot, unlocked: unlocked);
+
+            if (!unlocked)
             {
                 button.Text = new LocString("gameplay_ui", "YUWANCARD-BALATRO_JOKER_BAG.locked").GetFormattedText();
                 button.Disabled = true;
-                button.Modulate = Colors.White;
+                button.TooltipText = string.Empty;
                 continue;
             }
 
@@ -178,16 +196,17 @@ public partial class NJokerBagPopup : Control, IScreenContext
             button.Text = $"{i + 1}\n{title}";
             button.Disabled = false;
             button.TooltipText = title;
-            button.Modulate = i == _selectedSlot
-                ? new Color(1f, 0.92f, 0.64f)
-                : Colors.White;
         }
 
         if (_selectedLabel != null)
         {
-            _selectedLabel.Text = string.Format(
-                new LocString("gameplay_ui", "YUWANCARD-BALATRO_JOKER_BAG.selected_slot").GetFormattedText(),
+            string selectedText = string.Format(
+                new LocString("gameplay_ui", "YUWANCARD-BALATRO_JOKER_BAG.selected_slot").GetRawText(),
                 _selectedSlot + 1);
+            string currentTitle = string.IsNullOrWhiteSpace(slots[_selectedSlot])
+                ? new LocString("gameplay_ui", "YUWANCARD-BALATRO_JOKER_BAG.empty_slot").GetFormattedText()
+                : _modifier.GetJokerTitle(slots[_selectedSlot]);
+            _selectedLabel.Text = $"{selectedText}  {currentTitle}";
         }
 
         if (_unequipButton != null)
@@ -196,33 +215,94 @@ public partial class NJokerBagPopup : Control, IScreenContext
                 || string.IsNullOrWhiteSpace(slots[_selectedSlot]);
         }
 
-        if (_bagGrid != null)
+        if (_bagGrid == null)
         {
-            foreach (Node child in _bagGrid.GetChildren())
-            {
-                child.QueueFree();
-            }
-
-            IReadOnlyList<string> bag = _modifier.GetJokerBagIds();
-            foreach (string jokerId in bag)
-            {
-                string title = _modifier.GetJokerTitle(jokerId);
-                Button button = new()
-                {
-                    Text = title,
-                    TooltipText = title,
-                    CustomMinimumSize = new Vector2(200f, 56f),
-                    FocusMode = FocusModeEnum.None
-                };
-                button.Pressed += () => OnBagJokerPressed(jokerId);
-                _bagGrid.AddChild(button);
-            }
-
-            if (_emptyLabel != null)
-            {
-                _emptyLabel.Visible = bag.Count == 0;
-            }
+            return;
         }
+
+        foreach (Node child in _bagGrid.GetChildren())
+        {
+            child.QueueFree();
+        }
+
+        IReadOnlyList<string> bag = _modifier.GetJokerBagIds();
+        foreach (string jokerId in bag)
+        {
+            _bagGrid.AddChild(CreateBagJokerButton(jokerId));
+        }
+
+        if (_emptyLabel != null)
+        {
+            _emptyLabel.Visible = bag.Count == 0;
+        }
+
+        _bagGrid.Visible = bag.Count > 0;
+    }
+
+    private Button CreateBagJokerButton(string jokerId)
+    {
+        string title = _modifier.GetJokerTitle(jokerId);
+        string description = _modifier.GetJokerDescription(jokerId);
+        Texture2D? icon = _modifier.GetJokerIcon(jokerId);
+
+        Button button = new()
+        {
+            CustomMinimumSize = new Vector2(378f, 208f),
+            FocusMode = FocusModeEnum.None,
+            MouseFilter = MouseFilterEnum.Stop,
+            TooltipText = $"{title}\n{description}"
+        };
+        BalatroUiTheme.ApplyCardButtonStyle(button);
+        button.Pressed += () => OnBagJokerPressed(jokerId);
+
+        MarginContainer margin = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        margin.AddThemeConstantOverride("margin_left", 18);
+        margin.AddThemeConstantOverride("margin_top", 18);
+        margin.AddThemeConstantOverride("margin_right", 18);
+        margin.AddThemeConstantOverride("margin_bottom", 18);
+        button.AddChild(margin);
+
+        VBoxContainer layout = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        layout.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        layout.AddThemeConstantOverride("separation", 10);
+        margin.AddChild(layout);
+
+        Control iconNode = icon != null
+            ? BalatroUiTheme.CreateTextureIcon(icon, 72f)
+            : BalatroUiTheme.CreateGlyphIcon("JK", BalatroUiTheme.Accent, 72f);
+        layout.AddChild(iconNode);
+
+        layout.AddChild(BalatroUiTheme.CreateTextLabel(title, 18, BalatroUiTheme.Title, HorizontalAlignment.Center));
+
+        Label descriptionLabel = BalatroUiTheme.CreateTextLabel(description, 14, BalatroUiTheme.Body, HorizontalAlignment.Center, wrap: true);
+        descriptionLabel.SizeFlagsVertical = SizeFlags.ExpandFill;
+        layout.AddChild(descriptionLabel);
+
+        Control spacer = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore,
+            SizeFlagsVertical = SizeFlags.ExpandFill
+        };
+        layout.AddChild(spacer);
+
+        string equipText = string.Format(
+            new LocString("gameplay_ui", "YUWANCARD-BALATRO_JOKER_BAG.selected_slot").GetRawText(),
+            _selectedSlot + 1);
+        layout.AddChild(BalatroUiTheme.CreateTextLabel(equipText, 14, BalatroUiTheme.Price, HorizontalAlignment.Center));
+
+        return button;
+    }
+
+    private static Label CreateLocLabel(string locKey, int fontSize, Color color)
+    {
+        return BalatroUiTheme.CreateTextLabel(new LocString("gameplay_ui", locKey).GetFormattedText(), fontSize, color);
     }
 
     private void OnBagJokerPressed(string jokerId)
@@ -239,23 +319,6 @@ public partial class NJokerBagPopup : Control, IScreenContext
         {
             RefreshUi();
         }
-    }
-
-    private static Label CreateLabel(string locKey, int fontSize, Color color)
-    {
-        return CreateTextLabel(new LocString("gameplay_ui", locKey).GetFormattedText(), fontSize, color);
-    }
-
-    private static Label CreateTextLabel(string text, int fontSize, Color color)
-    {
-        Label label = new()
-        {
-            Text = text,
-            MouseFilter = MouseFilterEnum.Ignore
-        };
-        label.AddThemeFontSizeOverride("font_size", fontSize);
-        label.AddThemeColorOverride("font_color", color);
-        return label;
     }
 
     private void Close()

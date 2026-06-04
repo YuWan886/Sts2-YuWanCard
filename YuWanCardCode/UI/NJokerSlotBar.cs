@@ -30,7 +30,7 @@ public partial class NJokerSlotBar : Control
             MouseFilter = MouseFilterEnum.Ignore
         };
         title.AddThemeFontSizeOverride("font_size", 14);
-        title.AddThemeColorOverride("font_color", new Color(0.95f, 0.84f, 0.64f));
+        title.AddThemeColorOverride("font_color", BalatroUiTheme.Title);
         root.AddChild(title);
 
         HBoxContainer row = new()
@@ -50,6 +50,7 @@ public partial class NJokerSlotBar : Control
                 MouseFilter = MouseFilterEnum.Stop
             };
             slotButton.AddThemeFontSizeOverride("font_size", 11);
+            BalatroUiTheme.ApplySlotButtonStyle(slotButton, selected: false, unlocked: true);
             slotButton.Pressed += () => OpenBag(slotIndex);
             _slotButtons.Add(slotButton);
             row.AddChild(slotButton);
@@ -63,6 +64,7 @@ public partial class NJokerSlotBar : Control
             MouseFilter = MouseFilterEnum.Stop
         };
         _bagButton.AddThemeFontSizeOverride("font_size", 12);
+        BalatroUiTheme.ApplyActionButtonStyle(_bagButton);
         _bagButton.Pressed += () => OpenBag(0);
         row.AddChild(_bagButton);
     }
@@ -88,12 +90,14 @@ public partial class NJokerSlotBar : Control
             Button button = _slotButtons[i];
             if (!modifier.IsJokerSlotUnlocked(i))
             {
+                BalatroUiTheme.ApplySlotButtonStyle(button, selected: false, unlocked: false);
                 button.Text = Loc("YUWANCARD-BALATRO_JOKER_BAR.locked_short");
                 button.Disabled = true;
                 button.TooltipText = Loc("YUWANCARD-BALATRO_JOKER_BAR.locked_tooltip");
                 continue;
             }
 
+            BalatroUiTheme.ApplySlotButtonStyle(button, selected: false, unlocked: true);
             string jokerId = slots[i];
             string title = string.IsNullOrWhiteSpace(jokerId)
                 ? Loc("YUWANCARD-BALATRO_JOKER_BAR.empty_slot")

@@ -2,6 +2,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Balatro;
@@ -11,13 +12,14 @@ namespace YuWanCard.UI;
 
 public partial class NBalatroMerchantExtension : Control
 {
-    private const float TabRowTop = 96f;
-    private const float TabRowHeight = 44f;
-    private const float StationRootTop = 150f;
-    private const float StationHeaderSideMargin = 112f;
-    private const float StationOffersTop = 152f;
-    private const float StationOffersSideMargin = 104f;
-    private const float StationFooterBottom = 48f;
+    private const float TabRowTop = 92f;
+    private const float TabRowHeight = 42f;
+    private const float StationRootTop = 148f;
+    private const float StationSideMargin = 92f;
+    private const float StationBottomMargin = 40f;
+    private const float OfferCardWidth = 312f;
+    private const float OfferCardHeight = 272f;
+    private const string DefaultOfferIconPath = "res://YuWanCard/images/relics/pig_carrot.png";
 
     private readonly List<CanvasItem> _merchantContentNodes = [];
 
@@ -26,8 +28,8 @@ public partial class NBalatroMerchantExtension : Control
     private Button? _stationTabButton;
     private Control? _stationPanel;
     private Label? _tokenLabel;
-    private Button? _offerButton1;
-    private Button? _offerButton2;
+    private OfferCardView? _offerCard1;
+    private OfferCardView? _offerCard2;
     private Button? _refreshButton;
 
     private BalatroModifier? _modifier;
@@ -40,10 +42,28 @@ public partial class NBalatroMerchantExtension : Control
         Name = "YuWanBalatroMerchantExtension";
         SetAnchorsPreset(LayoutPreset.FullRect);
         MouseFilter = MouseFilterEnum.Ignore;
+        ZIndex = 1;
 
         BuildUi();
         CacheMerchantNodes();
         ShowShop();
+        Visible = false;
+    }
+
+    public override void _Process(double delta)
+    {
+        if (_inventory == null)
+        {
+            Visible = false;
+            return;
+        }
+
+        bool shouldShow = _modifier != null
+            && _inventory.IsOpen
+            && _inventory.Visible
+            && ActiveScreenContext.Instance.IsCurrent(_inventory);
+        Visible = shouldShow;
+        SyncModeVisibility();
     }
 
     public void RefreshForOpen()
@@ -64,39 +84,45 @@ public partial class NBalatroMerchantExtension : Control
         UpdateUi();
     }
 
+    public void OnInventoryClosed()
+    {
+        Visible = false;
+        ShowShop();
+    }
+
     private void BuildUi()
     {
         HBoxContainer tabRow = new()
         {
             Name = "BalatroMerchantTabs",
-            MouseFilter = MouseFilterEnum.Stop,
-            ZIndex = 200,
+            MouseFilter = MouseFilterEnum.Ignore,
+            ZIndex = 2,
             AnchorLeft = 0.5f,
             AnchorTop = 0f,
             AnchorRight = 0.5f,
             AnchorBottom = 0f,
-            OffsetLeft = -180f,
+            OffsetLeft = -182f,
             OffsetTop = TabRowTop,
-            OffsetRight = 180f,
+            OffsetRight = 182f,
             OffsetBottom = TabRowTop + TabRowHeight,
             Alignment = BoxContainer.AlignmentMode.Center
         };
         tabRow.AddThemeConstantOverride("separation", 12);
         AddChild(tabRow);
 
-        _shopTabButton = CreateTabButton("YUWANCARD-BALATRO_MOD_STATION.shop_tab");
+        _shopTabButton = CreateTabButton("YUWANCARD-BALATRO_MOD_STATION.shop_tab", primary: false);
         _shopTabButton.Pressed += ShowShop;
         tabRow.AddChild(_shopTabButton);
 
-        _stationTabButton = CreateTabButton("YUWANCARD-BALATRO_MOD_STATION.station_tab");
+        _stationTabButton = CreateTabButton("YUWANCARD-BALATRO_MOD_STATION.station_tab", primary: true);
         _stationTabButton.Pressed += ShowStation;
         tabRow.AddChild(_stationTabButton);
 
         _stationPanel = new Control
         {
             Visible = false,
-            MouseFilter = MouseFilterEnum.Stop,
-            ZIndex = 199,
+            MouseFilter = MouseFilterEnum.Ignore,
+            ZIndex = 1,
             AnchorLeft = 0f,
             AnchorTop = 0f,
             AnchorRight = 1f,
@@ -105,76 +131,80 @@ public partial class NBalatroMerchantExtension : Control
         };
         AddChild(_stationPanel);
 
+        MarginContainer bodyMargin = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        bodyMargin.AnchorLeft = 0f;
+        bodyMargin.AnchorTop = 0f;
+        bodyMargin.AnchorRight = 1f;
+        bodyMargin.AnchorBottom = 1f;
+        bodyMargin.OffsetLeft = StationSideMargin;
+        bodyMargin.OffsetTop = 0f;
+        bodyMargin.OffsetRight = -StationSideMargin;
+        bodyMargin.OffsetBottom = -StationBottomMargin;
+        bodyMargin.AddThemeConstantOverride("margin_left", 28);
+        bodyMargin.AddThemeConstantOverride("margin_top", 6);
+        bodyMargin.AddThemeConstantOverride("margin_right", 28);
+        bodyMargin.AddThemeConstantOverride("margin_bottom", 12);
+        _stationPanel.AddChild(bodyMargin);
+
+        VBoxContainer root = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        root.AddThemeConstantOverride("separation", 18);
+        bodyMargin.AddChild(root);
+
         VBoxContainer header = new()
         {
             MouseFilter = MouseFilterEnum.Ignore
         };
-        header.AnchorLeft = 0f;
-        header.AnchorTop = 0f;
-        header.AnchorRight = 1f;
-        header.AnchorBottom = 0f;
-        header.OffsetLeft = StationHeaderSideMargin;
-        header.OffsetTop = 0f;
-        header.OffsetRight = -StationHeaderSideMargin;
-        header.OffsetBottom = 116f;
-        header.AddThemeConstantOverride("separation", 10);
-        _stationPanel.AddChild(header);
+        header.AddThemeConstantOverride("separation", 8);
+        root.AddChild(header);
 
-        Label title = CreateLabel("YUWANCARD-BALATRO_MOD_STATION.title", 28, new Color(1f, 0.89f, 0.66f));
-        header.AddChild(title);
+        header.AddChild(CreateLocLabel("YUWANCARD-BALATRO_MOD_STATION.title", 32, BalatroUiTheme.Title));
 
-        Label subtitle = CreateLabel("YUWANCARD-BALATRO_MOD_STATION.description", 16, new Color(0.92f, 0.92f, 0.92f));
+        Label subtitle = CreateLocLabel("YUWANCARD-BALATRO_MOD_STATION.description", 18, BalatroUiTheme.Body);
         subtitle.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         header.AddChild(subtitle);
 
-        _tokenLabel = CreateLabel(string.Empty, 18, new Color(0.93f, 0.84f, 0.42f));
+        _tokenLabel = BalatroUiTheme.CreateTextLabel(string.Empty, 20, BalatroUiTheme.Price);
         header.AddChild(_tokenLabel);
 
         HBoxContainer offersRow = new()
         {
             MouseFilter = MouseFilterEnum.Ignore,
-            Alignment = BoxContainer.AlignmentMode.Center
+            Alignment = BoxContainer.AlignmentMode.Center,
+            SizeFlagsVertical = SizeFlags.ExpandFill
         };
-        offersRow.AnchorLeft = 0f;
-        offersRow.AnchorTop = 0f;
-        offersRow.AnchorRight = 1f;
-        offersRow.AnchorBottom = 0f;
-        offersRow.OffsetLeft = StationOffersSideMargin;
-        offersRow.OffsetTop = StationOffersTop;
-        offersRow.OffsetRight = -StationOffersSideMargin;
-        offersRow.OffsetBottom = StationOffersTop + 240f;
-        offersRow.AddThemeConstantOverride("separation", 36);
-        _stationPanel.AddChild(offersRow);
+        offersRow.AddThemeConstantOverride("separation", 22);
+        root.AddChild(offersRow);
 
-        _offerButton1 = CreateOfferButton();
-        _offerButton1.Pressed += async () => await OnOfferPressed(0);
-        offersRow.AddChild(_offerButton1);
+        _offerCard1 = CreateOfferCard();
+        _offerCard1.Button.Pressed += async () => await OnOfferPressed(0);
+        offersRow.AddChild(_offerCard1.Button);
 
-        _offerButton2 = CreateOfferButton();
-        _offerButton2.Pressed += async () => await OnOfferPressed(1);
-        offersRow.AddChild(_offerButton2);
+        _offerCard2 = CreateOfferCard();
+        _offerCard2.Button.Pressed += async () => await OnOfferPressed(1);
+        offersRow.AddChild(_offerCard2.Button);
 
         HBoxContainer bottomRow = new()
         {
             MouseFilter = MouseFilterEnum.Ignore,
             Alignment = BoxContainer.AlignmentMode.End
         };
-        bottomRow.AnchorLeft = 0f;
-        bottomRow.AnchorTop = 1f;
-        bottomRow.AnchorRight = 1f;
-        bottomRow.AnchorBottom = 1f;
-        bottomRow.OffsetLeft = StationOffersSideMargin;
-        bottomRow.OffsetTop = -StationFooterBottom - 44f;
-        bottomRow.OffsetRight = -StationOffersSideMargin;
-        bottomRow.OffsetBottom = -StationFooterBottom;
-        _stationPanel.AddChild(bottomRow);
+        root.AddChild(bottomRow);
 
         _refreshButton = new Button
         {
             Text = new LocString("gameplay_ui", "YUWANCARD-BALATRO_MOD_STATION.refresh").GetFormattedText(),
-            CustomMinimumSize = new Vector2(220f, 44f),
-            FocusMode = FocusModeEnum.None
+            CustomMinimumSize = new Vector2(220f, 46f),
+            FocusMode = FocusModeEnum.None,
+            MouseFilter = MouseFilterEnum.Stop
         };
+        BalatroUiTheme.ApplyActionButtonStyle(_refreshButton, primary: false);
+        _refreshButton.AddThemeFontSizeOverride("font_size", 18);
         _refreshButton.Pressed += async () => await OnRefreshPressed();
         bottomRow.AddChild(_refreshButton);
     }
@@ -202,80 +232,85 @@ public partial class NBalatroMerchantExtension : Control
         }
     }
 
-    private Button CreateTabButton(string locKey)
-    {
-        return new Button
-        {
-            Text = new LocString("gameplay_ui", locKey).GetFormattedText(),
-            CustomMinimumSize = new Vector2(168f, 40f),
-            FocusMode = FocusModeEnum.None,
-            MouseFilter = MouseFilterEnum.Stop
-        };
-    }
-
-    private Button CreateOfferButton()
+    private static Button CreateTabButton(string locKey, bool primary)
     {
         Button button = new()
         {
-            CustomMinimumSize = new Vector2(360f, 220f),
-            Alignment = HorizontalAlignment.Left,
-            TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis,
-            AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            Text = new LocString("gameplay_ui", locKey).GetFormattedText(),
+            CustomMinimumSize = new Vector2(176f, 42f),
             FocusMode = FocusModeEnum.None,
             MouseFilter = MouseFilterEnum.Stop
         };
-        button.AddThemeFontSizeOverride("font_size", 18);
-        button.AddThemeStyleboxOverride("normal", CreateOfferButtonStyle(new Color(0.12f, 0.1f, 0.08f, 0.72f)));
-        button.AddThemeStyleboxOverride("hover", CreateOfferButtonStyle(new Color(0.16f, 0.13f, 0.1f, 0.82f)));
-        button.AddThemeStyleboxOverride("pressed", CreateOfferButtonStyle(new Color(0.09f, 0.08f, 0.07f, 0.86f)));
-        button.AddThemeStyleboxOverride("disabled", CreateOfferButtonStyle(new Color(0.08f, 0.08f, 0.08f, 0.45f)));
+        BalatroUiTheme.ApplyActionButtonStyle(button, primary);
+        button.AddThemeFontSizeOverride("font_size", 17);
         return button;
     }
 
-    private static StyleBoxFlat CreateOfferButtonStyle(Color bgColor)
+    private static OfferCardView CreateOfferCard()
     {
-        return new StyleBoxFlat
+        Button button = new()
         {
-            BgColor = bgColor,
-            BorderColor = new Color(0.95f, 0.83f, 0.58f, 0.9f),
-            BorderWidthLeft = 2,
-            BorderWidthTop = 2,
-            BorderWidthRight = 2,
-            BorderWidthBottom = 2,
-            CornerRadiusTopLeft = 14,
-            CornerRadiusTopRight = 14,
-            CornerRadiusBottomLeft = 14,
-            CornerRadiusBottomRight = 14,
-            ContentMarginLeft = 18f,
-            ContentMarginTop = 16f,
-            ContentMarginRight = 18f,
-            ContentMarginBottom = 16f
+            CustomMinimumSize = new Vector2(OfferCardWidth, OfferCardHeight),
+            FocusMode = FocusModeEnum.None,
+            MouseFilter = MouseFilterEnum.Stop
         };
-    }
+        BalatroUiTheme.ApplyCardButtonStyle(button);
 
-    private static Label CreateLabel(string locKey, int fontSize, Color color)
-    {
-        Label label = new()
+        MarginContainer margin = new()
         {
-            Text = string.IsNullOrWhiteSpace(locKey)
-                ? string.Empty
-                : new LocString("gameplay_ui", locKey).GetFormattedText(),
             MouseFilter = MouseFilterEnum.Ignore
         };
-        label.AddThemeFontSizeOverride("font_size", fontSize);
-        label.AddThemeColorOverride("font_color", color);
-        return label;
+        margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        margin.AddThemeConstantOverride("margin_left", 18);
+        margin.AddThemeConstantOverride("margin_top", 18);
+        margin.AddThemeConstantOverride("margin_right", 18);
+        margin.AddThemeConstantOverride("margin_bottom", 18);
+        button.AddChild(margin);
+
+        VBoxContainer layout = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        layout.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        layout.AddThemeConstantOverride("separation", 12);
+        margin.AddChild(layout);
+
+        PanelContainer iconFrame = BalatroUiTheme.CreateTextureIcon(
+            GD.Load<Texture2D>(DefaultOfferIconPath),
+            74f);
+        layout.AddChild(iconFrame);
+
+        Label iconLabel = BalatroUiTheme.CreateTextLabel(string.Empty, 16, BalatroUiTheme.Muted, HorizontalAlignment.Center);
+
+        Label titleLabel = BalatroUiTheme.CreateTextLabel(string.Empty, 24, BalatroUiTheme.Title, HorizontalAlignment.Center);
+        layout.AddChild(titleLabel);
+
+        Label descriptionLabel = BalatroUiTheme.CreateTextLabel(string.Empty, 18, BalatroUiTheme.Body, HorizontalAlignment.Center, wrap: true);
+        descriptionLabel.SizeFlagsVertical = SizeFlags.ExpandFill;
+        layout.AddChild(descriptionLabel);
+
+        Control spacer = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore,
+            SizeFlagsVertical = SizeFlags.ExpandFill
+        };
+        layout.AddChild(spacer);
+
+        Label priceLabel = BalatroUiTheme.CreateTextLabel(string.Empty, 20, BalatroUiTheme.Price, HorizontalAlignment.Center, wrap: true);
+        layout.AddChild(priceLabel);
+
+        return new OfferCardView(button, iconFrame, iconLabel, titleLabel, descriptionLabel, priceLabel);
+    }
+
+    private static Label CreateLocLabel(string locKey, int fontSize, Color color)
+    {
+        return BalatroUiTheme.CreateTextLabel(new LocString("gameplay_ui", locKey).GetFormattedText(), fontSize, color);
     }
 
     private void ShowShop()
     {
         _stationVisible = false;
-        SetMerchantContentVisible(true);
-        if (_stationPanel != null)
-        {
-            _stationPanel.Visible = false;
-        }
-
+        SyncModeVisibility();
         UpdateTabState();
     }
 
@@ -288,19 +323,15 @@ public partial class NBalatroMerchantExtension : Control
 
         _stationVisible = true;
         _modifier.EnsureModStationOffers(_player);
-        SetMerchantContentVisible(false);
-        if (_stationPanel != null)
-        {
-            _stationPanel.Visible = true;
-        }
-
+        SyncModeVisibility();
         UpdateUi();
     }
 
     private void UpdateUi()
     {
+        SyncModeVisibility();
         UpdateTabState();
-        if (_tokenLabel == null || _modifier == null || _player == null)
+        if (_tokenLabel == null || _modifier == null || _player == null || _offerCard1 == null || _offerCard2 == null)
         {
             return;
         }
@@ -310,8 +341,8 @@ public partial class NBalatroMerchantExtension : Control
             _modifier.ModifierTokenCount);
 
         IReadOnlyList<BalatroCardEdition> offers = _modifier.GetModStationOffers();
-        UpdateOfferButton(_offerButton1, offers[0]);
-        UpdateOfferButton(_offerButton2, offers[1]);
+        UpdateOfferCard(_offerCard1, offers[0]);
+        UpdateOfferCard(_offerCard2, offers[1]);
         if (_refreshButton != null)
         {
             _refreshButton.Disabled = _player.Gold < 25;
@@ -329,24 +360,46 @@ public partial class NBalatroMerchantExtension : Control
         _stationTabButton.Disabled = _stationVisible;
     }
 
-    private void UpdateOfferButton(Button? button, BalatroCardEdition edition)
+    private void UpdateOfferCard(OfferCardView card, BalatroCardEdition edition)
     {
-        if (button == null || _modifier == null || _player == null)
+        if (_modifier == null || _player == null)
         {
             return;
         }
 
-        string title = new LocString("gameplay_ui", $"YUWANCARD-BALATRO_EDITION.{edition.ToString().ToUpperInvariant()}.title").GetFormattedText();
-        string description = new LocString("gameplay_ui", $"YUWANCARD-BALATRO_EDITION.{edition.ToString().ToUpperInvariant()}.description").GetFormattedText();
+        string editionKey = edition.ToString().ToUpperInvariant();
+        string title = new LocString("gameplay_ui", $"YUWANCARD-BALATRO_EDITION.{editionKey}.title").GetFormattedText();
+        string description = new LocString("gameplay_ui", $"YUWANCARD-BALATRO_EDITION.{editionKey}.description").GetFormattedText();
+        Color accentColor = BalatroUiTheme.GetEditionAccent(edition);
         bool useToken = _modifier.ModifierTokenCount > 0;
         int cost = _modifier.GetEditionShopCost(edition);
-        string paymentText = useToken
+        bool canApply = CanApplyAnyCard(edition);
+        bool affordable = useToken || _player.Gold >= cost;
+
+        card.IconFrame.AddThemeStyleboxOverride(
+            "panel",
+            new StyleBoxFlat
+            {
+                BgColor = new Color(accentColor.R, accentColor.G, accentColor.B, 0.14f),
+                BorderColor = accentColor,
+                BorderWidthLeft = 1,
+                BorderWidthTop = 1,
+                BorderWidthRight = 1,
+                BorderWidthBottom = 1,
+                CornerRadiusTopLeft = 12,
+                CornerRadiusTopRight = 12,
+                CornerRadiusBottomLeft = 12,
+                CornerRadiusBottomRight = 12
+            });
+        card.IconLabel.Text = string.Empty;
+        card.TitleLabel.Text = title;
+        card.DescriptionLabel.Text = description;
+        card.PriceLabel.Text = useToken
             ? new LocString("gameplay_ui", "YUWANCARD-BALATRO_MOD_STATION.token_payment").GetFormattedText()
             : string.Format(new LocString("gameplay_ui", "YUWANCARD-BALATRO_MOD_STATION.gold_payment").GetRawText(), cost);
-
-        button.Text = $"{title}\n{description}\n{paymentText}";
-        button.TooltipText = $"{title}\n{description}";
-        button.Disabled = !CanApplyAnyCard(edition) || (!useToken && _player.Gold < cost);
+        card.PriceLabel.AddThemeColorOverride("font_color", affordable ? BalatroUiTheme.Price : BalatroUiTheme.Muted);
+        card.Button.TooltipText = $"{title}\n{description}";
+        card.Button.Disabled = !canApply || !affordable;
     }
 
     private bool CanApplyAnyCard(BalatroCardEdition edition)
@@ -400,6 +453,16 @@ public partial class NBalatroMerchantExtension : Control
         }
     }
 
+    private void SyncModeVisibility()
+    {
+        bool showStation = _stationVisible && Visible;
+        SetMerchantContentVisible(!showStation);
+        if (_stationPanel != null)
+        {
+            _stationPanel.Visible = showStation;
+        }
+    }
+
     private async Task<bool> RunWithMerchantHiddenAsync(Func<Task<bool>> action)
     {
         if (_inventory == null)
@@ -426,5 +489,31 @@ public partial class NBalatroMerchantExtension : Control
                 ShowShop();
             }
         }
+    }
+
+    private sealed class OfferCardView
+    {
+        public OfferCardView(
+            Button button,
+            PanelContainer iconFrame,
+            Label iconLabel,
+            Label titleLabel,
+            Label descriptionLabel,
+            Label priceLabel)
+        {
+            Button = button;
+            IconFrame = iconFrame;
+            IconLabel = iconLabel;
+            TitleLabel = titleLabel;
+            DescriptionLabel = descriptionLabel;
+            PriceLabel = priceLabel;
+        }
+
+        public Button Button { get; }
+        public PanelContainer IconFrame { get; }
+        public Label IconLabel { get; }
+        public Label TitleLabel { get; }
+        public Label DescriptionLabel { get; }
+        public Label PriceLabel { get; }
     }
 }
