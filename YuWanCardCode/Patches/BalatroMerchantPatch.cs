@@ -25,7 +25,7 @@ public static class BalatroMerchantPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("Close")]
+    [HarmonyPatch(nameof(NMerchantInventory.Close))]
     public static void OnClose(NMerchantInventory __instance)
     {
         EnsureExtension(__instance)?.OnInventoryClosed();

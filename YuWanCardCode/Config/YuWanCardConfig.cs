@@ -10,7 +10,7 @@ public class YuWanCardConfig : FallbackSimpleModConfig
 
     [ConfigSection("显示设置")]
     [ConfigHoverTip]
-    public static bool ShowBalatroModeToggle { get; set; } = true;
+    public static bool ShowBalatroModeToggle { get; set; } = false;
 
     [ConfigSection("多人游戏设置")]
     [ConfigHoverTip]

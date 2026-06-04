@@ -8,13 +8,15 @@ namespace YuWanCard.Patches;
 public static class BalatroTopBarModifierFilterPatch
 {
     [HarmonyPrefix]
-    public static void Prefix(IRunState runState)
+    public static bool Prefix(IRunState runState)
     {
         if (runState is RunState state)
         {
             MainFile.Logger.Info(
                 $"[BalatroDebug] NTopBar.Initialize keeping modifiers visible=[{string.Join(", ", state.Modifiers.Select(static m => m.Id.Entry))}]");
         }
+
+        return true;
     }
 
     [HarmonyFinalizer]

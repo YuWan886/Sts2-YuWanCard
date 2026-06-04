@@ -23,7 +23,7 @@ public static class BalatroTopBarUiPatch
     private static NComboCounter? _comboCounter;
 
     [HarmonyPostfix]
-    [HarmonyPatch("_Ready")]
+    [HarmonyPatch(nameof(NTopBar._Ready))]
     public static void AddBalatroUi(NTopBar __instance)
     {
         EnsureToggleButton(__instance);

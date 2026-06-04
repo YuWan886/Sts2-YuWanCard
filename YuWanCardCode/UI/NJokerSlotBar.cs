@@ -7,8 +7,14 @@ namespace YuWanCard.UI;
 
 public partial class NJokerSlotBar : Control
 {
+    private const float SlotWidth = 56f;
+    private const float SlotHeight = 56f;
+    private const float BagWidth = 70f;
+    private const float RowGap = 6f;
+
     private readonly List<Button> _slotButtons = [];
 
+    private HBoxContainer? _row;
     private Button? _bagButton;
 
     public override void _Ready()
@@ -24,28 +30,21 @@ public partial class NJokerSlotBar : Control
         root.AddThemeConstantOverride("separation", 6);
         AddChild(root);
 
-        Label title = new()
+        _row = new HBoxContainer
         {
-            Text = Loc("YUWANCARD-BALATRO_JOKER_BAR.title"),
-            MouseFilter = MouseFilterEnum.Ignore
+            MouseFilter = MouseFilterEnum.Ignore,
+            Alignment = BoxContainer.AlignmentMode.Center,
+            SizeFlagsHorizontal = SizeFlags.ShrinkCenter
         };
-        title.AddThemeFontSizeOverride("font_size", 14);
-        title.AddThemeColorOverride("font_color", BalatroUiTheme.Title);
-        root.AddChild(title);
-
-        HBoxContainer row = new()
-        {
-            MouseFilter = MouseFilterEnum.Ignore
-        };
-        row.AddThemeConstantOverride("separation", 6);
-        root.AddChild(row);
+        _row.AddThemeConstantOverride("separation", (int)RowGap);
+        root.AddChild(_row);
 
         for (int i = 0; i < 6; i++)
         {
             int slotIndex = i;
             Button slotButton = new()
             {
-                CustomMinimumSize = new Vector2(56f, 56f),
+                CustomMinimumSize = new Vector2(SlotWidth, SlotHeight),
                 FocusMode = FocusModeEnum.None,
                 MouseFilter = MouseFilterEnum.Stop
             };
@@ -53,20 +52,20 @@ public partial class NJokerSlotBar : Control
             BalatroUiTheme.ApplySlotButtonStyle(slotButton, selected: false, unlocked: true);
             slotButton.Pressed += () => OpenBag(slotIndex);
             _slotButtons.Add(slotButton);
-            row.AddChild(slotButton);
+            _row.AddChild(slotButton);
         }
 
         _bagButton = new Button
         {
             Text = Loc("YUWANCARD-BALATRO_JOKER_BAR.bag_button"),
-            CustomMinimumSize = new Vector2(70f, 56f),
+            CustomMinimumSize = new Vector2(BagWidth, SlotHeight),
             FocusMode = FocusModeEnum.None,
             MouseFilter = MouseFilterEnum.Stop
         };
         _bagButton.AddThemeFontSizeOverride("font_size", 12);
         BalatroUiTheme.ApplyActionButtonStyle(_bagButton);
         _bagButton.Pressed += () => OpenBag(0);
-        row.AddChild(_bagButton);
+        _row.AddChild(_bagButton);
     }
 
     public override void _Process(double delta)
@@ -85,18 +84,20 @@ public partial class NJokerSlotBar : Control
         }
 
         IReadOnlyList<string> slots = modifier.GetAllJokerSlotIds();
+        int unlockedCount = 0;
         for (int i = 0; i < _slotButtons.Count; i++)
         {
             Button button = _slotButtons[i];
             if (!modifier.IsJokerSlotUnlocked(i))
             {
-                BalatroUiTheme.ApplySlotButtonStyle(button, selected: false, unlocked: false);
-                button.Text = Loc("YUWANCARD-BALATRO_JOKER_BAR.locked_short");
+                button.Visible = false;
                 button.Disabled = true;
                 button.TooltipText = Loc("YUWANCARD-BALATRO_JOKER_BAR.locked_tooltip");
                 continue;
             }
 
+            unlockedCount++;
+            button.Visible = true;
             BalatroUiTheme.ApplySlotButtonStyle(button, selected: false, unlocked: true);
             string jokerId = slots[i];
             string title = string.IsNullOrWhiteSpace(jokerId)
@@ -113,6 +114,8 @@ public partial class NJokerSlotBar : Control
                 LocRaw("YUWANCARD-BALATRO_JOKER_BAR.bag_tooltip"),
                 modifier.GetJokerBagIds().Count);
         }
+
+        CustomMinimumSize = new Vector2(GetPreferredHudWidth(unlockedCount), SlotHeight);
     }
 
     private static string ShortenTitle(string title)
@@ -145,5 +148,20 @@ public partial class NJokerSlotBar : Control
     private static string LocRaw(string key)
     {
         return new LocString("gameplay_ui", key).GetRawText();
+    }
+
+    public float GetPreferredHudWidth()
+    {
+        int unlockedCount = RunManager.Instance?.State is RunState state && BalatroModifier.GetInstance(state) is { } modifier
+            ? modifier.GetCurrentJokerCapacity()
+            : 3;
+        return GetPreferredHudWidth(unlockedCount);
+    }
+
+    private static float GetPreferredHudWidth(int unlockedCount)
+    {
+        int elementCount = Math.Max(1, unlockedCount) + 1;
+        float gapWidth = Math.Max(0, elementCount - 1) * RowGap;
+        return unlockedCount * SlotWidth + BagWidth + gapWidth;
     }
 }

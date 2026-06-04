@@ -14,6 +14,7 @@ public sealed class Bankruptcy : YuWanCardModel
     public Bankruptcy() : base(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
     {
         WithDamage(0);
+        WithTags(CardTag.Strike);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

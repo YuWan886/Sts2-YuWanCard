@@ -31,6 +31,38 @@ public sealed class BalatroModifier : YuWanModifierModel
 {
     private const string BagSeparator = "|";
 
+    // Interest
+    private const decimal InterestRate = 0.1m;
+    private const int BaseInterestCap = 10;
+
+    // Combo
+    private const float ComboMultiplierPerPoint = 0.1f;
+    private const float MaxCombo = 30f;
+    private const float RetainedComboThreshold = 20f;
+    private const float DefaultRetainRatio = 0.1f;
+    private const float SteelJokerRetainRatio = 0.2f;
+    private const float RetainedComboScale = 20f;
+    private const float LegendBonusPerCard = 0.2f;
+
+    // Mod Station
+    private const int ModStationRefreshCost = 25;
+    private const int ModStationFoilCost = 75;
+    private const int ModStationHolographicCost = 75;
+    private const int ModStationPolychromeCost = 150;
+    private const int ModStationNegativeCost = 250;
+
+    // Joker triggers
+    private const int GreedJokerGoldPerTrigger = 5;
+    private const int GluttonyJokerHealPerTrigger = 3;
+    private const int InvestorRefundRatioPercent = 20;
+    private const int GamblerJokerMinDamage = 8;
+    private const int GamblerJokerMaxDamage = 21;
+    private const int CollectorEnergyDivisor = 5;
+    private const int DiceMinRoll = 1;
+    private const int DiceMaxRoll = 4;
+
+    #region Saved Properties
+
     public override bool AllowedInCustomRun => false;
 
     [SavedProperty]
@@ -81,6 +113,10 @@ public sealed class BalatroModifier : YuWanModifierModel
     [SavedProperty]
     public int YUWANCARD_ModStationFloor { get; set; }
 
+    #endregion
+
+    #region Runtime State
+
     public float ComboCounter { get; private set; }
 
     public int CardsPlayedThisTurn { get; private set; }
@@ -100,6 +136,10 @@ public sealed class BalatroModifier : YuWanModifierModel
             new LocString("modifiers", "YUWANCARD-BALATRO.description"))
     ];
 
+    #endregion
+
+    #region Lifecycle & Room Hooks
+
     protected override void AfterRunCreated(RunState runState)
     {
         base.AfterRunCreated(runState);
@@ -107,12 +147,12 @@ public sealed class BalatroModifier : YuWanModifierModel
             $"[BalatroDebug] BalatroModifier.AfterRunCreated seed={runState.Rng.StringSeed} players={runState.Players.Count} act0={runState.Acts.FirstOrDefault()?.Id.Entry ?? "null"} modifiers=[{string.Join(", ", runState.Modifiers.Select(static m => m.Id.Entry))}]");
     }
 
-    public float ComboMultiplier => 1f + ComboCounter * 0.1f + GetLegendBonus();
+    public float ComboMultiplier => 1f + ComboCounter * ComboMultiplierPerPoint + GetLegendBonus();
 
     private float RetainedCombo
     {
-        get => YUWANCARD_RetainedComboScaled / 20f;
-        set => YUWANCARD_RetainedComboScaled = (int)MathF.Round(Math.Clamp(value, 0f, 30f) * 20f);
+        get => YUWANCARD_RetainedComboScaled / RetainedComboScale;
+        set => YUWANCARD_RetainedComboScaled = (int)MathF.Round(Math.Clamp(value, 0f, MaxCombo) * RetainedComboScale);
     }
 
     private SerializableCard? CurrentTurnFirstCard
@@ -184,13 +224,13 @@ public sealed class BalatroModifier : YuWanModifierModel
 
         YUWANCARD_LastInterestFloor = RunState.TotalFloor;
 
-        int interest = (int)Math.Floor(player.Gold * 0.1m);
+        int interest = (int)Math.Floor(player.Gold * InterestRate);
         if (interest <= 0)
         {
             return;
         }
 
-        interest = Math.Min(interest, 10 + GetCompoundInterestCapBonus(player));
+        interest = Math.Min(interest, BaseInterestCap + GetCompoundInterestCapBonus(player));
         interest += 3 * CountEffectiveJokers<BankerJoker>(player);
 
         if (interest > 0)
@@ -208,6 +248,10 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
     }
 
+    #endregion
+
+    #region Turn & Card Hooks
+
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (player != GetBalatroPlayer())
@@ -217,13 +261,13 @@ public sealed class BalatroModifier : YuWanModifierModel
 
         if (RetainedCombo > 0f)
         {
-            ComboCounter = Math.Min(30f, RetainedCombo);
+            ComboCounter = Math.Min(MaxCombo, RetainedCombo);
             RetainedCombo = 0f;
         }
 
         if (player.GetRelic<Dice>() != null)
         {
-            int roll = RunState.Rng.Niche.NextInt(1, 4);
+            int roll = RunState.Rng.Niche.NextInt(DiceMinRoll, DiceMaxRoll);
             ComboCounter = Math.Max(ComboCounter, roll);
         }
 
@@ -262,19 +306,19 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
 
         float retainRatio = 0f;
-        if (ComboCounter >= 20f)
+        if (ComboCounter >= RetainedComboThreshold)
         {
-            retainRatio = 0.1f;
+            retainRatio = DefaultRetainRatio;
             await PowerCmd.Apply<InertiaPower>(player.Creature, 1, player.Creature, null);
         }
 
         if (player.GetRelic<SteelJoker>() != null)
         {
-            retainRatio = Math.Max(retainRatio, 0.2f);
+            retainRatio = Math.Max(retainRatio, SteelJokerRetainRatio);
         }
 
         RetainedCombo = retainRatio > 0f
-            ? MathF.Min(30f, ComboCounter * retainRatio)
+            ? MathF.Min(MaxCombo, ComboCounter * retainRatio)
             : 0f;
 
         PreviousTurnFirstCard = CurrentTurnFirstCard;
@@ -331,7 +375,7 @@ public sealed class BalatroModifier : YuWanModifierModel
                 .FirstOrDefault();
             if (target != null)
             {
-                int damage = RunState.Rng.Niche.NextInt(8, 21);
+                int damage = RunState.Rng.Niche.NextInt(GamblerJokerMinDamage, GamblerJokerMaxDamage);
                 await CreatureCmd.Damage(context, target, damage, ValueProp.Move, player.Creature, null);
             }
         }
@@ -408,6 +452,10 @@ public sealed class BalatroModifier : YuWanModifierModel
         return true;
     }
 
+    #endregion
+
+    #region Shop, Rewards & Mod Station
+
     public override CardCreationOptions ModifyCardRewardCreationOptions(Player player, CardCreationOptions options)
     {
         if (options.Flags.HasFlag(CardCreationFlags.NoCardPoolModifications))
@@ -481,12 +529,16 @@ public sealed class BalatroModifier : YuWanModifierModel
             return;
         }
 
-        int refund = (int)Math.Floor(goldSpent * 0.2m * refundMultiplier);
+        int refund = (int)Math.Floor(goldSpent * (InvestorRefundRatioPercent / 100m) * refundMultiplier);
         if (refund > 0)
         {
             await PlayerCmd.GainGold(refund, player);
         }
     }
+
+    #endregion
+
+    #region Joker Management
 
     public async Task AcquireJoker(YuWanJokerRelicModel joker, Player player)
     {
@@ -685,10 +737,10 @@ public sealed class BalatroModifier : YuWanModifierModel
     {
         return edition switch
         {
-            BalatroCardEdition.Foil => 75,
-            BalatroCardEdition.Holographic => 75,
-            BalatroCardEdition.Polychrome => 150,
-            BalatroCardEdition.Negative => 250,
+            BalatroCardEdition.Foil => ModStationFoilCost,
+            BalatroCardEdition.Holographic => ModStationHolographicCost,
+            BalatroCardEdition.Polychrome => ModStationPolychromeCost,
+            BalatroCardEdition.Negative => ModStationNegativeCost,
             _ => 0
         };
     }
@@ -708,15 +760,14 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     public async Task<bool> RefreshModStationOffers(Player player, bool payRefreshCost)
     {
-        const int refreshCost = 25;
-        if (payRefreshCost && player.Gold < refreshCost)
+        if (payRefreshCost && player.Gold < ModStationRefreshCost)
         {
             return false;
         }
 
         if (payRefreshCost)
         {
-            await PlayerCmd.LoseGold(refreshCost, player, GoldLossType.Spent);
+            await PlayerCmd.LoseGold(ModStationRefreshCost, player, GoldLossType.Spent);
         }
 
         RollModStationOffers(player);
@@ -767,6 +818,10 @@ public sealed class BalatroModifier : YuWanModifierModel
 
         return true;
     }
+
+    #endregion
+
+    #region Internal Helpers
 
     private IEnumerable<CardModel> GetBalatroRewardCards(Player player)
     {
@@ -954,7 +1009,7 @@ public sealed class BalatroModifier : YuWanModifierModel
             return 0f;
         }
 
-        return CardsPlayedThisTurn * 0.2f * CountEffectiveJokers<LegendJoker>(player);
+        return CardsPlayedThisTurn * LegendBonusPerCard * CountEffectiveJokers<LegendJoker>(player);
     }
 
     private Player? GetBalatroPlayer()
@@ -1049,7 +1104,7 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     private void AddCombo(float amount)
     {
-        ComboCounter = Math.Clamp(ComboCounter + amount, 0f, 30f);
+        ComboCounter = Math.Clamp(ComboCounter + amount, 0f, MaxCombo);
     }
 
     private void ResetCombatState()
@@ -1140,4 +1195,6 @@ public sealed class BalatroModifier : YuWanModifierModel
             return null;
         }
     }
+
+    #endregion
 }

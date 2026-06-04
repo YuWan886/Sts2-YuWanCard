@@ -7,8 +7,11 @@ namespace YuWanCard.UI;
 
 public partial class NBalatroHudPanel : PanelContainer
 {
-    private const float DragThreshold = 10f;
+    private const float DragThreshold = 6f;
     private const float Margin = 16f;
+    private const float HorizontalPadding = 24f;
+    private const float MinimumWidth = 320f;
+    private const float MinimumHeight = 108f;
 
     private static bool _isOpen = true;
 
@@ -31,7 +34,7 @@ public partial class NBalatroHudPanel : PanelContainer
         Name = "YuWanBalatroHudPanel";
         MouseFilter = MouseFilterEnum.Stop;
         FocusMode = FocusModeEnum.None;
-        Size = new Vector2(432f, 126f);
+        Size = new Vector2(MinimumWidth, MinimumHeight);
         CustomMinimumSize = Size;
         AddThemeStyleboxOverride("panel", BalatroUiTheme.CreatePanelStyle());
 
@@ -82,6 +85,7 @@ public partial class NBalatroHudPanel : PanelContainer
         if (_jokerBar != null)
         {
             _jokerBar.Visible = true;
+            UpdatePanelSize();
         }
 
         if (Visible && !_isDragging)
@@ -98,17 +102,8 @@ public partial class NBalatroHudPanel : PanelContainer
                 if (touch.Pressed)
                 {
                     BeginPointer(touch.Index, touch.Position);
+                    AcceptEvent();
                 }
-                else if (_isPointerDown && touch.Index == _activePointerId)
-                {
-                    EndPointer(touch.Position);
-                }
-                AcceptEvent();
-                break;
-
-            case InputEventScreenDrag drag when _isPointerDown && drag.Index == _activePointerId:
-                UpdateDrag(drag.Position);
-                AcceptEvent();
                 break;
 
             case InputEventMouseButton mouseButton
@@ -116,25 +111,54 @@ public partial class NBalatroHudPanel : PanelContainer
                 if (mouseButton.Pressed)
                 {
                     BeginPointer(-1, mouseButton.Position);
+                    AcceptEvent();
                 }
-                else if (_isPointerDown && _activePointerId == -1)
-                {
-                    EndPointer(mouseButton.Position);
-                }
-                AcceptEvent();
+                break;
+        }
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (!_isPointerDown)
+        {
+            return;
+        }
+
+        switch (@event)
+        {
+            case InputEventScreenDrag drag when drag.Index == _activePointerId:
+                UpdateDrag(drag.Position, drag.Relative);
+                GetViewport().SetInputAsHandled();
+                break;
+
+            case InputEventScreenTouch touch when !touch.Pressed && touch.Index == _activePointerId:
+                EndPointer();
+                GetViewport().SetInputAsHandled();
                 break;
 
             case InputEventMouseMotion mouseMotion
-                when !ShouldIgnoreMouseInput() && _isPointerDown && _activePointerId == -1:
-                UpdateDrag(mouseMotion.Position);
-                AcceptEvent();
+                when !ShouldIgnoreMouseInput() && _activePointerId == -1:
+                UpdateDrag(mouseMotion.Position, mouseMotion.Relative);
+                if (_isDragging)
+                {
+                    GetViewport().SetInputAsHandled();
+                }
+                break;
+
+            case InputEventMouseButton mouseButton
+                when !ShouldIgnoreMouseInput() && mouseButton.ButtonIndex == MouseButton.Left && !mouseButton.Pressed && _activePointerId == -1:
+                EndPointer();
+                if (_isDragging)
+                {
+                    GetViewport().SetInputAsHandled();
+                }
                 break;
         }
     }
 
     private static bool ShouldIgnoreMouseInput()
     {
-        return OS.HasFeature("android");
+        return RuntimePlatform.IsMobileLike;
     }
 
     private void InitializePosition()
@@ -152,7 +176,7 @@ public partial class NBalatroHudPanel : PanelContainer
         _panelStartPosition = Position;
     }
 
-    private void UpdateDrag(Vector2 pointerPosition)
+    private void UpdateDrag(Vector2 pointerPosition, Vector2 relativeMotion)
     {
         Vector2 delta = pointerPosition - _pointerStartPosition;
         if (!_isDragging && delta.Length() >= DragThreshold)
@@ -165,16 +189,24 @@ public partial class NBalatroHudPanel : PanelContainer
             return;
         }
 
-        Position = _panelStartPosition + delta;
+        if (delta.Length() <= DragThreshold + 0.01f)
+        {
+            Position = _panelStartPosition + delta;
+        }
+        else
+        {
+            Position += relativeMotion;
+        }
         ClampToViewport();
     }
 
-    private void EndPointer(Vector2 pointerPosition)
+    private void EndPointer()
     {
+        bool wasDragging = _isDragging;
         _isPointerDown = false;
         _isDragging = false;
         _activePointerId = -1;
-        if ((pointerPosition - _pointerStartPosition).Length() >= DragThreshold)
+        if (wasDragging)
         {
             ClampToViewport();
         }
@@ -193,5 +225,23 @@ public partial class NBalatroHudPanel : PanelContainer
     private static string Loc(string key)
     {
         return new LocString("gameplay_ui", key).GetFormattedText();
+    }
+
+    private void UpdatePanelSize()
+    {
+        if (_jokerBar == null)
+        {
+            return;
+        }
+
+        float targetWidth = Mathf.Max(MinimumWidth, _jokerBar.GetPreferredHudWidth() + HorizontalPadding);
+        Vector2 targetSize = new(targetWidth, MinimumHeight);
+        if (Size == targetSize && CustomMinimumSize == targetSize)
+        {
+            return;
+        }
+
+        Size = targetSize;
+        CustomMinimumSize = targetSize;
     }
 }
