@@ -2,6 +2,7 @@ using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Core.Interop;
 using YuWanCard.Relics;
 using YuWanCard.Hextech.Relics;
@@ -22,6 +23,7 @@ public static class HextechRuntimeCompat
     private const string UnlockStateTypeName = "MegaCrit.Sts2.Core.Unlocks.UnlockState";
     private const string SaveManagerTypeName = "MegaCrit.Sts2.Core.Saves.SaveManager";
     private const string EnergyIconHelperTypeName = "MegaCrit.Sts2.Core.Helpers.EnergyIconHelper";
+
     private static bool _installed;
     private static readonly AsyncLocal<int> OwnedRuneRecognitionScopeDepth = new();
 
@@ -65,26 +67,26 @@ public static class HextechRuntimeCompat
             return;
         }
 
-        context.PatchMethods(
-            harmony,
-            catalogType,
-            typeof(HextechRuntimeCompat),
-            prefixName: null,
-            postfixName: nameof(GetAllSelectableRuneTypesPostfix),
-            "GetAllSelectableRuneTypes");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetAllSelectableRuneTypesPostfix), "GetAllSelectableRuneTypes");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetGenericSelectableRuneTypesPostfix), "GetGenericSelectableRuneTypes");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetGenericVisibleRuneTypesPostfix), "GetGenericVisibleRuneTypes");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetPlayerRuneTypesForRarityPostfix), "GetPlayerRuneTypesForRarity");
-        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCharacterRuneGroupsPostfix), "GetCharacterRuneGroups");
-        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCanonicalForgesPostfix), "GetCanonicalForges");
-        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCanonicalVisibleCustomRelicsPostfix), "GetCanonicalVisibleCustomRelics");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsPlayerRuneTypeSelectablePostfix), "IsPlayerRuneTypeSelectable");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetPlayerRunePoolKeyPostfix), "GetPlayerRunePoolKey");
-        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsAvailableForPlayerPostfix), "IsAvailableForPlayer");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsPlayerRuneAllowedInActPostfix), "IsPlayerRuneAllowedInAct");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCharacterRuneGroupsPostfix), "GetCharacterRuneGroups");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCanonicalForgesPostfix), "GetCanonicalForges");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetForgeTypesForRarityPostfix), "GetForgeTypesForRarity");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCanonicalVisibleCustomRelicsPostfix), "GetCanonicalVisibleCustomRelics");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsAvailableForPlayerPostfix), "IsAvailableForPlayer");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetMutuallyExclusivePlayerRuneIdsPostfix), "GetMutuallyExclusivePlayerRuneIds");
+
+        // NOTE: TryGetPlayerRuneRarity is intentionally NOT patched.
+        // Harmony cannot safely handle the internal HextechRarityTier enum
+        // in an 'out' parameter via 'ref object' in a postfix — doing so
+        // causes a hard freeze during overlay dismissal.
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsHextechRelicScopedPostfix), "IsHextechRelic");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsHextechForgeRelicPostfix), "IsHextechForgeRelic");
-        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(TryGetPlayerRuneRarityScopedPostfix), "TryGetPlayerRuneRarity");
-        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetMutuallyExclusivePlayerRuneIdsPostfix), "GetMutuallyExclusivePlayerRuneIds");
     }
 
     private static void PatchScopedRuntimeRecognition(Harmony harmony, ModCompatContext context)
@@ -218,6 +220,44 @@ public static class HextechRuntimeCompat
             .ToArray();
     }
 
+    /// <summary>
+    /// Inject shared (non-character-specific) pig runes into the generic visible
+    /// rune type list so they appear in the relic compendium organized by rarity
+    /// tier (Silver → Gold → Prismatic) rather than all lumped at the end.
+    ///
+    /// AllRuneTypes is built Silver → Gold → Prismatic at registration time, so
+    /// we split the original list into thirds and append our shared runes to the
+    /// matching tier. The positional heuristic is coarse but correct because the
+    /// native registration order in HextechContentRegistry is guaranteed.
+    /// </summary>
+    public static void GetGenericVisibleRuneTypesPostfix(ref IReadOnlyList<Type> __result)
+    {
+        int total = __result.Count;
+        if (total == 0)
+        {
+            __result = HextechPigRuneRegistry.GetSharedRuneTypes().ToArray();
+            return;
+        }
+
+        // AllRuneTypes is ordered Silver → Gold → Prismatic. Split roughly.
+        int silverEnd = Math.Max(1, total / 3);
+        int goldEnd = Math.Max(silverEnd + 1, total * 2 / 3);
+
+        List<Type> merged = [];
+        for (int i = 0; i < total; i++)
+        {
+            merged.Add(__result[i]);
+            if (i == silverEnd - 1)
+                merged.AddRange(HextechPigRuneRegistry.GetSharedRunesByRarity(HextechRuneRarity.Silver));
+            if (i == goldEnd - 1)
+                merged.AddRange(HextechPigRuneRegistry.GetSharedRunesByRarity(HextechRuneRarity.Gold));
+        }
+        // Prismatic shared runes go at the very end
+        merged.AddRange(HextechPigRuneRegistry.GetSharedRunesByRarity(HextechRuneRarity.Prismatic));
+
+        __result = merged.ToArray();
+    }
+
     public static void GetPlayerRuneTypesForRarityPostfix(object rarity, ref IReadOnlyList<Type> __result)
     {
         __result = __result.Concat(GetPigRunesForHextechRarity(rarity)).Distinct().ToArray();
@@ -262,6 +302,19 @@ public static class HextechRuntimeCompat
     public static void GetCanonicalForgesPostfix(ref IReadOnlyList<RelicModel> __result)
     {
         __result = __result.Concat(GetPigForgeRelics()).Distinct().ToArray();
+    }
+
+    public static void GetForgeTypesForRarityPostfix(object rarity, ref IReadOnlyList<Type> __result)
+    {
+        string name = rarity.ToString() ?? string.Empty;
+        IReadOnlyList<Type> pigForges = name switch
+        {
+            "Silver" => HextechForgeRegistry.GetForgesByRarity(HextechForgeRarity.Silver),
+            "Gold" => HextechForgeRegistry.GetForgesByRarity(HextechForgeRarity.Gold),
+            "Prismatic" => HextechForgeRegistry.GetForgesByRarity(HextechForgeRarity.Prismatic),
+            _ => Array.Empty<Type>()
+        };
+        __result = __result.Concat(pigForges).Distinct().ToArray();
     }
 
     public static void GetCanonicalVisibleCustomRelicsPostfix(ref IReadOnlyList<RelicModel> __result)
@@ -321,7 +374,7 @@ public static class HextechRuntimeCompat
     {
         if (HextechPigRuneRegistry.GetAllRunes().Contains(runeType))
         {
-            __result = HextechPigRuneRegistry.IsAllowedInAct(runeType, actIndex);
+            __result = HextechPigRuneRegistry.IsAllowedInAct(runeType, actIndex, IsEndlessModeActive());
         }
     }
 
@@ -341,20 +394,19 @@ public static class HextechRuntimeCompat
         }
     }
 
-    public static void TryGetPlayerRuneRarityScopedPostfix(RelicModel? relic, out object __state, ref bool __result, ref object rarity)
+    public static void TryGetPlayerRuneRarityScopedPostfix(RelicModel? relic, ref bool __result, ref object rarity)
     {
-        __state = rarity;
         if (__result || !IsOwnedRuneRecognitionScopeActive() || !HextechPigRuneRegistry.TryGetRarity(relic, out HextechRuneRarity pigRarity))
         {
             return;
         }
 
-        if (__state == null)
+        if (rarity == null)
         {
             return;
         }
 
-        Type rarityType = __state.GetType();
+        Type rarityType = rarity.GetType();
         if (Enum.TryParse(rarityType, pigRarity.ToString(), out object? parsed))
         {
             rarity = parsed;
@@ -484,6 +536,25 @@ public static class HextechRuntimeCompat
         else
         {
             MainFile.Logger.Warn("HextechRuntimeCompat: Could not resolve forge types for shopping cart resolver");
+        }
+    }
+
+    private static bool IsEndlessModeActive()
+    {
+        try
+        {
+            RunState? state = RunManager.Instance?.DebugOnlyGetState();
+            if (state == null)
+            {
+                return false;
+            }
+
+            return state.Modifiers.Any(modifier =>
+                modifier.Id.Entry.Contains("ENDLESS", StringComparison.OrdinalIgnoreCase));
+        }
+        catch
+        {
+            return false;
         }
     }
 

@@ -83,6 +83,21 @@ public static class HextechPigRuneRegistry
         return SilverRunes.Concat(GoldRunes).Concat(PrismaticRunes).ToArray();
     }
 
+    public static IReadOnlyList<Type> GetSharedRuneTypes()
+    {
+        return SharedSilverRunes.Concat(SharedGoldRunes).ToArray();
+    }
+
+    public static IReadOnlyList<Type> GetSharedRunesByRarity(HextechRuneRarity rarity)
+    {
+        return rarity switch
+        {
+            HextechRuneRarity.Silver => SharedSilverRunes,
+            HextechRuneRarity.Gold => SharedGoldRunes,
+            _ => Array.Empty<Type>()
+        };
+    }
+
     public static IReadOnlyList<Type> GetRunesByRarity(HextechRuneRarity rarity)
     {
         return rarity switch
@@ -142,12 +157,12 @@ public static class HextechPigRuneRegistry
         return false;
     }
 
-    public static bool IsAllowedInAct(Type runeType, int actIndex)
+    public static bool IsAllowedInAct(Type runeType, int actIndex, bool isEndlessMode = false)
     {
         return actIndex switch
         {
             0 => !FirstActExcluded.Contains(runeType),
-            2 => !ThirdActExcluded.Contains(runeType),
+            2 => isEndlessMode || !ThirdActExcluded.Contains(runeType),
             _ => true
         };
     }
