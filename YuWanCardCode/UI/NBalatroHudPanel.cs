@@ -1,5 +1,5 @@
 using Godot;
-using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Modifiers;
 
@@ -12,7 +12,6 @@ public partial class NBalatroHudPanel : PanelContainer
 
     private static bool _isOpen = true;
 
-    private NComboCounter? _comboCounter;
     private NJokerSlotBar? _jokerBar;
     private bool _isPointerDown;
     private bool _isDragging;
@@ -32,7 +31,7 @@ public partial class NBalatroHudPanel : PanelContainer
         Name = "YuWanBalatroHudPanel";
         MouseFilter = MouseFilterEnum.Stop;
         FocusMode = FocusModeEnum.None;
-        Size = new Vector2(420f, 178f);
+        Size = new Vector2(420f, 122f);
         CustomMinimumSize = Size;
 
         StyleBoxFlat panelStyle = new()
@@ -61,25 +60,18 @@ public partial class NBalatroHudPanel : PanelContainer
             OffsetBottom = -8f
         };
         root.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        root.AddThemeConstantOverride("separation", 4);
+        root.AddThemeConstantOverride("separation", 6);
         AddChild(root);
 
         Label titleLabel = new()
         {
             MouseFilter = MouseFilterEnum.Ignore,
-            Text = "BALATRO",
+            Text = Loc("YUWANCARD-BALATRO_HUD.title"),
             HorizontalAlignment = HorizontalAlignment.Left
         };
         titleLabel.AddThemeColorOverride("font_color", new Color(0.96f, 0.88f, 0.68f));
         titleLabel.AddThemeFontSizeOverride("font_size", 14);
         root.AddChild(titleLabel);
-
-        _comboCounter = new NComboCounter
-        {
-            MouseFilter = MouseFilterEnum.Ignore,
-            CustomMinimumSize = new Vector2(0f, 56f)
-        };
-        root.AddChild(_comboCounter);
 
         _jokerBar = new NJokerSlotBar
         {
@@ -105,12 +97,6 @@ public partial class NBalatroHudPanel : PanelContainer
         if (modifier == null)
         {
             return;
-        }
-
-        if (_comboCounter != null)
-        {
-            bool inCombat = state.CurrentRoom is CombatRoom;
-            _comboCounter.Visible = inCombat;
         }
 
         if (_jokerBar != null)
@@ -222,5 +208,10 @@ public partial class NBalatroHudPanel : PanelContainer
         Position = new Vector2(
             Mathf.Clamp(Position.X, Margin, maxX),
             Mathf.Clamp(Position.Y, Margin, maxY));
+    }
+
+    private static string Loc(string key)
+    {
+        return new LocString("gameplay_ui", key).GetFormattedText();
     }
 }

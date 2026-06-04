@@ -1,9 +1,7 @@
 using Godot;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YuWanCard.Balatro;
-using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Patches;
 

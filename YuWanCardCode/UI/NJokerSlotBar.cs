@@ -1,4 +1,5 @@
 using Godot;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Modifiers;
 
@@ -25,7 +26,7 @@ public partial class NJokerSlotBar : Control
 
         Label title = new()
         {
-            Text = "JOKER",
+            Text = Loc("YUWANCARD-BALATRO_JOKER_BAR.title"),
             MouseFilter = MouseFilterEnum.Ignore
         };
         title.AddThemeFontSizeOverride("font_size", 14);
@@ -56,7 +57,7 @@ public partial class NJokerSlotBar : Control
 
         _bagButton = new Button
         {
-            Text = "BAG",
+            Text = Loc("YUWANCARD-BALATRO_JOKER_BAR.bag_button"),
             CustomMinimumSize = new Vector2(70f, 56f),
             FocusMode = FocusModeEnum.None,
             MouseFilter = MouseFilterEnum.Stop
@@ -87,15 +88,15 @@ public partial class NJokerSlotBar : Control
             Button button = _slotButtons[i];
             if (!modifier.IsJokerSlotUnlocked(i))
             {
-                button.Text = "LOCK";
+                button.Text = Loc("YUWANCARD-BALATRO_JOKER_BAR.locked_short");
                 button.Disabled = true;
-                button.TooltipText = "Locked";
+                button.TooltipText = Loc("YUWANCARD-BALATRO_JOKER_BAR.locked_tooltip");
                 continue;
             }
 
             string jokerId = slots[i];
             string title = string.IsNullOrWhiteSpace(jokerId)
-                ? "-"
+                ? Loc("YUWANCARD-BALATRO_JOKER_BAR.empty_slot")
                 : modifier.GetJokerTitle(jokerId);
             button.Text = $"{i + 1}\n{ShortenTitle(title)}";
             button.TooltipText = title;
@@ -104,7 +105,9 @@ public partial class NJokerSlotBar : Control
 
         if (_bagButton != null)
         {
-            _bagButton.TooltipText = $"Backpack ({modifier.GetJokerBagIds().Count})";
+            _bagButton.TooltipText = string.Format(
+                LocRaw("YUWANCARD-BALATRO_JOKER_BAR.bag_tooltip"),
+                modifier.GetJokerBagIds().Count);
         }
     }
 
@@ -128,5 +131,15 @@ public partial class NJokerSlotBar : Control
 
         int targetSlot = modifier.IsJokerSlotUnlocked(preferredSlot) ? preferredSlot : 0;
         NJokerBagPopup.Open(modifier, targetSlot);
+    }
+
+    private static string Loc(string key)
+    {
+        return new LocString("gameplay_ui", key).GetFormattedText();
+    }
+
+    private static string LocRaw(string key)
+    {
+        return new LocString("gameplay_ui", key).GetRawText();
     }
 }

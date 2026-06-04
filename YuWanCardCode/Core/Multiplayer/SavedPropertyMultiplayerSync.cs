@@ -23,7 +23,12 @@ internal static class SavedPropertyMultiplayerSync
             return;
         }
 
-        if (!TryGetOwner(model, out Player owner) || !LocalContext.IsMe(owner))
+        if (!TryGetSyncOwner(model, out Player owner))
+        {
+            return;
+        }
+
+        if (model is not ModifierModel && !LocalContext.IsMe(owner))
         {
             return;
         }
@@ -92,13 +97,13 @@ internal static class SavedPropertyMultiplayerSync
         }
     }
 
-    private static bool TryGetOwner(AbstractModel model, out Player owner)
+    private static bool TryGetSyncOwner(AbstractModel model, out Player owner)
     {
         owner = (model switch
         {
             MegaCrit.Sts2.Core.Models.CardModel card => card.Owner,
             RelicModel relic => relic.Owner,
-            ModifierModel modifier => ResolveModifierOwner(modifier),
+            ModifierModel modifier => ResolveModifierSyncOwner(modifier),
             _ => null
         })!;
 
@@ -113,7 +118,7 @@ internal static class SavedPropertyMultiplayerSync
                and not MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType.Replay;
     }
 
-    private static Player? ResolveModifierOwner(ModifierModel modifier)
+    private static Player? ResolveModifierSyncOwner(ModifierModel modifier)
     {
         RunState? runState = (modifier as YuWanModifierModel)?.SafeRunState;
         if (runState == null)
@@ -121,7 +126,9 @@ internal static class SavedPropertyMultiplayerSync
             return null;
         }
 
-        return LocalContext.GetMe(runState) ?? runState.Players.FirstOrDefault();
+        // Run-level modifiers are shared state, so use a stable run anchor rather than
+        // treating the modifier as "owned" by whichever peer is currently local.
+        return runState.Players.FirstOrDefault();
     }
 
     private static void InvokeAfterDeserialized(AbstractModel model)

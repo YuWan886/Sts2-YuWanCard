@@ -3,7 +3,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using YuWanCard.Core.Abstracts;
 
-namespace YuWanCard.Patches;
+namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(NCustomRunModifiersList), "GetAllModifiers")]
 public static class CustomRunModifierVisibilityPatch

@@ -69,9 +69,9 @@ public static class SavedPropertySyncMessageHandler
         });
     }
 
-    private static void HandleMessage(SavedPropertySyncMessage message, ulong _senderId)
+    private static void HandleMessage(SavedPropertySyncMessage message, ulong senderId)
     {
-        if (LocalContext.NetId == message.OwnerNetId)
+        if (LocalContext.NetId == senderId)
         {
             return;
         }

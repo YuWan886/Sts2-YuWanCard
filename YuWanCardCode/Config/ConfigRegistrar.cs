@@ -16,6 +16,7 @@ internal static class ConfigRegistrar
     private static readonly string[] ConfigKeys =
     [
         "EnableDeathEffect",
+        "ShowBalatroModeToggle",
         "BypassModelDbHashCheck",
         "EnableAutoUpdateCheck",
         "EnableSevenCursesRing",
@@ -25,6 +26,7 @@ internal static class ConfigRegistrar
     private static readonly (string Name, string Section)[] BaseLibConfigProps =
     [
         ("EnableDeathEffect", "显示设置"),
+        ("ShowBalatroModeToggle", "显示设置"),
         ("BypassModelDbHashCheck", "多人游戏设置"),
         ("EnableAutoUpdateCheck", "更新设置"),
         ("EnableSevenCursesRing", "游戏设置"),
@@ -35,6 +37,7 @@ internal static class ConfigRegistrar
         RitsuConfigProps =
     [
         ("EnableDeathEffect", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效"),
+        ("ShowBalatroModeToggle", "show_balatro_mode_toggle", "config_show_balatro_mode_toggle", "显示Balatro模式开关", "在角色选择界面显示Balatro模式开关"),
         ("BypassModelDbHashCheck", "bypass_modeldb_check", "config_bypass_modeldb_hash_check", "跳过哈希检查", "多人模式下跳过ModelDb哈希校验"),
         ("EnableAutoUpdateCheck", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新"),
         ("EnableSevenCursesRing", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒"),

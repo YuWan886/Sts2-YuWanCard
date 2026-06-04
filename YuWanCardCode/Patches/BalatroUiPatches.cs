@@ -1,5 +1,6 @@
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Runs;
@@ -14,10 +15,12 @@ public static class BalatroTopBarUiPatch
 {
     private const string ToggleButtonName = "BalatroUiToggleButton";
     private const string PanelName = "YuWanBalatroHudPanel";
+    private const string CounterName = "YuWanBalatroComboCounter";
     private const string ButtonIconPath = "res://YuWanCard/images/modifiers/balatro.png";
 
     private static Button? _toggleButton;
     private static NBalatroHudPanel? _panel;
+    private static NComboCounter? _comboCounter;
 
     [HarmonyPostfix]
     [HarmonyPatch("_Ready")]
@@ -25,6 +28,7 @@ public static class BalatroTopBarUiPatch
     {
         EnsureToggleButton(__instance);
         EnsureHudPanel(__instance);
+        EnsureComboCounter(__instance);
         RefreshVisibility(RunManager.Instance?.State);
     }
 
@@ -81,12 +85,39 @@ public static class BalatroTopBarUiPatch
         _panel = panel;
     }
 
+    private static void EnsureComboCounter(NTopBar topBar)
+    {
+        if (_comboCounter != null && GodotObject.IsInstanceValid(_comboCounter))
+        {
+            return;
+        }
+
+        Node? parent = topBar.GetParent();
+        if (parent == null)
+        {
+            return;
+        }
+
+        if (parent.GetNodeOrNull<NComboCounter>(CounterName) is { } existingCounter)
+        {
+            _comboCounter = existingCounter;
+            return;
+        }
+
+        NComboCounter counter = new()
+        {
+            Name = CounterName
+        };
+        parent.CallDeferred(Node.MethodName.AddChild, counter);
+        _comboCounter = counter;
+    }
+
     private static Button CreateToggleButton()
     {
         Button button = new()
         {
             Name = ToggleButtonName,
-            TooltipText = "Balatro UI",
+            TooltipText = new LocString("gameplay_ui", "YUWANCARD-BALATRO_HUD.toggle_tooltip").GetFormattedText(),
             CustomMinimumSize = new Vector2(80f, 80f),
             FocusMode = Control.FocusModeEnum.None
         };
@@ -139,6 +170,12 @@ public static class BalatroTopBarUiPatch
         if (_panel != null && GodotObject.IsInstanceValid(_panel))
         {
             _panel.Visible = isActive && NBalatroHudPanel.IsOpen;
+        }
+
+        if (_comboCounter != null && GodotObject.IsInstanceValid(_comboCounter))
+        {
+            _comboCounter.HudEnabled = isActive && NBalatroHudPanel.IsOpen;
+            _comboCounter.Visible = _comboCounter.HudEnabled;
         }
     }
 }

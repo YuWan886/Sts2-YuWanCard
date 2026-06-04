@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.CustomRun;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Config;
 using YuWanCard.Modifiers;
 
 namespace YuWanCard.Patches;
@@ -99,6 +100,12 @@ internal static class BalatroCharacterSelectSyncPatch
         }
 
         if (screen.Lobby == null)
+        {
+            container.Visible = false;
+            return;
+        }
+
+        if (!YuWanCardConfig.ShowBalatroModeToggle)
         {
             container.Visible = false;
             return;
