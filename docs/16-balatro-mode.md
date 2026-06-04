@@ -1,13 +1,13 @@
-# Balatro 模式（未完成）
+# Balatro 模式
 
 ## 概述
 
-Balatro 模式是 YuWanCard 模组的一个自定义**修改器（Modifier）**，ID 为 `YUWANCARD-BALATRO`。激活后，游戏会叠加 6 个互相联动的子系统，将《Balatro》的经典机制引入《Slay the Spire 2》：
+Balatro 模式是 YuWanCard 模组的一个自定义**修改器（Modifier）**，ID 为 `YUWANCARD-BALATRO`。激活后，游戏会叠加 5 个互相联动的子系统，将《Balatro》的经典机制引入《Slay the Spire 2》：
 
-- **Joker 槽位系统**：独立于普通遗物的 Joker 遗物装备栏（含背包管理界面）
+- **Joker 遗物系统**：12 个 Joker 遗物使用 StS2 原生遗物系统，占据普通遗物槽，仅在 Balatro 激活时出现
 - **连击乘数系统**：基于回合内打出的卡牌累积连击，伤害获得倍率加成
 - **卡牌修饰器系统**：独立于升级/附魔的第三层卡牌强化（铝箔/全息/多彩/负片），含着色器视觉特效
-- **加工站系统**：商店内专属标签页，使用金币或修饰器代币为手牌添加修饰器
+- **加工站系统**：通过 TopBar 按钮直接使用修饰器代币为手牌添加修饰器
 - **利息经济系统**：每进入新楼层获得当前金币 10% 的利息
 - **Balatro 主题卡牌**：13 张消耗品卡牌（塔罗式/星球式/光谱式），加入共享无色卡池
 
@@ -18,7 +18,7 @@ Balatro 模式是 YuWanCard 模组的一个自定义**修改器（Modifier）**�
 ## 目录
 
 1. [激活方式](#1-激活方式)
-2. [Joker 槽位系统](#2-joker-槽位系统)
+2. [Joker 遗物系统](#2-joker-遗物系统)
 3. [连击乘数系统](#3-连击乘数系统)
 4. [卡牌修饰器系统](#4-卡牌修饰器系统)
 5. [加工站系统](#5-加工站系统)
@@ -56,71 +56,38 @@ BalatroModifier? modifier = BalatroModifier.GetInstance(runState);
 
 ---
 
-## 2. Joker 槽位系统
+## 2. Joker 遗物系统
 
-### 2.1 槽位机制
+### 2.1 概述
 
-Joker 遗物**不占用**普通遗物槽，拥有自己独立的装备栏：
+Joker 遗物使用 **StS2 原生遗物系统**——它们占据普通遗物槽，存储在玩家的 `player.Relics` 列表中。所有 Joker 遗物继承 `YuWanJokerRelicModel` → `BalatroRelicModel` → `YuWanRelicModel`。
 
-| 槽位 | 解锁条件 | 说明 |
-|------|---------|------|
-| 1 | 初始解锁 | 修改器激活即可用 |
-| 2 | 初始解锁 | 修改器激活即可用 |
-| 3 | 初始解锁 | 修改器激活即可用 |
-| 4 | 击杀第 1 个 Boss | 完成第一幕后自动解锁（`AfterCombatVictory`，act ≤ 1） |
-| 5 | 击杀第 2 个 Boss | 完成第二幕后自动解锁（`AfterCombatVictory`，act ≤ 2） |
-| 6 | 获得「负片小丑」 | 仅在拥有 NegativeJoker 时生效，同时解锁第 4、5 槽（若未解锁） |
+- **仅在 Balatro 激活时出现**：`BalatroRelicModel.IsAllowed` 检查 `BalatroModifier.IsActive(runState)`
+- **可出现在商店和遗物池中**：不再有限制（`IsAllowedInShops` 默认为 true）
+- **效果直接在遗物类中实现**：每个 Joker 遗物通过覆写 `RelicModel` 钩子（如 `AfterCardPlayed`、`ModifyDamageAdditive`、`ModifyCardPlayCount` 等）自行实现效果
+- **Blueprint 翻倍**：每个 Joker 通过其私有的 `EffectiveCount()` 方法自行处理 Blueprint 交互
 
 ### 2.2 Joker 获取方式
 
-- **精英掉落**：击杀精英有 25% 概率额外掉落一个 Joker 遗物（独立于普通遗物奖励，不重复获得已拥有的 Joker）
+- **精英掉落**：击杀精英有 25% 概率额外掉落一个 Joker 遗物（不重复获得已拥有的 Joker）
 - **Boss 掉落**：击杀 Boss 有 100% 概率额外掉落一个 Joker 遗物
 - **修饰器代币掉落**：击杀精英/Boss 必定额外掉落一个 `ModifierToken` 遗物（用于加工站）
 - **空白兑换券**：BlankVoucher 遗物获得时从 3 个随机 Joker 中选择 1 个获得
 
-### 2.3 Joker 的装备与存储
+### 2.3 Joker 效果实现
 
-Joker 遗物继承 `YuWanJokerRelicModel`（位于 `Relics/Jokers/BalatroJokerRelicModel.cs`），核心行为：
+Joker 遗物继承 `YuWanJokerRelicModel`（位于 `Relics/Jokers/BalatroJokerRelicModel.cs`），效果通过覆写 `RelicModel` 钩子在各自的类中实现：
 
-1. **获得时**（`AfterObtained`）→ 自动尝试装备到空闲槽位（`AcquireJoker`）
-2. 若槽位已满 → 存入 **Joker 背包**（以 `|` 分隔的字符串列表持久化到 `YUWANCARD_JokerBag`）
-3. 装备后 → 从普通遗物栏移除（`RelicCmd.Remove`）
-4. 解锁新槽位时 → 自动从背包中取出装备
-5. 背包管理 → 通过 `NJokerSlotBar` 和 `NJokerBagPopup` UI 进行装备/卸下操作
+所有 12 个 Joker 均使用 `player.GetRelic<Blueprint>()` 自行处理 Blueprint 翻倍。需要共享回合状态（`AttackCardsThisTurn`、`SkillCardsThisTurn`、`LastCardTypeThisTurn`）的 Joker 通过 `BalatroModifier.GetInstance(runState)` 访问修改器。
 
-### 2.4 Joker 背包
-
-背包是一个持久化的 Joker ID 列表，存储于 `YUWANCARD_JokerBag`（`|` 分隔的字符串 SavedProperty）。支持以下操作：
-
-- `TryEquipBagJoker(jokerId, slotIndex)` — 从背包装备到指定槽位
-- `TryUnequipJoker(slotIndex)` — 从槽位卸下到背包
-- 背包容量无上限
-- 重复 Joker 判定会同时检查装备槽位和背包中的 ID
-
-### 2.5 代码接口
+### 2.4 代码接口
 
 ```csharp
-// 获取当前可用槽位数（3~6）
-int capacity = modifier.GetCurrentJokerCapacity();
+// 检查玩家是否拥有特定 Joker（标准 StS2 遗物检查）
+bool hasGreed = player.GetRelic<GreedJoker>() != null;
 
-// 获取当前装备的 Joker ID 列表（仅已装备的，不含背包）
-IReadOnlyList<string> equipped = modifier.GetEquippedJokerIds();
-
-// 获取全部槽位 ID（含空槽位）
-IReadOnlyList<string> allSlots = modifier.GetAllJokerSlotIds();
-
-// 检查槽位是否解锁
-bool unlocked = modifier.IsJokerSlotUnlocked(slotIndex);
-
-// 获取 Joker 元数据（从 ModelDb 查询）
-string title = modifier.GetJokerTitle(jokerId);
-string description = modifier.GetJokerDescription(jokerId);
-Texture2D? icon = modifier.GetJokerIcon(jokerId);
-
-// 背包操作
-IReadOnlyList<string> bag = modifier.GetJokerBagIds();
-bool equipped = modifier.TryEquipBagJoker(jokerId, slotIndex);
-bool unequipped = modifier.TryUnequipJoker(slotIndex);
+// 检查 Balatro 是否激活（Joker 仅在此情况下出现）
+bool active = BalatroModifier.IsActive(runState);
 ```
 
 ---
@@ -131,7 +98,7 @@ bool unequipped = modifier.TryUnequipJoker(slotIndex);
 
 - **累积**：每打出一张牌（不含状态/诅咒，除非有 WildCard 遗物），获得连击
 - **乘数公式**：`乘数 = 1 + 连击数 × 0.1 + 传奇小丑加成`。连击上限 30（乘数上限 ≥ ×4.0）
-- **传奇小丑加成**：`LegendBonus = CardsPlayedThisTurn × 0.2 × LegendJokerCount`
+- **传奇小丑加成**：`LegendBonus = CardsPlayedThisTurn × 0.2 × LegendJokerCount`（由 `LegendJoker.GetLegendBonus()` 计算，`ComboMultiplier` 查询玩家遗物）
 - **应用**：所有攻击牌的最终伤害 × 当前乘数（`ModifyDamageMultiplicative`）
 - **重置**：回合结束时连击归零
 - **跨回合保留**：连击 ≥ 20 时获得 1 层**惯性**能力，下回合保留 10% 连击
@@ -279,7 +246,7 @@ BalatroCardEditionHelper.RefreshEditionAfterCardStateRebuild(card);
 
 ### 5.1 概述
 
-加工站（Mod Station）是商店界面的第二个标签页，允许玩家使用**金币**或**修饰器代币**为手牌中的卡牌添加修饰器。这是一个完整的商店扩展，通过 `BalatroMerchantPatch` 注入到 `NMerchantInventory` 中。
+加工站（Mod Station）允许玩家使用**金币**或**修饰器代币**为手牌中的卡牌添加修饰器。通过 `BalatroModifier.PurchaseModStationOffer()` API 和卡牌选择界面直接运行。
 
 ### 5.2 加工站定价
 
@@ -310,13 +277,11 @@ BalatroCardEditionHelper.RefreshEditionAfterCardStateRebuild(card);
 
 ### 5.4 购买流程
 
-1. 在商店界面点击「加工站」标签页
-2. 查看当前 2 个修饰器商品（对应 6 个 Joker 槽位的装备状态显示在上方）
-3. 点击想购买的修饰器卡片
-4. 系统检查手牌中是否有可添加该修饰器的卡牌
-5. 弹出卡牌选择界面（标准 `CardSelection` 流程）
-6. 选择目标卡牌 → 应用修饰器 → 扣除金币或代币 → 刷新 UI
-7. 若拥有 GrowingJoker，同时获得 3 最大生命值
+1. 通过 TopBar Balatro 按钮或直接 API 调用访问加工站
+2. 系统检查手牌中是否有可添加该修饰器的卡牌
+3. 弹出卡牌选择界面（标准 `CardSelection` 流程）
+4. 选择目标卡牌 → 应用修饰器 → 扣除金币或代币
+5. 若拥有 GrowingJoker，同时获得 3 最大生命值
 
 ### 5.5 代码接口
 
@@ -417,67 +382,80 @@ modifier.AddModifierTokens(1);
 
 ## 8. Joker 遗物
 
-全部 12 个 Joker 遗物继承 `YuWanJokerRelicModel`（位于 `Relics/Jokers/BalatroJokerRelicModel.cs`），注册在 `SharedRelicPool`。它们**不出现在普通遗物池和商店中**（`IsAllowed => false`, `IsAllowedInShops => false`），仅通过精英/Boss 奖励掉落和 BlankVoucher 获取。
+全部 12 个 Joker 遗物继承 `YuWanJokerRelicModel`（位于 `Relics/Jokers/BalatroJokerRelicModel.cs`），注册在 `SharedRelicPool`。它们使用 **StS2 原生遗物系统**，占据普通遗物槽，通过 `BalatroRelicModel.IsAllowed` 在 Balatro 模式激活时可用。
 
 | # | 名称 | 稀有度 | 效果 | 联动系统 |
 |---|------|--------|------|---------|
-| 1 | **GreedJoker** (贪婪小丑) | Common | 每打出第 3 张攻击牌，获得 5 金币 | 连击 × 经济 |
-| 2 | **GluttonyJoker** (暴食小丑) | Common | 每打出第 4 张技能牌，回复 3 生命 | 技能连击 |
-| 3 | **MirrorJoker** (镜像小丑) | Common | 连续打出同类型牌时，后续牌额外触发 1 次 | 同类型连打 |
-| 4 | **MiserJoker** (守财小丑) | Uncommon | 手牌中每有 1 张 0 费牌，攻击牌伤害 +1（加法） | 卡牌属性条件 |
-| 5 | **CollectorJoker** (收藏小丑) | Uncommon | 牌组中每 5 张 Rare/Ancient 牌，回合开始获得 1 能量 | 稀有度经济 |
+| 1 | **GreedJoker** (贪婪小丑) | Common | 每打出第 3 张攻击牌，获得 5 金币。Blueprint 翻倍 | 连击 × 经济 |
+| 2 | **GluttonyJoker** (暴食小丑) | Common | 每打出第 4 张技能牌，回复 3 生命。Blueprint 翻倍 | 技能连击 |
+| 3 | **MirrorJoker** (镜像小丑) | Common | 连续打出同类型牌时，后续牌额外触发 1 次。Blueprint 翻倍 | 同类型连打 |
+| 4 | **MiserJoker** (守财小丑) | Uncommon | 手牌中每有 1 张 0 费牌，攻击牌伤害 +1（加法）。Blueprint 翻倍 | 卡牌属性条件 |
+| 5 | **CollectorJoker** (收藏小丑) | Uncommon | 牌组中每 5 张 Rare/Ancient 牌，回合开始获得 1 能量。Blueprint 翻倍 | 稀有度经济 |
 | 6 | **GamblerJoker** (赌徒小丑) | Uncommon | 连击 ≥ 5 时，随机对一名敌人造成 8~20 伤害 | 连击阈值触发 |
-| 7 | **PolychromeJoker** (多彩小丑) | Rare | 打出带修饰器的卡牌时，额外触发 1 次 | 修饰器联动 |
-| 8 | **NegativeJoker** (负片小丑) | Rare | 解锁第 6 个 Joker 槽位，同时解锁第 4、5 槽 | 槽位扩展 |
-| 9 | **LegendJoker** (传奇小丑) | Ancient | 回合内每打 1 张牌，连击乘数额外 +0.2 | 核心输出增幅 |
+| 7 | **PolychromeJoker** (多彩小丑) | Rare | 打出带修饰器的卡牌时，额外触发 1 次。Blueprint 翻倍 | 修饰器联动 |
+| 8 | **NegativeJoker** (负片小丑) | Rare | 每回合 +1 抽牌 | 抽牌 |
+| 9 | **LegendJoker** (传奇小丑) | Ancient | 回合内每打 1 张牌，连击乘数额外 +0.2。Blueprint 翻倍 | 核心输出增幅 |
 | 10 | **HolographicJoker** (全息小丑) | Ancient | 回合开始时，复制上回合打出的第一张牌加入手牌 | 跨回合策略 |
-| 11 | **BankerJoker** (银行家小丑) | Uncommon | 利息触发时额外获得 3 金币 | 经济增强 |
-| 12 | **InvestorJoker** (投资家小丑) | Rare | 商店消费的 20% 返还 | 经济回收 |
+| 11 | **BankerJoker** (银行家小丑) | Uncommon | 利息触发时额外获得 3 金币。Blueprint 翻倍 | 经济增强 |
+| 12 | **InvestorJoker** (投资家小丑) | Rare | 商店消费的 20% 返还。Blueprint 翻倍 | 经济回收 |
 
 ### Joker 效果实现详解
 
-- **GreedJoker**：在 `AfterCardPlayed` 中计数攻击牌（`_attackCardsThisTurn`），每 3 张触发一次，金币获得量 = 5 × 贪婪小丑数量
-- **GluttonyJoker**：同上，每 4 张技能牌回复 3 × 暴食小丑数量点生命（使用 `HealCmd`）
-- **MirrorJoker**：在 `ModifyCardPlayCount` 中检测 `LastCardTypeThisTurn == card.Type`，额外触发次数 = 镜像小丑数量
-- **MiserJoker**：在 `ModifyDamageAdditive` 中计算手牌中 0 费牌数量（不含 X 费），加法加成 = 0 费牌数 × 守财小丑数量
-- **CollectorJoker**：在 `AfterPlayerTurnStart` 中统计牌组 Rare/Ancient 牌，能量 = `floor(RareAncientCount / 5) × 收藏家数量`
-- **GamblerJoker**：在 `AfterCardPlayed` 中检测连击 ≥ 5，随机目标 8~20 伤害（`GamblerJokerMinDamage` + `Random.Range(0, GamblerJokerMaxDamage - GamblerJokerMinDamage)`）
-- **PolychromeJoker**：在 `ModifyCardPlayCount` 中对有修饰器的卡牌额外 +1 触发（与多彩修饰器本身的 +1 叠加，共 +2）
-- **NegativeJoker**：通过 `AcquireJoker` 的特殊处理：获得时自动解锁第 4、5、6 槽（`YUWANCARD_UnlockedJokerSlots = Math.Max(current, 5)`）
-- **LegendJoker**：`GetLegendBonus()` 返回 `CardsPlayedThisTurn × 0.2 × LegendJokerCount`，加入 `ComboMultiplier` 计算
-- **HolographicJoker**：`AfterPlayerTurnStart` 中从 `YUWANCARD_PreviousTurnFirstCardJson` 反序列化上回合第一张牌，复制加入手牌。上回合的第一张牌在 `AfterCardPlayed` 中首次打出时通过 JSON 序列化存储到 `YUWANCARD_CurrentTurnFirstCardJson`
-- **BankerJoker**：利息计算中 `+3 × BankerJokerCount`
-- **InvestorJoker**：在 `AfterItemPurchased` 中返还 `floor(goldSpent × 0.2 × Count)`
+- **GreedJoker**：覆写 `AfterCardPlayed`，通过 `BalatroModifier.AttackCardsThisTurn` 追踪攻击牌计数，每 3 张触发一次，金币获得量 = 5 × 有效数量
+- **GluttonyJoker**：覆写 `AfterCardPlayed`，通过 `BalatroModifier.SkillCardsThisTurn` 追踪技能牌计数，每 4 张回复 3 × 有效数量点生命（使用 `HealCmd`）
+- **MirrorJoker**：覆写 `ModifyCardPlayCount`，检测 `BalatroModifier.LastCardTypeThisTurn == card.Type`，额外触发次数 = 有效数量
+- **MiserJoker**：覆写 `ModifyDamageAdditive`，计算手牌中 0 费牌数量（不含 X 费），加法加成 = 0 费牌数 × 有效数量
+- **CollectorJoker**：覆写 `AfterPlayerTurnStart`，统计牌组 Rare/Ancient 牌，能量 = `floor(RareAncientCount / 5) × 有效数量`
+- **GamblerJoker**：覆写 `AfterCardPlayed`，检测 `BalatroModifier.ComboCounter ≥ 5`，随机目标 8~20 伤害
+- **PolychromeJoker**：覆写 `ModifyCardPlayCount`，对有修饰器的卡牌额外 +1 触发（与多彩修饰器本身的 +1 叠加，共 +2）
+- **NegativeJoker**：覆写 `ModifyHandDraw`，每回合 +1 抽牌
+- **LegendJoker**：提供 `GetLegendBonus()` 方法，返回 `CardsPlayedThisTurn × 0.2 × 有效数量`，由 `BalatroModifier.ComboMultiplier` 调用
+- **HolographicJoker**：覆写 `AfterPlayerTurnStart`，从 `BalatroModifier.PreviousTurnFirstCard` 读取上回合第一张卡牌的反序列化副本，加入手牌
+- **BankerJoker**：纯标记类，效果在 `BalatroModifier.AfterRoomEntered` 中通过 `player.GetRelic<BankerJoker>()` 检查，利息 +3 × 有效数量
+- **InvestorJoker**：覆写 `AfterItemPurchased`，返还 `floor(goldSpent × 0.2 × 有效数量)`
+
+### Blueprint 交互
+
+每个 Joker 通过其私有的 `EffectiveCount()` 方法处理 Blueprint 翻倍：若玩家同时拥有该 Joker 和 Blueprint，有效计数返回 2（否则返回 1）。此机制适用于除 GamblerJoker 和 NegativeJoker 以外的所有 Joker。
 
 ---
 
 ## 9. 配套遗物
 
-9 个普通遗物继承 `BalatroRelicModel`（位于 `Relics/Balatro/BalatroRelicModel.cs`），注册在 `SharedRelicPool`。仅在 Balatro 模式激活时出现（`IsAllowed` 检查 `BalatroModifier.IsActive`）。
+9 个普通遗物继承 `BalatroRelicModel`（位于 `Relics/Balatro/BalatroRelicModel.cs`），注册在 `SharedRelicPool`。仅在 Balatro 模式激活时出现（`IsAllowed` 检查 `BalatroModifier.IsActive`）。所有 Balatro 遗物（包含 Joker 和配套遗物）共享自定义稀有度分类 `YUWANCARD-BALATRO`，在遗物百科中独立显示为一个分类。
 
 | 名称 | 稀有度 | 效果 |
 |------|--------|------|
-| **Dice** (骰子) | Common | 每回合开始时，随机将连击设为 1~3（不降低已有连击） |
-| **Chip** (筹码) | Common | 战斗开始时，连击 +3 |
-| **WildCard** (万能牌) | Uncommon | 打出状态牌计入连击（+0.5），诅咒牌额外 +2 |
-| **SteelJoker** (钢制小丑) | Uncommon | 回合结束时保留 20% 连击 |
-| **GrowingJoker** (成长小丑) | Uncommon | 每次给卡牌添加修饰器，永久获得 3 最大生命值 |
+| **Dice** (骰子) | Common | 每回合开始时，随机将连击设为 1~3（不降低已有连击）。效果在 `Dice.AfterPlayerTurnStart` 中实现 |
+| **Chip** (筹码) | Common | 每回合开始时，连击 +3。效果在 `Chip.AfterPlayerTurnStart` 中实现 |
+| **WildCard** (万能牌) | Uncommon | 打出状态牌计入连击（+0.5），诅咒牌额外 +2。效果在 `BalatroModifier.CalculateComboGain` 中 |
+| **SteelJoker** (钢制小丑) | Uncommon | 回合结束时保留 20% 连击。效果在 `BalatroModifier.AfterTurnEnd` 中 |
+| **GrowingJoker** (成长小丑) | Uncommon | 每次给卡牌添加修饰器，永久获得 3 最大生命值。效果在 `BalatroCardEditionHelper.TryApplyEdition` 中 |
 | **BlankVoucher** (空白兑换券) | Rare | 获得时从 3 个随机 Joker 中选择 1 个获得 |
-| **Blueprint** (蓝图) | Rare | 复制最右侧 Joker 槽位的效果 |
-| **LuckyCard** (幸运卡) | Ancient | 每打出第 7 张牌，该牌额外触发 2 次 |
+| **Blueprint** (蓝图) | Rare | 复制每个 Joker 的效果（每个 Joker 通过 `EffectiveCount()` 自行翻倍） |
+| **LuckyCard** (幸运卡) | Ancient | 每打出第 7 张牌，该牌额外触发 2 次。效果在 `LuckyCard.ModifyCardPlayCount` 中实现 |
 | **ModifierToken** (修饰器代币) | None | 获得时给予 1 个修饰器代币，随后自毁（不在任何遗物池，仅通过精英/Boss 奖励掉落） |
 
 ### 配套遗物实现详解
 
-- **Dice**：`AfterPlayerTurnStart` 中 `ComboCounter = Math.Max(ComboCounter, Random.Range(1, 4))`
-- **Chip**：`BeforeCombatStart` 中 `ComboCounter += 3`
-- **WildCard**：在连击计算时允许状态牌和诅咒牌计入
-- **SteelJoker**：在 `AfterTurnEnd` 中计算保留比例时取 Max(0.1, 0.2)
-- **GrowingJoker**：`BalatroCardEditionHelper.TryApplyEdition` 中检测并触发 `GainMaxHp(3)`
+- **Dice**：覆写 `AfterPlayerTurnStart`，通过 `BalatroModifier.GetInstance()` 访问修改器，设置 `ComboCounter = Math.Max(ComboCounter, Random.Range(1, 4))`
+- **Chip**：覆写 `AfterPlayerTurnStart`，通过 `BalatroModifier.GetInstance()` 访问修改器，设置 `ComboCounter = Math.Min(30f, ComboCounter + 3f)`
+- **WildCard**：纯标记类，在 `BalatroModifier.CalculateComboGain` 中通过 `player.GetRelic<WildCard>()` 检查
+- **SteelJoker**：纯标记类，在 `BalatroModifier.AfterTurnEnd` 中通过 `player.GetRelic<SteelJoker>()` 检查，保留比例取 Max(0.1, 0.2)
+- **GrowingJoker**：纯标记类，`BalatroCardEditionHelper.TryApplyEdition` 中检测并触发 `GainMaxHp(3)`
 - **BlankVoucher**：`AfterObtained` 中从可用 Joker 池随机 3 个，弹出选择界面
-- **Blueprint**：在 `GetAllJokerSlotIds` 等效逻辑中，将最右侧非空 Joker ID 加入生效列表
-- **LuckyCard**：`ModifyCardPlayCount` 中检测 `CardsPlayedThisTurn % 7 == 0`，额外 +2
+- **Blueprint**：纯标记类，每个 Joker 通过 `EffectiveCount()` 自行检查并翻倍
+- **LuckyCard**：覆写 `ModifyCardPlayCount`，通过 `BalatroModifier.GetInstance()` 访问修改器检查 `CardsPlayedThisTurn % 7 == 0`，额外 +2
 - **ModifierToken**：`AfterObtained` 中 `modifier.AddModifierTokens(1)` 后 `RelicCmd.Remove` 自毁
+
+### 遗物百科自定义分类
+
+所有继承 `BalatroRelicModel` 的遗物（12 个 Joker + 9 个配套遗物）共享 `YuWanCustomRelicRarity`：
+- **ID**: `YUWANCARD-BALATRO`
+- **边框颜色**: `#E8D1A0`（金色）
+- **排序顺序**: 85
+- **显示稀有度视觉**: `RelicRarity.Uncommon`
+- 在遗物百科中自动分组为独立分类，与其他稀有度分类（Starter/Common/Uncommon/Rare/Shop/Ancient/Event）并列显示
 
 ---
 
@@ -504,39 +482,12 @@ modifier.AddModifierTokens(1);
 
 ## 11. UI 与交互
 
-### 11.1 UI 主题系统
+### 11.1 连击计数器
 
-`BalatroUiTheme`（`UI/BalatroUiTheme.cs`）是 Balatro 模式所有 UI 的**统一视觉主题**，提供：
-
-| 元素 | 颜色 | 用途 |
-|------|------|------|
-| Surface | `#1A1817` (暗棕) | 面板背景 |
-| SurfaceAlt | `#242220` (稍亮棕) | 卡片背景 |
-| SurfaceHover | `#2B2724` (悬停棕) | 悬停态 |
-| SurfacePressed | `#141311` (深压棕) | 按下态 |
-| Border | `#BAAA8F` (淡金) | 默认边框 |
-| BorderStrong | `#EDDBB5` (亮金) | 强调边框 |
-| Title | `#F7EDDB` (暖白) | 标题文字 |
-| Body | `#DED9CF` (灰白) | 正文 |
-| Muted | `#A8A399` (灰) | 次要文字 |
-| Accent | `#E8D1A0` (金) | 强调色 |
-| Price | `#F2D670` (亮金) | 价格文字 |
-
-**工厂方法**：
-- `CreatePanelStyle()` — 面板 StyleBox（2px 金色边框，12px 圆角，阴影）
-- `CreateCardStyle(bg?, border?)` — 卡片 StyleBox（1px 边框，10px 圆角）
-- `CreateTextLabel(text, fontSize, color, ...)` — 统一文本标签
-- `CreateGlyphIcon(glyph, accentColor, size)` — 文本图标（带边框面板）
-- `CreateTextureIcon(texture, size)` — 纹理图标（带边框面板）
-
-**按钮样式方法**：
-- `ApplyCardButtonStyle(button)` — 卡片按钮（完整状态样式）
-- `ApplyActionButtonStyle(button, primary)` — 操作按钮（主要/次要）
-- `ApplySlotButtonStyle(button, selected, unlocked)` — 槽位按钮（选中/未解锁态）
-
-**修饰器辅助**：
-- `GetEditionGlyph(edition)` — 获取修饰器缩写（FL/HO/PC/NG）
-- `GetEditionAccent(edition)` — 获取修饰器强调色
+- 文件：`UI/NComboCounter.cs`
+- 显示内容：当前连击数、乘数和加成（`COMBO 12.0  MULT x2.2`）
+- 仅在战斗中显示，Balatro 模式激活时可见
+- 视觉特效：弹出动画、爆发粒子、颜色阶段（基于连击阈值）
 
 ### 11.2 角色选择 Tickbox
 
@@ -545,69 +496,14 @@ modifier.AddModifierTokens(1);
 - 创建 `NRunModifierTickbox` 放置在 AscensionPanel 右侧
 - 客户端只读同步（通过 SavedProperty 自动同步）
 
-### 11.3 HUD 面板
-
-- 文件：`UI/NBalatroHudPanel.cs`
-- 显示内容：
-  - **战斗中**：`COMBO 12.0  MULT x2.2`（连击数和乘数）
-  - **始终**：Joker 槽位栏（`NJokerSlotBar`，嵌入在面板中）
-- 交互：
-  - 可拖动（支持鼠标和触摸）
-  - 自动限制在视口范围内
-  - 通过顶部栏 Balatro 图标按钮切换显示/隐藏
-- 视觉：深色半透明背景 + 金色边框圆角面板（`BalatroUiTheme.CreatePanelStyle()`）
-
-### 11.4 Joker 槽位栏
-
-- 文件：`UI/NJokerSlotBar.cs`
-- 嵌入在 `NBalatroHudPanel` 中，显示 6 个 Joker 槽位按钮
-- 每个槽位按钮显示：
-  - 未解锁 → 灰色虚线框 + 🔒 符号，不可点击
-  - 空槽位 → 按钮显示槽位编号 + "空"文字
-  - 已装备 → 按钮显示编号 + Joker 名称缩写（≤8 字符）
-- 右侧「背包」按钮显示背包中 Joker 数量
-- 点击任意槽位或背包按钮 → 打开 `NJokerBagPopup`
-- 每帧 `_Process` 中更新槽位状态（`BalatroModifier` 实例变化时自动同步）
-
-### 11.5 Joker 背包弹窗
-
-- 文件：`UI/NJokerBagPopup.cs`
-- 作为模态弹窗（`NModalContainer`）打开
-- 上方：6 个槽位按钮（选中高亮，未解锁灰色），点击切换目标槽位
-- 中间：2 列网格显示背包中所有 Joker（卡片式布局，含图标、名称、描述）
-- 下方：
-  - 当前选中槽位信息
-  - 「卸下」按钮（将当前槽位 Joker 移回背包）
-  - 「关闭」按钮
-- 点击背包中的 Joker → 装备到当前选中槽位
-- 实现 `IScreenContext`，支持手柄导航（`DefaultFocusedControl`）
-
-### 11.6 商店加工站扩展
-
-- 文件：`UI/NBalatroMerchantExtension.cs` + `Patches/BalatroMerchantPatch.cs`
-- `BalatroMerchantPatch` 注入 `NMerchantInventory`：
-  - `_Ready` → 创建 `NBalatroMerchantExtension` 并添加到 `SlotsContainer`
-  - `Open` → 调用 `RefreshForOpen()` 刷新商品和状态
-  - `Close` → 调用 `OnInventoryClosed()` 重置界面
-- `NBalatroMerchantExtension` 提供两个标签页：
-  - **商店**（默认）：隐藏加工站面板，显示原始商店内容
-  - **加工站**：隐藏原始商店内容，显示修饰器购买界面
-- 加工站界面布局：
-  - 标题和描述（本地化）
-  - 当前代币数量
-  - 2 个修饰器商品卡片（带图标、名称、描述、价格）
-  - 「刷新」按钮（25 金币，禁用时灰色显示）
-- 点击商品 → 扣除金币/代币 → 弹出卡牌选择 → 应用修饰器
-- 购买流程中使用 `RunWithMerchantHiddenAsync` 隐藏商店以避免 UI 冲突
-
-### 11.7 顶部栏按钮
+### 11.3 TopBar 按钮
 
 - 文件：`Patches/BalatroUiPatches.cs`
 - 在 `NTopBar` 上注入一个 Balatro 图标按钮（`images/modifiers/balatro.png`）
 - 仅在 Balatro 模式激活时可见
-- 点击切换 HUD 面板的显示/隐藏
+- 点击切换连击计数器的显示/隐藏
 
-### 11.8 顶部栏修饰器图标
+### 11.4 TopBar 修饰器图标
 
 - 文件：`Patches/BalatroTopBarModifierFilterPatch.cs`
 - `NTopBarModifier` 显示 Balatro 修饰器图标时使用 `BalatroModifier.Icon` 替代默认图标
@@ -625,7 +521,7 @@ YuWanCardCode/
 │   └── BalatroCardPool.cs                      # Balatro 卡牌池（共享无色，淡金色主题）
 │
 ├── Modifiers/
-│   └── BalatroModifier.cs                      # 修改器主体（~1200 行，所有核心逻辑）
+│   └── BalatroModifier.cs                      # 修改器主体（~860 行，连击/利息/加工站逻辑）
 │
 ├── Cards/Balatro/                              # 13 张 Balatro 卡牌
 │   ├── Investment.cs                           #   1. 投资（经济）
@@ -643,29 +539,29 @@ YuWanCardCode/
 │   └── VoidCard.cs                             #  13. 虚空（光谱/负片）
 │
 ├── Relics/Jokers/                              # 12 个 Joker 遗物 + 基类
-│   ├── BalatroJokerRelicModel.cs               # Joker 遗物抽象基类
-│   ├── GreedJoker.cs                           #   1. 贪婪小丑
-│   ├── GluttonyJoker.cs                        #   2. 暴食小丑
-│   ├── MirrorJoker.cs                          #   3. 镜像小丑
-│   ├── MiserJoker.cs                           #   4. 守财小丑
-│   ├── CollectorJoker.cs                       #   5. 收藏小丑
-│   ├── GamblerJoker.cs                         #   6. 赌徒小丑
-│   ├── PolychromeJoker.cs                      #   7. 多彩小丑
-│   ├── NegativeJoker.cs                        #   8. 负片小丑
-│   ├── LegendJoker.cs                          #   9. 传奇小丑
-│   ├── HolographicJoker.cs                     #  10. 全息小丑
-│   ├── BankerJoker.cs                          #  11. 银行家小丑
-│   └── InvestorJoker.cs                        #  12. 投资家小丑
+│   ├── BalatroJokerRelicModel.cs               # Joker 遗物抽象基类（继承 BalatroRelicModel）
+│   ├── GreedJoker.cs                           #   1. 贪婪小丑（AfterCardPlayed: 每 3 张攻击牌 +5 金币）
+│   ├── GluttonyJoker.cs                        #   2. 暴食小丑（AfterCardPlayed: 每 4 张技能牌 +3 HP）
+│   ├── MirrorJoker.cs                          #   3. 镜像小丑（ModifyCardPlayCount: 连续同类型 +1 触发）
+│   ├── MiserJoker.cs                           #   4. 守财小丑（ModifyDamageAdditive: 0 费牌 +1 伤害）
+│   ├── CollectorJoker.cs                       #   5. 收藏小丑（AfterPlayerTurnStart: Rare/Ancient 牌 +1 能量）
+│   ├── GamblerJoker.cs                         #   6. 赌徒小丑（AfterCardPlayed: 连击≥5 造成 8-20 伤害）
+│   ├── PolychromeJoker.cs                      #   7. 多彩小丑（ModifyCardPlayCount: 修饰器牌额外 +1）
+│   ├── NegativeJoker.cs                        #   8. 负片小丑（ModifyHandDraw: +1 抽牌）
+│   ├── LegendJoker.cs                          #   9. 传奇小丑（GetLegendBonus: 每张牌 +0.2x）
+│   ├── HolographicJoker.cs                     #  10. 全息小丑（AfterPlayerTurnStart: 复制上回合第一张牌）
+│   ├── BankerJoker.cs                          #  11. 银行家小丑（标记遗物：利息 +3 金币）
+│   └── InvestorJoker.cs                        #  12. 投资家小丑（AfterItemPurchased: 返还 20%）
 │
 ├── Relics/Balatro/                             # 9 个配套遗物 + 基类
-│   ├── BalatroRelicModel.cs                    # Balatro 配套遗物抽象基类（IsAllowed 检查 BalatroModifier.IsActive）
-│   ├── Dice.cs                                 # 骰子
-│   ├── Chip.cs                                 # 筹码
-│   ├── WildCard.cs                             # 万能牌
-│   ├── SteelJoker.cs                           # 钢制小丑
-│   ├── GrowingJoker.cs                         # 成长小丑
-│   ├── BlankVoucher.cs                         # 空白兑换券
-│   ├── Blueprint.cs                            # 蓝图
+│   ├── BalatroRelicModel.cs                    # Balatro 遗物抽象基类（含 CustomRarity = YUWANCARD-BALATRO，遗物百科独立分类）
+│   ├── Dice.cs                                 # 骰子（AfterPlayerTurnStart: 随机底线 1~3）
+│   ├── Chip.cs                                 # 筹码（AfterPlayerTurnStart: +3 连击）
+│   ├── WildCard.cs                             # 万能牌（标记：状态/诅咒牌计入连击）
+│   ├── SteelJoker.cs                           # 钢制小丑（标记：20% 连击保留）
+│   ├── GrowingJoker.cs                         # 成长小丑（标记：修饰器应用时 +3 最大生命值）
+│   ├── BlankVoucher.cs                         # 空白兑换券（AfterObtained: 3 选 1 Joker）
+│   ├── Blueprint.cs                            # 蓝图（标记：每个 Joker EffectiveCount 翻倍）
 │   ├── LuckyCard.cs                            # 幸运卡
 │   └── ModifierToken.cs                        # 修饰器代币（稀有度 None，自动自毁）
 │
@@ -674,20 +570,15 @@ YuWanCardCode/
 │   ├── InflationPower.cs                       # 通货膨胀能力（金币加成 + 费用增加）
 │   └── InertiaPower.cs                         # 惯性能力（连击跨回合保留，自毁）
 │
-├── Patches/                                    # 6 个 Balatro 补丁文件
+├── Patches/                                    # 4 个 Balatro 补丁文件
 │   ├── BalatroCharacterSelectPatch.cs          # 角色选择界面 Tickbox
-│   ├── BalatroUiPatches.cs                     # TopBar 按钮 + HUD 面板注入
+│   ├── BalatroUiPatches.cs                     # TopBar 按钮 + 连击计数器注入
 │   ├── BalatroTopBarModifierFilterPatch.cs     # TopBar 修饰器图标替换
-│   ├── BalatroMerchantPatch.cs                 # 商店加工站扩展注入
 │   ├── BalatroCardEditionPersistencePatch.cs   # 修饰器序列化/反序列化/克隆持久化
 │   └── BalatroCardEditionVisualPatch.cs        # 修饰器着色器视觉特效（NCard 叠加层）
 │
-└── UI/                                         # 5 个 Balatro UI 组件
-    ├── BalatroUiTheme.cs                       # 统一视觉主题（颜色、样式、工厂方法）
-    ├── NBalatroHudPanel.cs                     # 可拖动 HUD 面板（连击 + Joker 槽位栏）
-    ├── NJokerSlotBar.cs                        # Joker 槽位栏组件（嵌入 HUD 面板）
-    ├── NJokerBagPopup.cs                       # Joker 背包管理弹窗（装备/卸下/浏览）
-    └── NBalatroMerchantExtension.cs            # 商店加工站标签页（购买修饰器）
+└── UI/                                         # 1 个 Balatro UI 组件
+    └── NComboCounter.cs                        # 连击计数器显示（战斗中，右上角）
 ```
 
 ### 资源文件
@@ -723,8 +614,7 @@ YuWanCard/
 |------|------|------|
 | 修饰器类型 | `YUWANCARD-BALATRO_EDITION.{TYPE}.` | `YUWANCARD-BALATRO_EDITION.FOIL.title` |
 | 加工站 UI | `YUWANCARD-BALATRO_MOD_STATION.` | `YUWANCARD-BALATRO_MOD_STATION.title` |
-| Joker 槽位栏 | `YUWANCARD-BALATRO_JOKER_BAR.` | `YUWANCARD-BALATRO_JOKER_BAR.bag_button` |
-| Joker 背包 | `YUWANCARD-BALATRO_JOKER_BAG.` | `YUWANCARD-BALATRO_JOKER_BAG.title` |
+| 连击计数器 | `YUWANCARD-BALATRO_HUD.` | `YUWANCARD-BALATRO_HUD.combo_compact` |
 | 修改器 | `YUWANCARD-BALATRO.` | `YUWANCARD-BALATRO.Name` |
 
 ---
@@ -735,27 +625,27 @@ YuWanCard/
 
 ### 已完整实现
 
-- 6 大核心子系统全部实现（Joker 槽位、连击乘数、卡牌修饰器、加工站、利息经济、消耗品卡牌）
-- 12 个 Joker 遗物全部实现（效果与设计一致）
-- 9 个配套遗物全部实现（含 ModifierToken）
+- 5 大核心子系统全部实现（Joker 遗物、连击乘数、卡牌修饰器、加工站、利息经济）
 - 13 张 Balatro 卡牌全部实现
 - 3 个 Balatro 能力全部实现
 - 角色选择 Tickbox
-- 可拖动 HUD 面板（NBalatroHudPanel）
-- Joker 槽位栏 UI（NJokerSlotBar）
-- Joker 背包管理界面（NJokerBagPopup）
-- 商店加工站标签页（NBalatroMerchantExtension）
+- 连击计数器（NComboCounter）
 - 卡牌修饰器着色器视觉特效（BalatroCardEditionVisualPatch）
 - 修饰器序列化持久化（BalatroCardEditionPersistencePatch）
-- 统一 UI 主题系统（BalatroUiTheme）
-- 顶部栏 Balatro 按钮和修饰器图标
+- TopBar Balatro 按钮和修饰器图标
+
+### 已变更（从原 Joker 槽位系统迁移）
+
+- Joker 遗物现在使用 StS2 原生遗物系统（占据普通遗物槽，存储在 `player.Relics` 中）
+- Joker 效果现在直接在各自的遗物类中实现（通过 `RelicModel` 钩子）
+- 蓝图现在通过每个 Joker 的 `EffectiveCount()` 方法翻倍有效计数
+- NegativeJoker 效果从"解锁第 6 个槽位"改为"+1 抽牌"
+- 移除了 Joker 槽位/背包/HUD 面板 UI（`NBalatroHudPanel`、`NJokerSlotBar`、`NJokerBagPopup`、`BalatroUiTheme`）
+- 移除了商店加工站扩展（`NBalatroMerchantExtension`、`BalatroMerchantPatch`）
 
 ### 未实现（未来扩展）
 
-- 连击增加/消耗粒子动画
-- Joker 槽位独立可视化（当前使用文字 + 按钮，非 Spine/动画）
-- 加工站修饰器图标（当前使用默认 pig_carrot.png 占位）
-- 更多修饰器获取途径（如随机事件、宝箱掉落）
+- 加工站修饰器购买 UI（当前仅通过 API 可用）
 
 ---
 
@@ -765,17 +655,11 @@ YuWanCard/
 |------|------|
 | 检查 Balatro 是否激活 | `BalatroModifier.IsActive(runState)` |
 | 获取修改器实例 | `BalatroModifier.GetInstance(runState)` |
+| 检查玩家是否有特定 Joker | `player.GetRelic<GreedJoker>() != null` |
 | 给卡牌加修饰器 | `BalatroCardEditionHelper.TryApplyEdition(card, edition)` |
 | 检查卡牌能否加修饰器 | `card.CanApplyBalatroEdition(edition)` |
 | 获取/设置卡牌修饰器 | `BalatroCardEditionHelper.GetEdition(card)` / `card.BalatroEdition` |
 | 获取连击显示文本 | `modifier.GetComboDisplayText()` |
-| 获取 Joker 显示文本 | `modifier.GetJokerDisplayText()` |
-| 获取装备的 Joker 列表 | `modifier.GetEquippedJokerIds()` |
-| 获取全部槽位状态 | `modifier.GetAllJokerSlotIds()` |
-| 检查槽位是否解锁 | `modifier.IsJokerSlotUnlocked(slotIndex)` |
-| 获取 Joker 槽位容量 | `modifier.GetCurrentJokerCapacity()` |
-| Joker 背包操作 | `modifier.TryEquipBagJoker()` / `modifier.TryUnequipJoker()` |
-| 获取 Joker 元数据 | `modifier.GetJokerTitle()` / `GetJokerDescription()` / `GetJokerIcon()` |
 | 加工站商品操作 | `modifier.GetModStationOffers()` / `EnsureModStationOffers()` / `PurchaseModStationOffer()` |
 | 修饰器代币 | `modifier.ModifierTokenCount` / `modifier.AddModifierTokens()` |
 | 获取修饰器价格 | `modifier.GetEditionShopCost(edition)` |
@@ -791,11 +675,8 @@ Balatro 修改器通过以下 `[SavedProperty]` 属性持久化所有状态（�
 
 | 属性名 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
-| `YUWANCARD_UnlockedJokerSlots` | int | 3 | 已解锁槽位数（3~6） |
 | `YUWANCARD_RetainedComboScaled` | int | 0 | 跨回合保留连击（缩放整数） |
 | `YUWANCARD_LastInterestFloor` | int | 0 | 上次触发利息的楼层号 |
-| `YUWANCARD_JokerBag` | string | `""` | 背包中 Joker ID（`\|` 分隔） |
-| `YUWANCARD_JokerSlot1Id` ~ `JokerSlot6Id` | string | `""` | 6 个槽位装备的 Joker ID |
 | `YUWANCARD_CurrentTurnFirstCardJson` | string | `""` | 本回合第一张牌（JSON 序列化） |
 | `YUWANCARD_PreviousTurnFirstCardJson` | string | `""` | 上回合第一张牌（JSON 序列化） |
 | `YUWANCARD_ModifierTokens` | int | 0 | 修饰器代币数量 |

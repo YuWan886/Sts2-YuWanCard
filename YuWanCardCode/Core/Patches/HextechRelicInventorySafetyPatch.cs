@@ -3,7 +3,6 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Relics;
 using YuWanCard.Hextech;
-using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Core.Patches;
 
@@ -81,7 +80,7 @@ static class HextechRelicInventorySafetyPatch
 
     static bool ShouldSuppressInventoryException(RelicModel relic)
     {
-        return HextechRuntimeCompat.TryGetSafeEnergyPrefix(relic, out _) || relic is YuWanJokerRelicModel;
+        return HextechRuntimeCompat.TryGetSafeEnergyPrefix(relic, out _);
     }
 
     static bool TryGetProtectedRelic(NRelicInventoryHolder holder, out RelicModel? relic)

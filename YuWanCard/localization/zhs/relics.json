@@ -281,6 +281,7 @@
   "YUWANCARD-WHAT_IF_INFINITE_UPGRADES.description": "所有卡牌都能无限升级。",
   "YUWANCARD-WHAT_IF_INFINITE_UPGRADES.flavor": "再来一次，还能再来一次。",
   "========== Balatro ==========": "========== Balatro ==========",
+  "YUWANCARD-BALATRO_RARITY.label": "Balatro遗物",
   "YUWANCARD-DICE.title": "骰子",
   "YUWANCARD-DICE.description": "在你的回合开始时，随机将连击数设为1至3点，但不会降低已有连击。",
   "YUWANCARD-DICE.flavor": "运气好时，起手就能热起来。",

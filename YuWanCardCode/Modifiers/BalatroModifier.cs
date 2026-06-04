@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -19,7 +18,6 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Balatro;
 using YuWanCard.Cards;
-using YuWanCard.Characters;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Powers;
 using YuWanCard.Relics;
@@ -29,8 +27,6 @@ namespace YuWanCard.Modifiers;
 
 public sealed class BalatroModifier : YuWanModifierModel
 {
-    private const string BagSeparator = "|";
-
     // Interest
     private const decimal InterestRate = 0.1m;
     private const int BaseInterestCap = 10;
@@ -51,49 +47,15 @@ public sealed class BalatroModifier : YuWanModifierModel
     private const int ModStationPolychromeCost = 150;
     private const int ModStationNegativeCost = 250;
 
-    // Joker triggers
-    private const int GreedJokerGoldPerTrigger = 5;
-    private const int GluttonyJokerHealPerTrigger = 3;
-    private const int InvestorRefundRatioPercent = 20;
-    private const int GamblerJokerMinDamage = 8;
-    private const int GamblerJokerMaxDamage = 21;
-    private const int CollectorEnergyDivisor = 5;
-    private const int DiceMinRoll = 1;
-    private const int DiceMaxRoll = 4;
-
     #region Saved Properties
 
     public override bool AllowedInCustomRun => false;
-
-    [SavedProperty]
-    public int YUWANCARD_UnlockedJokerSlots { get; set; } = 3;
 
     [SavedProperty]
     public int YUWANCARD_RetainedComboScaled { get; set; }
 
     [SavedProperty]
     public int YUWANCARD_LastInterestFloor { get; set; }
-
-    [SavedProperty]
-    public string YUWANCARD_JokerBag { get; set; } = string.Empty;
-
-    [SavedProperty]
-    public string YUWANCARD_JokerSlot1Id { get; set; } = string.Empty;
-
-    [SavedProperty]
-    public string YUWANCARD_JokerSlot2Id { get; set; } = string.Empty;
-
-    [SavedProperty]
-    public string YUWANCARD_JokerSlot3Id { get; set; } = string.Empty;
-
-    [SavedProperty]
-    public string YUWANCARD_JokerSlot4Id { get; set; } = string.Empty;
-
-    [SavedProperty]
-    public string YUWANCARD_JokerSlot5Id { get; set; } = string.Empty;
-
-    [SavedProperty]
-    public string YUWANCARD_JokerSlot6Id { get; set; } = string.Empty;
 
     [SavedProperty]
     public string YUWANCARD_CurrentTurnFirstCardJson { get; set; } = string.Empty;
@@ -117,15 +79,15 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     #region Runtime State
 
-    public float ComboCounter { get; private set; }
+    public float ComboCounter { get; set; }
 
     public int CardsPlayedThisTurn { get; private set; }
 
-    private int AttackCardsThisTurn { get; set; }
+    public int AttackCardsThisTurn { get; private set; }
 
-    private int SkillCardsThisTurn { get; set; }
+    public int SkillCardsThisTurn { get; private set; }
 
-    private CardType? LastCardTypeThisTurn { get; set; }
+    public CardType? LastCardTypeThisTurn { get; private set; }
 
     public override bool AllowedInDailyRun => false;
 
@@ -161,7 +123,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         set => YUWANCARD_CurrentTurnFirstCardJson = SerializeStoredCard(value);
     }
 
-    private SerializableCard? PreviousTurnFirstCard
+    public SerializableCard? PreviousTurnFirstCard
     {
         get => DeserializeStoredCard(YUWANCARD_PreviousTurnFirstCardJson);
         set => YUWANCARD_PreviousTurnFirstCardJson = SerializeStoredCard(value);
@@ -182,23 +144,6 @@ public sealed class BalatroModifier : YuWanModifierModel
     public override async Task AfterCombatVictory(CombatRoom room)
     {
         await base.AfterCombatVictory(room);
-
-        if (room.RoomType != RoomType.Boss)
-        {
-            return;
-        }
-
-        int currentAct = RunState.CurrentActIndex;
-        if (currentAct == 0)
-        {
-            YUWANCARD_UnlockedJokerSlots = Math.Max(YUWANCARD_UnlockedJokerSlots, 4);
-        }
-        else if (currentAct == 1)
-        {
-            YUWANCARD_UnlockedJokerSlots = Math.Max(YUWANCARD_UnlockedJokerSlots, 5);
-        }
-
-        TryAutoEquipFromBag();
     }
 
     public override async Task AfterRoomEntered(AbstractRoom room)
@@ -231,7 +176,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
 
         interest = Math.Min(interest, BaseInterestCap + GetCompoundInterestCapBonus(player));
-        interest += 3 * CountEffectiveJokers<BankerJoker>(player);
+        interest += 3 * SimpleJokerCount<BankerJoker>(player);
 
         if (interest > 0)
         {
@@ -263,23 +208,6 @@ public sealed class BalatroModifier : YuWanModifierModel
         {
             ComboCounter = Math.Min(MaxCombo, RetainedCombo);
             RetainedCombo = 0f;
-        }
-
-        if (player.GetRelic<Dice>() != null)
-        {
-            int roll = RunState.Rng.Niche.NextInt(DiceMinRoll, DiceMaxRoll);
-            ComboCounter = Math.Max(ComboCounter, roll);
-        }
-
-        if (player.GetRelic<Chip>() != null)
-        {
-            AddCombo(3f);
-        }
-
-        int collectorEnergy = GetCollectorEnergy(player);
-        if (collectorEnergy > 0)
-        {
-            await PlayerCmd.GainEnergy(collectorEnergy, player);
         }
 
         SerializableCard? previousTurnFirstCard = PreviousTurnFirstCard;
@@ -325,12 +253,12 @@ public sealed class BalatroModifier : YuWanModifierModel
         ResetTurnState();
     }
 
-    public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
+    public override Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
         Player? player = GetBalatroPlayer();
         if (player == null || cardPlay.Card.Owner != player)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         CardModel card = cardPlay.Card;
@@ -342,7 +270,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         float comboGain = CalculateComboGain(player, card);
         if (comboGain <= 0f)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         AddCombo(comboGain);
@@ -351,34 +279,13 @@ public sealed class BalatroModifier : YuWanModifierModel
         if (card.Type == CardType.Attack)
         {
             AttackCardsThisTurn++;
-            int greedTriggers = CountEffectiveJokers<GreedJoker>(player);
-            if (greedTriggers > 0 && AttackCardsThisTurn % 3 == 0)
-            {
-                await PlayerCmd.GainGold(5 * greedTriggers, player);
-            }
         }
         else if (card.Type == CardType.Skill)
         {
             SkillCardsThisTurn++;
-            int gluttonyTriggers = CountEffectiveJokers<GluttonyJoker>(player);
-            if (gluttonyTriggers > 0 && SkillCardsThisTurn % 4 == 0)
-            {
-                await CreatureCmd.Heal(player.Creature, 3 * gluttonyTriggers);
-            }
         }
 
-        if (CountEffectiveJokers<GamblerJoker>(player) > 0 && ComboCounter >= 5f)
-        {
-            Creature? target = OwnerCreatureCombatState(player)?.Enemies
-                .Where(enemy => !enemy.IsDead)
-                .OrderBy(_ => RunState.Rng.Niche.NextFloat())
-                .FirstOrDefault();
-            if (target != null)
-            {
-                int damage = RunState.Rng.Niche.NextInt(GamblerJokerMinDamage, GamblerJokerMaxDamage);
-                await CreatureCmd.Damage(context, target, damage, ValueProp.Move, player.Creature, null);
-            }
-        }
+        return Task.CompletedTask;
     }
 
     public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount)
@@ -390,20 +297,9 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
 
         int extra = 0;
-        if (LastCardTypeThisTurn.HasValue && LastCardTypeThisTurn.Value == card.Type)
-        {
-            extra += CountEffectiveJokers<MirrorJoker>(player);
-        }
-
         if (BalatroCardEditionHelper.HasEdition(card))
         {
             extra += BalatroCardEditionHelper.GetPlayCountBonus(card);
-            extra += CountEffectiveJokers<PolychromeJoker>(player);
-        }
-
-        if (player.GetRelic<LuckyCard>() != null && (CardsPlayedThisTurn + 1) % 7 == 0)
-        {
-            extra += 2;
         }
 
         return playCount + extra;
@@ -411,21 +307,7 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        Player? player = GetBalatroPlayer();
-        if (player == null || dealer != player.Creature || cardSource?.Type != CardType.Attack)
-        {
-            return 0m;
-        }
-
-        int jokerCount = CountEffectiveJokers<MiserJoker>(player);
-        if (jokerCount <= 0)
-        {
-            return 0m;
-        }
-
-        int zeroCostCount = PileType.Hand.GetPile(player).Cards
-            .Count(card => !card.EnergyCost.CostsX && card.EnergyCost.GetWithModifiers(CostModifiers.All) == 0);
-        return zeroCostCount * jokerCount;
+        return 0m;
     }
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
@@ -497,7 +379,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         float chance = room.RoomType == RoomType.Boss ? 1f : 0.25f;
         if (RunState.Rng.Niche.NextFloat() <= chance)
         {
-            List<RelicModel> available = GetAvailableJokers();
+            List<RelicModel> available = GetAvailableJokers(player);
             if (available.Count > 0)
             {
                 RelicModel reward = available[RunState.Rng.Niche.NextInt(available.Count)];
@@ -523,66 +405,12 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     public override async Task AfterItemPurchased(Player player, MerchantEntry itemPurchased, int goldSpent)
     {
-        int refundMultiplier = CountEffectiveJokers<InvestorJoker>(player);
-        if (refundMultiplier <= 0)
-        {
-            return;
-        }
-
-        int refund = (int)Math.Floor(goldSpent * (InvestorRefundRatioPercent / 100m) * refundMultiplier);
-        if (refund > 0)
-        {
-            await PlayerCmd.GainGold(refund, player);
-        }
+        await Task.CompletedTask;
     }
 
     #endregion
 
     #region Joker Management
-
-    public async Task AcquireJoker(YuWanJokerRelicModel joker, Player player)
-    {
-        string jokerId = joker.Id.Entry;
-        if (string.IsNullOrEmpty(jokerId) || HasJoker(jokerId))
-        {
-            return;
-        }
-
-        if (joker is NegativeJoker)
-        {
-            YUWANCARD_UnlockedJokerSlots = Math.Max(YUWANCARD_UnlockedJokerSlots, 5);
-        }
-
-        if (!TryEquipJoker(jokerId, joker is NegativeJoker ? 6 : GetCurrentJokerCapacity()))
-        {
-            List<string> bag = GetJokerBag();
-            bag.Add(jokerId);
-            SaveJokerBag(bag);
-        }
-
-        TryAutoEquipFromBag();
-        await Task.CompletedTask;
-    }
-
-    public IReadOnlyList<string> GetEquippedJokerIds()
-    {
-        return GetSlotIds()
-            .Take(GetCurrentJokerCapacity())
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Select(id => id!)
-            .ToList();
-    }
-
-    public int GetCurrentJokerCapacity()
-    {
-        int unlocked = Math.Clamp(YUWANCARD_UnlockedJokerSlots, 3, 5);
-        if (HasStoredJoker(ModelDb.GetId<NegativeJoker>().Entry))
-        {
-            return 6;
-        }
-
-        return unlocked;
-    }
 
     public static BalatroModifier? GetInstance(RunState state)
     {
@@ -597,119 +425,6 @@ public sealed class BalatroModifier : YuWanModifierModel
     public string GetComboDisplayText()
     {
         return $"COMBO {ComboCounter:0.#}  MULT x{ComboMultiplier:0.0}";
-    }
-
-    public string GetJokerDisplayText()
-    {
-        List<string> slots = [];
-        int capacity = GetCurrentJokerCapacity();
-        string[] equipped = GetSlotIds().Take(capacity).Select(id => string.IsNullOrWhiteSpace(id) ? "-" : ResolveJokerShortName(id!)).ToArray();
-        for (int i = 0; i < capacity; i++)
-        {
-            slots.Add($"[{equipped[i]}]");
-        }
-
-        return "JOKER " + string.Join(" ", slots);
-    }
-
-    public IReadOnlyList<string> GetJokerBagIds()
-    {
-        return GetJokerBag();
-    }
-
-    public IReadOnlyList<string> GetAllJokerSlotIds()
-    {
-        return GetSlotIds();
-    }
-
-    public bool IsJokerSlotUnlocked(int slotIndex)
-    {
-        return slotIndex >= 0 && slotIndex < GetCurrentJokerCapacity();
-    }
-
-    public string GetJokerTitle(string jokerId)
-    {
-        if (string.IsNullOrWhiteSpace(jokerId))
-        {
-            return "-";
-        }
-
-        RelicModel? relic = ResolveJokerModel(jokerId);
-        return relic?.Title.GetFormattedText() ?? ResolveJokerShortName(jokerId);
-    }
-
-    public string GetJokerDescription(string jokerId)
-    {
-        if (string.IsNullOrWhiteSpace(jokerId))
-        {
-            return string.Empty;
-        }
-
-        RelicModel? relic = ResolveJokerModel(jokerId);
-        return relic?.DynamicDescription.GetFormattedText() ?? string.Empty;
-    }
-
-    public Texture2D? GetJokerIcon(string jokerId)
-    {
-        if (string.IsNullOrWhiteSpace(jokerId))
-        {
-            return null;
-        }
-
-        return ResolveJokerModel(jokerId)?.Icon;
-    }
-
-    public bool TryEquipBagJoker(string jokerId, int slotIndex)
-    {
-        if (!IsJokerSlotUnlocked(slotIndex))
-        {
-            return false;
-        }
-
-        List<string> bag = GetJokerBag();
-        int bagIndex = bag.FindIndex(id => string.Equals(id, jokerId, StringComparison.Ordinal));
-        if (bagIndex < 0)
-        {
-            return false;
-        }
-
-        string[] slots = GetSlotIds();
-        string existing = slots[slotIndex];
-        if (string.Equals(existing, jokerId, StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        bag.RemoveAt(bagIndex);
-        if (!string.IsNullOrWhiteSpace(existing))
-        {
-            bag.Add(existing);
-        }
-
-        SetSlotId(slotIndex, jokerId);
-        SaveJokerBag(bag);
-        return true;
-    }
-
-    public bool TryUnequipJoker(int slotIndex)
-    {
-        if (!IsJokerSlotUnlocked(slotIndex))
-        {
-            return false;
-        }
-
-        string[] slots = GetSlotIds();
-        string jokerId = slots[slotIndex];
-        if (string.IsNullOrWhiteSpace(jokerId))
-        {
-            return false;
-        }
-
-        List<string> bag = GetJokerBag();
-        bag.Add(jokerId);
-        SetSlotId(slotIndex, string.Empty);
-        SaveJokerBag(bag);
-        return true;
     }
 
     public int ModifierTokenCount => YUWANCARD_ModifierTokens;
@@ -828,16 +543,6 @@ public sealed class BalatroModifier : YuWanModifierModel
         IEnumerable<CardModel> cards = ModelDb.CardPool<BalatroCardPool>()
             .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint);
 
-        if (player.Character.CardPool is PigCardPool)
-        {
-            foreach (CardModel card in cards)
-            {
-                yield return card;
-            }
-
-            yield break;
-        }
-
         foreach (CardModel card in cards.Where(card => card is not Investment
                      and not CompoundInterest
                      and not Dividend
@@ -848,24 +553,14 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
     }
 
-    private List<RelicModel> GetAvailableJokers()
+    private static List<RelicModel> GetAvailableJokers(Player player)
     {
-        HashSet<string> ownedIds = GetEquippedJokerIds()
-            .Concat(GetJokerBag())
-            .ToHashSet(StringComparer.Ordinal);
-
         return GetAllJokerModels()
-            .Where(relic => !ownedIds.Contains(relic.Id.Entry))
+            .Where(relic => !player.Relics.Any(r => r.Id == relic.Id))
             .ToList();
     }
 
-    private RelicModel? ResolveJokerModel(string jokerId)
-    {
-        return GetAllJokerModels()
-            .FirstOrDefault(model => string.Equals(model.Id.Entry, jokerId, StringComparison.Ordinal));
-    }
-
-    private IEnumerable<RelicModel> GetAllJokerModels()
+    private static IEnumerable<RelicModel> GetAllJokerModels()
     {
         yield return ModelDb.Relic<GreedJoker>();
         yield return ModelDb.Relic<GluttonyJoker>();
@@ -879,44 +574,6 @@ public sealed class BalatroModifier : YuWanModifierModel
         yield return ModelDb.Relic<HolographicJoker>();
         yield return ModelDb.Relic<BankerJoker>();
         yield return ModelDb.Relic<InvestorJoker>();
-    }
-
-    private void TryAutoEquipFromBag()
-    {
-        List<string> bag = GetJokerBag();
-        if (bag.Count == 0)
-        {
-            return;
-        }
-
-        bool changed = false;
-        while (bag.Count > 0 && TryEquipJoker(bag[0], GetCurrentJokerCapacity()))
-        {
-            bag.RemoveAt(0);
-            changed = true;
-        }
-
-        if (changed)
-        {
-            SaveJokerBag(bag);
-        }
-    }
-
-    private bool TryEquipJoker(string jokerId, int capacity)
-    {
-        string[] slots = GetSlotIds();
-        for (int i = 0; i < Math.Min(capacity, slots.Length); i++)
-        {
-            if (!string.IsNullOrWhiteSpace(slots[i]))
-            {
-                continue;
-            }
-
-            SetSlotId(i, jokerId);
-            return true;
-        }
-
-        return false;
     }
 
     private float CalculateComboGain(Player player, CardModel card)
@@ -966,41 +623,6 @@ public sealed class BalatroModifier : YuWanModifierModel
         return player.Creature.GetPower<CompoundInterestPower>()?.Amount ?? 0;
     }
 
-    private int GetCollectorEnergy(Player player)
-    {
-        int collectorCount = CountEffectiveJokers<CollectorJoker>(player);
-        if (collectorCount <= 0)
-        {
-            return 0;
-        }
-
-        int rareCount = player.Deck.Cards.Count(card =>
-            card.Rarity is CardRarity.Rare or CardRarity.Ancient);
-        return rareCount / 5 * collectorCount;
-    }
-
-    private int CountEffectiveJokers<T>(Player player) where T : RelicModel
-    {
-        string id = ModelDb.GetId<T>().Entry;
-        int count = GetEffectiveJokerIds(player).Count(jokerId => jokerId == id);
-        return count;
-    }
-
-    private IReadOnlyList<string> GetEffectiveJokerIds(Player player)
-    {
-        List<string> ids = GetEquippedJokerIds().ToList();
-        if (player.GetRelic<Blueprint>() != null)
-        {
-            string? rightmost = ids.LastOrDefault();
-            if (!string.IsNullOrWhiteSpace(rightmost))
-            {
-                ids.Add(rightmost);
-            }
-        }
-
-        return ids;
-    }
-
     private float GetLegendBonus()
     {
         Player? player = GetBalatroPlayer();
@@ -1009,43 +631,23 @@ public sealed class BalatroModifier : YuWanModifierModel
             return 0f;
         }
 
-        return CardsPlayedThisTurn * LegendBonusPerCard * CountEffectiveJokers<LegendJoker>(player);
+        LegendJoker? legend = player.GetRelic<LegendJoker>();
+        if (legend == null)
+        {
+            return 0f;
+        }
+
+        return legend.GetLegendBonus();
+    }
+
+    private static int SimpleJokerCount<T>(Player player) where T : RelicModel
+    {
+        return player.GetRelic<T>() != null ? 1 : 0;
     }
 
     private Player? GetBalatroPlayer()
     {
         return LocalContext.GetMe(RunState) ?? RunState.Players.FirstOrDefault();
-    }
-
-    private static CombatState? OwnerCreatureCombatState(Player player)
-    {
-        return player.Creature?.CombatState;
-    }
-
-    private bool HasJoker(string jokerId)
-    {
-        return GetEquippedJokerIds().Contains(jokerId, StringComparer.Ordinal)
-            || GetJokerBag().Contains(jokerId, StringComparer.Ordinal);
-    }
-
-    private bool HasStoredJoker(string jokerId)
-    {
-        return GetSlotIds().Any(id => string.Equals(id, jokerId, StringComparison.Ordinal))
-            || GetJokerBag().Contains(jokerId, StringComparer.Ordinal);
-    }
-
-    private List<string> GetJokerBag()
-    {
-        return string.IsNullOrWhiteSpace(YUWANCARD_JokerBag)
-            ? []
-            : YUWANCARD_JokerBag
-                .Split(BagSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ToList();
-    }
-
-    private void SaveJokerBag(List<string> bag)
-    {
-        YUWANCARD_JokerBag = string.Join(BagSeparator, bag);
     }
 
     private static BalatroCardEdition NormalizeEditionOffer(int savedValue)
@@ -1125,52 +727,6 @@ public sealed class BalatroModifier : YuWanModifierModel
         SkillCardsThisTurn = 0;
         LastCardTypeThisTurn = null;
         CurrentTurnFirstCard = null;
-    }
-
-    private string ResolveJokerShortName(string jokerId)
-    {
-        return jokerId.Replace("YUWANCARD-", string.Empty, StringComparison.Ordinal)
-            .Replace("_JOKER", string.Empty, StringComparison.Ordinal)
-            .Split('_', StringSplitOptions.RemoveEmptyEntries)
-            .FirstOrDefault() ?? "?";
-    }
-
-    private string[] GetSlotIds()
-    {
-        return
-        [
-            YUWANCARD_JokerSlot1Id,
-            YUWANCARD_JokerSlot2Id,
-            YUWANCARD_JokerSlot3Id,
-            YUWANCARD_JokerSlot4Id,
-            YUWANCARD_JokerSlot5Id,
-            YUWANCARD_JokerSlot6Id
-        ];
-    }
-
-    private void SetSlotId(int index, string jokerId)
-    {
-        switch (index)
-        {
-            case 0:
-                YUWANCARD_JokerSlot1Id = jokerId;
-                break;
-            case 1:
-                YUWANCARD_JokerSlot2Id = jokerId;
-                break;
-            case 2:
-                YUWANCARD_JokerSlot3Id = jokerId;
-                break;
-            case 3:
-                YUWANCARD_JokerSlot4Id = jokerId;
-                break;
-            case 4:
-                YUWANCARD_JokerSlot5Id = jokerId;
-                break;
-            case 5:
-                YUWANCARD_JokerSlot6Id = jokerId;
-                break;
-        }
     }
 
     private static string SerializeStoredCard(SerializableCard? card)
