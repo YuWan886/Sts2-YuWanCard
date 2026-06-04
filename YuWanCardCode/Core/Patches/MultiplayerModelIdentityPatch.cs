@@ -1,6 +1,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Entities.Potions;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -123,6 +124,23 @@ public static class MultiplayerModelIdentityPlayerPatch
         MultiplayerModelIdentityRegistry.Unregister(relic);
     }
 
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(Player.AddPotionInternal), new[] { typeof(PotionModel), typeof(int), typeof(bool) })]
+    private static void AfterAddPotionInternal(Player __instance, PotionModel potion, PotionProcureResult __result)
+    {
+        if (__result.success && __instance.RunState is not NullRunState)
+        {
+            MultiplayerModelIdentityRegistry.EnsureRegistered(potion);
+        }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("RemovePotionInternal", new[] { typeof(PotionModel) })]
+    private static void BeforeRemovePotionInternal(PotionModel potion)
+    {
+        MultiplayerModelIdentityRegistry.Unregister(potion);
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Player.SyncWithSerializedPlayer), new[] { typeof(SerializablePlayer) })]
     private static void BeforeSyncWithSerializedPlayer(
@@ -139,5 +157,26 @@ public static class MultiplayerModelIdentityPlayerPatch
         MultiplayerModelIdentityRegistry.PlayerInventoryIdentitySnapshot __state)
     {
         MultiplayerModelIdentityRegistry.RestorePlayerInventory(__instance, __state);
+    }
+}
+
+[HarmonyPatch(typeof(PowerModel))]
+public static class MultiplayerModelIdentityPowerPatch
+{
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(PowerModel.ApplyInternal), new[] { typeof(MegaCrit.Sts2.Core.Entities.Creatures.Creature), typeof(decimal), typeof(bool) })]
+    private static void AfterApplyInternal(PowerModel __instance, decimal amount)
+    {
+        if (amount != 0)
+        {
+            MultiplayerModelIdentityRegistry.EnsureRegistered(__instance);
+        }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PowerModel.RemoveInternal))]
+    private static void BeforeRemoveInternal(PowerModel __instance)
+    {
+        MultiplayerModelIdentityRegistry.Unregister(__instance);
     }
 }

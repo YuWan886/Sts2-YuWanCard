@@ -81,6 +81,11 @@ internal static class SavedPropertyMultiplayerSync
         }
     }
 
+    internal static IDisposable SuppressNotifications()
+    {
+        return Suppress();
+    }
+
     private static void EnsureIdentity(AbstractModel model)
     {
         switch (model)

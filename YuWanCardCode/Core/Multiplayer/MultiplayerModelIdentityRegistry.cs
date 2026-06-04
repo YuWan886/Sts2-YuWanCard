@@ -148,6 +148,11 @@ internal static class MultiplayerModelIdentityRegistry
         {
             EnsureRegistered(relic);
         }
+
+        foreach (var potion in player.PotionSlots)
+        {
+            EnsureRegistered(potion);
+        }
     }
 
     public static void RegisterRunModifiers(RunState? runState)
@@ -167,13 +172,15 @@ internal static class MultiplayerModelIdentityRegistry
     {
         return new PlayerInventoryIdentitySnapshot(
             CaptureCards(player.Deck.Cards),
-            CaptureModels(player.Relics));
+            CaptureModels(player.Relics),
+            CaptureModels(player.PotionSlots));
     }
 
     public static void RestorePlayerInventory(Player player, PlayerInventoryIdentitySnapshot snapshot)
     {
         RestoreCards(snapshot.DeckCards, player.Deck.Cards);
         RestoreModels(snapshot.Relics, player.Relics);
+        RestoreModels(snapshot.Potions, player.PotionSlots);
     }
 
     private static CardIdentitySnapshot[] CaptureCards(IReadOnlyList<CardModel> cards)
@@ -333,7 +340,8 @@ internal static class MultiplayerModelIdentityRegistry
 
     public readonly record struct PlayerInventoryIdentitySnapshot(
         CardIdentitySnapshot[] DeckCards,
-        ModelIdentitySnapshot[] Relics);
+        ModelIdentitySnapshot[] Relics,
+        ModelIdentitySnapshot[] Potions);
 
     public readonly record struct CardIdentitySnapshot(
         ModelIdentitySnapshot Card,
