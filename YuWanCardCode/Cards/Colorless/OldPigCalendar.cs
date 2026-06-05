@@ -56,12 +56,12 @@ public class OldPigCalendar : YuWanCardModel
             }
 
             int amount = power.Amount <= 0 ? 1 : power.Amount;
-            await PowerCmd.Apply(canonical.ToMutable(), Owner.Creature, amount, Owner.Creature, this);
+            await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), canonical.ToMutable(), Owner.Creature, amount, Owner.Creature, this);
             await PowerCmd.Remove(power);
         }
 
-        await PowerCmd.Apply<OldPigCalendarDoubleDamagePower>(Owner.Creature, 1, Owner.Creature, this);
-        await PowerCmd.Apply<OldPigCalendarDoubleDamagePower>(teammate, 1, Owner.Creature, this);
+        await PowerCmd.Apply<OldPigCalendarDoubleDamagePower>(new ThrowingPlayerChoiceContext(), Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<OldPigCalendarDoubleDamagePower>(new ThrowingPlayerChoiceContext(), teammate, 1, Owner.Creature, this);
 
         var otherTeammates = Owner.Creature.CombatState.PlayerCreatures
             .Where(creature => creature.IsAlive
@@ -72,7 +72,7 @@ public class OldPigCalendar : YuWanCardModel
 
         foreach (var otherTeammate in otherTeammates)
         {
-            await PowerCmd.Apply<OldPigCalendarNoDamagePower>(otherTeammate, 1, Owner.Creature, this);
+            await PowerCmd.Apply<OldPigCalendarNoDamagePower>(new ThrowingPlayerChoiceContext(), otherTeammate, 1, Owner.Creature, this);
         }
     }
 }

@@ -43,7 +43,7 @@ public class KouKouSpace : YuWanCardModel
         {
             foreach (var teammate in aliveTeammates)
             {
-                await PowerCmd.Apply<WeakPower>(teammate, 1, Owner.Creature, this);
+                await PowerCmd.Apply<WeakPower>(new ThrowingPlayerChoiceContext(), teammate, 1, Owner.Creature, this);
             }
 
             await GainRandomPotions(aliveTeammates.Count);
@@ -55,7 +55,7 @@ public class KouKouSpace : YuWanCardModel
             return;
         }
 
-        await PowerCmd.Apply<WeakPower>(cardPlay.Target, 1, Owner.Creature, this);
+        await PowerCmd.Apply<WeakPower>(new ThrowingPlayerChoiceContext(), cardPlay.Target, 1, Owner.Creature, this);
         await GainRandomPotions(1);
     }
 

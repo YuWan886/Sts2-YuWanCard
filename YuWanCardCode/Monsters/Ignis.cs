@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Ascension;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -265,7 +266,7 @@ public sealed class Ignis : YuWanMonsterModel
     {
         await base.AfterAddedToRoom();
         _phaseTurnInterruptionQueued = false;
-        await PowerCmd.Apply<IgnisShieldPower>(Creature, ShieldDamageCap, Creature, null);
+        await PowerCmd.Apply<IgnisShieldPower>(new ThrowingPlayerChoiceContext(), Creature, ShieldDamageCap, Creature, null);
         UpdatePhaseVisual(1);
     }
 
@@ -355,7 +356,7 @@ public sealed class Ignis : YuWanMonsterModel
             .WithHitFx("vfx/vfx_attack_blunt")
             .WithHitVfxNode(target => NLineBurstVfx.Create(target))
             .Execute(null);
-        await PowerCmd.Apply<WeakPower>(targets, 1m, Creature, null);
+        await PowerCmd.Apply<WeakPower>(new ThrowingPlayerChoiceContext(), targets, 1m, Creature, null);
         await AddDazed(targets, 1);
     }
 
@@ -397,7 +398,7 @@ public sealed class Ignis : YuWanMonsterModel
         SfxCmd.Play(CastSfxPath);
         await CreatureCmd.TriggerAnim(Creature, "Cast", 0.45f);
         await CreatureCmd.GainBlock(Creature, CounterBlock, ValueProp.Move, null);
-        await PowerCmd.Apply<IgnisCounterPower>(Creature, CounterDamage, Creature, null);
+        await PowerCmd.Apply<IgnisCounterPower>(new ThrowingPlayerChoiceContext(), Creature, CounterDamage, Creature, null);
     }
 
     private async Task BlueFlameAwakeningMove(IReadOnlyList<Creature> targets)
@@ -408,9 +409,9 @@ public sealed class Ignis : YuWanMonsterModel
         await CreatureCmd.TriggerAnim(Creature, "Cast", 0.6f);
         await PlayPhaseTransitionVfx(_phase, BlueFlameTint, 1.3f, false);
         await RemoveSelfDebuffs();
-        await PowerCmd.Apply<IgnisShieldPower>(Creature, ShieldDamageCap, Creature, null);
+        await PowerCmd.Apply<IgnisShieldPower>(new ThrowingPlayerChoiceContext(), Creature, ShieldDamageCap, Creature, null);
         await CreatureCmd.GainBlock(Creature, BlueFlameTransitionBlock, ValueProp.Move, null);
-        await PowerCmd.Apply<StrengthPower>(Creature, BlueFlameTransitionStrength, Creature, null);
+        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Creature, BlueFlameTransitionStrength, Creature, null);
         await AddBurns(targets, 1);
     }
 
@@ -442,7 +443,7 @@ public sealed class Ignis : YuWanMonsterModel
         await RemoveSelfDebuffs();
         await PowerCmd.Remove<IgnisShieldPower>(Creature);
         await CreatureCmd.GainBlock(Creature, SoulflameTransitionBlock, ValueProp.Move, null);
-        await PowerCmd.Apply<StrengthPower>(Creature, SoulflameTransitionStrength, Creature, null);
+        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Creature, SoulflameTransitionStrength, Creature, null);
         await AddDazed(targets, 1);
     }
 
@@ -495,7 +496,7 @@ public sealed class Ignis : YuWanMonsterModel
             .WithHitFx(VfxCmd.heavyBluntPath)
             .WithHitVfxNode(target => NLineBurstVfx.Create(target))
             .Execute(null);
-        await PowerCmd.Apply<VulnerablePower>(targets, 1m, Creature, null);
+        await PowerCmd.Apply<VulnerablePower>(new ThrowingPlayerChoiceContext(), targets, 1m, Creature, null);
         await AddDazed(targets, 1);
     }
 
@@ -514,7 +515,7 @@ public sealed class Ignis : YuWanMonsterModel
             return;
         }
 
-        await CardPileCmd.AddToCombatAndPreview<Burn>(aliveTargets, PileType.Discard, amount, addedByPlayer: false);
+        await CardPileCmd.AddToCombatAndPreview<Burn>(aliveTargets, PileType.Discard, amount, null);
     }
 
     private async Task AddDazed(IReadOnlyList<Creature> targets, int amount)
@@ -525,7 +526,7 @@ public sealed class Ignis : YuWanMonsterModel
             return;
         }
 
-        await CardPileCmd.AddToCombatAndPreview<Dazed>(aliveTargets, PileType.Discard, amount, addedByPlayer: false);
+        await CardPileCmd.AddToCombatAndPreview<Dazed>(aliveTargets, PileType.Discard, amount, null);
     }
 
     private async Task HealSelf(int amount)

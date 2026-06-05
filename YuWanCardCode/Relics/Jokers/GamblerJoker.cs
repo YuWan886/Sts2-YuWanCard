@@ -39,7 +39,7 @@ public sealed class GamblerJoker : BalatroJokerRelicModel
             return;
         }
 
-        CombatState? combatState = Owner.Creature?.CombatState;
+        ICombatState? combatState = Owner.Creature?.CombatState;
         if (combatState == null)
         {
             return;

@@ -42,7 +42,7 @@ public sealed class HolographicJoker : BalatroJokerRelicModel
             return;
         }
 
-        CombatState? combatState = player.Creature?.CombatState;
+        ICombatState? combatState = player.Creature?.CombatState;
         if (combatState == null)
         {
             return;
@@ -50,7 +50,7 @@ public sealed class HolographicJoker : BalatroJokerRelicModel
 
         CardModel copy = CardModel.FromSerializable(previousCard);
         combatState.AddCard(copy, player);
-        await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, addedByPlayer: true);
+        await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, Owner);
     }
 
     private BalatroModifier? GetModifier()

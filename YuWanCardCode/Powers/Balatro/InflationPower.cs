@@ -18,16 +18,16 @@ public sealed class InflationPower : YuWanPowerModel
     private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
         () => Owner.Player,
         amount => Math.Floor(amount * (Amount / 100m)),
-        async amount => await PlayerCmd.GainGold(amount, Owner.Player!));
+        async _ => { Flash(); await Task.CompletedTask; });
 
-    public override bool ShouldGainGold(decimal amount, Player player)
+    public override decimal ModifyGoldGained(Player player, decimal amount)
     {
-        return GoldGuard.ShouldGainGold(amount, player);
+        return GoldGuard.ModifyGoldGained(player, amount);
     }
 
-    public override async Task AfterGoldGained(Player player)
+    public override async Task AfterModifyingGoldGained(Player player, decimal amount)
     {
-        await GoldGuard.AfterGoldGained(player);
+        await GoldGuard.AfterModifyingGoldGained(player, amount);
     }
 
     public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)

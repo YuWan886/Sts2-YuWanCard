@@ -20,6 +20,7 @@ public struct YuWanRightClickSyncMessage : INetMessage, IPacketSerializable, IRu
     public bool ShouldBroadcast => true;
     public NetTransferMode Mode => NetTransferMode.Reliable;
     public LogLevel LogLevel => LogLevel.Debug;
+    public bool ShouldBuffer => false;
 
     RunLocation IRunLocationTargetedMessage.Location => Location;
 

@@ -87,14 +87,14 @@ public class GreedyPig : YuWanRelicModel
         }
     }
 
-    public override bool ShouldGainGold(decimal amount, Player player)
+    public override decimal ModifyGoldGained(Player player, decimal amount)
     {
-        return GoldGuard.ShouldGainGold(amount, player);
+        return GoldGuard.ModifyGoldGained(player, amount);
     }
 
-    public override async Task AfterGoldGained(Player player)
+    public override async Task AfterModifyingGoldGained(Player player, decimal amount)
     {
-        await GoldGuard.AfterGoldGained(player);
+        await GoldGuard.AfterModifyingGoldGained(player, amount);
     }
 
     public override async Task AfterCombatVictory(CombatRoom room)

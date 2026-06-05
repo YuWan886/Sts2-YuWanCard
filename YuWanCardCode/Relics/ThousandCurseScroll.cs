@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.RelicPools;
@@ -80,13 +81,13 @@ public class ThousandCurseScroll : YuWanRelicModel
 
         if (strengthToGain > 0)
         {
-            await PowerCmd.Apply<StrengthPower>(ownerCreature, strengthToGain, ownerCreature, card);
+            await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), ownerCreature, strengthToGain, ownerCreature, card);
             YUWANCARD_StrengthGrantedThisCombat += strengthToGain;
         }
 
         if (dexterityToGain > 0)
         {
-            await PowerCmd.Apply<DexterityPower>(ownerCreature, dexterityToGain, ownerCreature, card);
+            await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), ownerCreature, dexterityToGain, ownerCreature, card);
             YUWANCARD_DexterityGrantedThisCombat += dexterityToGain;
         }
     }

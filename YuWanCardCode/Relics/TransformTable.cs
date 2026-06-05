@@ -71,7 +71,8 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
         return Owner != null
                && context.Player == Owner
                && LocalContext.IsMe(Owner)
-               && CombatManager.Instance.IsPlayPhase
+               && CombatManager.Instance.IsInProgress
+               && !CombatManager.Instance.IsEnding
                && !CombatManager.Instance.PlayerActionsDisabled
                && YUWANCARD_RemainingTransforms > 0
                && GetConvertibleHandCards().Count > 0;
@@ -82,7 +83,8 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
         return Owner != null
                && context.Player == Owner
                && LocalContext.IsMe(Owner)
-               && CombatManager.Instance.IsPlayPhase
+               && CombatManager.Instance.IsInProgress
+               && !CombatManager.Instance.IsEnding
                && !CombatManager.Instance.PlayerActionsDisabled
                && YUWANCARD_RemainingTransforms > 0;
     }

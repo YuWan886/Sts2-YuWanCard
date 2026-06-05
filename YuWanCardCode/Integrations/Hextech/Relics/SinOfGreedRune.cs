@@ -32,7 +32,7 @@ public sealed class SinOfGreedRune : HextechSharedRuneBase
 
     private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
         () => Owner,
-        amount => amount,
+        _ => 0m,
         async _ =>
         {
             if (Owner?.Creature?.CombatState == null)
@@ -75,13 +75,13 @@ public sealed class SinOfGreedRune : HextechSharedRuneBase
         return PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, bonus * DynamicVars.Strength.BaseValue, Owner.Creature, null);
     }
 
-    public override bool ShouldGainGold(decimal amount, Player player)
+    public override decimal ModifyGoldGained(Player player, decimal amount)
     {
-        return GoldGuard.ShouldGainGold(amount, player);
+        return GoldGuard.ModifyGoldGained(player, amount);
     }
 
-    public override async Task AfterGoldGained(Player player)
+    public override async Task AfterModifyingGoldGained(Player player, decimal amount)
     {
-        await GoldGuard.AfterGoldGained(player);
+        await GoldGuard.AfterModifyingGoldGained(player, amount);
     }
 }

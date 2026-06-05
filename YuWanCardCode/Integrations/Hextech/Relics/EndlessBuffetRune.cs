@@ -27,6 +27,6 @@ public sealed class EndlessBuffetRune : HextechPigRuneBase
 
         Flash();
         CardModel copy = CardCopyHelper.CreateCopy(cardPlay.Card, Owner);
-        return CardPileCmd.AddGeneratedCardsToCombat([copy], PileType.Hand, addedByPlayer: true);
+        return CardPileCmd.AddGeneratedCardsToCombat([copy], PileType.Hand, Owner);
     }
 }

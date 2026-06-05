@@ -212,7 +212,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         SerializableCard? previousTurnFirstCard = PreviousTurnFirstCard;
         if (previousTurnFirstCard != null)
         {
-            CombatState? combatState = player.Creature.CombatState;
+            ICombatState? combatState = player.Creature.CombatState;
             if (combatState == null)
             {
                 return;
@@ -220,11 +220,11 @@ public sealed class BalatroModifier : YuWanModifierModel
 
             CardModel copy = CardModel.FromSerializable(previousTurnFirstCard);
             combatState.AddCard(copy, player);
-            await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, addedByPlayer: true);
+            await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, player);
         }
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         Player? player = GetBalatroPlayer();
         if (player == null || side != player.Creature.Side)
@@ -236,7 +236,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         if (ComboCounter >= RetainedComboThreshold)
         {
             retainRatio = DefaultRetainRatio;
-            await PowerCmd.Apply<InertiaPower>(player.Creature, 1, player.Creature, null);
+            await PowerCmd.Apply<InertiaPower>(new ThrowingPlayerChoiceContext(), player.Creature, 1, player.Creature, null);
         }
 
         if (player.GetRelic<SteelJoker>() != null)
@@ -397,9 +397,9 @@ public sealed class BalatroModifier : YuWanModifierModel
         return modified;
     }
 
-    public override bool ShouldGainGold(decimal amount, Player player)
+    public override decimal ModifyGoldGained(Player player, decimal amount)
     {
-        return player == GetBalatroPlayer();
+        return player == GetBalatroPlayer() ? amount : 0m;
     }
 
     public override async Task AfterItemPurchased(Player player, MerchantEntry itemPurchased, int goldSpent)

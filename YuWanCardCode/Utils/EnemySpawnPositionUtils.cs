@@ -13,7 +13,7 @@ public static class EnemySpawnPositionUtils
     private const float VerticalStaggerFactor = 0.08f;
     private const int MaxPlacementAttempts = 8;
 
-    public static string? GetNextEnemySlot(CombatState combatState)
+    public static string? GetNextEnemySlot(ICombatState combatState)
     {
         string? slotName = combatState.Encounter?.GetNextSlot(combatState);
         return string.IsNullOrEmpty(slotName) ? null : slotName;

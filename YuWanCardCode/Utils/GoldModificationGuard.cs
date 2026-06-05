@@ -2,65 +2,48 @@ using MegaCrit.Sts2.Core.Entities.Players;
 
 namespace YuWanCard.Utils;
 
+/// <summary>
+/// Helper for relics/powers that need to modify gold gain amounts or trigger side effects.
+/// Uses <c>ModifyGoldGained</c> / <c>AfterModifyingGoldGained</c> (beta API — replaces removed ShouldGainGold).
+/// </summary>
 public class GoldModificationGuard
 {
-    private decimal _pendingModification;
     private bool _isApplyingModification;
     private readonly Func<Player?> _getOwner;
-    private readonly Func<decimal, decimal> _calculateModification;
-    private readonly Func<decimal, Task> _modifyGoldAction;
+    private readonly Func<decimal, decimal> _calculateDelta;
+    private readonly Func<decimal, Task>? _onModified;
 
     public GoldModificationGuard(
         Func<Player?> getOwner,
-        Func<decimal, decimal> calculateModification,
-        Func<decimal, Task> modifyGoldAction)
+        Func<decimal, decimal> calculateDelta,
+        Func<decimal, Task>? onModified = null)
     {
         _getOwner = getOwner ?? throw new ArgumentNullException(nameof(getOwner));
-        _calculateModification = calculateModification ?? throw new ArgumentNullException(nameof(calculateModification));
-        _modifyGoldAction = modifyGoldAction ?? throw new ArgumentNullException(nameof(modifyGoldAction));
+        _calculateDelta = calculateDelta ?? throw new ArgumentNullException(nameof(calculateDelta));
+        _onModified = onModified;
     }
 
-    public bool ShouldGainGold(decimal amount, Player player)
+    public decimal ModifyGoldGained(Player player, decimal amount)
     {
         var owner = _getOwner();
-        if (owner == null || player != owner)
-        {
-            return true;
-        }
-
-        if (_isApplyingModification)
-        {
-            return true;
-        }
-
-        _pendingModification = _calculateModification(amount);
-        return true;
+        if (owner == null || player != owner || _isApplyingModification)
+            return amount;
+        return amount + _calculateDelta(amount);
     }
 
-    public async Task AfterGoldGained(Player player)
+    public async Task AfterModifyingGoldGained(Player player, decimal amount)
     {
+        if (_onModified == null)
+            return;
+
         var owner = _getOwner();
-        if (owner == null || player != owner)
-        {
+        if (owner == null || player != owner || _isApplyingModification)
             return;
-        }
 
-        if (_isApplyingModification)
-        {
-            return;
-        }
-
-        if (_pendingModification <= 0m)
-        {
-            return;
-        }
-
-        var modification = _pendingModification;
-        _pendingModification = 0m;
         _isApplyingModification = true;
         try
         {
-            await _modifyGoldAction(modification);
+            await _onModified(_calculateDelta(amount));
         }
         finally
         {
@@ -70,7 +53,6 @@ public class GoldModificationGuard
 
     public void Reset()
     {
-        _pendingModification = 0m;
         _isApplyingModification = false;
     }
 }

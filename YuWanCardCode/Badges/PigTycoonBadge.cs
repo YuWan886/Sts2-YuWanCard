@@ -8,12 +8,6 @@ public class PigTycoonBadge : Badge
 {
     public const string BadgeId = "PIG_TYCOON";
 
-    public override string Id => BadgeId;
-
-    public override bool RequiresWin => true;
-
-    public override bool MultiplayerOnly => false;
-
     public override BadgeRarity Rarity
     {
         get
@@ -26,8 +20,8 @@ public class PigTycoonBadge : Badge
         }
     }
 
-    public PigTycoonBadge(SerializableRun run, ulong playerId)
-        : base(run, playerId)
+    public PigTycoonBadge(SerializableRun run, ulong playerId, bool won)
+        : base(run, won, playerId, BadgeId, requiresWin: true, multiplayerOnly: false)
     {
     }
 

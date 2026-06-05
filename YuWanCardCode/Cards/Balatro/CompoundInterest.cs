@@ -22,6 +22,6 @@ public sealed class CompoundInterest : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<CompoundInterestPower>(Owner.Creature, DynamicVars["InterestCap"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<CompoundInterestPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["InterestCap"].BaseValue, Owner.Creature, this);
     }
 }

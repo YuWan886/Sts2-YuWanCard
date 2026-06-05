@@ -53,7 +53,7 @@ public class DimensionSlash : YuWanCardModel
 
         foreach (var debuff in debuffsToCopy)
         {
-            await PowerCmd.Apply(debuff.Canonical.ToMutable(), target, debuff.AmountToDouble, Owner.Creature, this);
+            await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), debuff.Canonical.ToMutable(), target, debuff.AmountToDouble, Owner.Creature, this);
         }
 
         var otherEnemies = combatState?.Enemies.Where(e => e != target && e.IsAlive).ToList() ?? new List<Creature>();
@@ -62,7 +62,7 @@ public class DimensionSlash : YuWanCardModel
         {
             foreach (var debuff in debuffsToCopy)
             {
-                await PowerCmd.Apply(debuff.Canonical.ToMutable(), enemy, debuff.AmountToCopy, Owner.Creature, this);
+                await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), debuff.Canonical.ToMutable(), enemy, debuff.AmountToCopy, Owner.Creature, this);
             }
         }
 
@@ -75,7 +75,7 @@ public class DimensionSlash : YuWanCardModel
 
     private static DebuffCopy? TryCaptureDebuffCopy(PowerModel power)
     {
-        if (power.IsInstanced || !PowerSafetyUtils.IsSafePower(power))
+        if (power.InstanceType != PowerInstanceType.None || !PowerSafetyUtils.IsSafePower(power))
         {
             return null;
         }

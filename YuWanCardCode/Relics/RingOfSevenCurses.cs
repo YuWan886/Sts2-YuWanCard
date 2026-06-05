@@ -49,18 +49,18 @@ public class RingOfSevenCurses : YuWanRelicModel
 
     public override RelicModel? GetUpgradeReplacement() => null;
 
-    public override bool ShouldGainGold(decimal amount, Player player)
+    public override decimal ModifyGoldGained(Player player, decimal amount)
     {
         if (IsCanonical)
-            return true;
-        return GoldGuard.ShouldGainGold(amount, player);
+            return amount;
+        return GoldGuard.ModifyGoldGained(player, amount);
     }
 
-    public override async Task AfterGoldGained(Player player)
+    public override async Task AfterModifyingGoldGained(Player player, decimal amount)
     {
         if (IsCanonical)
             return;
-        await GoldGuard.AfterGoldGained(player);
+        await GoldGuard.AfterModifyingGoldGained(player, amount);
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)

@@ -22,6 +22,6 @@ public sealed class Inflation : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<InflationPower>(Owner.Creature, DynamicVars["InflationBonus"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<InflationPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["InflationBonus"].BaseValue, Owner.Creature, this);
     }
 }
