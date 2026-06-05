@@ -23,19 +23,10 @@ public class GroupFriendFormPower : YuWanPowerModel
         if (cardPlay.Card.Type == CardType.Power)
             return;
 
-        var canonicalCard = cardPlay.Card.CanonicalInstance;
-        if (canonicalCard == null)
+        if (Owner.CombatState == null)
             return;
 
-        var combatState = Owner.CombatState;
-        if (combatState == null)
-            return;
-
-        var newCard = combatState.CreateCard(canonicalCard, Owner.Player);
-        for (int i = 0; i < cardPlay.Card.CurrentUpgradeLevel; i++)
-        {
-            CardCmd.Upgrade(newCard);
-        }
+        var newCard = CardCopyHelper.CreateCopy(cardPlay.Card, Owner.Player);
 
         await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Draw, cardPlay.Card.Owner);
     }

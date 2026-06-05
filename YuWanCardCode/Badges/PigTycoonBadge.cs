@@ -6,6 +6,14 @@ namespace YuWanCard.Badges;
 
 public class PigTycoonBadge : Badge
 {
+    public const string BadgeId = "PIG_TYCOON";
+
+    public override string Id => BadgeId;
+
+    public override bool RequiresWin => true;
+
+    public override bool MultiplayerOnly => false;
+
     public override BadgeRarity Rarity
     {
         get
@@ -18,8 +26,8 @@ public class PigTycoonBadge : Badge
         }
     }
 
-    public PigTycoonBadge(SerializableRun run, ulong playerId, bool won)
-        : base(run, won, playerId, "PIG_TYCOON", requiresWin: true, multiplayerOnly: false)
+    public PigTycoonBadge(SerializableRun run, ulong playerId)
+        : base(run, playerId)
     {
     }
 

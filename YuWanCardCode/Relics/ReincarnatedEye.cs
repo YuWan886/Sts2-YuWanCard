@@ -64,7 +64,6 @@ public class ReincarnatedEye : YuWanRelicModel
             return;
         }
 
-        var combatState = Owner.Creature.CombatState;
         var deck = Owner.Deck;
 
         if (deck == null || deck.Cards.Count == 0)
@@ -97,21 +96,7 @@ public class ReincarnatedEye : YuWanRelicModel
             return;
         }
 
-        CardModel copiedCard = combatState.CreateCard(cardToCopy.CanonicalInstance, Owner);
-
-        if (cardToCopy.IsUpgraded)
-        {
-            for (int i = 0; i < cardToCopy.CurrentUpgradeLevel; i++)
-            {
-                CardCmd.Upgrade(copiedCard);
-            }
-        }
-
-        if (cardToCopy.Enchantment != null)
-        {
-            EnchantmentModel enchantmentModel = (EnchantmentModel)cardToCopy.Enchantment.MutableClone();
-            CardCmd.Enchant(enchantmentModel, copiedCard, enchantmentModel.Amount);
-        }
+        CardModel copiedCard = CardCopyHelper.CreateCopy(cardToCopy, Owner);
 
         // 检查手牌是否已满（最大手牌数为 10）
         var hand = PileType.Hand.GetPile(Owner);

@@ -22,6 +22,8 @@ namespace YuWanCard.Modifiers;
 
 public sealed class MaliceModifier : YuWanModifierModel
 {
+    public override bool AllowedInCustomRun => false;
+
     [SavedProperty]
     public int YuWanCard_MaliceLevel { get; set; }
 

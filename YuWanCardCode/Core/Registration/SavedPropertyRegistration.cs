@@ -1,6 +1,7 @@
 using System.Reflection;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core.Multiplayer;
 using YuWanCard.Core.Patches;
 
 namespace YuWanCard.Core.Registration;
@@ -44,6 +45,7 @@ internal static class SavedPropertyRegistration
         }
 
         SavedPropertiesTypeCachePatch.EnsureTypeRegistered(type);
+        SavedPropertySyncRegistry.RegisterType(type);
         return true;
     }
 

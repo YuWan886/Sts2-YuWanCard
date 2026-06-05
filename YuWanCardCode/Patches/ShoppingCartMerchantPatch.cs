@@ -13,15 +13,21 @@ namespace YuWanCard.Patches;
 public static class NMerchantSlot_ShoppingCartPatch
 {
     private static readonly Dictionary<NMerchantSlot, Button> _addToCartButtons = new();
-
-    private static bool ClearAfterPurchase(MerchantEntry entry)
-    {
-        return YuWanReflectionHelper.CallPrivateMethod(entry, "ClearAfterPurchase");
-    }
+    private static readonly HashSet<NMerchantInventory> _openInventories = [];
 
     private static bool UpdateVisual(NMerchantSlot slot)
     {
         return YuWanReflectionHelper.CallPrivateMethod(slot, "UpdateVisual");
+    }
+
+    public static void RegisterInventory(NMerchantInventory inventory)
+    {
+        _openInventories.Add(inventory);
+    }
+
+    public static void UnregisterInventory(NMerchantInventory inventory)
+    {
+        _openInventories.Remove(inventory);
     }
 
     [HarmonyPostfix]
@@ -43,12 +49,21 @@ public static class NMerchantSlot_ShoppingCartPatch
     [HarmonyPatch("UpdateVisual")]
     public static void UpdateButtonVisibility(NMerchantSlot __instance)
     {
+        var entry = __instance.Entry;
+        bool isReserved = ShoppingCartManager.IsEntryReserved(entry);
+
+        if (entry != null && entry.IsStocked)
+        {
+            __instance.Visible = !isReserved;
+            __instance.MouseFilter = isReserved ? Control.MouseFilterEnum.Ignore : Control.MouseFilterEnum.Stop;
+        }
+
         if (!_addToCartButtons.TryGetValue(__instance, out var button)) return;
 
-        var entry = __instance.Entry;
-        button.Visible = entry != null && entry.IsStocked;
+        button.Visible = entry != null && entry.IsStocked && !isReserved;
         button.Disabled = !ShoppingCartManager.HasShoppingCart() || 
-                          ShoppingCartManager.GetCartData()?.IsFull == true;
+                          ShoppingCartManager.GetCartData()?.IsFull == true ||
+                          isReserved;
     }
 
     [HarmonyPostfix]
@@ -105,13 +120,57 @@ public static class NMerchantSlot_ShoppingCartPatch
 
         if (added)
         {
-            ClearAfterPurchase(entry);
-            UpdateVisual(slot);
+            RefreshOpenMerchantInventories();
             SfxCmd.Play("event:/sfx/ui/ui_card_reward_open");
         }
         else
         {
             SfxCmd.Play("event:/sfx/npcs/merchant/merchant_dissapointment");
         }
+    }
+
+    public static void RefreshOpenMerchantInventories()
+    {
+        foreach (var inventory in _openInventories.ToArray())
+        {
+            if (!GodotObject.IsInstanceValid(inventory))
+            {
+                _openInventories.Remove(inventory);
+                continue;
+            }
+
+            foreach (var slot in inventory.GetAllSlots())
+            {
+                UpdateVisual(slot);
+            }
+
+            YuWanReflectionHelper.CallPrivateMethod(inventory, "UpdateNavigation");
+        }
+    }
+}
+
+[HarmonyPatch(typeof(NMerchantInventory))]
+public static class NMerchantInventory_ShoppingCartPatch
+{
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(NMerchantInventory.Open))]
+    public static void OnOpen(NMerchantInventory __instance)
+    {
+        NMerchantSlot_ShoppingCartPatch.RegisterInventory(__instance);
+        NMerchantSlot_ShoppingCartPatch.RefreshOpenMerchantInventories();
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("Close")]
+    public static void OnClose(NMerchantInventory __instance)
+    {
+        NMerchantSlot_ShoppingCartPatch.UnregisterInventory(__instance);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(NMerchantInventory._ExitTree))]
+    public static void OnExitTree(NMerchantInventory __instance)
+    {
+        NMerchantSlot_ShoppingCartPatch.UnregisterInventory(__instance);
     }
 }

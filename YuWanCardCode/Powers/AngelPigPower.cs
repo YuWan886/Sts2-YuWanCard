@@ -2,6 +2,7 @@ using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using YuWanCard.Characters;
 using YuWanCard.Utils;
 using MegaCrit.Sts2.Core.Models;
 
@@ -41,6 +42,11 @@ public class AngelPigPower : YuWanPowerModel
     {
         await base.AfterApplied(applier, cardSource);
 
+        if (Owner.Player?.Character is not Pig)
+        {
+            return;
+        }
+
         CreatureVisualUtils.SwitchCreatureSkin(Owner, "normal");
         await CreatureCmd.TriggerAnim(Owner, "Tf2", 4.0f);
         await Task.Delay(TimeSpan.FromSeconds(4.2f));
@@ -49,6 +55,11 @@ public class AngelPigPower : YuWanPowerModel
 
     public override async Task AfterRemoved(Creature oldOwner)
     {
+        if (oldOwner.Player?.Character is not Pig)
+        {
+            return;
+        }
+
         CreatureVisualUtils.SwitchCreatureSkin(oldOwner, "normal");
         await Task.CompletedTask;
     }

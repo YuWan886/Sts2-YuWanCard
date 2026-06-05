@@ -44,16 +44,10 @@ public class StealCard : YuWanCardModel
         var selectedCard = selectedCards.FirstOrDefault();
         if (selectedCard != null)
         {
-            int upgradeLevel = selectedCard.CurrentUpgradeLevel;
-            
             await CardPileCmd.Add(selectedCard, PileType.Exhaust);
-            
-            var newCard = CombatState!.CreateCard(selectedCard.CanonicalInstance, Owner);
-            for (int i = 0; i < upgradeLevel; i++)
-            {
-                CardCmd.Upgrade(newCard);
-            }
-            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, cardPlay.Card.Owner);
+
+            var newCard = CardCopyHelper.CreateCopy(selectedCard, Owner);
+            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, addedByPlayer: true);
         }
     }
 }

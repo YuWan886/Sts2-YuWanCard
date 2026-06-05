@@ -169,16 +169,15 @@ public static class CustomEnergyIconPatches
     }
 
     /// <summary>
-    /// Short-circuit <see cref="EnergyIconHelper.GetPrefix"/> for hextech pig/shared runes
-    /// whose <see cref="RelicModel.Pool"/> calls .First() on AllRelicPools and throws
-    /// when the rune isn't in any vanilla pool. Returns the pig card-pool energy prefix
-    /// so the original GetPool (which would throw) is skipped entirely.
+    /// Short-circuit <see cref="EnergyIconHelper.GetPrefix"/> for Hextech custom relics
+    /// whose <see cref="RelicModel.Pool"/> may walk vanilla pools and throw. We return a
+    /// safe prefix directly so the original pool lookup is skipped entirely.
     /// </summary>
     public static bool EnergyIconHelperGetPrefixPrefix(AbstractModel model, ref string __result)
     {
-        if (model is RelicModel relic && HextechPigRuneRegistry.IsPigOrSharedRune(relic))
+        if (model is RelicModel relic && HextechRuntimeCompat.TryGetSafeEnergyPrefix(relic, out string prefix))
         {
-            __result = ModelDb.CardPool<Characters.PigCardPool>().EnergyColorName;
+            __result = prefix;
             return false;
         }
 

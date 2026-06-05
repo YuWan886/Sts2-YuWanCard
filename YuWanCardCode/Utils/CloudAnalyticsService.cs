@@ -1,10 +1,16 @@
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Godot;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Characters;
+using YuWanCard.Modifiers;
+using YuWanCard.Relics;
 
 namespace YuWanCard.Utils;
 
@@ -37,6 +43,8 @@ public static class CloudAnalyticsService
     private static string _statePath = string.Empty;
     private static bool _initialized;
     private static bool _sessionRegistered;
+    private static bool _attemptedLoadChineseCharacterTable;
+    private static LocTable? _cachedChineseCharacterTable;
 
     static CloudAnalyticsService()
     {
@@ -97,6 +105,7 @@ public static class CloudAnalyticsService
         }
 
         TryRegisterRunStart(runState, requirePendingNewRun: true);
+        CaptureRunEndState(runState);
 
         ActiveRunTelemetry? runToReport;
         lock (SyncRoot)
@@ -264,10 +273,12 @@ public static class CloudAnalyticsService
                 RunId = Guid.NewGuid().ToString("N"),
                 CharacterId = localPlayer.Character.Id.Entry,
                 CharacterType = localPlayer.Character.GetType().Name,
+                CharacterNameZh = ResolveCharacterChineseTitle(localPlayer.Character),
                 IsPig = isPig,
                 PlayerCount = runState.Players.Count,
                 IsMultiplayer = IsMultiplayer(runState),
                 AscensionLevel = runState.AscensionLevel,
+                InstalledModList = GetInstalledModList(),
                 StartedAtUtc = DateTime.UtcNow
             };
 
@@ -296,11 +307,13 @@ public static class CloudAnalyticsService
             ["run_id"] = run.RunId,
             ["character_id"] = run.CharacterId,
             ["character_type"] = run.CharacterType,
+            ["character_name_zh"] = run.CharacterNameZh,
             ["is_pig"] = run.IsPig,
             ["player_count"] = run.PlayerCount,
             ["is_multiplayer"] = run.IsMultiplayer,
             ["ascension_level"] = run.AscensionLevel,
             ["mod_version"] = UpdateChecker.CurrentVersion,
+            ["installed_mod_list"] = run.InstalledModList,
             ["run_started_at_utc"] = run.StartedAtUtc.ToString("O")
         };
 
@@ -308,9 +321,152 @@ public static class CloudAnalyticsService
         {
             properties["result"] = result;
             properties["duration_seconds"] = Math.Max(0, (int)(DateTime.UtcNow - run.StartedAtUtc).TotalSeconds);
+            properties["has_ring_of_seven_curses"] = run.HasRingOfSevenCursesAtEnd;
+            properties["malice_level"] = run.MaliceLevelAtEnd;
         }
 
         return properties;
+    }
+
+    private static void CaptureRunEndState(RunState? runState)
+    {
+        if (runState == null)
+        {
+            return;
+        }
+
+        lock (SyncRoot)
+        {
+            if (_activeRun == null || _activeRun.HasReportedEnd)
+            {
+                return;
+            }
+
+            Player? trackedPlayer = ResolveTrackedPlayer(runState, _activeRun.CharacterId);
+            if (trackedPlayer?.Character == null)
+            {
+                return;
+            }
+
+            _activeRun.HasRingOfSevenCursesAtEnd = trackedPlayer.GetRelic<RingOfSevenCurses>() != null;
+            _activeRun.MaliceLevelAtEnd = MaliceModifier.GetMaliceModifier(runState)?.EffectiveMaliceLevel ?? 0;
+        }
+    }
+
+    private static Player? ResolveTrackedPlayer(RunState runState, string characterId)
+    {
+        Player? localPlayer = LocalContext.GetMe(runState);
+        if (localPlayer?.Character != null)
+        {
+            return localPlayer;
+        }
+
+        return runState.Players.FirstOrDefault(player => player.Character?.Id.Entry == characterId);
+    }
+
+    private static string ResolveCharacterChineseTitle(CharacterModel character)
+    {
+        string locKey = $"{character.Id.Entry}.title";
+
+        try
+        {
+            LocTable? chineseCharacterTable = GetChineseCharacterTable();
+            if (chineseCharacterTable != null)
+            {
+                string title = chineseCharacterTable.GetRawText(locKey);
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    return title;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"Cloud analytics failed to resolve zh character title for '{character.Id.Entry}': {ex.Message}");
+        }
+
+        string fallbackTitle = character.Title.GetRawText();
+        return string.IsNullOrWhiteSpace(fallbackTitle)
+            ? character.Id.Entry
+            : fallbackTitle;
+    }
+
+    private static LocTable? GetChineseCharacterTable()
+    {
+        lock (SyncRoot)
+        {
+            if (_attemptedLoadChineseCharacterTable)
+            {
+                return _cachedChineseCharacterTable;
+            }
+
+            _attemptedLoadChineseCharacterTable = true;
+
+            try
+            {
+                MethodInfo? loadTablesMethod = typeof(LocManager).GetMethod(
+                    "LoadTablesFromPath",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                if (loadTablesMethod == null)
+                {
+                    return null;
+                }
+
+                object? loadResult = loadTablesMethod.Invoke(null, new object?[] { "zhs", true });
+                if (loadResult == null)
+                {
+                    return null;
+                }
+
+                Type resultType = loadResult.GetType();
+                object? tablesObject = resultType.GetField("Item1")?.GetValue(loadResult)
+                    ?? resultType.GetProperty("Item1")?.GetValue(loadResult);
+                if (tablesObject is Dictionary<string, LocTable> tables &&
+                    tables.TryGetValue("characters", out LocTable? characterTable))
+                {
+                    _cachedChineseCharacterTable = characterTable;
+                }
+            }
+            catch (Exception ex)
+            {
+                MainFile.Logger.Warn($"Cloud analytics failed to load zh character localization table: {ex.Message}");
+            }
+
+            return _cachedChineseCharacterTable;
+        }
+    }
+
+    private static List<string> GetInstalledModList()
+    {
+        try
+        {
+            return ModManager.Mods
+                .Where(mod => mod.manifest?.id != null)
+                .OrderBy(mod => mod.manifest!.id, StringComparer.Ordinal)
+                .Select(BuildInstalledModDescriptor)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"Cloud analytics failed to enumerate installed mods: {ex.Message}");
+            return [];
+        }
+    }
+
+    private static string BuildInstalledModDescriptor(Mod mod)
+    {
+        string id = mod.manifest?.id ?? "unknown";
+        string? name = mod.manifest?.name;
+        string? version = mod.manifest?.version;
+        string state = mod.state.ToString().ToLowerInvariant();
+
+        string display = string.IsNullOrWhiteSpace(name) ||
+            string.Equals(name, id, StringComparison.OrdinalIgnoreCase)
+            ? id
+            : $"{name} ({id})";
+        return string.IsNullOrWhiteSpace(version)
+            ? $"{display}[{state}]"
+            : $"{display}@{version}[{state}]";
     }
 
     private static void SendIdentifySnapshot()
@@ -858,11 +1014,15 @@ public static class CloudAnalyticsService
         public required string RunId { get; set; }
         public required string CharacterId { get; set; }
         public required string CharacterType { get; set; }
+        public required string CharacterNameZh { get; set; }
         public required DateTime StartedAtUtc { get; set; }
+        public List<string> InstalledModList { get; set; } = [];
         public bool IsPig { get; set; }
         public bool IsMultiplayer { get; set; }
         public bool HasReportedEnd { get; set; }
         public int PlayerCount { get; set; }
         public int AscensionLevel { get; set; }
+        public bool HasRingOfSevenCursesAtEnd { get; set; }
+        public int MaliceLevelAtEnd { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Powers.MaliceTraits;
 
@@ -40,16 +41,18 @@ public sealed class MasterTrait : MaliceTraitPowerBase
             return;
         }
 
-        int index = combatState.RunState.Rng.UpFront.NextInt(_actMonsterPool.Count);
+        int index = combatState.RunState.Rng.CombatCardGeneration.NextInt(_actMonsterPool.Count);
         MonsterModel monster = _actMonsterPool[index].ToMutable();
 
         // Find a free slot to prevent hitbox overlap (null if encounter has no slots)
-        string? slotName = combatState.Encounter?.GetNextSlot(combatState);
-        if (string.IsNullOrEmpty(slotName))
-            slotName = null;
+        string? slotName = EnemySpawnPositionUtils.GetNextEnemySlot(combatState);
 
         Flash();
         Creature summoned = await CreatureCmd.Add(monster, combatState, Owner.Side, slotName);
+        if (slotName == null)
+        {
+            EnemySpawnPositionUtils.PositionSummonWithoutSlot(summoned, Owner);
+        }
 
         // Mark as minion (爪牙)
         await PowerCmd.Apply<MinionPower>(new ThrowingPlayerChoiceContext(), summoned, 1, Owner, null);

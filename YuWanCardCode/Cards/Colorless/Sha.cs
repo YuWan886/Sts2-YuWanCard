@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Multiplayer;
 
 namespace YuWanCard.Cards;
 
@@ -49,15 +50,31 @@ public class Sha : YuWanCardModel
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
 
-        if (!attackCommand.Results.SelectMany(r => r).Any(result => result.WasTargetKilled)) return;
+        if (!attackCommand.Results.Any(result => result.WasTargetKilled)) return;
+        IncreasePermanentReplayCount();
+    }
 
-        YUWANCARD_PermanentReplayCount += 1;
-        BaseReplayCount = YUWANCARD_PermanentReplayCount;
-
-        if (DeckVersion is Sha deckSha)
+    private void IncreasePermanentReplayCount()
+    {
+        if (DeckVersion is Sha deckSha && !ReferenceEquals(deckSha, this))
         {
             deckSha.YUWANCARD_PermanentReplayCount += 1;
             deckSha.BaseReplayCount = deckSha.YUWANCARD_PermanentReplayCount;
+            MirrorPermanentReplayCountLocally(deckSha.YUWANCARD_PermanentReplayCount);
+            return;
         }
+
+        YUWANCARD_PermanentReplayCount += 1;
+        BaseReplayCount = YUWANCARD_PermanentReplayCount;
+    }
+
+    private void MirrorPermanentReplayCountLocally(int replayCount)
+    {
+        using (SavedPropertyMultiplayerSync.SuppressNotifications())
+        {
+            YUWANCARD_PermanentReplayCount = replayCount;
+        }
+
+        BaseReplayCount = replayCount;
     }
 }

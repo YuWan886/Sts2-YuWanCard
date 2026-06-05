@@ -1,0 +1,160 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/Core/Nodes/Rooms/NCombatBackground.cs" id="1_bg"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/rooms/ignis_boss/ignis_bg.png" id="2_bgtex"]
+[ext_resource type="Texture2D" path="res://images/vfx/dot.png" id="3_dot"]
+[ext_resource type="Texture2D" path="res://images/vfx/fog_sheet_1.png" id="4_fog"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fog"]
+particles_animation = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 3
+particles_anim_loop = false
+
+[sub_resource type="Curve" id="Curve_fog_scale"]
+_data = [Vector2(0.339496, 0.600085), 0.0, 0.0, 0, 0]
+point_count = 1
+
+[node name="IgnisBossBackground" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_bg")
+
+[node name="Backdrop" type="TextureRect" parent="."]
+z_index = -30
+z_as_relative = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1364.0
+offset_top = -768.0
+offset_right = 1364.0
+offset_bottom = 768.0
+grow_horizontal = 2
+grow_vertical = 2
+modulate = Color(0.78, 0.72, 0.72, 1)
+texture = ExtResource("2_bgtex")
+expand_mode = 1
+
+[node name="HeatTint" type="ColorRect" parent="."]
+z_index = -29
+z_as_relative = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -64.0
+offset_top = -32.0
+offset_right = 64.0
+offset_bottom = 32.0
+color = Color(0.180392, 0.0352941, 0.0196078, 0.313726)
+
+[node name="SmokeLeft" type="CPUParticles2D" parent="."]
+z_index = -20
+material = SubResource("CanvasItemMaterial_fog")
+position = Vector2(-1650, 470)
+scale = Vector2(0.72, 0.72)
+amount = 2
+texture = ExtResource("4_fog")
+lifetime = 120.0
+preprocess = 120.0
+local_coords = true
+gravity = Vector2(1.2, 0)
+scale_amount_min = 0.45
+scale_amount_max = 0.72
+split_scale = true
+scale_curve_y = SubResource("Curve_fog_scale")
+color = Color(0.14902, 0.0705882, 0.0431373, 0.28)
+anim_offset_max = 1.0
+
+[node name="SmokeRight" type="CPUParticles2D" parent="."]
+z_index = -20
+material = SubResource("CanvasItemMaterial_fog")
+position = Vector2(-580, 525)
+scale = Vector2(0.68, 0.68)
+amount = 2
+texture = ExtResource("4_fog")
+lifetime = 140.0
+preprocess = 140.0
+local_coords = true
+gravity = Vector2(0.8, 0)
+scale_amount_min = 0.38
+scale_amount_max = 0.65
+split_scale = true
+scale_curve_y = SubResource("Curve_fog_scale")
+color = Color(0.105882, 0.0470588, 0.0313726, 0.22)
+anim_offset_max = 1.0
+
+[node name="EmbersBack" type="CPUParticles2D" parent="."]
+z_index = -18
+position = Vector2(0, 250)
+amount = 54
+texture = ExtResource("3_dot")
+lifetime = 10.0
+preprocess = 10.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(1500, 520)
+direction = Vector2(0, -1)
+spread = 26.0
+gravity = Vector2(12, -30)
+initial_velocity_min = 24.0
+initial_velocity_max = 60.0
+scale_amount_min = 0.25
+scale_amount_max = 0.72
+color = Color(0.882353, 0.278431, 0.105882, 0.22)
+
+[node name="EmbersFront" type="CPUParticles2D" parent="."]
+z_index = -16
+position = Vector2(0, 360)
+amount = 28
+texture = ExtResource("3_dot")
+lifetime = 7.0
+preprocess = 7.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(1260, 260)
+direction = Vector2(0, -1)
+spread = 18.0
+gravity = Vector2(6, -36)
+initial_velocity_min = 42.0
+initial_velocity_max = 88.0
+scale_amount_min = 0.42
+scale_amount_max = 1.05
+color = Color(0.976471, 0.686275, 0.403922, 0.3)
+
+[node name="CinderDrift" type="CPUParticles2D" parent="."]
+z_index = -17
+position = Vector2(0, 120)
+amount = 22
+texture = ExtResource("3_dot")
+lifetime = 14.0
+preprocess = 14.0
+local_coords = true
+emission_shape = 3
+emission_rect_extents = Vector2(820, 180)
+direction = Vector2(0, -1)
+spread = 12.0
+gravity = Vector2(4, -18)
+initial_velocity_min = 12.0
+initial_velocity_max = 28.0
+scale_amount_min = 0.18
+scale_amount_max = 0.45
+color = Color(0.917647, 0.431373, 0.2, 0.18)
+
+[node name="FurnaceGlow" type="ColorRect" parent="."]
+z_index = -27
+z_as_relative = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = 185.0
+offset_right = 220.0
+offset_bottom = 430.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.501961, 0.133333, 0.0470588, 0.08)

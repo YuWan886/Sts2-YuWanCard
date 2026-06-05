@@ -1,0 +1,10 @@
+{
+  "YUWANCARD-FOIL.title": "Foil",
+  "YUWANCARD-FOIL.description": "This card's positive numeric values are increased by 20% (minimum +1).",
+  "YUWANCARD-HOLOGRAPHIC.title": "Holographic",
+  "YUWANCARD-HOLOGRAPHIC.description": "This card costs 1 less in combat.",
+  "YUWANCARD-POLYCHROME.title": "Polychrome",
+  "YUWANCARD-POLYCHROME.description": "This card triggers 1 extra time when played.",
+  "YUWANCARD-NEGATIVE.title": "Negative",
+  "YUWANCARD-NEGATIVE.description": "This card has a Negative edition and still counts as an edited card for Balatro synergies."
+}

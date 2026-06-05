@@ -16,7 +16,7 @@ public sealed class ShulkerTrait : MaliceTraitPowerBase
         }
 
         int currentSlippery = Owner.GetPower<SlipperyPower>()?.Amount ?? 0;
-        int toApply = Math.Min(2, 3 - currentSlippery);
+        int toApply = Math.Min(1, 3 - currentSlippery);
         if (toApply > 0)
         {
             Flash();

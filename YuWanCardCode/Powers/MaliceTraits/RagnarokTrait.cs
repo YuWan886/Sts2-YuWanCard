@@ -23,7 +23,7 @@ public sealed class RagnarokTrait : MaliceTraitPowerBase
             return Task.CompletedTask;
         }
 
-        var rng = combatState.RunState!.Rng!.UpFront;
+        var rng = combatState.RunState!.Rng!.CombatTargets;
         var targetPlayer = rng.NextItem(candidates)!;
 
         var availableRelics = targetPlayer.Relics

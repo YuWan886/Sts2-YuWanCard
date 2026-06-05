@@ -41,9 +41,9 @@ public class YwDebugCmd : AbstractConsoleCmd
 
     public override string CmdName => "yw";
 
-    public override string Args => "[sinpigrelics|regenerateancient|refreshshop|unlockmalice|maplength]";
+    public override string Args => "[sinpigrelics|regenerateancient|refreshshop|unlockmalice|maplength|boss]";
 
-    public override string Description => "YuWanCard debug commands. 'yw sinpigrelics' - obtain all 7 sin pig relics. 'yw regenerateancient' - regenerate current ancient options. 'yw refreshshop' - reroll all shop items. 'yw unlockmalice' - unlock all Malice levels for all characters. 'yw maplength <1-10>' - regenerate the current act map with a custom length multiplier.";
+    public override string Description => "YuWanCard debug commands. 'yw sinpigrelics' - obtain all 7 sin pig relics. 'yw regenerateancient' - regenerate current ancient options. 'yw refreshshop' - reroll all shop items. 'yw unlockmalice' - unlock all Malice levels for all characters. 'yw maplength <1-10>' - regenerate the current act map with a custom length multiplier. 'yw boss <id>' - replace the current act boss and refresh the map/top bar.";
 
     public override bool IsNetworked => true;
 
@@ -51,7 +51,7 @@ public class YwDebugCmd : AbstractConsoleCmd
     {
         if (args.Length < 1)
         {
-            return new CmdResult(false, "Usage: yw <sinpigrelics|regenerateancient|refreshshop|unlockmalice|maplength>");
+            return new CmdResult(false, "Usage: yw <sinpigrelics|regenerateancient|refreshshop|unlockmalice|maplength|boss>");
         }
 
         string subCmd = args[0].ToLowerInvariant();
@@ -86,7 +86,12 @@ public class YwDebugCmd : AbstractConsoleCmd
             return SetMapLength(args);
         }
 
-        return new CmdResult(false, $"Unknown subcommand: {subCmd}. Use 'yw sinpigrelics', 'yw regenerateancient', 'yw refreshshop', 'yw unlockmalice', or 'yw maplength'.");
+        if (subCmd == "boss")
+        {
+            return SetBossEncounter(args);
+        }
+
+        return new CmdResult(false, $"Unknown subcommand: {subCmd}. Use 'yw sinpigrelics', 'yw regenerateancient', 'yw refreshshop', 'yw unlockmalice', 'yw maplength', or 'yw boss'.");
     }
 
     private CmdResult SetMapLength(string[] args)
@@ -280,13 +285,61 @@ public class YwDebugCmd : AbstractConsoleCmd
         }
     }
 
+    private CmdResult SetBossEncounter(string[] args)
+    {
+        if (args.Length < 2)
+        {
+            return new CmdResult(false, "Usage: yw boss <bossId>");
+        }
+
+        var runState = RunManager.Instance.State;
+        if (runState?.Act == null || runState.Map == null)
+        {
+            return new CmdResult(false, "No run is currently available!");
+        }
+
+        string query = args[1].Trim();
+        var bossCandidates = ModelDb.AllEncounters
+            .Where(encounter => encounter.RoomType == RoomType.Boss)
+            .ToList();
+
+        var matches = bossCandidates
+            .Where(encounter =>
+                encounter.Id.Entry.Equals(query, StringComparison.OrdinalIgnoreCase) ||
+                encounter.Id.Entry.EndsWith(query, StringComparison.OrdinalIgnoreCase) ||
+                encounter.Id.Entry.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                encounter.Title.GetFormattedText().Contains(query, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        if (matches.Count == 0)
+        {
+            return new CmdResult(false, $"Boss '{query}' not found. Use a boss id such as 'YUWANCARD-IGNIS_BOSS'.");
+        }
+
+        EncounterModel selectedBoss = matches.Count == 1
+            ? matches[0]
+            : matches.FirstOrDefault(encounter => encounter.Id.Entry.Equals(query, StringComparison.OrdinalIgnoreCase) || encounter.Id.Entry.EndsWith(query, StringComparison.OrdinalIgnoreCase))
+              ?? matches[0];
+
+        if (matches.Count > 1 && !matches.Any(encounter => encounter.Id.Entry.Equals(query, StringComparison.OrdinalIgnoreCase)))
+        {
+            string options = string.Join(", ", matches.Select(encounter => encounter.Id.Entry));
+            return new CmdResult(false, $"Boss '{query}' is ambiguous. Candidates: {options}");
+        }
+
+        MapCmd.SetBossEncounter(runState, selectedBoss);
+
+        MainFile.Logger.Info($"YwDebugCmd: Set current act boss to {selectedBoss.Id.Entry}");
+        return new CmdResult(true, $"Set current act boss to {selectedBoss.Id.Entry}");
+    }
+
     public override CompletionResult GetArgumentCompletions(Player? player, string[] args)
     {
         if (args.Length == 0 || (args.Length == 1 && string.IsNullOrWhiteSpace(args[0])))
         {
             return new CompletionResult
             {
-                Candidates = ["sinpigrelics", "regenerateancient", "refreshshop", "unlockmalice", "maplength"],
+                Candidates = ["sinpigrelics", "regenerateancient", "refreshshop", "unlockmalice", "maplength", "boss"],
                 Type = CompletionType.Subcommand,
                 ArgumentContext = CmdName
             };
@@ -317,6 +370,10 @@ public class YwDebugCmd : AbstractConsoleCmd
             {
                 candidates.Add("maplength");
             }
+            if ("boss".StartsWith(partial))
+            {
+                candidates.Add("boss");
+            }
 
             if (candidates.Count > 0)
             {
@@ -340,6 +397,28 @@ public class YwDebugCmd : AbstractConsoleCmd
             if (candidates.Count > 0)
             {
                 return CompleteArgument(candidates, [], partial, CompletionType.Argument);
+            }
+        }
+
+        if (args.Length == 2 && args[0].Equals("boss", StringComparison.OrdinalIgnoreCase))
+        {
+            string partial = args[1];
+            var candidates = ModelDb.AllEncounters
+                .Where(encounter => encounter.RoomType == RoomType.Boss)
+                .Select(encounter => encounter.Id.Entry)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var filtered = candidates
+                .Where(candidate =>
+                    candidate.StartsWith(partial, StringComparison.OrdinalIgnoreCase) ||
+                    candidate.EndsWith(partial, StringComparison.OrdinalIgnoreCase) ||
+                    candidate.Contains(partial, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (filtered.Count > 0)
+            {
+                return CompleteArgument(filtered, [], partial, CompletionType.Argument);
             }
         }
 

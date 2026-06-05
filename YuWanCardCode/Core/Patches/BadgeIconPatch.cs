@@ -13,10 +13,21 @@ public static class BadgeIconPatch
     [HarmonyPrefix]
     public static bool BadgeIconPrefix(Badge __instance, ref Texture2D __result)
     {
-        var customPath = CustomIconDir + __instance.Id.ToLowerInvariant() + ".png";
-        if (!ResourceLoader.Exists(customPath)) return true;
+        var customPath = ResolveCustomIconPath(__instance.Id);
+        if (customPath == null) return true;
 
         __result = PreloadManager.Cache.GetTexture2D(customPath);
         return false;
+    }
+
+    private static string? ResolveCustomIconPath(string badgeId)
+    {
+        var autoPath = CustomIconDir + badgeId.ToLowerInvariant() + "_badge.png";
+        if (ResourceLoader.Exists(autoPath))
+        {
+            return autoPath;
+        }
+
+        return null;
     }
 }

@@ -40,22 +40,15 @@ public class PigTeammate : YuWanCardModel
         {
             await CardPileCmd.RemoveFromCombat(card);
 
-            var newCard = CombatState!.CreateCard(card.CanonicalInstance, Owner);
-            if (card.CurrentUpgradeLevel > 0)
-            {
-                for (int i = 0; i < card.CurrentUpgradeLevel; i++)
-                {
-                    CardCmd.Upgrade(newCard);
-                }
-            }
-            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, cardPlay.Card.Owner);
+            var newCard = CardCopyHelper.CreateCopy(card, Owner);
+            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, addedByPlayer: true);
         }
 
         var energyToTake = targetPlayer.PlayerCombatState?.Energy ?? 0;
         await PlayerCmd.SetEnergy(0, targetPlayer);
         await PlayerCmd.GainEnergy(energyToTake, Owner);
 
-        await PowerCmd.Apply<BufferPower>(new ThrowingPlayerChoiceContext(), targetPlayer.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<BufferPower>(targetPlayer.Creature, 1, Owner.Creature, this);
 
         await CardPileCmd.Add(this, PileType.Exhaust);
     }

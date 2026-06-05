@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace YuWanCard.Core.Abstracts;
 
@@ -16,6 +17,25 @@ public abstract partial class YuWanModifierModel : ModifierModel
     /// Defaults to <c>false</c> — override to <c>true</c> in modifiers that are safe for daily runs.
     /// </summary>
     public virtual bool AllowedInDailyRun => false;
+
+    /// <summary>
+    /// Whether this modifier should be shown in the custom run modifier list.
+    /// Defaults to <c>true</c> so existing modifiers keep their current behavior unless opted out.
+    /// </summary>
+    public virtual bool AllowedInCustomRun => true;
+
+    /// <summary>
+    /// Safely returns the modifier's <see cref="ModifierModel.RunState"/> without throwing
+    /// when the modifier hasn't been initialized yet. Returns <c>null</c> in that case.
+    /// </summary>
+    internal RunState? SafeRunState
+    {
+        get
+        {
+            try { return base.RunState; }
+            catch (InvalidOperationException) { return null; }
+        }
+    }
 
     protected virtual string ModifierId
     {

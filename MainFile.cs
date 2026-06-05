@@ -9,6 +9,8 @@ using YuWanCard.Characters;
 using YuWanCard.Config;
 using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
+using YuWanCard.Core.Multiplayer;
+using YuWanCard.Core.RightClick;
 using YuWanCard.Core.Transcendence;
 using YuWanCard.Multiplayer;
 using YuWanCard.Utils;
@@ -73,7 +75,8 @@ public partial class MainFile : Node
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
         SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
         TranscendenceRegistry.RegisterDefaults();
-        CustomBadgeRegistry.Register((run, playerId, won) => new PigTycoonBadge(run, playerId, won));
+        CustomBadgeRegistry.Register((run, playerId) => new PigTycoonBadge(run, playerId));
+        CustomBadgeRegistry.Register((run, playerId) => new WerewolfBadge(run, playerId));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 
         // Phase 4: Config, scene conversions, multiplayer, assets
@@ -84,6 +87,8 @@ public partial class MainFile : Node
         Pig.RegisterScenes();
 
         TeammatePayMessageHandler.Register();
+        SavedPropertySyncMessageHandler.Register();
+        YuWanRightClickMessageHandler.Register();
 
         AssetPreloader.Preload();
         CloudAnalyticsService.Initialize();

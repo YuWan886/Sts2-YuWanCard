@@ -7,6 +7,8 @@ namespace YuWanCard.Relics;
 [Pool(typeof(WhatIfRelicPool))]
 public class WhatIfAllRelics : WhatIfRelicModel
 {
+    private static readonly Assembly YuWanAssembly = typeof(WhatIfAllRelics).Assembly;
+
     private static readonly string[] RewardEffectHookNames =
     [
         nameof(TryModifyCardRewardAlternatives),
@@ -30,7 +32,7 @@ public class WhatIfAllRelics : WhatIfRelicModel
         }
 
         var allCandidateRelics = ModelDb.AllRelics
-            .Where(relic => relic.Id != Id && Owner.GetRelicById(relic.Id) == null)
+            .Where(relic => relic.Id != Id && Owner.GetRelicById(relic.Id) == null && IsWhitelistedRelicSource(relic))
             .ToList();
 
         var skippedPickupEffectRelics = allCandidateRelics
@@ -110,5 +112,23 @@ public class WhatIfAllRelics : WhatIfRelicModel
             var method = relicType.GetMethod(hookName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             return method != null && method.DeclaringType == relicType;
         });
+    }
+
+    private static bool IsWhitelistedRelicSource(RelicModel relicModel)
+    {
+        var relicType = relicModel.GetType();
+        if (relicType.Assembly == YuWanAssembly)
+        {
+            return true;
+        }
+
+        var assemblyName = relicType.Assembly.GetName().Name;
+        if (!string.IsNullOrEmpty(assemblyName) &&
+            assemblyName.StartsWith("MegaCrit.Sts2.", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return relicType.Namespace?.StartsWith("MegaCrit.Sts2.", StringComparison.Ordinal) == true;
     }
 }

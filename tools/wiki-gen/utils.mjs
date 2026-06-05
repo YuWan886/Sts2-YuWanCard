@@ -1,6 +1,6 @@
 // Foundation utilities: path/fs helpers, BBCode, YAML, badges, images
 
-import { readFileSync, mkdirSync, existsSync, copyFileSync, readdirSync } from 'fs'
+import { readFileSync, mkdirSync, existsSync, copyFileSync, readdirSync, statSync } from 'fs'
 import { join, basename } from 'path'
 
 // GitHub Pages base path — change if repo is renamed/moved
@@ -182,6 +182,15 @@ export function findImage(entityId, entityType, imgRoot, entity) {
 
   for (const file of readdirSync(imgDir)) {
     if (file.endsWith('.png.import')) continue
+    const fullPath = join(imgDir, file)
+    // If the entity has a subdirectory, pick the first .png inside it
+    if (statSync(fullPath).isDirectory()) {
+      if (file === entityId) {
+        const subFiles = readdirSync(fullPath).filter(f => f.endsWith('.png') && !f.endsWith('.png.import'))
+        if (subFiles.length > 0) return join(fullPath, subFiles[0])
+      }
+      continue
+    }
     const base = basename(file, '.png')
     if (base === entityId) return join(imgDir, file)
     for (const alt of altNames) {

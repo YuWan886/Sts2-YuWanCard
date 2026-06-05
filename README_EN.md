@@ -57,3 +57,4 @@ When you first enter the main menu, a consent dialog will appear. **Data is only
 - 《God of the Reincarnation World》 - [「勇者の肋骨」俺＆女神さまのボイス収めたカオスな本PV、キービジュアルも公開](https://natalie.mu/comic/news/663320)
 - Pig Spine Animation by [mmmmm基因](https://space.bilibili.com/51792041)
 - Trait Icons - [L2Hostility](https://www.mcmod.cn/class/12008.html)
+- Ignis - [L_Ender 's Cataclysm](https://www.mcmod.cn/class/5214.html)

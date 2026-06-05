@@ -23,7 +23,7 @@
   "YUWANCARD-UPDATE_POPUP.body": "A new version of YuWanCard is available!\n\nCurrent version: {0}\nLatest version: {1}\n\nWould you like to download the update?",
   "YUWANCARD-UPDATE_POPUP.download": "Download",
   "YUWANCARD-UPDATE_POPUP.close": "Close",
-  "YUWANCARD-ANALYTICS_POPUP.title": "Anonymous Analytics",
+  "YUWANCARD-ANALYTICS_POPUP.title": "YuWanCard Anonymous Analytics",
   "YUWANCARD-ANALYTICS_POPUP.body": "This mod can anonymously collect the following data to understand feature usage and character performance:\n\n- Mod launch count\n- Anonymous unique install identifier\n- Selected character at run start\n- Singleplayer or multiplayer\n- Ascension level\n- Victory or defeat result\n- Run duration\n- Mod version\n\nIt does not collect player names, chat content, or other directly identifying personal information.\n\nDo you want to enable anonymous analytics?",
   "YUWANCARD-ANALYTICS_POPUP.enable": "Enable Collection",
   "YUWANCARD-ANALYTICS_POPUP.disable": "Disable Collection",
