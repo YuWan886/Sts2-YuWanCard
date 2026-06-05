@@ -46,9 +46,10 @@ public class PigBirth : YuWanCardModel
                 this
             );
 
-            if (cardsToDiscard.Any())
+            var discardList = CombatCardStateHelper.EnsureRegistered(cardsToDiscard, nameof(PigBirth));
+            if (discardList.Count > 0)
             {
-                await CardCmd.Discard(choiceContext, cardsToDiscard);
+                await CardCmd.Discard(choiceContext, discardList);
             }
         }
     }

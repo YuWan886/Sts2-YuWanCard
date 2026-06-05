@@ -27,9 +27,7 @@ Balatro 模式是 YuWanCard 模组的一个自定义**修改器（Modifier）**�
 8. [Joker 遗物](#8-joker-遗物)
 9. [配套遗物](#9-配套遗物)
 10. [Balatro 能力](#10-balatro-能力)
-11. [UI 与交互](#11-ui-与交互)
-12. [文件结构](#12-文件结构)
-13. [设计文档对照](#13-设计文档对照)
+11. [文件结构](#12-文件结构)
 
 ---
 
@@ -480,36 +478,6 @@ modifier.AddModifierTokens(1);
 
 ---
 
-## 11. UI 与交互
-
-### 11.1 连击计数器
-
-- 文件：`UI/NComboCounter.cs`
-- 显示内容：当前连击数、乘数和加成（`COMBO 12.0  MULT x2.2`）
-- 仅在战斗中显示，Balatro 模式激活时可见
-- 视觉特效：弹出动画、爆发粒子、颜色阶段（基于连击阈值）
-
-### 11.2 角色选择 Tickbox
-
-- 文件：`Patches/BalatroCharacterSelectPatch.cs`
-- 注入点：`NCharacterSelectScreen` 的 `_Ready`、`SelectCharacter`、`OnSubmenuOpened`、`InitializeSingleplayer`、`InitializeMultiplayerAsHost/Client`
-- 创建 `NRunModifierTickbox` 放置在 AscensionPanel 右侧
-- 客户端只读同步（通过 SavedProperty 自动同步）
-
-### 11.3 TopBar 按钮
-
-- 文件：`Patches/BalatroUiPatches.cs`
-- 在 `NTopBar` 上注入一个 Balatro 图标按钮（`images/modifiers/balatro.png`）
-- 仅在 Balatro 模式激活时可见
-- 点击切换连击计数器的显示/隐藏
-
-### 11.4 TopBar 修饰器图标
-
-- 文件：`Patches/BalatroTopBarModifierFilterPatch.cs`
-- `NTopBarModifier` 显示 Balatro 修饰器图标时使用 `BalatroModifier.Icon` 替代默认图标
-
----
-
 ## 12. 文件结构
 
 ```
@@ -616,36 +584,6 @@ YuWanCard/
 | 加工站 UI | `YUWANCARD-BALATRO_MOD_STATION.` | `YUWANCARD-BALATRO_MOD_STATION.title` |
 | 连击计数器 | `YUWANCARD-BALATRO_HUD.` | `YUWANCARD-BALATRO_HUD.combo_compact` |
 | 修改器 | `YUWANCARD-BALATRO.` | `YUWANCARD-BALATRO.Name` |
-
----
-
-## 13. 设计文档对照
-
-本实现基于 `docs/superpowers/specs/2026-06-03-balatro-modifier-design.md` 设计文档。以下记录实现与设计的主要差异：
-
-### 已完整实现
-
-- 5 大核心子系统全部实现（Joker 遗物、连击乘数、卡牌修饰器、加工站、利息经济）
-- 13 张 Balatro 卡牌全部实现
-- 3 个 Balatro 能力全部实现
-- 角色选择 Tickbox
-- 连击计数器（NComboCounter）
-- 卡牌修饰器着色器视觉特效（BalatroCardEditionVisualPatch）
-- 修饰器序列化持久化（BalatroCardEditionPersistencePatch）
-- TopBar Balatro 按钮和修饰器图标
-
-### 已变更（从原 Joker 槽位系统迁移）
-
-- Joker 遗物现在使用 StS2 原生遗物系统（占据普通遗物槽，存储在 `player.Relics` 中）
-- Joker 效果现在直接在各自的遗物类中实现（通过 `RelicModel` 钩子）
-- 蓝图现在通过每个 Joker 的 `EffectiveCount()` 方法翻倍有效计数
-- NegativeJoker 效果从"解锁第 6 个槽位"改为"+1 抽牌"
-- 移除了 Joker 槽位/背包/HUD 面板 UI（`NBalatroHudPanel`、`NJokerSlotBar`、`NJokerBagPopup`、`BalatroUiTheme`）
-- 移除了商店加工站扩展（`NBalatroMerchantExtension`、`BalatroMerchantPatch`）
-
-### 未实现（未来扩展）
-
-- 加工站修饰器购买 UI（当前仅通过 API 可用）
 
 ---
 

@@ -12,35 +12,13 @@ public sealed class CounterStrikeTrait : MaliceTraitPowerBase
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("CounterDamage", 6m)];
     protected override string[] AutoUpdateVarNames => ["CounterDamage"];
 
-    private bool _shouldCounter;
-
-    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
-    {
-        _shouldCounter = false;
-
-        if (target != Owner || dealer == null || dealer == Owner || amount <= 0)
-        {
-            return 1m;
-        }
-
-        float roll = CombatState?.RunState.Rng.Niche.NextFloat() ?? 1f;
-        if (roll > 0.3f)
-        {
-            return 1m;
-        }
-
-        _shouldCounter = true;
-        return 0m;
-    }
-
     public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (!_shouldCounter || target != Owner || dealer == null || dealer == Owner)
+        if (target != Owner || dealer == null || dealer == Owner || result.UnblockedDamage <= 0)
         {
             return;
         }
 
-        _shouldCounter = false;
         Flash();
         await CreatureCmd.Damage(choiceContext, dealer, 6 * Amount, ValueProp.Unpowered, Owner, null);
     }

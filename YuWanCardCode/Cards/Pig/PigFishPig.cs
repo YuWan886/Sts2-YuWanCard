@@ -45,13 +45,14 @@ public class PigFishPig : YuWanCardModel
             this
         );
 
-        var discardedCard = cardsToDiscard.FirstOrDefault();
+        var discardList = CombatCardStateHelper.EnsureRegistered(cardsToDiscard, nameof(PigFishPig));
+        var discardedCard = discardList.FirstOrDefault();
         if (discardedCard == null)
         {
             return;
         }
 
-        await CardCmd.Discard(choiceContext, cardsToDiscard);
+        await CardCmd.Discard(choiceContext, discardList);
 
         var upgradableCards = PileType.Hand.GetPile(Owner).Cards
             .Where(c => c.IsUpgradable)

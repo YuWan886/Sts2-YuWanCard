@@ -53,7 +53,7 @@ public class PigBlackHole : YuWanCardModel
             source: this
         );
 
-        var cardsToExhaust = selectedCards.ToList();
+        var cardsToExhaust = CombatCardStateHelper.EnsureRegistered(selectedCards, nameof(PigBlackHole));
         int cardsToExhaustCount = cardsToExhaust.Count;
 
         if (cardsToExhaustCount > 0)

@@ -1,28 +1,36 @@
-using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Combat.History.Entries;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class AdaptiveTrait : MaliceTraitPowerBase
 {
-    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (target != Owner)
+        if (target != Owner || dealer == null || dealer == Owner || result.UnblockedDamage <= 0)
         {
-            return 1m;
+            return;
         }
 
-        string? currentCardId = cardSource?.Id.Entry;
-        DamageReceivedEntry? lastDamageTaken = CombatManager.Instance?.History.Entries
-            .OfType<DamageReceivedEntry>()
-            .LastOrDefault(entry => entry.Receiver == Owner);
-        string? lastCardId = lastDamageTaken?.CardSource?.Id.Entry;
-        bool repeatedSource = dealer == lastDamageTaken?.Dealer
-                              && currentCardId != null
-                              && currentCardId == lastCardId;
-        return repeatedSource ? 0.7m : 1m;
+        int currentPlating = Owner.GetPower<PlatingPower>()?.Amount ?? 0;
+        int maxPlating = GetMaxPlating(target);
+        int toApply = Math.Min((int)Amount, Math.Max(0, maxPlating - currentPlating));
+        if (toApply <= 0)
+        {
+            return;
+        }
+
+        Flash();
+        await PowerCmd.Apply<PlatingPower>(Owner, toApply, Owner, null);
+    }
+
+    private static int GetMaxPlating(Creature target)
+    {
+        int actIndex = target.CombatState?.RunState?.CurrentActIndex ?? 0;
+        return 3 + Math.Min(Math.Max(actIndex, 0), 2);
     }
 }
