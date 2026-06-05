@@ -6,7 +6,9 @@ namespace YuWanCard.Badges;
 
 public class PigTycoonBadge : Badge
 {
-    public override string Id => "PIG_TYCOON";
+    public const string BadgeId = "PIG_TYCOON";
+
+    public override string Id => BadgeId;
 
     public override bool RequiresWin => true;
 

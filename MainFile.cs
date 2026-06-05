@@ -76,6 +76,7 @@ public partial class MainFile : Node
         SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
         TranscendenceRegistry.RegisterDefaults();
         CustomBadgeRegistry.Register((run, playerId) => new PigTycoonBadge(run, playerId));
+        CustomBadgeRegistry.Register((run, playerId) => new WerewolfBadge(run, playerId));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
 
         // Phase 4: Config, scene conversions, multiplayer, assets

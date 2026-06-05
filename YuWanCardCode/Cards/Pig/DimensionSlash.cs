@@ -14,6 +14,8 @@ namespace YuWanCard.Cards;
 [Pool(typeof(PigCardPool))]
 public class DimensionSlash : YuWanCardModel
 {
+    private readonly record struct DebuffCopy(PowerModel Canonical, decimal AmountToDouble, decimal AmountToCopy);
+
     public DimensionSlash() : base(
         baseCost: 0,
         type: CardType.Attack,
@@ -41,25 +43,26 @@ public class DimensionSlash : YuWanCardModel
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
 
-        var debuffsToApply = new List<(PowerModel Power, int Amount)>();
-        
-        foreach (var power in target.Powers)
+        // Snapshot first so we can double the target without mutating the enumeration,
+        // then give every other living enemy a fresh debuff instance with the doubled result.
+        var debuffsToCopy = target.Powers
+            .Where(power => power.IsVisible && power.Type == PowerType.Debuff)
+            .Select(TryCaptureDebuffCopy)
+            .OfType<DebuffCopy>()
+            .ToList();
+
+        foreach (var debuff in debuffsToCopy)
         {
-            if (power is PowerModel powerModel && powerModel.Type == PowerType.Debuff)
-            {
-                var doubledAmount = powerModel.Amount * 2;
-                await PowerCmd.Apply(powerModel, target, doubledAmount, Owner.Creature, this);
-                debuffsToApply.Add((powerModel, doubledAmount));
-            }
+            await PowerCmd.Apply(debuff.Canonical.ToMutable(), target, debuff.AmountToDouble, Owner.Creature, this);
         }
 
         var otherEnemies = combatState?.Enemies.Where(e => e != target && e.IsAlive).ToList() ?? new List<Creature>();
-        
+
         foreach (var enemy in otherEnemies)
         {
-            foreach (var (power, amount) in debuffsToApply)
+            foreach (var debuff in debuffsToCopy)
             {
-                await PowerCmd.Apply(power, enemy, amount, Owner.Creature, this);
+                await PowerCmd.Apply(debuff.Canonical.ToMutable(), enemy, debuff.AmountToCopy, Owner.Creature, this);
             }
         }
 
@@ -67,6 +70,34 @@ public class DimensionSlash : YuWanCardModel
         {
             VfxUtils.PlayCentered("res://YuWanCard/scenes/vfx/vfx_glass_shatter.tscn");
             AudioUtils.Play("res://YuWanCard/sounds/vfx/glass_shatter.mp3");
+        }
+    }
+
+    private static DebuffCopy? TryCaptureDebuffCopy(PowerModel power)
+    {
+        if (power.IsInstanced || !PowerSafetyUtils.IsSafePower(power))
+        {
+            return null;
+        }
+
+        var canonical = ModelDb.GetByIdOrNull<PowerModel>(power.Id);
+        if (canonical == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            _ = canonical.ToMutable();
+            decimal baseAmount = power.Amount <= 0 ? 1 : power.Amount;
+            decimal amountToDouble = baseAmount;
+            decimal amountToCopy = power.StackType == PowerStackType.Counter ? baseAmount * 2 : baseAmount;
+            return new DebuffCopy(canonical, amountToDouble, amountToCopy);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"[DimensionSlash] 跳过无法复制的减益 {power.Id}：{ex.Message}");
+            return null;
         }
     }
 }

@@ -21,7 +21,6 @@ using YuWanCard.Cards;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Powers;
 using YuWanCard.Relics;
-using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Modifiers;
 
@@ -49,7 +48,7 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     #region Saved Properties
 
-    public override bool AllowedInCustomRun => false;
+    public override bool AllowedInCustomRun => true;
 
     [SavedProperty]
     public int YUWANCARD_RetainedComboScaled { get; set; }

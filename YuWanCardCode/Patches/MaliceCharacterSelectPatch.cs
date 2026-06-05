@@ -284,7 +284,6 @@ public static class MaliceCharacterSelectModifiersChangedPatch
     public static bool Prefix(NCharacterSelectScreen __instance)
     {
         MaliceCharacterSelectSyncPatch.SyncMalicePanel(__instance);
-        BalatroCharacterSelectSyncPatch.SyncButton(__instance);
         return false;
     }
 }
