@@ -11,6 +11,11 @@ public static class SavedPropertySyncMessageHandler
 
     public static void Register(INetGameService? _ = null)
     {
+        if (!SavedPropertyMultiplayerSync.IsCustomTransportEnabled)
+        {
+            return;
+        }
+
         var buffer = RunManager.Instance?.RunLocationTargetedBuffer;
         if (buffer == null)
         {
@@ -48,6 +53,11 @@ public static class SavedPropertySyncMessageHandler
 
     public static void SendState(Player owner, MultiplayerModelIdentityToken modelToken, SavedProperties properties)
     {
+        if (!SavedPropertyMultiplayerSync.IsCustomTransportEnabled)
+        {
+            return;
+        }
+
         var netService = RunManager.Instance?.NetService;
         var locationBuffer = RunManager.Instance?.RunLocationTargetedBuffer;
         if (netService == null || locationBuffer == null || !netService.IsConnected)
@@ -71,6 +81,11 @@ public static class SavedPropertySyncMessageHandler
 
     private static void HandleMessage(SavedPropertySyncMessage message, ulong senderId)
     {
+        if (!SavedPropertyMultiplayerSync.IsCustomTransportEnabled)
+        {
+            return;
+        }
+
         if (LocalContext.NetId == senderId)
         {
             return;

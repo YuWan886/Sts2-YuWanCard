@@ -24,6 +24,16 @@ public interface IYuWanRightClickableModel
     }
 
     /// <summary>
+    /// 是否需要额外发送 YuWan 自定义右键同步消息。
+    /// 已经自行通过 HookPlayerChoiceContext / 原生 GameAction 接管多人流程的实现应返回 false，
+    /// 避免叠加两套同步后把远端拖进异常状态。
+    /// </summary>
+    bool ShouldSyncRightClick(YuWanRightClickContext context)
+    {
+        return true;
+    }
+
+    /// <summary>
     /// 右键动作实际执行入口。
     /// </summary>
     Task OnRightClick(YuWanRightClickExecutionContext context);

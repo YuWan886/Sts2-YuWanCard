@@ -81,7 +81,6 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
     {
         return Owner != null
                && context.Player == Owner
-               && LocalContext.IsMe(Owner)
                && CombatManager.Instance.IsPlayPhase
                && !CombatManager.Instance.PlayerActionsDisabled
                && YUWANCARD_RemainingTransforms > 0;

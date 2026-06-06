@@ -16,9 +16,13 @@ internal static class SavedPropertyMultiplayerSync
         AccessTools.Method(typeof(RelicModel), "InvokeDisplayAmountChanged");
     private static int _suppressionDepth;
 
+    // Multiplayer action queue/save sync already carries SavedProperty-backed state.
+    // A second out-of-band transport here caused checksum drift and state ping-pong.
+    internal static bool IsCustomTransportEnabled => false;
+
     public static void NotifyPotentialStateChange(AbstractModel model)
     {
-        if (_suppressionDepth > 0 || !SavedPropertySyncRegistry.IsRegisteredModel(model))
+        if (!IsCustomTransportEnabled || _suppressionDepth > 0 || !SavedPropertySyncRegistry.IsRegisteredModel(model))
         {
             return;
         }
@@ -50,6 +54,11 @@ internal static class SavedPropertyMultiplayerSync
 
     public static void ApplyRemoteState(SavedPropertySyncMessage message)
     {
+        if (!IsCustomTransportEnabled)
+        {
+            return;
+        }
+
         if (!MultiplayerModelIdentityRegistry.TryResolve(message.ModelToken, out AbstractModel model))
         {
             MainFile.Logger.Warn(

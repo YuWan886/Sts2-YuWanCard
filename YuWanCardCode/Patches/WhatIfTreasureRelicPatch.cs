@@ -18,6 +18,8 @@ public static class WhatIfTreasureRelicPatch
     {
         public List<RelicModel> DisplayRelics { get; set; } = [];
 
+        public List<RelicModel> CanonicalRelics { get; set; } = [];
+
         public List<RelicModel> OriginalRelics { get; set; } = [];
 
         public Dictionary<ModelId, RelicModel> ObtainMap { get; set; } = [];
@@ -32,9 +34,6 @@ public static class WhatIfTreasureRelicPatch
         AccessTools.FieldRefAccess<NTreasureRoomRelicCollection, List<NTreasureRoomRelicHolder>>("_holdersInUse");
     private static readonly AccessTools.FieldRef<NTreasureRoomRelicCollection, IRunState> RunStateField =
         AccessTools.FieldRefAccess<NTreasureRoomRelicCollection, IRunState>("_runState");
-    private static readonly AccessTools.FieldRef<NRelic, RelicModel?> NRelicModelField =
-        AccessTools.FieldRefAccess<NRelic, RelicModel?>("_model");
-
     [HarmonyPostfix]
     public static void Postfix(TreasureRoomRelicSynchronizer __instance)
     {
@@ -55,21 +54,27 @@ public static class WhatIfTreasureRelicPatch
 
         var replacement = source.GetUniformRelic(runState);
         var displayRelics = new List<RelicModel>(currentRelics.Count);
+        var canonicalRelics = new List<RelicModel>(currentRelics.Count);
         var obtainMap = new Dictionary<ModelId, RelicModel>(currentRelics.Count);
         for (int i = 0; i < currentRelics.Count; i++)
         {
             var displayRelic = replacement.ToMutable();
             displayRelics.Add(displayRelic);
+            canonicalRelics.Add(replacement);
             obtainMap[currentRelics[i].Id] = replacement;
+            obtainMap[displayRelic.Id] = replacement;
+            obtainMap[replacement.Id] = replacement;
         }
 
         ReplacementBoxes.Remove(__instance);
         ReplacementBoxes.Add(__instance, new TreasureRelicReplacementBox
         {
             DisplayRelics = displayRelics,
+            CanonicalRelics = canonicalRelics,
             OriginalRelics = [.. currentRelics],
             ObtainMap = obtainMap
         });
+        CurrentRelicsField(__instance) = canonicalRelics;
         MainFile.Logger.Info(
             $"[WhatIfTreasureRelicPatch] Remapped treasure relic display to {replacement.Id.Entry} x{displayRelics.Count} via {source.GetType().Name}");
     }
@@ -121,17 +126,6 @@ public static class WhatIfTreasureRelicPatch
         if (synchronizer == null || !ReplacementBoxes.TryGetValue(synchronizer, out var box))
         {
             return;
-        }
-
-        var holders = HoldersInUseField(__instance);
-        if (holders.Count == box.OriginalRelics.Count)
-        {
-            for (int i = 0; i < holders.Count; i++)
-            {
-                // Keep the replaced visuals shown in the chest, but restore the
-                // original canonical relic model for the reward-resolution logic.
-                NRelicModelField(holders[i].Relic) = box.OriginalRelics[i];
-            }
         }
 
         box.RemainingObtains = results.Count(static result => result.type != RelicPickingResultType.Skipped);

@@ -60,7 +60,7 @@ public static class YuWanRightClickRegistry
             return false;
         }
 
-        if (ShouldSync())
+        if (ShouldSync() && ShouldSyncContext(context))
         {
             if (!TryCreateMessage(context, bindingIds, out YuWanRightClickSyncMessage message))
             {
@@ -76,6 +76,25 @@ public static class YuWanRightClickRegistry
 
         ExecuteLocal(context.Player, context.Model, context.Trigger, bindingIds);
         return true;
+    }
+
+    private static bool ShouldSyncContext(YuWanRightClickContext context)
+    {
+        if (context.Model is not IYuWanRightClickableModel rightClickable)
+        {
+            return true;
+        }
+
+        try
+        {
+            return rightClickable.ShouldSyncRightClick(context);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn(
+                $"RightClick: interface sync guard failed. model={context.Model.Id} type={context.Model.GetType().FullName} error={ex}");
+            return false;
+        }
     }
 
     internal static void HandleRemoteMessage(YuWanRightClickSyncMessage message)
