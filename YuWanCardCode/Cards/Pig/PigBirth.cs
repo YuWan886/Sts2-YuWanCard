@@ -46,7 +46,7 @@ public class PigBirth : YuWanCardModel
                 this
             );
 
-            var discardList = CombatCardStateHelper.EnsureRegistered(cardsToDiscard, nameof(PigBirth));
+            var discardList = cardsToDiscard.ToList();
             if (discardList.Count > 0)
             {
                 await CardCmd.Discard(choiceContext, discardList);

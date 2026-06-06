@@ -45,7 +45,7 @@ public class PigFishPig : YuWanCardModel
             this
         );
 
-        var discardList = CombatCardStateHelper.EnsureRegistered(cardsToDiscard, nameof(PigFishPig));
+        var discardList = cardsToDiscard.ToList();
         var discardedCard = discardList.FirstOrDefault();
         if (discardedCard == null)
         {

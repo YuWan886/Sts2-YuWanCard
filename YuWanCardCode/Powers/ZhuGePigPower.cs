@@ -37,9 +37,9 @@ public class ZhuGePigPower : YuWanPowerModel
             topCards.Count
         );
 
-        var cardsToDiscard = CombatCardStateHelper.EnsureRegistered(await CardSelectCmd.FromSimpleGrid(
+        var cardsToDiscard = (await CardSelectCmd.FromSimpleGrid(
             choiceContext, topCards, player, prefs
-        ), nameof(ZhuGePigPower));
+        )).ToList();
 
         var cardsToKeep = topCards.Except(cardsToDiscard).ToList();
 
