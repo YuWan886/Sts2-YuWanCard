@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Relics;
@@ -10,29 +11,33 @@ using YuWanCard.RelicPools;
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfChemicalX : WhatIfRelicModel, IWhatIfUniformRelicSource
+public class WhatIfBingBong : WhatIfRelicModel, IWhatIfUniformRelicSource
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        HoverTipFactory.FromRelic<ChemicalX>();
+    public override string PackedIconPath => ImageHelper.GetImagePath("atlases/relic_atlas.sprites/bing_bong.tres");
 
-    public WhatIfChemicalX() : base(true)
+    protected override string PackedIconOutlinePath => ImageHelper.GetImagePath("atlases/relic_outline_atlas.sprites/bing_bong.tres");
+
+    protected override string BigIconPath => ImageHelper.GetImagePath("relics/bing_bong.png");
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+        HoverTipFactory.FromRelic<BingBong>();
+
+    public WhatIfBingBong() : base(true)
     {
     }
 
     public override bool TryModifyRewards(Player player, List<Reward> rewards, AbstractRoom? room)
     {
-        if (player != Owner || Owner == null)
+        if (player != Owner)
         {
             return false;
         }
-
-        var chemicalXModel = ModelDb.Relic<ChemicalX>();
 
         for (int i = 0; i < rewards.Count; i++)
         {
             if (rewards[i] is RelicReward)
             {
-                rewards[i] = new RelicReward(chemicalXModel.ToMutable(), player);
+                rewards[i] = new RelicReward(ModelDb.Relic<BingBong>().ToMutable(), player);
             }
         }
 
@@ -41,6 +46,6 @@ public class WhatIfChemicalX : WhatIfRelicModel, IWhatIfUniformRelicSource
 
     public RelicModel GetUniformRelic(IRunState runState)
     {
-        return ModelDb.Relic<ChemicalX>();
+        return ModelDb.Relic<BingBong>();
     }
 }
