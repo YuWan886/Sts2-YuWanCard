@@ -9,9 +9,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Every 3rd attack card played: gain 5 gold.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class GreedJoker : BalatroJokerRelicModel
 {

@@ -8,9 +8,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// At combat start, gain +3 combo.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class Chip : BalatroRelicModel
 {

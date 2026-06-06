@@ -8,9 +8,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Playing the same card type consecutively grants an extra play.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class MirrorJoker : BalatroJokerRelicModel
 {

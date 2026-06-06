@@ -6,9 +6,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Each card played this turn adds +0.2x to the combo multiplier.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class LegendJoker : BalatroJokerRelicModel
 {

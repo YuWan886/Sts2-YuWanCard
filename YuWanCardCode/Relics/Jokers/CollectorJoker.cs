@@ -8,9 +8,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Every 5 Rare/Ancient cards in deck grants +1 energy at turn start.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class CollectorJoker : BalatroJokerRelicModel
 {

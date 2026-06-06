@@ -126,7 +126,7 @@
   "YUWANCARD-PIG_BLACK_HOLE.description": "消耗任意数量的手牌。每张被消耗的牌造成{Magic:diff()}点伤害。",
   "YUWANCARD-PIG_BLACK_HOLE.selectionScreenPrompt": "选择要消耗的手牌",
   "YUWANCARD-HACKER_PIG.title": "骇客猪",
-  "YUWANCARD-HACKER_PIG.description": "选择手牌中的1张卡牌，附魔[gold]忠诚[/gold]。",
+  "YUWANCARD-HACKER_PIG.description": "选择[gold]手牌[/gold]中一张无消耗的攻击牌或技能牌，为其附魔[gold]忠诚[/gold]。",
   "YUWANCARD-HACKER_PIG.selectionScreenPrompt": "选择1张手牌附魔忠诚",
   "YUWANCARD-BLOOD_WHEEL_EYE.title": "血轮眼",
   "YUWANCARD-BLOOD_WHEEL_EYE.description": "本场战斗所有卡牌获得重放1。",

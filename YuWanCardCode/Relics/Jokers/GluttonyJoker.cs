@@ -9,9 +9,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Every 4th skill card played: heal 3 HP.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class GluttonyJoker : BalatroJokerRelicModel
 {

@@ -13,9 +13,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// At turn start, copy the first card played last turn into hand.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class HolographicJoker : BalatroJokerRelicModel
 {

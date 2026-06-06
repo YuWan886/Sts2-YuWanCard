@@ -7,9 +7,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Cards with editions trigger +1 extra time.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class PolychromeJoker : BalatroJokerRelicModel
 {

@@ -13,9 +13,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// When combo >= 5, deal 8-20 damage to a random enemy on each card played.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class GamblerJoker : BalatroJokerRelicModel
 {

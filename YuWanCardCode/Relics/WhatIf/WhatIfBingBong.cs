@@ -13,12 +13,6 @@ namespace YuWanCard.Relics;
 [Pool(typeof(WhatIfRelicPool))]
 public class WhatIfBingBong : WhatIfRelicModel, IWhatIfUniformRelicSource
 {
-    public override string PackedIconPath => ImageHelper.GetImagePath("atlases/relic_atlas.sprites/bing_bong.tres");
-
-    protected override string PackedIconOutlinePath => ImageHelper.GetImagePath("atlases/relic_outline_atlas.sprites/bing_bong.tres");
-
-    protected override string BigIconPath => ImageHelper.GetImagePath("relics/bing_bong.png");
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         HoverTipFactory.FromRelic<BingBong>();
 
