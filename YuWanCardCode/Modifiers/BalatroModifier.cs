@@ -21,6 +21,7 @@ using YuWanCard.Cards;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Powers;
 using YuWanCard.Relics;
+using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Modifiers;
 
@@ -175,10 +176,18 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
 
         interest = Math.Min(interest, BaseInterestCap + GetCompoundInterestCapBonus(player));
-        interest += 3 * SimpleJokerCount<BankerJoker>(player);
+
+        BankerJoker? bankerJoker = player.GetRelic<BankerJoker>();
+        int bankerBonus = bankerJoker?.GetInterestBonusGold() ?? 0;
+        interest += bankerBonus;
 
         if (interest > 0)
         {
+            if (bankerBonus > 0)
+            {
+                bankerJoker!.Flash();
+            }
+
             MainFile.Logger.Info(
                 $"[BalatroDebug] BalatroModifier.AfterRoomEntered granting interest={interest} currentGold={player.Gold}.");
             await PlayerCmd.GainGold(interest, player);
@@ -554,25 +563,12 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     private static List<RelicModel> GetAvailableJokers(Player player)
     {
-        return GetAllJokerModels()
-            .Where(relic => !player.Relics.Any(r => r.Id == relic.Id))
-            .ToList();
+        return BalatroJokerRelicModel.GetAvailableRewardableJokers(player);
     }
 
     private static IEnumerable<RelicModel> GetAllJokerModels()
     {
-        yield return ModelDb.Relic<GreedJoker>();
-        yield return ModelDb.Relic<GluttonyJoker>();
-        yield return ModelDb.Relic<MirrorJoker>();
-        yield return ModelDb.Relic<MiserJoker>();
-        yield return ModelDb.Relic<CollectorJoker>();
-        yield return ModelDb.Relic<GamblerJoker>();
-        yield return ModelDb.Relic<PolychromeJoker>();
-        yield return ModelDb.Relic<NegativeJoker>();
-        yield return ModelDb.Relic<LegendJoker>();
-        yield return ModelDb.Relic<HolographicJoker>();
-        yield return ModelDb.Relic<BankerJoker>();
-        yield return ModelDb.Relic<InvestorJoker>();
+        return BalatroJokerRelicModel.GetRewardableJokers();
     }
 
     private float CalculateComboGain(Player player, CardModel card)
@@ -637,11 +633,6 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
 
         return legend.GetLegendBonus();
-    }
-
-    private static int SimpleJokerCount<T>(Player player) where T : RelicModel
-    {
-        return player.GetRelic<T>() != null ? 1 : 0;
     }
 
     private Player? GetBalatroPlayer()

@@ -42,17 +42,26 @@ public sealed class GamblerJoker : BalatroJokerRelicModel
             return;
         }
 
-        Creature? target = combatState.Enemies
-            .Where(enemy => !enemy.IsDead)
-            .OrderBy(_ => Owner.RunState.Rng.Niche.NextFloat())
-            .FirstOrDefault();
-        if (target == null)
+        int triggerCount = EffectiveCount();
+        if (triggerCount <= 0)
         {
             return;
         }
 
-        int damage = Owner.RunState.Rng.Niche.NextInt(MinDamage, MaxDamage);
-        await CreatureCmd.Damage(context, target, damage, ValueProp.Move, Owner.Creature, null);
+        for (int i = 0; i < triggerCount; i++)
+        {
+            Creature? target = combatState.Enemies
+                .Where(enemy => !enemy.IsDead)
+                .OrderBy(_ => Owner.RunState.Rng.Niche.NextFloat())
+                .FirstOrDefault();
+            if (target == null)
+            {
+                break;
+            }
+
+            int damage = Owner.RunState.Rng.Niche.NextInt(MinDamage, MaxDamage);
+            await CreatureCmd.Damage(context, target, damage, ValueProp.Move, Owner.Creature, null);
+        }
     }
 
     private static BalatroModifier? GetModifier(Player owner)

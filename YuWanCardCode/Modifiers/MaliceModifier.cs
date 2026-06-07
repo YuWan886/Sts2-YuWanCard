@@ -106,21 +106,17 @@ public sealed class MaliceModifier : YuWanModifierModel
         if (!isElite && !isBoss)
             return false;
 
-        float chance = isBoss ? 1.0f : 0.25f;
+        float chance = isBoss ? 1.0f : 0.10f;
         if (RunState.Rng.Niche.NextFloat() > chance)
             return false;
 
-        var maliceRelics = new RelicModel[]
+        List<RelicModel> availableMaliceRelics = GetAvailableMaliceRelics(player);
+        if (availableMaliceRelics.Count <= 0)
         {
-            ModelDb.Relic<EnvyMalice>(),
-            ModelDb.Relic<GluttonyMalice>(),
-            ModelDb.Relic<GreedMalice>(),
-            ModelDb.Relic<LustMalice>(),
-            ModelDb.Relic<PrideMalice>(),
-            ModelDb.Relic<SlothMalice>(),
-            ModelDb.Relic<WrathMalice>(),
-        };
-        var relic = maliceRelics[RunState.Rng.Niche.NextInt(maliceRelics.Length)];
+            return false;
+        }
+
+        var relic = availableMaliceRelics[RunState.Rng.Niche.NextInt(availableMaliceRelics.Count)];
         rewards.Add(new RelicReward(relic.ToMutable(), player));
         return true;
     }
@@ -222,6 +218,24 @@ public sealed class MaliceModifier : YuWanModifierModel
     public static bool IsMaliceMode(RunState runState)
     {
         return GetMaliceModifier(runState)?.EffectiveMaliceLevel > 0;
+    }
+
+    private static List<RelicModel> GetAvailableMaliceRelics(Player player)
+    {
+        return GetAllMaliceRelics()
+            .Where(relic => !player.Relics.Any(existing => existing.Id == relic.Id))
+            .ToList();
+    }
+
+    private static IEnumerable<RelicModel> GetAllMaliceRelics()
+    {
+        yield return ModelDb.Relic<EnvyMalice>();
+        yield return ModelDb.Relic<GluttonyMalice>();
+        yield return ModelDb.Relic<GreedMalice>();
+        yield return ModelDb.Relic<LustMalice>();
+        yield return ModelDb.Relic<PrideMalice>();
+        yield return ModelDb.Relic<SlothMalice>();
+        yield return ModelDb.Relic<WrathMalice>();
     }
 
     public static HoverTip GetHoverTip(int level)

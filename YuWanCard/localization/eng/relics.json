@@ -297,7 +297,7 @@
   "YUWANCARD-STEEL_JOKER.description": "At end of turn, retain 20% of your Combo for next turn.",
   "YUWANCARD-STEEL_JOKER.flavor": "If it doesn't bend, the Combo won't break.",
   "YUWANCARD-BLUEPRINT.title": "Blueprint",
-  "YUWANCARD-BLUEPRINT.description": "Copy the effect of the Joker in your rightmost Joker slot.",
+  "YUWANCARD-BLUEPRINT.description": "Your other Joker relic effects trigger an additional time.",
   "YUWANCARD-BLUEPRINT.flavor": "Copying the plan still counts as having a plan.",
   "YUWANCARD-BLANK_VOUCHER.title": "Blank Voucher",
   "YUWANCARD-BLANK_VOUCHER.description": "When obtained, choose 1 of 3 random Joker relics to gain.",

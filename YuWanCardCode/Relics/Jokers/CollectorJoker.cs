@@ -39,13 +39,4 @@ public sealed class CollectorJoker : BalatroJokerRelicModel
         }
     }
 
-    private int EffectiveCount()
-    {
-        int count = 1;
-        if (Owner != null && Owner.GetRelic<Blueprint>() != null)
-        {
-            count *= 2;
-        }
-        return count;
-    }
 }

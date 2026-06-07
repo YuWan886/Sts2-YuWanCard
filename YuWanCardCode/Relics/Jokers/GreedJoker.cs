@@ -38,16 +38,6 @@ public sealed class GreedJoker : BalatroJokerRelicModel
         }
     }
 
-    private int EffectiveCount()
-    {
-        int count = 1;
-        if (Owner != null && Owner.GetRelic<Blueprint>() != null)
-        {
-            count *= 2;
-        }
-        return count;
-    }
-
     private BalatroModifier? GetModifier()
     {
         return Owner?.RunState is RunState runState

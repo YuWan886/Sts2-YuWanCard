@@ -8,4 +8,9 @@ namespace YuWanCard.Relics;
 public sealed class Blueprint : BalatroRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Rare;
+
+    public bool CopiesJoker(BalatroJokerRelicModel joker)
+    {
+        return Owner != null && joker.Owner == Owner;
+    }
 }

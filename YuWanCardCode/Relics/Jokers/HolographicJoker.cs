@@ -45,9 +45,18 @@ public sealed class HolographicJoker : BalatroJokerRelicModel
             return;
         }
 
-        CardModel copy = CardModel.FromSerializable(previousCard);
-        combatState.AddCard(copy, player);
-        await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, addedByPlayer: true);
+        int copyCount = EffectiveCount();
+        if (copyCount <= 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < copyCount; i++)
+        {
+            CardModel copy = CardModel.FromSerializable(previousCard);
+            combatState.AddCard(copy, player);
+            await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, addedByPlayer: true);
+        }
     }
 
     private BalatroModifier? GetModifier()

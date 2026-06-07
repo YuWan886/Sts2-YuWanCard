@@ -19,7 +19,7 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 {
-    private const int MaxTransformsPerTurn = 3;
+    private const int MaxTransformsPerTurn = 2;
     private static readonly LocString SelectionPrompt = new("relics", "YUWANCARD-TRANSFORM_TABLE.selectionPrompt");
 
     static TransformTable()
