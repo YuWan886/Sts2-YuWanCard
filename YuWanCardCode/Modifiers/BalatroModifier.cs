@@ -22,6 +22,7 @@ using YuWanCard.Core.Abstracts;
 using YuWanCard.Powers;
 using YuWanCard.Relics;
 using YuWanCard.Relics.Balatro;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Modifiers;
 
@@ -205,11 +206,11 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     #region Turn & Card Hooks
 
-    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (player != GetBalatroPlayer())
         {
-            return;
+            return Task.CompletedTask;
         }
 
         if (RetainedCombo > 0f)
@@ -218,19 +219,7 @@ public sealed class BalatroModifier : YuWanModifierModel
             RetainedCombo = 0f;
         }
 
-        SerializableCard? previousTurnFirstCard = PreviousTurnFirstCard;
-        if (previousTurnFirstCard != null)
-        {
-            CombatState? combatState = player.Creature.CombatState;
-            if (combatState == null)
-            {
-                return;
-            }
-
-            CardModel copy = CardModel.FromSerializable(previousTurnFirstCard);
-            combatState.AddCard(copy, player);
-            await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, addedByPlayer: true);
-        }
+        return Task.CompletedTask;
     }
 
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -384,23 +373,29 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
 
         bool modified = false;
-        float chance = room.RoomType == RoomType.Boss ? 1f : 0.25f;
-        if (RunState.Rng.Niche.NextFloat() <= chance)
+        if (!HasBalatroRelicReward(rewards))
         {
-            List<RelicModel> available = GetAvailableJokers(player);
-            if (available.Count > 0)
+            float jokerChance = room.RoomType == RoomType.Boss ? 0.5f : 0.10f;
+            if (RunState.Rng.Niche.NextFloat() <= jokerChance)
             {
-                RelicModel reward = available[RunState.Rng.Niche.NextInt(available.Count)];
-                rewards.Add(new RelicReward(reward.ToMutable(), player));
-                modified = true;
+                List<RelicModel> available = GetAvailableJokers(player);
+                if (available.Count > 0)
+                {
+                    RelicModel reward = available[RunState.Rng.Niche.NextInt(available.Count)];
+                    rewards.Add(new RelicReward(reward.ToMutable(), player));
+                    modified = true;
+                }
             }
         }
 
-        float tokenChance = room.RoomType == RoomType.Boss ? 0.5f : 0.2f;
-        if (RunState.Rng.Niche.NextFloat() <= tokenChance)
+        if (!HasBalatroRelicReward(rewards))
         {
-            rewards.Add(new RelicReward(ModelDb.Relic<ModifierToken>().ToMutable(), player));
-            modified = true;
+            float tokenChance = room.RoomType == RoomType.Boss ? 0.20f : 0.05f;
+            if (RunState.Rng.Niche.NextFloat() <= tokenChance)
+            {
+                rewards.Add(new RelicReward(ModelDb.Relic<ModifierToken>().ToMutable(), player));
+                modified = true;
+            }
         }
 
         return modified;
@@ -564,6 +559,14 @@ public sealed class BalatroModifier : YuWanModifierModel
     private static List<RelicModel> GetAvailableJokers(Player player)
     {
         return BalatroJokerRelicModel.GetAvailableRewardableJokers(player);
+    }
+
+    private static bool HasBalatroRelicReward(IEnumerable<Reward> rewards)
+    {
+        return rewards
+            .OfType<RelicReward>()
+            .Select(reward => YuWanReflectionHelper.GetPrivateField<RelicModel>(reward, "_relic"))
+            .Any(relic => relic is BalatroRelicModel);
     }
 
     private static IEnumerable<RelicModel> GetAllJokerModels()

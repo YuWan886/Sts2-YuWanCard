@@ -310,7 +310,7 @@
   "YUWANCARD-MERCURY.title": "Mercury",
   "YUWANCARD-MERCURY.description": "For this combat, all Attack cards gain +{IfUpgraded:show:2|1} damage permanently. Exhaust.",
   "YUWANCARD-VENUS.title": "Venus",
-  "YUWANCARD-VENUS.description": "For this combat, all Skill cards with Block gain +{IfUpgraded:show:2|1} Block permanently. Exhaust.",
+  "YUWANCARD-VENUS.description": "For this combat, whenever you gain [gold]Block[/gold] directly from a card, gain {IfUpgraded:show:2|1} additional [gold]Block[/gold]. Exhaust.",
   "YUWANCARD-OBSIDIAN.title": "Obsidian",
   "YUWANCARD-OBSIDIAN.description": "Choose a card in your hand without an edition. Give it [gold]Polychrome[/gold]. {IfUpgraded:show:|Randomly remove another card from your deck.} Exhaust.",
   "YUWANCARD-OBSIDIAN.selectionScreenPrompt": "Choose 1 card to give Polychrome",

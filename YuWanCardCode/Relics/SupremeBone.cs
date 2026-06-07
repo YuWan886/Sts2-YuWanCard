@@ -11,21 +11,39 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core.Persistence;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(SharedRelicPool))]
 public class SupremeBone : YuWanRelicModel
 {
-    [SavedProperty]
-    private bool HasTriggeredLowHpEffectThisCombat { get; set; }
+    private static readonly SavedAttachedState<SupremeBone, bool> HasTriggeredLowHpEffectThisCombatState =
+        new(nameof(HasTriggeredLowHpEffectThisCombat));
 
-    [SavedProperty]
-    private bool HasAddedCardThisCombat { get; set; }
+    private static readonly SavedAttachedState<SupremeBone, bool> HasAddedCardThisCombatState =
+        new(nameof(HasAddedCardThisCombat));
 
-    [SavedProperty]
-    private bool ShouldTriggerDelayedEffect { get; set; }
+    private static readonly SavedAttachedState<SupremeBone, bool> ShouldTriggerDelayedEffectState =
+        new(nameof(ShouldTriggerDelayedEffect));
+
+    private bool HasTriggeredLowHpEffectThisCombat
+    {
+        get => HasTriggeredLowHpEffectThisCombatState.GetValueOrDefault(this, false);
+        set => HasTriggeredLowHpEffectThisCombatState[this] = value;
+    }
+
+    private bool HasAddedCardThisCombat
+    {
+        get => HasAddedCardThisCombatState.GetValueOrDefault(this, false);
+        set => HasAddedCardThisCombatState[this] = value;
+    }
+
+    private bool ShouldTriggerDelayedEffect
+    {
+        get => ShouldTriggerDelayedEffectState.GetValueOrDefault(this, false);
+        set => ShouldTriggerDelayedEffectState[this] = value;
+    }
 
     private List<CardModel>? selectedCards;
 

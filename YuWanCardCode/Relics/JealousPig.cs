@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core.Persistence;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
@@ -15,8 +15,14 @@ namespace YuWanCard.Relics;
 [Pool(typeof(EventRelicPool))]
 public class JealousPig : YuWanRelicModel
 {
-    [SavedProperty]
-    private bool HasTriggeredThisCombat { get; set; }
+    private static readonly SavedAttachedState<JealousPig, bool> HasTriggeredThisCombatState =
+        new(nameof(HasTriggeredThisCombat));
+
+    private bool HasTriggeredThisCombat
+    {
+        get => HasTriggeredThisCombatState.GetValueOrDefault(this, false);
+        set => HasTriggeredThisCombatState[this] = value;
+    }
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 

@@ -311,7 +311,7 @@
   "YUWANCARD-MERCURY.title": "水星",
   "YUWANCARD-MERCURY.description": "本场战斗中，所有攻击牌的伤害永久+{IfUpgraded:show:2|1}。",
   "YUWANCARD-VENUS.title": "金星",
-  "YUWANCARD-VENUS.description": "本场战斗中，所有技能牌若具有格挡数值，则其格挡永久+{IfUpgraded:show:2|1}。",
+  "YUWANCARD-VENUS.description": "本场战斗中，当你从卡牌获得[gold]格挡[/gold]时，额外获得{IfUpgraded:show:2|1}点[gold]格挡[/gold]。",
   "YUWANCARD-OBSIDIAN.title": "黑曜石",
   "YUWANCARD-OBSIDIAN.description": "选择手牌中的1张没有修饰器的牌，赋予其[gold]多彩[/gold]修饰器。{IfUpgraded:show:|随机消耗牌组中的另一张牌。}",
   "YUWANCARD-OBSIDIAN.selectionScreenPrompt": "选择1张手牌赋予多彩",

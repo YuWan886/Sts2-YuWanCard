@@ -11,17 +11,24 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Rewards;
+using YuWanCard.Core.Persistence;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(EventRelicPool))]
 public class GluttonousPig : YuWanRelicModel
 {
+    private static readonly SavedAttachedState<GluttonousPig, bool> HasAddedBuffThisCombatState =
+        new(nameof(HasAddedBuffThisCombat));
+
     [SavedProperty]
     private int CardsEatenCount { get; set; }
 
-    [SavedProperty]
-    private bool HasAddedBuffThisCombat { get; set; }
+    private bool HasAddedBuffThisCombat
+    {
+        get => HasAddedBuffThisCombatState.GetValueOrDefault(this, false);
+        set => HasAddedBuffThisCombatState[this] = value;
+    }
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 

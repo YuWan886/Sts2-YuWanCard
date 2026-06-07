@@ -26,6 +26,19 @@ public static class SavedPropertiesTypeCachePatch
         RefreshNetIdBitSize();
     }
 
+    public static void EnsurePropertyNameRegistered(string propertyName)
+    {
+        if (string.IsNullOrWhiteSpace(propertyName) || PropertyNameToNetIdMap.ContainsKey(propertyName))
+        {
+            return;
+        }
+
+        int netId = NetIdToPropertyNameMap.Count;
+        PropertyNameToNetIdMap[propertyName] = netId;
+        NetIdToPropertyNameMap.Add(propertyName);
+        RefreshNetIdBitSize();
+    }
+
     private static void RefreshNetIdBitSize()
     {
         int newBitSize = (int)Math.Ceiling(Math.Log2(NetIdToPropertyNameMap.Count));
@@ -36,13 +49,8 @@ public static class SavedPropertiesTypeCachePatch
     [HarmonyPatch(typeof(SavedPropertiesTypeCache), nameof(SavedPropertiesTypeCache.GetNetIdForPropertyName))]
     public static bool GetNetIdForPropertyName(string propertyName, ref int __result)
     {
-        if (!PropertyNameToNetIdMap.TryGetValue(propertyName, out int netId))
-        {
-            netId = NetIdToPropertyNameMap.Count;
-            PropertyNameToNetIdMap[propertyName] = netId;
-            NetIdToPropertyNameMap.Add(propertyName);
-            RefreshNetIdBitSize();
-        }
+        EnsurePropertyNameRegistered(propertyName);
+        int netId = PropertyNameToNetIdMap[propertyName];
 
         __result = netId;
         return false;

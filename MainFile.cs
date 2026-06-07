@@ -87,7 +87,6 @@ public partial class MainFile : Node
         Pig.RegisterScenes();
 
         TeammatePayMessageHandler.Register();
-        SavedPropertySyncMessageHandler.Register();
         YuWanRightClickMessageHandler.Register();
 
         AssetPreloader.Preload();

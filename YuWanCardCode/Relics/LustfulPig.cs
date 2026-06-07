@@ -5,7 +5,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core.Persistence;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 
@@ -14,8 +14,14 @@ namespace YuWanCard.Relics;
 [Pool(typeof(EventRelicPool))]
 public class LustfulPig : YuWanRelicModel
 {
-    [SavedProperty]
-    private bool HasAppliedDebuffsThisCombat { get; set; }
+    private static readonly SavedAttachedState<LustfulPig, bool> HasAppliedDebuffsThisCombatState =
+        new(nameof(HasAppliedDebuffsThisCombat));
+
+    private bool HasAppliedDebuffsThisCombat
+    {
+        get => HasAppliedDebuffsThisCombatState.GetValueOrDefault(this, false);
+        set => HasAppliedDebuffsThisCombatState[this] = value;
+    }
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 

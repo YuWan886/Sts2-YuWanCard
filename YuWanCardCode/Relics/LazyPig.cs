@@ -11,21 +11,27 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core.Persistence;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(EventRelicPool))]
 public class LazyPig : YuWanRelicModel
 {
-    [SavedProperty]
-    private int _turnCount;
+    private static readonly SavedAttachedState<LazyPig, int> TurnCountState =
+        new("_turnCount", () => 0);
+
+    private int TurnCount
+    {
+        get => TurnCountState.GetValueOrDefault(this, 0);
+        set => TurnCountState[this] = value;
+    }
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
     public override bool ShowCounter => CombatManager.Instance.IsInProgress;
 
-    public override int DisplayAmount => _turnCount;
+    public override int DisplayAmount => TurnCount;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<DexterityPower>()];
 
@@ -39,9 +45,9 @@ public class LazyPig : YuWanRelicModel
         {
             return;
         }
-        _turnCount++;
+        TurnCount++;
         InvokeDisplayAmountChanged();
-        if (_turnCount % 2 == 0)
+        if (TurnCount % 2 == 0)
         {
             Flash();
             await PowerCmd.Apply<DexterityPower>(player.Creature, 2, player.Creature, null);
@@ -54,14 +60,14 @@ public class LazyPig : YuWanRelicModel
         {
             return Task.CompletedTask;
         }
-        _turnCount = 0;
+        TurnCount = 0;
         InvokeDisplayAmountChanged();
         return Task.CompletedTask;
     }
 
     public override Task AfterCombatEnd(CombatRoom room)
     {
-        _turnCount = 0;
+        TurnCount = 0;
         InvokeDisplayAmountChanged();
         return Task.CompletedTask;
     }

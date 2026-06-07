@@ -7,25 +7,32 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
+using YuWanCard.Core.Persistence;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(SharedRelicPool))]
 public class ReincarnatedEye : YuWanRelicModel
 {
-    static ReincarnatedEye()
+    private static readonly SavedAttachedState<ReincarnatedEye, bool> HasTriggeredThisCombatState =
+        new(nameof(HasTriggeredThisCombat));
+
+    private static readonly SavedAttachedState<ReincarnatedEye, bool> HasAddedCardThisCombatState =
+        new(nameof(HasAddedCardThisCombat));
+
+    private bool HasTriggeredThisCombat
     {
-        SavedPropertyRegistration.RegisterType(typeof(ReincarnatedEye));
+        get => HasTriggeredThisCombatState.GetValueOrDefault(this, false);
+        set => HasTriggeredThisCombatState[this] = value;
     }
 
-    [SavedProperty]
-    private bool HasTriggeredThisCombat { get; set; }
-
-    [SavedProperty]
-    private bool HasAddedCardThisCombat { get; set; }
+    private bool HasAddedCardThisCombat
+    {
+        get => HasAddedCardThisCombatState.GetValueOrDefault(this, false);
+        set => HasAddedCardThisCombatState[this] = value;
+    }
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 

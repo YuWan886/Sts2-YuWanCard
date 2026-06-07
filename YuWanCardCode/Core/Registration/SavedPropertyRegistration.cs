@@ -45,7 +45,6 @@ internal static class SavedPropertyRegistration
         }
 
         SavedPropertiesTypeCachePatch.EnsureTypeRegistered(type);
-        SavedPropertySyncRegistry.RegisterType(type);
         return true;
     }
 

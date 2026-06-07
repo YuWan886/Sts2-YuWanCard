@@ -10,8 +10,8 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Persistence;
 using YuWanCard.Core.RightClick;
 
 namespace YuWanCard.Relics;
@@ -21,14 +21,14 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 {
     private const int MaxTransformsPerTurn = 2;
     private static readonly LocString SelectionPrompt = new("relics", "YUWANCARD-TRANSFORM_TABLE.selectionPrompt");
+    private static readonly SavedAttachedState<TransformTable, int> RemainingTransformsState =
+        new(nameof(YUWANCARD_RemainingTransforms), () => 0);
 
-    static TransformTable()
+    private int YUWANCARD_RemainingTransforms
     {
-        SavedPropertyRegistration.RegisterType(typeof(TransformTable));
+        get => RemainingTransformsState.GetValueOrDefault(this, 0);
+        set => RemainingTransformsState[this] = value;
     }
-
-    [SavedProperty]
-    private int YUWANCARD_RemainingTransforms { get; set; }
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 

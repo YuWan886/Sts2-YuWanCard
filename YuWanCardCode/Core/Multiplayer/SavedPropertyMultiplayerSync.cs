@@ -1,82 +1,15 @@
-using System.Reflection;
-using HarmonyLib;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Runs;
-using MegaCrit.Sts2.Core.Saves.Runs;
-using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Core.Multiplayer;
 
 internal static class SavedPropertyMultiplayerSync
 {
     private static readonly object Gate = new();
-    private static readonly Dictionary<Type, MethodInfo?> AfterDeserializedCache = [];
-    private static readonly MethodInfo? RelicDisplayRefreshMethod =
-        AccessTools.Method(typeof(RelicModel), "InvokeDisplayAmountChanged");
     private static int _suppressionDepth;
-
-    // Multiplayer action queue/save sync already carries SavedProperty-backed state.
-    // A second out-of-band transport here caused checksum drift and state ping-pong.
-    internal static bool IsCustomTransportEnabled => false;
-
-    public static void NotifyPotentialStateChange(AbstractModel model)
-    {
-        if (!IsCustomTransportEnabled || _suppressionDepth > 0 || !SavedPropertySyncRegistry.IsRegisteredModel(model))
-        {
-            return;
-        }
-
-        if (!TryGetSyncOwner(model, out Player owner))
-        {
-            return;
-        }
-
-        if (model is not ModifierModel && !LocalContext.IsMe(owner))
-        {
-            return;
-        }
-
-        EnsureIdentity(model);
-        if (!MultiplayerModelIdentityRegistry.TryGetToken(model, out MultiplayerModelIdentityToken token))
-        {
-            return;
-        }
-
-        SavedProperties? properties = SavedProperties.From(model);
-        if (properties == null)
-        {
-            return;
-        }
-
-        SavedPropertySyncMessageHandler.SendState(owner, token, properties);
-    }
-
-    public static void ApplyRemoteState(SavedPropertySyncMessage message)
-    {
-        if (!IsCustomTransportEnabled)
-        {
-            return;
-        }
-
-        if (!MultiplayerModelIdentityRegistry.TryResolve(message.ModelToken, out AbstractModel model))
-        {
-            MainFile.Logger.Warn(
-                $"SavedPropertySync: failed to resolve token {message.ModelToken.Identity.Value} for {message.ModelToken.ModelId}.");
-            return;
-        }
-
-        using (Suppress())
-        {
-            message.Properties.FillInternal(model);
-            InvokeAfterDeserialized(model);
-            RefreshModelDisplay(model);
-        }
-    }
 
     public static void BeginSavedPropertiesFill(object model)
     {
-        if (model is AbstractModel abstractModel && SavedPropertySyncRegistry.IsRegisteredModel(abstractModel))
+        if (model is AbstractModel)
         {
             EnterSuppression();
         }
@@ -84,7 +17,7 @@ internal static class SavedPropertyMultiplayerSync
 
     public static void EndSavedPropertiesFill(object model)
     {
-        if (model is AbstractModel abstractModel && SavedPropertySyncRegistry.IsRegisteredModel(abstractModel))
+        if (model is AbstractModel)
         {
             ExitSuppression();
         }
@@ -93,79 +26,6 @@ internal static class SavedPropertyMultiplayerSync
     internal static IDisposable SuppressNotifications()
     {
         return Suppress();
-    }
-
-    private static void EnsureIdentity(AbstractModel model)
-    {
-        switch (model)
-        {
-            case MegaCrit.Sts2.Core.Models.CardModel card:
-                MultiplayerModelIdentityRegistry.RegisterCardTree(card);
-                break;
-            case RelicModel relic:
-                MultiplayerModelIdentityRegistry.EnsureRegistered(relic);
-                break;
-            case ModifierModel modifier:
-                MultiplayerModelIdentityRegistry.EnsureRegistered(modifier);
-                break;
-        }
-    }
-
-    private static bool TryGetSyncOwner(AbstractModel model, out Player owner)
-    {
-        owner = (model switch
-        {
-            MegaCrit.Sts2.Core.Models.CardModel card => card.Owner,
-            RelicModel relic => relic.Owner,
-            ModifierModel modifier => ResolveModifierSyncOwner(modifier),
-            _ => null
-        })!;
-
-        if (owner == null)
-        {
-            return false;
-        }
-
-        var netService = RunManager.Instance?.NetService;
-        return netService is { IsConnected: true }
-               && netService.Type is not MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType.Singleplayer
-               and not MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType.Replay;
-    }
-
-    private static Player? ResolveModifierSyncOwner(ModifierModel modifier)
-    {
-        RunState? runState = (modifier as YuWanModifierModel)?.SafeRunState;
-        if (runState == null)
-        {
-            return null;
-        }
-
-        // Run-level modifiers are shared state, so use a stable run anchor rather than
-        // treating the modifier as "owned" by whichever peer is currently local.
-        return runState.Players.FirstOrDefault();
-    }
-
-    private static void InvokeAfterDeserialized(AbstractModel model)
-    {
-        MethodInfo? method;
-        lock (Gate)
-        {
-            if (!AfterDeserializedCache.TryGetValue(model.GetType(), out method))
-            {
-                method = AccessTools.Method(model.GetType(), "AfterDeserialized");
-                AfterDeserializedCache[model.GetType()] = method;
-            }
-        }
-
-        method?.Invoke(model, null);
-    }
-
-    private static void RefreshModelDisplay(AbstractModel model)
-    {
-        if (model is RelicModel)
-        {
-            RelicDisplayRefreshMethod?.Invoke(model, null);
-        }
     }
 
     private static IDisposable Suppress()

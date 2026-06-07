@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.HoverTips;
+using YuWanCard.Core.Persistence;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
@@ -17,8 +18,14 @@ namespace YuWanCard.Relics;
 [Pool(typeof(EventRelicPool))]
 public class GreedyPig : YuWanRelicModel
 {
-    [SavedProperty]
-    private bool HasAddedGreedThisCombat { get; set; }
+    private static readonly SavedAttachedState<GreedyPig, bool> HasAddedGreedThisCombatState =
+        new(nameof(HasAddedGreedThisCombat));
+
+    private bool HasAddedGreedThisCombat
+    {
+        get => HasAddedGreedThisCombatState.GetValueOrDefault(this, false);
+        set => HasAddedGreedThisCombatState[this] = value;
+    }
 
     private GoldModificationGuard? _goldGuard;
 
