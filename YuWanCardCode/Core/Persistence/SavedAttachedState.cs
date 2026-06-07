@@ -112,6 +112,16 @@ public sealed class SavedAttachedState<TKey, TValue> where TKey : class
                 owner.Set((TSavedKey)model, value!);
             }
         }
+
+        public void Clone(object source, object clone)
+        {
+            if (!owner.TryGetValue((TSavedKey)source, out var value))
+            {
+                return;
+            }
+
+            owner.Set((TSavedKey)clone, (TSavedValue)SavedAttachedStateRegistry.CloneValue(value)!);
+        }
     }
 }
 
@@ -122,6 +132,7 @@ internal interface ISavedAttachedState
     Type TargetType { get; }
     bool Export(object model, SavedProperties props);
     void Import(object model, SavedProperties props);
+    void Clone(object source, object clone);
 }
 
 internal static class SavedAttachedStateRegistry
@@ -207,6 +218,25 @@ internal static class SavedAttachedStateRegistry
         foreach (ISavedAttachedState state in GetStatesForModel(model))
         {
             state.Import(model, properties);
+        }
+    }
+
+    internal static void CloneAttachedStates(AbstractModel prototype, AbstractModel clone)
+    {
+        ArgumentNullException.ThrowIfNull(prototype);
+        ArgumentNullException.ThrowIfNull(clone);
+
+        if (ReferenceEquals(prototype, clone))
+        {
+            return;
+        }
+
+        foreach (ISavedAttachedState state in GetStatesForModel(prototype))
+        {
+            if (state.TargetType.IsInstanceOfType(clone))
+            {
+                state.Clone(prototype, clone);
+            }
         }
     }
 
@@ -373,5 +403,63 @@ internal static class SavedAttachedStateRegistry
                 : (T)(object)found.Value.value;
             return true;
         }
+    }
+
+    internal static object? CloneValue(object? value)
+    {
+        return value switch
+        {
+            null => null,
+            int or bool or string or ModelId => value,
+            Enum => value,
+            int[] intArray => (int[])intArray.Clone(),
+            Array enumArray when enumArray.GetType().GetElementType()?.IsEnum == true => enumArray.Clone(),
+            SerializableCard card => CloneSerializableCard(card),
+            SerializableCard[] cardArray => cardArray.Select(CloneSerializableCard).ToArray(),
+            List<SerializableCard> cardList => cardList.Select(CloneSerializableCard).ToList(),
+            _ => value
+        };
+    }
+
+    private static SerializableCard CloneSerializableCard(SerializableCard card)
+    {
+        ArgumentNullException.ThrowIfNull(card);
+        return new SerializableCard
+        {
+            Id = card.Id,
+            CurrentUpgradeLevel = card.CurrentUpgradeLevel,
+            Enchantment = card.Enchantment == null ? null : CloneSerializableEnchantment(card.Enchantment),
+            Props = card.Props == null ? null : CloneSavedProperties(card.Props),
+            FloorAddedToDeck = card.FloorAddedToDeck
+        };
+    }
+
+    private static SerializableEnchantment CloneSerializableEnchantment(SerializableEnchantment enchantment)
+    {
+        ArgumentNullException.ThrowIfNull(enchantment);
+        return new SerializableEnchantment
+        {
+            Id = enchantment.Id,
+            Amount = enchantment.Amount,
+            Props = enchantment.Props == null ? null : CloneSavedProperties(enchantment.Props)
+        };
+    }
+
+    private static SavedProperties CloneSavedProperties(SavedProperties props)
+    {
+        ArgumentNullException.ThrowIfNull(props);
+        return new SavedProperties
+        {
+            ints = props.ints?.Select(static property => new SavedProperties.SavedProperty<int>(property.name, property.value)).ToList(),
+            bools = props.bools?.Select(static property => new SavedProperties.SavedProperty<bool>(property.name, property.value)).ToList(),
+            strings = props.strings?.Select(static property => new SavedProperties.SavedProperty<string>(property.name, property.value)).ToList(),
+            intArrays = props.intArrays?.Select(static property =>
+                new SavedProperties.SavedProperty<int[]>(property.name, (int[])property.value.Clone())).ToList(),
+            modelIds = props.modelIds?.Select(static property => new SavedProperties.SavedProperty<ModelId>(property.name, property.value)).ToList(),
+            cards = props.cards?.Select(static property =>
+                new SavedProperties.SavedProperty<SerializableCard>(property.name, CloneSerializableCard(property.value))).ToList(),
+            cardArrays = props.cardArrays?.Select(static property =>
+                new SavedProperties.SavedProperty<SerializableCard[]>(property.name, property.value.Select(CloneSerializableCard).ToArray())).ToList()
+        };
     }
 }

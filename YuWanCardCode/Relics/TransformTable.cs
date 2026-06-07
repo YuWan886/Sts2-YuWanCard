@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Persistence;
 using YuWanCard.Core.RightClick;
@@ -88,25 +89,12 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 
     public async Task OnRightClick(YuWanRightClickExecutionContext context)
     {
-        if (Owner == null)
+        if (Owner == null || context.PlayerChoiceContext == null)
         {
             return;
         }
 
-        if (context.PlayerChoiceContext != null)
-        {
-            await ExecuteTransform(context.PlayerChoiceContext);
-            return;
-        }
-
-        if (!LocalContext.NetId.HasValue)
-        {
-            return;
-        }
-
-        var hookContext = new HookPlayerChoiceContext(Owner, LocalContext.NetId.Value, GameActionType.CombatPlayPhaseOnly);
-        Task task = ExecuteTransform(hookContext);
-        await hookContext.AssignTaskAndWaitForPauseOrCompletion(task);
+        await ExecuteTransform(context.PlayerChoiceContext);
     }
 
     private async Task ExecuteTransform(PlayerChoiceContext choiceContext)
@@ -134,7 +122,15 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
             return;
         }
 
-        int convertedEnergy = GetConvertibleEnergy(selectedCard);
+        CardModel? resolvedCard = ResolveSelectedHandCard(selectedCard);
+        if (resolvedCard == null)
+        {
+            MainFile.Logger.Warn(
+                $"[{nameof(TransformTable)}] Failed to resolve selected hand card for owner {Owner.NetId}: {selectedCard}");
+            return;
+        }
+
+        int convertedEnergy = GetConvertibleEnergy(resolvedCard);
         if (convertedEnergy <= 0)
         {
             return;
@@ -142,7 +138,7 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 
         Flash();
         await PlayerCmd.GainEnergy(convertedEnergy, Owner);
-        await CardPileCmd.RemoveFromCombat(selectedCard);
+        await CardPileCmd.RemoveFromCombat(resolvedCard);
         SetRemainingTransforms(YUWANCARD_RemainingTransforms - 1);
     }
 
@@ -171,6 +167,45 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
         }
 
         return card.EnergyCost.GetResolved();
+    }
+
+    private CardModel? ResolveSelectedHandCard(CardModel? selectedCard)
+    {
+        if (Owner == null || selectedCard == null)
+        {
+            return null;
+        }
+
+        if (selectedCard.Owner == Owner && selectedCard.Pile?.Type == PileType.Hand)
+        {
+            return selectedCard;
+        }
+
+        if (NetCombatCardDb.Instance.TryGetCardId(selectedCard, out uint combatCardId)
+            && NetCombatCardDb.Instance.TryGetCard(combatCardId, out CardModel? combatCard)
+            && combatCard?.Owner == Owner
+            && combatCard.Pile?.Type == PileType.Hand)
+        {
+            return combatCard;
+        }
+
+        SerializableCard serializedCard = selectedCard.ToSerializable();
+        return PileType.Hand.GetPile(Owner).Cards.FirstOrDefault(card => MatchesSelection(card, serializedCard, selectedCard));
+    }
+
+    private static bool MatchesSelection(CardModel candidate, SerializableCard serializedCard, CardModel selectedCard)
+    {
+        if (!candidate.IsMutable || candidate.Pile?.Type != PileType.Hand)
+        {
+            return false;
+        }
+
+        if (!candidate.ToSerializable().Equals(serializedCard))
+        {
+            return false;
+        }
+
+        return candidate.EnergyCost?.GetResolved() == selectedCard.EnergyCost?.GetResolved();
     }
 
     private void SetRemainingTransforms(int value)
