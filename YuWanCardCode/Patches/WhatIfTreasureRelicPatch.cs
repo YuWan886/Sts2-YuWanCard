@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.TreasureRelicPicking;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
-using MegaCrit.Sts2.Core.Nodes.Relics;
 using MegaCrit.Sts2.Core.Nodes.Screens.TreasureRoomRelic;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Relics;

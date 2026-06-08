@@ -9,11 +9,12 @@ using MegaCrit.Sts2.Core.Multiplayer.Replay;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Multiplayer.Transport;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Core.Multiplayer;
 using YuWanCard.Core.RightClick;
 
 namespace YuWanCard.Core.Patches;
 
-internal static class RightClickManagedActionNetPatchHelpers
+internal static class ManagedActionNetPatchHelpers
 {
     private const int ReplayEventTypeBits = 3;
     private const int ReplayGameActionPlayerIdBits = 64;
@@ -36,6 +37,7 @@ internal static class RightClickManagedActionNetPatchHelpers
 
     public static bool TrySendManagedClientRequest(ActionQueueSynchronizer synchronizer, GameAction action)
     {
+        YuWanRightClickManagedActions.EnsureRegistered();
         if (action.ActionType == GameActionType.CombatPlayPhaseOnly
             && synchronizer.CombatState == ActionSynchronizerCombatState.NotPlayPhase)
         {
@@ -52,7 +54,7 @@ internal static class RightClickManagedActionNetPatchHelpers
             return false;
         }
 
-        if (action.ToNetAction() is not YuWanRightClickManagedNetAction netAction)
+        if (action.ToNetAction() is not YuWanManagedNetAction netAction)
         {
             return false;
         }
@@ -71,12 +73,13 @@ internal static class RightClickManagedActionNetPatchHelpers
         GameAction action,
         ulong actionOwnerId)
     {
+        YuWanRightClickManagedActions.EnsureRegistered();
         if (NetServiceRef(synchronizer) is not NetHostGameService { IsConnected: true, NetHost: not null } host)
         {
             return false;
         }
 
-        if (action.ToNetAction() is not YuWanRightClickManagedNetAction netAction)
+        if (action.ToNetAction() is not YuWanManagedNetAction netAction)
         {
             return false;
         }
@@ -116,7 +119,7 @@ internal static class RightClickManagedActionNetPatchHelpers
     {
         PacketWriter writer = CreateMessageWriter(senderId, message);
         writer.Write(message.location);
-        YuWanRightClickManagedActions.TryWriteNetAction(writer, message.action);
+        YuWanManagedNetActions.TryWriteNetAction(writer, message.action);
         return (writer.Buffer, (int)Math.Ceiling(writer.BitPosition / 8f));
     }
 
@@ -127,7 +130,7 @@ internal static class RightClickManagedActionNetPatchHelpers
         PacketWriter writer = CreateMessageWriter(senderId, message);
         writer.WriteULong(message.playerId);
         writer.Write(message.location);
-        YuWanRightClickManagedActions.TryWriteNetAction(writer, message.action);
+        YuWanManagedNetActions.TryWriteNetAction(writer, message.action);
         return (writer.Buffer, (int)Math.Ceiling(writer.BitPosition / 8f));
     }
 
@@ -149,9 +152,9 @@ internal static class RightClickManagedActionNetPatchHelpers
 
     public static bool ReplayEventPayloadIsManagedGameAction(PacketReader reader)
     {
-        return YuWanRightClickManagedActions.TryPeekInt(reader, 0, ReplayEventTypeBits, out int eventType)
+        return YuWanManagedNetActions.TryPeekInt(reader, 0, ReplayEventTypeBits, out int eventType)
                && eventType == (int)CombatReplayEventType.GameAction
-               && YuWanRightClickManagedActions.NextPayloadIsManagedAction(reader, ReplayGameActionPayloadOffsetBits);
+               && YuWanManagedNetActions.NextPayloadIsManagedAction(reader, ReplayGameActionPayloadOffsetBits);
     }
 }
 
@@ -162,7 +165,7 @@ public static class RightClickManagedActionRequestEnqueuePatch
     [HarmonyPatch(nameof(ActionQueueSynchronizer.RequestEnqueue), [typeof(GameAction)])]
     public static bool Prefix(ActionQueueSynchronizer __instance, GameAction action)
     {
-        return !RightClickManagedActionNetPatchHelpers.TrySendManagedClientRequest(__instance, action);
+        return !ManagedActionNetPatchHelpers.TrySendManagedClientRequest(__instance, action);
     }
 }
 
@@ -173,7 +176,7 @@ public static class RightClickManagedActionEnqueuePatch
     [HarmonyPatch("EnqueueAction", [typeof(GameAction), typeof(ulong)])]
     public static bool Prefix(ActionQueueSynchronizer __instance, GameAction action, ulong actionOwnerId)
     {
-        return !RightClickManagedActionNetPatchHelpers.TrySendManagedHostAnnouncement(__instance, action, actionOwnerId);
+        return !ManagedActionNetPatchHelpers.TrySendManagedHostAnnouncement(__instance, action, actionOwnerId);
     }
 }
 
@@ -184,13 +187,14 @@ public static class RightClickManagedActionRequestMessagePatch
     [HarmonyPatch(nameof(RequestEnqueueActionMessage.Serialize), [typeof(PacketWriter)])]
     public static bool SerializePrefix(RequestEnqueueActionMessage __instance, PacketWriter writer)
     {
-        if (__instance.action is not YuWanRightClickManagedNetAction)
+        YuWanRightClickManagedActions.EnsureRegistered();
+        if (__instance.action is not YuWanManagedNetAction)
         {
             return true;
         }
 
         writer.Write(__instance.location);
-        YuWanRightClickManagedActions.TryWriteNetAction(writer, __instance.action);
+        YuWanManagedNetActions.TryWriteNetAction(writer, __instance.action);
         return false;
     }
 
@@ -198,14 +202,15 @@ public static class RightClickManagedActionRequestMessagePatch
     [HarmonyPatch(nameof(RequestEnqueueActionMessage.Deserialize), [typeof(PacketReader)])]
     public static bool DeserializePrefix(ref RequestEnqueueActionMessage __instance, PacketReader reader)
     {
-        PacketReader probe = RightClickManagedActionNetPatchHelpers.CreateProbeReader(reader);
+        YuWanRightClickManagedActions.EnsureRegistered();
+        PacketReader probe = ManagedActionNetPatchHelpers.CreateProbeReader(reader);
         RunLocation location = probe.Read<RunLocation>();
-        if (!YuWanRightClickManagedActions.NextPayloadIsManagedAction(probe))
+        if (!YuWanManagedNetActions.NextPayloadIsManagedAction(probe))
         {
             return true;
         }
 
-        INetAction action = YuWanRightClickManagedActions.ReadNetAction(probe);
+        INetAction action = YuWanManagedNetActions.ReadNetAction(probe);
         __instance.location = location;
         __instance.action = action;
         reader.BitPosition = probe.BitPosition;
@@ -220,14 +225,15 @@ public static class RightClickManagedActionAnnouncementMessagePatch
     [HarmonyPatch(nameof(ActionEnqueuedMessage.Serialize), [typeof(PacketWriter)])]
     public static bool SerializePrefix(ActionEnqueuedMessage __instance, PacketWriter writer)
     {
-        if (__instance.action is not YuWanRightClickManagedNetAction)
+        YuWanRightClickManagedActions.EnsureRegistered();
+        if (__instance.action is not YuWanManagedNetAction)
         {
             return true;
         }
 
         writer.WriteULong(__instance.playerId);
         writer.Write(__instance.location);
-        YuWanRightClickManagedActions.TryWriteNetAction(writer, __instance.action);
+        YuWanManagedNetActions.TryWriteNetAction(writer, __instance.action);
         return false;
     }
 
@@ -235,15 +241,16 @@ public static class RightClickManagedActionAnnouncementMessagePatch
     [HarmonyPatch(nameof(ActionEnqueuedMessage.Deserialize), [typeof(PacketReader)])]
     public static bool DeserializePrefix(ref ActionEnqueuedMessage __instance, PacketReader reader)
     {
-        PacketReader probe = RightClickManagedActionNetPatchHelpers.CreateProbeReader(reader);
+        YuWanRightClickManagedActions.EnsureRegistered();
+        PacketReader probe = ManagedActionNetPatchHelpers.CreateProbeReader(reader);
         ulong playerId = probe.ReadULong();
         RunLocation location = probe.Read<RunLocation>();
-        if (!YuWanRightClickManagedActions.NextPayloadIsManagedAction(probe))
+        if (!YuWanManagedNetActions.NextPayloadIsManagedAction(probe))
         {
             return true;
         }
 
-        INetAction action = YuWanRightClickManagedActions.ReadNetAction(probe);
+        INetAction action = YuWanManagedNetActions.ReadNetAction(probe);
         __instance.playerId = playerId;
         __instance.location = location;
         __instance.action = action;
@@ -261,15 +268,16 @@ public static class RightClickManagedActionReplayPatch
     [HarmonyPatch(nameof(CombatReplayEvent.Serialize), [typeof(PacketWriter)])]
     public static bool SerializePrefix(CombatReplayEvent __instance, PacketWriter writer)
     {
+        YuWanRightClickManagedActions.EnsureRegistered();
         if (__instance.eventType != CombatReplayEventType.GameAction
-            || __instance.action is not YuWanRightClickManagedNetAction)
+            || __instance.action is not YuWanManagedNetAction)
         {
             return true;
         }
 
         writer.WriteInt((int)__instance.eventType, ReplayEventTypeBits);
         writer.WriteULong(__instance.playerId!.Value);
-        YuWanRightClickManagedActions.TryWriteNetAction(writer, __instance.action);
+        YuWanManagedNetActions.TryWriteNetAction(writer, __instance.action);
         return false;
     }
 
@@ -277,14 +285,15 @@ public static class RightClickManagedActionReplayPatch
     [HarmonyPatch(nameof(CombatReplayEvent.Deserialize), [typeof(PacketReader)])]
     public static bool DeserializePrefix(ref CombatReplayEvent __instance, PacketReader reader)
     {
-        if (!RightClickManagedActionNetPatchHelpers.ReplayEventPayloadIsManagedGameAction(reader))
+        YuWanRightClickManagedActions.EnsureRegistered();
+        if (!ManagedActionNetPatchHelpers.ReplayEventPayloadIsManagedGameAction(reader))
         {
             return true;
         }
 
         __instance.eventType = (CombatReplayEventType)reader.ReadInt(ReplayEventTypeBits);
         __instance.playerId = reader.ReadULong();
-        __instance.action = YuWanRightClickManagedActions.ReadNetAction(reader);
+        __instance.action = YuWanManagedNetActions.ReadNetAction(reader);
         return false;
     }
 }

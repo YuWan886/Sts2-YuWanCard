@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using YuWanCard.Relics;
 
 namespace YuWanCard.Powers;
 
@@ -36,6 +37,11 @@ public class PigCoinPower : YuWanPowerModel
     {
         if (side == Owner.Side && Amount > 0)
         {
+            if (Owner.Player?.GetRelic<PerpetualPigRune>() != null)
+            {
+                return;
+            }
+
             Flash();
             await PowerCmd.Decrement(this);
         }

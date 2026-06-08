@@ -76,11 +76,13 @@ public static class YuWanRightClickRegistry
     {
         if (!TryGetPlayer(payload.OwnerNetId, out Player player))
         {
+            MainFile.Logger.Warn($"RightClick: failed to resolve player for managed payload owner={payload.OwnerNetId} kind={payload.Kind} model={payload.ModelToken.ModelId}.");
             return;
         }
 
         if (!TryResolveModel(player, payload.Kind, payload.ModelToken, out AbstractModel model))
         {
+            MainFile.Logger.Warn($"RightClick: failed to resolve model for managed payload owner={payload.OwnerNetId} kind={payload.Kind} model={payload.ModelToken.ModelId} token={payload.ModelToken.Identity.Value}.");
             return;
         }
 
@@ -269,15 +271,12 @@ public static class YuWanRightClickRegistry
         out AbstractModel model)
     {
         model = null!;
-        if (!MultiplayerModelIdentityRegistry.TryResolve(token, out AbstractModel resolved))
-        {
-            return false;
-        }
+        bool hasResolved = MultiplayerModelIdentityRegistry.TryResolve(token, out AbstractModel resolved);
 
         switch (kind)
         {
             case YuWanRightClickModelKind.Card:
-                if (resolved is not CardModel card || card.Owner != player || card.Pile?.Type != PileType.Hand)
+                if (!hasResolved || resolved is not CardModel card || card.Owner != player || card.Pile?.Type != PileType.Hand)
                 {
                     return false;
                 }
@@ -286,16 +285,25 @@ public static class YuWanRightClickRegistry
                 return true;
 
             case YuWanRightClickModelKind.Relic:
-                if (resolved is not RelicModel relic || relic.Owner != player)
+                if (hasResolved && resolved is RelicModel relic && relic.Owner == player)
+                {
+                    model = relic;
+                    return true;
+                }
+
+                List<RelicModel> fallbackRelics = player.Relics.Where(candidate => candidate.Id == token.ModelId).ToList();
+                if (fallbackRelics.Count != 1)
                 {
                     return false;
                 }
 
-                model = relic;
+                RelicModel fallbackRelic = fallbackRelics[0];
+                MultiplayerModelIdentityRegistry.EnsureRegistered(fallbackRelic);
+                model = fallbackRelic;
                 return true;
 
             case YuWanRightClickModelKind.Power:
-                if (resolved is not PowerModel power || !IsPowerReachableForPlayer(power, player))
+                if (!hasResolved || resolved is not PowerModel power || !IsPowerReachableForPlayer(power, player))
                 {
                     return false;
                 }
@@ -304,12 +312,21 @@ public static class YuWanRightClickRegistry
                 return true;
 
             case YuWanRightClickModelKind.Potion:
-                if (resolved is not PotionModel potion || potion.Owner != player)
+                if (hasResolved && resolved is PotionModel potion && potion.Owner == player)
+                {
+                    model = potion;
+                    return true;
+                }
+
+                List<PotionModel> fallbackPotions = player.PotionSlots.Where(candidate => candidate?.Id == token.ModelId).OfType<PotionModel>().ToList();
+                if (fallbackPotions.Count != 1)
                 {
                     return false;
                 }
 
-                model = potion;
+                PotionModel fallbackPotion = fallbackPotions[0];
+                MultiplayerModelIdentityRegistry.EnsureRegistered(fallbackPotion);
+                model = fallbackPotion;
                 return true;
 
             default:

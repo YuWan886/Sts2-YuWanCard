@@ -2,7 +2,6 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -10,7 +9,6 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Persistence;
 using YuWanCard.Core.RightClick;
@@ -171,41 +169,7 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 
     private CardModel? ResolveSelectedHandCard(CardModel? selectedCard)
     {
-        if (Owner == null || selectedCard == null)
-        {
-            return null;
-        }
-
-        if (selectedCard.Owner == Owner && selectedCard.Pile?.Type == PileType.Hand)
-        {
-            return selectedCard;
-        }
-
-        if (NetCombatCardDb.Instance.TryGetCardId(selectedCard, out uint combatCardId)
-            && NetCombatCardDb.Instance.TryGetCard(combatCardId, out CardModel? combatCard)
-            && combatCard?.Owner == Owner
-            && combatCard.Pile?.Type == PileType.Hand)
-        {
-            return combatCard;
-        }
-
-        SerializableCard serializedCard = selectedCard.ToSerializable();
-        return PileType.Hand.GetPile(Owner).Cards.FirstOrDefault(card => MatchesSelection(card, serializedCard, selectedCard));
-    }
-
-    private static bool MatchesSelection(CardModel candidate, SerializableCard serializedCard, CardModel selectedCard)
-    {
-        if (!candidate.IsMutable || candidate.Pile?.Type != PileType.Hand)
-        {
-            return false;
-        }
-
-        if (!candidate.ToSerializable().Equals(serializedCard))
-        {
-            return false;
-        }
-
-        return candidate.EnergyCost?.GetResolved() == selectedCard.EnergyCost?.GetResolved();
+        return CombatCardStateHelper.ResolveSelectedHandCard(Owner, selectedCard);
     }
 
     private void SetRemainingTransforms(int value)

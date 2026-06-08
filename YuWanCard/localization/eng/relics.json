@@ -111,7 +111,7 @@
   "YUWANCARD-HEXTECH_SHOPPING_CART_RUNE.description": "Requires [gold]Shopping Cart[/gold]. Items placed in the cart cost [blue]{DiscountPercent}%[/blue] less.",
   "YUWANCARD-HEXTECH_SHOPPING_CART_RUNE.flavor": "This purchase finally pays for itself.",
   "YUWANCARD-PERPETUAL_PIG_RUNE.title": "Perpetual Pig",
-  "YUWANCARD-PERPETUAL_PIG_RUNE.description": "Your [gold]PigVampiricPower[/gold] and [gold]PigCoinPower[/gold] gain extra duration and no longer decay at their normal pace.",
+  "YUWANCARD-PERPETUAL_PIG_RUNE.description": "Your [gold]PigVampiricPower[/gold] and [gold]PigCoinPower[/gold] no longer naturally lose stacks.",
   "YUWANCARD-PERPETUAL_PIG_RUNE.flavor": "Once the engine starts, it never stops.",
   "YUWANCARD-PIGLET_COLLAR_FORGE.title": "Piglet Collar",
   "YUWANCARD-PIGLET_COLLAR_FORGE.description": "At the start of combat, gain 1 [gold]Pig Friends[/gold].",
