@@ -28,7 +28,7 @@ public sealed class Chip : BalatroRelicModel
             return;
         }
 
-        modifier.ComboCounter = Math.Min(30f, modifier.ComboCounter + 3f);
+        modifier.AddCombo(Owner, 3f);
     }
 
     private BalatroModifier? GetModifier()

@@ -13,7 +13,7 @@ public sealed class LegendJoker : BalatroJokerRelicModel
 
     /// <summary>
     /// Returns the bonus multiplier: cardsPlayedThisTurn * 0.2 * effectiveCount.
-    /// Called by BalatroModifier.ComboMultiplier.
+    /// Called by BalatroModifier.GetComboMultiplier(Player).
     /// </summary>
     public float GetLegendBonus()
     {
@@ -28,7 +28,7 @@ public sealed class LegendJoker : BalatroJokerRelicModel
             return 0f;
         }
 
-        return modifier.CardsPlayedThisTurn * 0.2f * EffectiveCount();
+        return modifier.GetCardsPlayedThisTurn(Owner) * 0.2f * EffectiveCount();
     }
 
     private BalatroModifier? GetModifier()

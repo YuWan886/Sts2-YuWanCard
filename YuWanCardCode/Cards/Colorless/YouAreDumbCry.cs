@@ -42,10 +42,16 @@ public class YouAreDumbCry : YuWanCardModel
         await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
 
         int cryCount = DynamicVars["CryCount"].IntValue;
+        List<CardPileAddResult> results = new();
         for (int i = 0; i < cryCount; i++)
         {
             var cryCard = CombatState!.CreateCard(ModelDb.Card<PigAlwaysCry>(), targetPlayer);
-            await CardPileCmd.AddGeneratedCardToCombat(cryCard, PileType.Draw, addedByPlayer: true);
+            results.Add(await CardPileCmd.AddGeneratedCardToCombat(cryCard, PileType.Draw, addedByPlayer: true));
+        }
+
+        if (results.Count > 0)
+        {
+            CardCmd.PreviewCardPileAdd(results);
         }
     }
 }

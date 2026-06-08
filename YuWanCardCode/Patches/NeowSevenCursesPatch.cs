@@ -6,6 +6,8 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
+using System.Security.Cryptography;
+using System.Text;
 using YuWanCard.Config;
 using YuWanCard.RelicPools;
 using YuWanCard.Relics;
@@ -110,8 +112,7 @@ class NeowSevenCursesPatch
 
     private static IReadOnlyList<EventOption> CreateWhatIfScreen(Neow neow)
     {
-        var pool = ModelDb.RelicPool<WhatIfRelicPool>();
-        var selected = pool.AllRelics.Distinct().ToList().UnstableShuffle(neow.Rng).Take(3);
+        var selected = SelectDeterministicWhatIfRelics(neow);
 
         var options = new List<EventOption>();
         foreach (var relic in selected)
@@ -137,6 +138,37 @@ class NeowSevenCursesPatch
         }, "YUWANCARD-WHAT_IF_SKIP", "relics"));
 
         return options;
+    }
+
+    private static IReadOnlyList<RelicModel> SelectDeterministicWhatIfRelics(Neow neow)
+    {
+        var pool = ModelDb.RelicPool<WhatIfRelicPool>();
+        var runState = neow.Owner?.RunState;
+        bool isMultiplayer = runState?.Players.Count > 1;
+
+        IEnumerable<RelicModel> candidates = pool.AllRelics
+            .GroupBy(static relic => relic.Id.Entry, StringComparer.Ordinal)
+            .Select(static group => group.First());
+
+        if (isMultiplayer)
+        {
+            candidates = candidates.Where(static relic => relic is not WhatIfAllRelics);
+        }
+
+        string seed = runState?.Rng.StringSeed ?? string.Empty;
+
+        return candidates
+            .OrderBy(relic => ComputeDeterministicSelectionKey(seed, relic.Id.Entry))
+            .ThenBy(static relic => relic.Id.Entry, StringComparer.Ordinal)
+            .Take(3)
+            .ToList();
+    }
+
+    private static ulong ComputeDeterministicSelectionKey(string seed, string relicId)
+    {
+        var bytes = Encoding.UTF8.GetBytes($"{seed}|YUWANCARD-NEOW-WHAT_IF|{relicId}");
+        var hash = SHA256.HashData(bytes);
+        return BitConverter.ToUInt64(hash, 0);
     }
 
     // ── Helpers ─────────────────────────────────────────────

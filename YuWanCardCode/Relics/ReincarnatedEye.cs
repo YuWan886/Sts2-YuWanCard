@@ -120,7 +120,8 @@ public class ReincarnatedEye : YuWanRelicModel
         if (isHandFull)
         {
             // 手牌已满，将卡牌放置到抽牌堆顶部
-            await CardPileCmd.Add(copiedCard, PileType.Draw, CardPilePosition.Top);
+            CardPileAddResult addResult = await CardPileCmd.Add(copiedCard, PileType.Draw, CardPilePosition.Top);
+            CardCmd.PreviewCardPileAdd(addResult);
             MainFile.Logger.Info($"ReincarnatedEye: Copied {cardToCopy.Title} to top of draw pile (hand full)");
         }
         else

@@ -40,7 +40,8 @@ public class BigBenPig : YuWanCardModel
         {
             CardCmd.Upgrade(benPig);
         }
-        await CardPileCmd.AddGeneratedCardToCombat(benPig, PileType.Draw, addedByPlayer: true);
+        CardPileAddResult addResult = await CardPileCmd.AddGeneratedCardToCombat(benPig, PileType.Draw, addedByPlayer: true);
+        CardCmd.PreviewCardPileAdd(addResult);
 
         VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
     }

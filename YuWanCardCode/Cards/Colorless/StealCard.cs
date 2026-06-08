@@ -46,7 +46,8 @@ public class StealCard : YuWanCardModel
         {
             await CardPileCmd.Add(selectedCard, PileType.Exhaust);
 
-            var newCard = CardCopyHelper.CreateCopy(selectedCard, Owner);
+            var newCard = CardCopyHelper.CreateCombatCopy(selectedCard, Owner);
+            if (newCard == null) return;
             await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, addedByPlayer: true);
         }
     }

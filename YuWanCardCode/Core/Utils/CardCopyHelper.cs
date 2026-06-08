@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 
@@ -9,6 +10,19 @@ internal static class CardCopyHelper
     {
         CardModel copy = CardModel.FromSerializable(source.ToSerializable());
         copy.Owner = owner;
+        return copy;
+    }
+
+    public static CardModel? CreateCombatCopy(CardModel source, Player owner)
+    {
+        CombatState? combatState = owner.Creature?.CombatState;
+        if (combatState == null)
+        {
+            return null;
+        }
+
+        CardModel copy = CardModel.FromSerializable(source.ToSerializable());
+        combatState.AddCard(copy, owner);
         return copy;
     }
 }

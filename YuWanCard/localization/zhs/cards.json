@@ -300,7 +300,7 @@
   "YUWANCARD-MAGICIAN.description": "选择手牌中的1张可[gold]变化[/gold]卡牌，将其变化为1张随机的同费用牌。",
   "YUWANCARD-MAGICIAN.selectionScreenPrompt": "选择1张手牌进行变化",
   "YUWANCARD-PRIESTESS.title": "女祭司",
-  "YUWANCARD-PRIESTESS.description": "选择手牌中的1张牌，复制1份加入[gold]抽牌堆[/gold]。{IfUpgraded:show:改为复制2份。|}",
+  "YUWANCARD-PRIESTESS.description": "选择手牌中的1张牌，复制{IfUpgraded:show:2|1}份加入[gold]抽牌堆[/gold]。",
   "YUWANCARD-PRIESTESS.selectionScreenPrompt": "选择1张手牌进行复制",
   "YUWANCARD-EMPEROR.title": "皇帝",
   "YUWANCARD-EMPEROR.description": "选择手牌中的1张牌，将其耗能永久设为0。{IfUpgraded:show:可额外选择1张。|}",

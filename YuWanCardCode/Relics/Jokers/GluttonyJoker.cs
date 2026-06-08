@@ -31,7 +31,7 @@ public sealed class GluttonyJoker : BalatroJokerRelicModel
             return;
         }
 
-        if (modifier.SkillCardsThisTurn % 4 == 0)
+        if (modifier.GetSkillCardsThisTurn(Owner) % 4 == 0)
         {
             int multiplier = EffectiveCount();
             await CreatureCmd.Heal(Owner.Creature, HealPerTrigger * multiplier);

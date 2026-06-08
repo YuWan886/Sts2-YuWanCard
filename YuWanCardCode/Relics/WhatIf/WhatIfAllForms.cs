@@ -36,6 +36,7 @@ public class WhatIfAllForms : WhatIfRelicModel
             .Select(card => Owner.RunState.CreateCard(card, Owner))
             .ToList();
 
-        await CardPileCmd.Add(cardsToAdd, PileType.Deck);
+        var addResults = await CardPileCmd.Add(cardsToAdd, PileType.Deck);
+        CardCmd.PreviewCardPileAdd(addResults);
     }
 }

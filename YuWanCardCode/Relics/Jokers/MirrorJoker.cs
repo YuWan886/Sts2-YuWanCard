@@ -23,7 +23,7 @@ public sealed class MirrorJoker : BalatroJokerRelicModel
         }
 
         BalatroModifier? modifier = GetModifier();
-        if (modifier?.LastCardTypeThisTurn == card.Type)
+        if (modifier?.GetLastCardTypeThisTurn(Owner) == card.Type)
         {
             result += EffectiveCount();
         }

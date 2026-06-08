@@ -29,7 +29,7 @@ public sealed class Dice : BalatroRelicModel
         }
 
         int roll = Owner.RunState.Rng.Niche.NextInt(1, 4);
-        modifier.ComboCounter = Math.Max(modifier.ComboCounter, roll);
+        modifier.SetComboAtLeast(Owner, roll);
     }
 
     private BalatroModifier? GetModifier()

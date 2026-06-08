@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Hextech;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Utils;
@@ -124,6 +125,32 @@ public static class ShoppingCartManager
         return false;
     }
 
+    public static bool CanAddToCart(MerchantEntry? entry)
+    {
+        return entry switch
+        {
+            MerchantCardEntry cardEntry => cardEntry.CreationResult?.Card != null,
+            MerchantRelicEntry relicEntry => CanStoreRelicInCart(relicEntry.Model),
+            MerchantPotionEntry potionEntry => potionEntry.Model != null,
+            _ => false
+        };
+    }
+
+    public static bool CanStoreRelicInCart(RelicModel? relicModel)
+    {
+        if (relicModel == null)
+        {
+            return false;
+        }
+
+        if (HextechForgeRegistry.TryGetRarity(relicModel, out _))
+        {
+            return false;
+        }
+
+        return relicModel.GetType().FullName != "HextechRunes.RandomForgeShopRelic";
+    }
+
     public static bool AddToCart(MerchantCardEntry cardEntry, Player? player = null)
     {
         var data = GetCartData(player);
@@ -155,6 +182,12 @@ public static class ShoppingCartManager
         if (relicEntry.Model == null)
         {
             MainFile.Logger.Warn("ShoppingCartManager: Relic entry has no model");
+            return false;
+        }
+
+        if (!CanStoreRelicInCart(relicEntry.Model))
+        {
+            MainFile.Logger.Info($"ShoppingCartManager: Relic {relicEntry.Model.Id.Entry} cannot be stored in shopping cart");
             return false;
         }
 
@@ -279,6 +312,8 @@ public static class ShoppingCartManager
             return false;
         }
 
+        CardCmd.PreviewCardPileAdd(result);
+
         await PlayerCmd.LoseGold(item.Price, player, MegaCrit.Sts2.Core.Entities.Gold.GoldLossType.Spent);
         RunManager.Instance.RewardSynchronizer.SyncLocalGoldLost(item.Price);
         RunManager.Instance.RewardSynchronizer.SyncLocalObtainedCard(mutableCard);
@@ -301,6 +336,12 @@ public static class ShoppingCartManager
         if (relicModel == null)
         {
             MainFile.Logger.Warn($"ShoppingCartManager: Relic not found: {item.ItemId}");
+            return false;
+        }
+
+        if (!CanStoreRelicInCart(relicModel))
+        {
+            MainFile.Logger.Warn($"ShoppingCartManager: Relic {relicModel.Id.Entry} cannot be purchased from shopping cart");
             return false;
         }
 

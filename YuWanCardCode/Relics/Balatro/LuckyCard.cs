@@ -23,7 +23,7 @@ public sealed class LuckyCard : BalatroRelicModel
         }
 
         BalatroModifier? modifier = GetModifier();
-        if (modifier != null && (modifier.CardsPlayedThisTurn + 1) % 7 == 0)
+        if (modifier != null && (modifier.GetCardsPlayedThisTurn(Owner) + 1) % 7 == 0)
         {
             result += 2;
         }

@@ -31,7 +31,7 @@ public sealed class GreedJoker : BalatroJokerRelicModel
             return;
         }
 
-        if (modifier.AttackCardsThisTurn % 3 == 0)
+        if (modifier.GetAttackCardsThisTurn(Owner) % 3 == 0)
         {
             int multiplier = EffectiveCount();
             await PlayerCmd.GainGold(GoldPerTrigger * multiplier, Owner);

@@ -117,13 +117,19 @@ public static class RightClickRelicPatch
             return;
         }
 
-        var player = LocalContext.GetMe(relicNode.Model.Owner.RunState);
+        var relicModel = relicNode.Model;
+        if (relicModel?.Owner == null)
+        {
+            return;
+        }
+
+        var player = LocalContext.GetMe(relicModel.Owner.RunState);
         if (player == null)
         {
             return;
         }
 
-        if (YuWanRightClickRegistry.TryDispatch(new YuWanRightClickContext(player, relicNode.Model, trigger)))
+        if (YuWanRightClickRegistry.TryDispatch(new YuWanRightClickContext(player, relicModel, trigger)))
         {
             viewport.SetInputAsHandled();
         }
@@ -183,13 +189,19 @@ public static class RightClickPowerPatch
             return;
         }
 
-        var player = LocalContext.GetMe(powerNode.Model.Owner.CombatState);
+        var powerModel = powerNode.Model;
+        if (powerModel?.Owner == null)
+        {
+            return;
+        }
+
+        var player = LocalContext.GetMe(powerModel.Owner.CombatState);
         if (player == null)
         {
             return;
         }
 
-        if (YuWanRightClickRegistry.TryDispatch(new YuWanRightClickContext(player, powerNode.Model, trigger)))
+        if (YuWanRightClickRegistry.TryDispatch(new YuWanRightClickContext(player, powerModel, trigger)))
         {
             viewport.SetInputAsHandled();
         }
@@ -249,13 +261,19 @@ public static class RightClickPotionPatch
             return;
         }
 
-        var player = LocalContext.GetMe(potionNode.Model.Owner.RunState);
+        var potionModel = potionNode.Model;
+        if (potionModel?.Owner == null)
+        {
+            return;
+        }
+
+        var player = LocalContext.GetMe(potionModel.Owner.RunState);
         if (player == null)
         {
             return;
         }
 
-        if (YuWanRightClickRegistry.TryDispatch(new YuWanRightClickContext(player, potionNode.Model, trigger)))
+        if (YuWanRightClickRegistry.TryDispatch(new YuWanRightClickContext(player, potionModel, trigger)))
         {
             viewport.SetInputAsHandled();
         }

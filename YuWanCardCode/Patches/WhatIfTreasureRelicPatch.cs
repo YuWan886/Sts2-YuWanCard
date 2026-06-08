@@ -58,12 +58,13 @@ public static class WhatIfTreasureRelicPatch
         var obtainMap = new Dictionary<ModelId, RelicModel>(currentRelics.Count);
         for (int i = 0; i < currentRelics.Count; i++)
         {
+            var canonicalRelic = replacement.ToMutable();
             var displayRelic = replacement.ToMutable();
             displayRelics.Add(displayRelic);
-            canonicalRelics.Add(replacement);
+            canonicalRelics.Add(canonicalRelic);
             obtainMap[currentRelics[i].Id] = replacement;
             obtainMap[displayRelic.Id] = replacement;
-            obtainMap[replacement.Id] = replacement;
+            obtainMap[canonicalRelic.Id] = replacement;
         }
 
         ReplacementBoxes.Remove(__instance);
@@ -128,6 +129,14 @@ public static class WhatIfTreasureRelicPatch
             return;
         }
 
+        foreach (var result in results)
+        {
+            if (TryGetDisplayRelic(box, result.relic, out var displayRelic))
+            {
+                result.relic = displayRelic;
+            }
+        }
+
         box.RemainingObtains = results.Count(static result => result.type != RelicPickingResultType.Skipped);
     }
 
@@ -157,5 +166,25 @@ public static class WhatIfTreasureRelicPatch
         {
             ReplacementBoxes.Remove(synchronizer);
         }
+    }
+
+    private static bool TryGetDisplayRelic(
+        TreasureRelicReplacementBox box,
+        RelicModel relic,
+        out RelicModel displayRelic)
+    {
+        for (int i = 0; i < box.DisplayRelics.Count; i++)
+        {
+            if (ReferenceEquals(box.DisplayRelics[i], relic)
+                || ReferenceEquals(box.CanonicalRelics[i], relic)
+                || ReferenceEquals(box.OriginalRelics[i], relic))
+            {
+                displayRelic = box.DisplayRelics[i];
+                return true;
+            }
+        }
+
+        displayRelic = null!;
+        return false;
     }
 }

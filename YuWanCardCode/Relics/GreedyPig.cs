@@ -86,7 +86,8 @@ public class GreedyPig : YuWanRelicModel
 
         if (isHandFull)
         {
-            await CardPileCmd.Add(card, PileType.Draw, CardPilePosition.Top);
+            CardPileAddResult addResult = await CardPileCmd.Add(card, PileType.Draw, CardPilePosition.Top);
+            CardCmd.PreviewCardPileAdd(addResult);
         }
         else
         {

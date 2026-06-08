@@ -33,7 +33,7 @@ public sealed class HolographicJoker : BalatroJokerRelicModel
             return;
         }
 
-        SerializableCard? previousCard = modifier.PreviousTurnFirstCard;
+        SerializableCard? previousCard = modifier.GetPreviousTurnFirstCard(Owner);
         if (previousCard == null)
         {
             return;

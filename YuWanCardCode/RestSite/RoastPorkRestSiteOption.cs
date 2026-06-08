@@ -43,13 +43,19 @@ public sealed class RoastPorkRestSiteOption(Player owner) : RestSiteOption(owner
         await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), Owner.Creature, 3m, ValueProp.Unblockable | ValueProp.Unpowered, null, null);
 
         var allPlayers = Owner.RunState.Players;
+        List<CardPileAddResult> addResults = new();
         foreach (var player in allPlayers)
         {
             if (player != Owner && player.Creature.CurrentHp > 0)
             {
                 var pigChopCard = Owner.RunState.CreateCard(ModelDb.Card<PigChop>(), player);
-                await CardPileCmd.Add(pigChopCard, PileType.Deck);
+                addResults.Add(await CardPileCmd.Add(pigChopCard, PileType.Deck));
             }
+        }
+
+        if (addResults.Count > 0)
+        {
+            CardCmd.PreviewCardPileAdd(addResults);
         }
 
         return true;

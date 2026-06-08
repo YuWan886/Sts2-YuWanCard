@@ -44,7 +44,8 @@ public class WhatIfAncientCards : WhatIfRelicModel
             .Select(card => Owner.RunState.CreateCard(card, Owner))
             .ToList();
 
-        await CardPileCmd.Add(cardsToAdd, PileType.Deck);
+        var addResults = await CardPileCmd.Add(cardsToAdd, PileType.Deck);
+        CardCmd.PreviewCardPileAdd(addResults);
     }
 
     public override bool TryModifyCardRewardOptions(Player player, List<CardCreationResult> cardRewardOptions, CardCreationOptions creationOptions)

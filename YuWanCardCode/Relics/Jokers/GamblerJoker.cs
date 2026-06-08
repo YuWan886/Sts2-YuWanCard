@@ -31,7 +31,7 @@ public sealed class GamblerJoker : BalatroJokerRelicModel
         }
 
         BalatroModifier? modifier = GetModifier(Owner);
-        if (modifier == null || modifier.ComboCounter < 5f)
+        if (modifier == null || modifier.GetComboCounter(Owner) < 5f)
         {
             return;
         }

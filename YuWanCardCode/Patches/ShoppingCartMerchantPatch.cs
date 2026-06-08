@@ -63,6 +63,7 @@ public static class NMerchantSlot_ShoppingCartPatch
         button.Visible = entry != null && entry.IsStocked && !isReserved;
         button.Disabled = !ShoppingCartManager.HasShoppingCart() || 
                           ShoppingCartManager.GetCartData()?.IsFull == true ||
+                          !ShoppingCartManager.CanAddToCart(entry) ||
                           isReserved;
     }
 
@@ -102,6 +103,11 @@ public static class NMerchantSlot_ShoppingCartPatch
     {
         var entry = slot.Entry;
         if (entry == null || !entry.IsStocked) return;
+        if (!ShoppingCartManager.CanAddToCart(entry))
+        {
+            SfxCmd.Play("event:/sfx/npcs/merchant/merchant_dissapointment");
+            return;
+        }
 
         var cartData = ShoppingCartManager.GetCartData();
         if (cartData == null || cartData.IsFull)
