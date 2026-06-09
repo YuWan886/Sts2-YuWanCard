@@ -1,5 +1,4 @@
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync;
 using MegaCrit.Sts2.Core.Rewards;

@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Characters;
 using YuWanCard.Utils;
 using MegaCrit.Sts2.Core.Models.Powers;
-using MegaCrit.Sts2.Core.Models.Cards;
+using YuWanCard.Powers;
 
 namespace YuWanCard.Cards;
 
@@ -17,6 +17,7 @@ public class PigDesire : YuWanCardModel
     private static readonly HashSet<Type> s_powerBlacklist = new()
     {
         typeof(NightmarePower),
+        typeof(YouArePigPower),
     };
 
     private static bool IsBlacklisted(PowerModel power)

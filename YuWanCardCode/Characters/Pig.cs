@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Cards;
+using YuWanCard.Core.Patches.UI;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Characters;
@@ -17,6 +18,7 @@ public class Pig : CharacterModel, IYuWanCharacter
     private const string PigMerchantPath = "res://YuWanCard/scenes/characters/pig_merchant.tscn";
     private const string PigEnergyCounterPath = "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
     private const string PigRestSitePath = "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
+    private const string PigYummyCookiePath = "res://YuWanCard/images/relics/pig_yummy_cookie.png";
 
     /// <summary>
     /// Registers Pig-specific scene type conversions with NodeFactory
@@ -81,6 +83,8 @@ public class Pig : CharacterModel, IYuWanCharacter
         => "res://images/ui/hands/multiplayer_hand_defect_paper.png";
     string? IYuWanCharacter.CustomArmScissorsTexturePath
         => "res://images/ui/hands/multiplayer_hand_defect_scissors.png";
+    RelicIconData? IYuWanCharacter.CustomYummyCookie
+        => new(PigYummyCookiePath, PigYummyCookiePath, PigYummyCookiePath);
 
     public override IEnumerable<CardModel> StartingDeck =>
     [

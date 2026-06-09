@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using YuWanCard.Core.Patches.UI;
 
 namespace YuWanCard.Core;
 
@@ -38,6 +39,7 @@ public interface IYuWanCharacter : IYuWanContent
     string? CustomAttackSfx => $"event:/sfx/characters/{PlaceholderID}/{PlaceholderID}_attack";
     string? CustomCastSfx => $"event:/sfx/characters/{PlaceholderID}/{PlaceholderID}_cast";
     string? CustomDeathSfx => $"event:/sfx/characters/{PlaceholderID}/{PlaceholderID}_die";
+    RelicIconData? CustomYummyCookie => null;
 
     float AttackAnimDelay => 0.15f;
     float CastAnimDelay => 0.25f;
