@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using YuWanCard.Config;
@@ -23,8 +24,8 @@ namespace YuWanCard.Patches;
 [HarmonyPatch(typeof(Neow))]
 class NeowSevenCursesPatch
 {
-    private static readonly Dictionary<Neow, List<EventOption>> _normalOptions = [];
-    private static readonly Dictionary<Neow, LocString> _normalDescriptions = [];
+    private static readonly Dictionary<AncientEventModel, List<EventOption>> _normalOptions = [];
+    private static readonly Dictionary<AncientEventModel, LocString> _normalDescriptions = [];
     private static readonly Dictionary<AncientEventModel, IReadOnlyList<ModifierModel>> _temporarilyFilteredModifiers = [];
 
     internal static void StoreOriginalModifiers(AncientEventModel eventModel, IReadOnlyList<ModifierModel> modifiers)
@@ -48,9 +49,17 @@ class NeowSevenCursesPatch
     [HarmonyPatch("GenerateInitialOptions")]
     static void ModifyInitialOptions(Neow __instance, ref IReadOnlyList<EventOption> __result)
     {
-        if (__instance.Owner == null)
+        if (__instance.Owner?.RunState == null)
+        {
             return;
+        }
 
+        if (!YuWanCardConfig.EnableSevenCursesRing && !YuWanCardConfig.EnableWhatIfRelics)
+        {
+            return;
+        }
+
+        MainFile.Logger.Info($"[NeowSevenCursesPatch] Injecting start options for {__instance.Id.Entry} via Neow.GenerateInitialOptions seven={YuWanCardConfig.EnableSevenCursesRing} whatIf={YuWanCardConfig.EnableWhatIfRelics} originalCount={__result.Count}");
         var options = __result.ToList();
 
         _normalOptions[__instance] = options;
@@ -68,7 +77,7 @@ class NeowSevenCursesPatch
 
     // ── Seven Curses ────────────────────────────────────────
 
-    private static IReadOnlyList<EventOption> CreateSevenCursesOptions(Neow neow)
+    internal static IReadOnlyList<EventOption> CreateSevenCursesOptions(AncientEventModel ancient)
     {
         var selectTitle = new LocString("relics", "YUWANCARD-SEVEN_CURSES_SELECT.title");
         var selectDesc = new LocString("relics", "YUWANCARD-SEVEN_CURSES_SELECT.description");
@@ -76,53 +85,53 @@ class NeowSevenCursesPatch
         var options = new List<EventOption>
         {
             new EventOption(
-                neow,
+                ancient,
                 async () =>
                 {
-                    await RelicCmd.Obtain<RingOfSevenCurses>(neow.Owner!);
-                    ResolveSevenCurses(neow);
+                    await RelicCmd.Obtain<RingOfSevenCurses>(ancient.Owner!);
+                    ResolveSevenCurses(ancient);
                 },
                 selectTitle,
                 selectDesc,
                 "YUWANCARD-SEVEN_CURSES",
                 Array.Empty<IHoverTip>()
-            ).WithRelic<RingOfSevenCurses>(neow.Owner!),
+            ).WithRelic<RingOfSevenCurses>(ancient.Owner!),
 
-            CreateSkipOption(neow, () => ResolveSevenCurses(neow),
+            CreateSkipOption(ancient, () => ResolveSevenCurses(ancient),
                 "YUWANCARD-SEVEN_CURSES_SKIP", "relics")
         };
 
         return options;
     }
 
-    private static void ResolveSevenCurses(Neow neow)
+    private static void ResolveSevenCurses(AncientEventModel ancient)
     {
         if (YuWanCardConfig.EnableWhatIfRelics)
         {
-            SetEventState(neow, neow.InitialDescription, CreateWhatIfScreen(neow));
+            SetEventState(ancient, ancient.InitialDescription, CreateWhatIfScreen(ancient));
         }
         else
         {
-            RestoreNormalOptionsOrFinish(neow);
+            RestoreNormalOptionsOrFinish(ancient);
         }
     }
 
     // ── What If ─────────────────────────────────────────────
 
-    private static IReadOnlyList<EventOption> CreateWhatIfScreen(Neow neow)
+    internal static IReadOnlyList<EventOption> CreateWhatIfScreen(AncientEventModel ancient)
     {
-        var selected = SelectDeterministicWhatIfRelics(neow);
+        var selected = SelectDeterministicWhatIfRelics(ancient);
 
         var options = new List<EventOption>();
         foreach (var relic in selected)
         {
             var mutable = relic.ToMutable();
             options.Add(new EventOption(
-                neow,
+                ancient,
                 async () =>
                 {
-                    await RelicCmd.Obtain(mutable, neow.Owner!);
-                    RestoreNormalOptionsOrFinish(neow);
+                    await RelicCmd.Obtain(mutable, ancient.Owner!);
+                    RestoreNormalOptionsOrFinish(ancient);
                 },
                 mutable.Title,
                 mutable.Description,
@@ -131,18 +140,18 @@ class NeowSevenCursesPatch
             ).WithRelic(mutable));
         }
 
-        options.Add(CreateSkipOption(neow, () =>
+        options.Add(CreateSkipOption(ancient, () =>
         {
-            RestoreNormalOptionsOrFinish(neow);
+            RestoreNormalOptionsOrFinish(ancient);
         }, "YUWANCARD-WHAT_IF_SKIP", "relics"));
 
         return options;
     }
 
-    private static IReadOnlyList<RelicModel> SelectDeterministicWhatIfRelics(Neow neow)
+    private static IReadOnlyList<RelicModel> SelectDeterministicWhatIfRelics(AncientEventModel ancient)
     {
         var pool = ModelDb.RelicPool<WhatIfRelicPool>();
-        var runState = neow.Owner?.RunState;
+        var runState = ancient.Owner?.RunState;
         bool isMultiplayer = runState?.Players.Count > 1;
 
         IEnumerable<RelicModel> candidates = pool.AllRelics
@@ -172,12 +181,12 @@ class NeowSevenCursesPatch
 
     // ── Helpers ─────────────────────────────────────────────
 
-    private static EventOption CreateSkipOption(Neow neow, Action onSkip, string key, string context)
+    private static EventOption CreateSkipOption(AncientEventModel ancient, Action onSkip, string key, string context)
     {
         var title = new LocString(context, $"{key}.title");
         var desc = new LocString(context, $"{key}.description");
         return new EventOption(
-            neow,
+            ancient,
             () => { onSkip(); return Task.CompletedTask; },
             title,
             desc,
@@ -186,25 +195,131 @@ class NeowSevenCursesPatch
         );
     }
 
-    private static bool SetEventState(EventModel eventModel, LocString description, IEnumerable<EventOption> options)
+    internal static bool SetEventState(EventModel eventModel, LocString description, IEnumerable<EventOption> options)
     {
         return YuWanReflectionHelper.CallPrivateMethod(eventModel, "SetEventState", description, options);
     }
 
-    private static void RestoreNormalOptionsOrFinish(Neow neow)
+    internal static bool ShouldInjectStartingAncientOptions(AncientEventModel ancient)
     {
-        if (_normalOptions.TryGetValue(neow, out var normalOpts) && normalOpts.Count > 0)
+        if (ancient.Owner?.RunState == null)
         {
-            LocString description = _normalDescriptions.TryGetValue(neow, out var originalDescription)
+            return false;
+        }
+
+        var runState = ancient.Owner.RunState;
+        // GenerateInitialOptions may run before EventRoom.LocalMutableEvent is fully
+        // assigned, so act0 + floor0 is the reliable "starting ancient" boundary.
+        return runState.CurrentActIndex == 0 && runState.TotalFloor == 0;
+    }
+
+    private static void RestoreNormalOptionsOrFinish(AncientEventModel ancient)
+    {
+        if (_normalOptions.TryGetValue(ancient, out var normalOpts) && normalOpts.Count > 0)
+        {
+            LocString restoreDescription = _normalDescriptions.TryGetValue(ancient, out var originalDescription)
                 ? originalDescription
-                : neow.InitialDescription;
-            SetEventState(neow, description, normalOpts);
+                : ancient.InitialDescription;
+            SetEventState(ancient, restoreDescription, normalOpts);
+            ClearStoredState(ancient);
             return;
         }
 
         // In custom mode, modifiers may exist but provide no Neow options.
         // In that case, conclude Neow cleanly after Seven Curses / What If resolves.
-        YuWanReflectionHelper.CallPrivateMethod(neow, "SetEventFinished", new LocString("events", "NEOW.pages.DONE.description"));
+        LocString description = ancient is Neow
+            ? new LocString("events", "NEOW.pages.DONE.description")
+            : ancient.InitialDescription;
+        YuWanReflectionHelper.CallPrivateMethod(ancient, "SetEventFinished", description);
+        ClearStoredState(ancient);
+    }
+
+    internal static bool HasStoredOriginalState(AncientEventModel ancient)
+    {
+        return _normalOptions.ContainsKey(ancient);
+    }
+
+    internal static void StoreOriginalState(AncientEventModel ancient, LocString description, List<EventOption> options)
+    {
+        _normalOptions[ancient] = options;
+        _normalDescriptions[ancient] = description;
+    }
+
+    private static void ClearStoredState(AncientEventModel ancient)
+    {
+        _normalOptions.Remove(ancient);
+        _normalDescriptions.Remove(ancient);
+    }
+}
+
+[HarmonyPatch]
+static class StartingAncientSetEventStatePatch
+{
+    private static readonly HashSet<AncientEventModel> _suppressInjection = [];
+
+    [HarmonyTargetMethod]
+    private static MethodBase? TargetMethod()
+    {
+        return YuWanReflectionHelper.GetPrivateMethod(
+            typeof(EventModel),
+            "SetEventState",
+            [typeof(LocString), typeof(IEnumerable<EventOption>)]);
+    }
+
+    [HarmonyPostfix]
+    private static void Postfix(EventModel __instance, LocString description, IEnumerable<EventOption> eventOptions)
+    {
+        if (__instance is not AncientEventModel ancient || ancient is Neow)
+        {
+            return;
+        }
+
+        if (!ShouldInjectFallback(ancient))
+        {
+            return;
+        }
+
+        var originalOptions = eventOptions.ToList();
+        if (originalOptions.Count == 0)
+        {
+            return;
+        }
+
+        NeowSevenCursesPatch.StoreOriginalState(ancient, description, originalOptions);
+        var replacementOptions = YuWanCardConfig.EnableSevenCursesRing
+            ? NeowSevenCursesPatch.CreateSevenCursesOptions(ancient)
+            : NeowSevenCursesPatch.CreateWhatIfScreen(ancient);
+
+        MainFile.Logger.Info($"[NeowSevenCursesPatch] Injecting start options for {ancient.Id.Entry} via EventModel.SetEventState");
+        _suppressInjection.Add(ancient);
+        try
+        {
+            NeowSevenCursesPatch.SetEventState(ancient, description, replacementOptions);
+        }
+        finally
+        {
+            _suppressInjection.Remove(ancient);
+        }
+    }
+
+    private static bool ShouldInjectFallback(AncientEventModel ancient)
+    {
+        if (_suppressInjection.Contains(ancient))
+        {
+            return false;
+        }
+
+        if (!NeowSevenCursesPatch.ShouldInjectStartingAncientOptions(ancient))
+        {
+            return false;
+        }
+
+        if (!YuWanCardConfig.EnableSevenCursesRing && !YuWanCardConfig.EnableWhatIfRelics)
+        {
+            return false;
+        }
+
+        return !NeowSevenCursesPatch.HasStoredOriginalState(ancient);
     }
 }
 
