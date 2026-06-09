@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Potions;
@@ -6,6 +7,8 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.RelicPools;
+using MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -65,19 +68,35 @@ public class RecycleBin : YuWanRelicModel
             return;
         }
 
-        decimal merchantValue = GetMerchantValue(reward);
-        if (merchantValue <= 0)
+        if (!TryGetRecycledGold(reward, out int recycledGold))
         {
             return;
         }
 
-        int recycledGold = GetRecycledGold(merchantValue);
-        if (recycledGold <= 0)
+        recycleBin.QueueRecycledGold(recycledGold, reward.GetType().Name, LocalContext.NetId ?? 0);
+    }
+
+    internal static void QueueSyncedSkippedReward(RewardObtainedMessage message, ulong senderId)
+    {
+        Player? player = RunManager.Instance?.State?.GetPlayer(senderId);
+        if (player == null)
+        {
+            MainFile.Logger.Warn($"RecycleBin: could not resolve reward sender {senderId} for synced skipped reward.");
+            return;
+        }
+
+        var recycleBin = GetOwnedRelic(player);
+        if (recycleBin == null)
         {
             return;
         }
 
-        recycleBin.QueueRecycledGold(recycledGold, reward.GetType().Name);
+        if (!TryGetRecycledGold(message, out int recycledGold, out string rewardType))
+        {
+            return;
+        }
+
+        recycleBin.QueueRecycledGold(recycledGold, rewardType, senderId);
     }
 
     private static RecycleBin? GetOwnedRelic(Player? player)
@@ -98,7 +117,7 @@ public class RecycleBin : YuWanRelicModel
         return null;
     }
 
-    private void QueueRecycledGold(int recycledGold, string rewardType)
+    private void QueueRecycledGold(int recycledGold, string rewardType, ulong senderId)
     {
         if (recycledGold <= 0)
         {
@@ -109,7 +128,43 @@ public class RecycleBin : YuWanRelicModel
         InvokeDisplayAmountChanged();
 
         MainFile.Logger.Info(
-            $"RecycleBin: queued {recycledGold} gold from skipped {rewardType}. Pending={YUWANCARD_PendingRecycleGold}.");
+            $"RecycleBin: queued {recycledGold} gold from skipped {rewardType} for player {Owner?.NetId} via sender {senderId}. Pending={YUWANCARD_PendingRecycleGold}.");
+    }
+
+    private static bool TryGetRecycledGold(Reward reward, out int recycledGold)
+    {
+        recycledGold = 0;
+
+        decimal merchantValue = GetMerchantValue(reward);
+        if (merchantValue <= 0)
+        {
+            return false;
+        }
+
+        recycledGold = GetRecycledGold(merchantValue);
+        return recycledGold > 0;
+    }
+
+    private static bool TryGetRecycledGold(RewardObtainedMessage message, out int recycledGold, out string rewardType)
+    {
+        recycledGold = 0;
+        rewardType = message.rewardType.ToString();
+
+        decimal merchantValue = message.rewardType switch
+        {
+            RewardType.Card when message.cardModel != null => GetCardMerchantValue(message.cardModel),
+            RewardType.Potion when message.potionModel != null => GetPotionMerchantValue(message.potionModel),
+            RewardType.Relic when message.relicModel != null => GetRelicMerchantValue(message.relicModel),
+            _ => 0m
+        };
+
+        if (merchantValue <= 0)
+        {
+            return false;
+        }
+
+        recycledGold = GetRecycledGold(merchantValue);
+        return recycledGold > 0;
     }
 
     private static int GetRecycledGold(decimal merchantValue)

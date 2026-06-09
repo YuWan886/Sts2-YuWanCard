@@ -1,4 +1,7 @@
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync;
 using MegaCrit.Sts2.Core.Rewards;
 using YuWanCard.Relics;
 
@@ -26,5 +29,22 @@ public static class RecycleBinRewardPatch
     public static void QueueSkippedRelicReward(RelicReward __instance)
     {
         RecycleBin.QueueSkippedReward(__instance);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(RewardSynchronizer), "HandleRewardObtainedMessage")]
+    public static void MirrorSkippedReward(RewardObtainedMessage message, ulong senderId)
+    {
+        if (!message.wasSkipped)
+        {
+            return;
+        }
+
+        if (LocalContext.NetId == senderId)
+        {
+            return;
+        }
+
+        RecycleBin.QueueSyncedSkippedReward(message, senderId);
     }
 }
