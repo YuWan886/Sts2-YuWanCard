@@ -17,11 +17,11 @@ public static class WhatIfTreasureRelicPatch
     {
         public List<RelicModel> DisplayRelics { get; set; } = [];
 
-        public List<RelicModel> CanonicalRelics { get; set; } = [];
+        public List<RelicModel> PickingRelics { get; set; } = [];
+
+        public List<RelicModel> ReplacementRelics { get; set; } = [];
 
         public List<RelicModel> OriginalRelics { get; set; } = [];
-
-        public Dictionary<ModelId, RelicModel> ObtainMap { get; set; } = [];
 
         public int RemainingObtains { get; set; }
     }
@@ -53,28 +53,26 @@ public static class WhatIfTreasureRelicPatch
 
         var replacement = source.GetUniformRelic(runState);
         var displayRelics = new List<RelicModel>(currentRelics.Count);
-        var canonicalRelics = new List<RelicModel>(currentRelics.Count);
-        var obtainMap = new Dictionary<ModelId, RelicModel>(currentRelics.Count);
+        var pickingRelics = new List<RelicModel>(currentRelics.Count);
+        var replacementRelics = new List<RelicModel>(currentRelics.Count);
         for (int i = 0; i < currentRelics.Count; i++)
         {
-            var canonicalRelic = replacement.ToMutable();
+            var pickingRelic = replacement.ToMutable();
             var displayRelic = replacement.ToMutable();
+            pickingRelics.Add(pickingRelic);
             displayRelics.Add(displayRelic);
-            canonicalRelics.Add(canonicalRelic);
-            obtainMap[currentRelics[i].Id] = replacement;
-            obtainMap[displayRelic.Id] = replacement;
-            obtainMap[canonicalRelic.Id] = replacement;
+            replacementRelics.Add(replacement);
         }
 
         ReplacementBoxes.Remove(__instance);
         ReplacementBoxes.Add(__instance, new TreasureRelicReplacementBox
         {
             DisplayRelics = displayRelics,
-            CanonicalRelics = canonicalRelics,
-            OriginalRelics = [.. currentRelics],
-            ObtainMap = obtainMap
+            PickingRelics = pickingRelics,
+            ReplacementRelics = replacementRelics,
+            OriginalRelics = [.. currentRelics]
         });
-        CurrentRelicsField(__instance) = canonicalRelics;
+        CurrentRelicsField(__instance) = pickingRelics;
         MainFile.Logger.Info(
             $"[WhatIfTreasureRelicPatch] Remapped treasure relic display to {replacement.Id.Entry} x{displayRelics.Count} via {source.GetType().Name}");
     }
@@ -106,15 +104,42 @@ public static class WhatIfTreasureRelicPatch
         }
 
         var holders = HoldersInUseField(__instance);
-        if (holders.Count == 0 || holders.Count != box.DisplayRelics.Count)
+        if (holders.Count == 0)
         {
             return;
         }
 
-        var runState = RunStateField(__instance);
-        for (int i = 0; i < holders.Count; i++)
+        var activeHolders = new List<NTreasureRoomRelicHolder>(box.DisplayRelics.Count);
+        foreach (var holder in holders)
         {
-            holders[i].Initialize(box.DisplayRelics[i], runState);
+            if (holder.Visible)
+            {
+                activeHolders.Add(holder);
+            }
+        }
+
+        if (activeHolders.Count != box.DisplayRelics.Count)
+        {
+            activeHolders.Clear();
+            for (int i = 0; i < holders.Count && i < box.DisplayRelics.Count; i++)
+            {
+                activeHolders.Add(holders[i]);
+            }
+        }
+
+        if (activeHolders.Count != box.DisplayRelics.Count)
+        {
+            MainFile.Logger.Warn(
+                $"[WhatIfTreasureRelicPatch] Failed to remap treasure holders: active={activeHolders.Count}, display={box.DisplayRelics.Count}, total={holders.Count}");
+            return;
+        }
+
+        HoldersInUseField(__instance) = activeHolders;
+        var runState = RunStateField(__instance);
+        for (int i = 0; i < activeHolders.Count; i++)
+        {
+            activeHolders[i].Relic.Model = box.DisplayRelics[i];
+            activeHolders[i].Initialize(box.DisplayRelics[i], runState);
         }
     }
 
@@ -140,6 +165,25 @@ public static class WhatIfTreasureRelicPatch
     }
 
     [HarmonyPrefix]
+    [HarmonyPatch(typeof(RelicModel), nameof(RelicModel.ToMutable))]
+    public static bool RelicToMutablePrefix(RelicModel __instance, ref RelicModel __result)
+    {
+        var synchronizer = RunManager.Instance?.TreasureRoomRelicSynchronizer;
+        if (synchronizer == null || !ReplacementBoxes.TryGetValue(synchronizer, out var box))
+        {
+            return true;
+        }
+
+        if (!TryGetCanonicalReplacement(box, __instance, out var canonicalReplacement))
+        {
+            return true;
+        }
+
+        __result = canonicalReplacement.ToMutable();
+        return false;
+    }
+
+    [HarmonyPrefix]
     [HarmonyPatch(typeof(RelicCmd), nameof(RelicCmd.Obtain), [typeof(RelicModel), typeof(MegaCrit.Sts2.Core.Entities.Players.Player), typeof(int)])]
     public static void ObtainPrefix(ref RelicModel relic)
     {
@@ -149,7 +193,7 @@ public static class WhatIfTreasureRelicPatch
             return;
         }
 
-        if (!box.ObtainMap.TryGetValue(relic.Id, out var canonicalReplacement))
+        if (!TryGetCanonicalReplacement(box, relic, out var canonicalReplacement))
         {
             return;
         }
@@ -175,7 +219,7 @@ public static class WhatIfTreasureRelicPatch
         for (int i = 0; i < box.DisplayRelics.Count; i++)
         {
             if (ReferenceEquals(box.DisplayRelics[i], relic)
-                || ReferenceEquals(box.CanonicalRelics[i], relic)
+                || ReferenceEquals(box.PickingRelics[i], relic)
                 || ReferenceEquals(box.OriginalRelics[i], relic))
             {
                 displayRelic = box.DisplayRelics[i];
@@ -186,4 +230,25 @@ public static class WhatIfTreasureRelicPatch
         displayRelic = null!;
         return false;
     }
+
+    private static bool TryGetCanonicalReplacement(
+        TreasureRelicReplacementBox box,
+        RelicModel relic,
+        out RelicModel canonicalReplacement)
+    {
+        for (int i = 0; i < box.ReplacementRelics.Count; i++)
+        {
+            if (ReferenceEquals(box.DisplayRelics[i], relic)
+                || ReferenceEquals(box.PickingRelics[i], relic)
+                || ReferenceEquals(box.OriginalRelics[i], relic))
+            {
+                canonicalReplacement = box.ReplacementRelics[i];
+                return true;
+            }
+        }
+
+        canonicalReplacement = null!;
+        return false;
+    }
+
 }
