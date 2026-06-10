@@ -15,7 +15,7 @@ internal static class CardCopyHelper
 
     public static CardModel? CreateCombatCopy(CardModel source, Player owner)
     {
-        CombatState? combatState = owner.Creature?.CombatState;
+        ICombatState? combatState = owner.Creature?.CombatState;
         if (combatState == null)
         {
             return null;

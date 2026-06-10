@@ -34,6 +34,6 @@ public class WhatIfIAmSnakebite : WhatIfRelicModel
         }
 
         Flash();
-        await PowerCmd.Apply<PoisonPower>(target, DynamicVars["PoisonPower"].BaseValue, Owner.Creature, null);
+        await PowerCmd.Apply<PoisonPower>(new ThrowingPlayerChoiceContext(), target, DynamicVars["PoisonPower"].BaseValue, Owner.Creature, null);
     }
 }

@@ -25,7 +25,7 @@ public sealed class AdaptiveTrait : MaliceTraitPowerBase
         }
 
         Flash();
-        await PowerCmd.Apply<PlatingPower>(Owner, toApply, Owner, null);
+        await PowerCmd.Apply<PlatingPower>(new ThrowingPlayerChoiceContext(), Owner, toApply, Owner, null);
     }
 
     private static int GetMaxPlating(Creature target)

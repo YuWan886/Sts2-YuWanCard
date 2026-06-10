@@ -23,6 +23,6 @@ public sealed class Venus : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<VenusPower>(Owner.Creature, DynamicVars["BonusBlock"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<VenusPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["BonusBlock"].BaseValue, Owner.Creature, this);
     }
 }

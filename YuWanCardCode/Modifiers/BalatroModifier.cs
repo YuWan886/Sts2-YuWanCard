@@ -168,7 +168,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         return Task.CompletedTask;
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         Player? player = GetActiveTurnPlayer();
         if (player == null || side != player.Creature.Side)
@@ -181,7 +181,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         if (comboCounter >= RetainedComboThreshold)
         {
             retainRatio = DefaultRetainRatio;
-            await PowerCmd.Apply<InertiaPower>(player.Creature, 1, player.Creature, null);
+            await PowerCmd.Apply<InertiaPower>(new ThrowingPlayerChoiceContext(), player.Creature, 1, player.Creature, null);
         }
 
         if (player.GetRelic<SteelJoker>() != null)
@@ -347,9 +347,9 @@ public sealed class BalatroModifier : YuWanModifierModel
         return modified;
     }
 
-    public override bool ShouldGainGold(decimal amount, Player player)
+    public override decimal ModifyGoldGained(Player player, decimal amount)
     {
-        return true;
+        return amount;
     }
 
     public override async Task AfterItemPurchased(Player player, MerchantEntry itemPurchased, int goldSpent)

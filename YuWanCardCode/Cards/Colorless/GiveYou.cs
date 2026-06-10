@@ -49,7 +49,7 @@ public class GiveYou : YuWanCardModel
             await CardPileCmd.RemoveFromCombat(selectedCard);
             var newCard = CardCopyHelper.CreateCombatCopy(selectedCard, targetPlayer);
             if (newCard == null) return;
-            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, addedByPlayer: true);
+            await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Hand, Owner);
         }
     }
 }

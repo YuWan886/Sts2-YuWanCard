@@ -46,7 +46,7 @@ public class YouAreDumbCry : YuWanCardModel
         for (int i = 0; i < cryCount; i++)
         {
             var cryCard = CombatState!.CreateCard(ModelDb.Card<PigAlwaysCry>(), targetPlayer);
-            results.Add(await CardPileCmd.AddGeneratedCardToCombat(cryCard, PileType.Draw, addedByPlayer: true));
+            results.Add(await CardPileCmd.AddGeneratedCardToCombat(cryCard, PileType.Draw, Owner));
         }
 
         if (results.Count > 0)

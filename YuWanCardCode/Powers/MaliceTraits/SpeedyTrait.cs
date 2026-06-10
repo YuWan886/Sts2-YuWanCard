@@ -1,5 +1,7 @@
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace YuWanCard.Powers.MaliceTraits;
@@ -8,7 +10,7 @@ public sealed class SpeedyTrait : MaliceTraitPowerBase
 {
     private const int DexterityLossPerTurn = 1;
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side != Owner.Side || Owner.IsDead)
         {
@@ -39,11 +41,11 @@ public sealed class SpeedyTrait : MaliceTraitPowerBase
                 flashed = true;
             }
 
-            await PowerCmd.Apply<DexterityPower>(player.Creature, -lossAmount, Owner, null);
+            await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), player.Creature, -lossAmount, Owner, null);
         }
     }
 
-    private static int GetMaxDexterityLoss(CombatState combatState)
+    private static int GetMaxDexterityLoss(ICombatState combatState)
     {
         int actIndex = combatState.RunState?.CurrentActIndex ?? 0;
         return 4 + Math.Min(Math.Max(actIndex, 0), 2);

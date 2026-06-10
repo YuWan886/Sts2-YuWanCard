@@ -30,7 +30,7 @@ public class GroupFriendFormPower : YuWanPowerModel
         if (newCard == null)
             return;
 
-        CardPileAddResult addResult = await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Draw, addedByPlayer: true);
+        CardPileAddResult addResult = await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Draw, cardPlay.Card.Owner);
         CardCmd.PreviewCardPileAdd(addResult);
     }
 }

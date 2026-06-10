@@ -46,7 +46,7 @@ public sealed class Priestess : YuWanCardModel
                 return;
             }
 
-            results.Add(await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Draw, addedByPlayer: true));
+            results.Add(await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Draw, Owner));
         }
 
         if (results.Count > 0)
