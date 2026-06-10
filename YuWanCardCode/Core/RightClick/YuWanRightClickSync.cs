@@ -1,62 +1,127 @@
-using MegaCrit.Sts2.Core.Logging;
-using MegaCrit.Sts2.Core.Multiplayer.Game;
-using MegaCrit.Sts2.Core.Multiplayer.Messages.Game;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
-using MegaCrit.Sts2.Core.Multiplayer.Transport;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Core.Multiplayer;
 
 namespace YuWanCard.Core.RightClick;
 
-public struct YuWanRightClickSyncMessage : INetMessage, IPacketSerializable, IRunLocationTargetedMessage
+internal readonly record struct YuWanRightClickManagedPayload(
+    ulong OwnerNetId,
+    YuWanRightClickModelKind Kind,
+    MultiplayerModelIdentityToken ModelToken,
+    YuWanRightClickTrigger Trigger,
+    IReadOnlyList<YuWanRightClickBindingId> BindingIds);
+
+internal static class YuWanRightClickManagedActions
 {
-    public required ulong OwnerNetId { get; set; }
-    public required YuWanRightClickModelKind Kind { get; set; }
-    public required MultiplayerModelIdentityToken ModelToken { get; set; }
-    public required YuWanRightClickTrigger Trigger { get; set; }
-    public required List<YuWanRightClickBindingId> BindingIds { get; set; }
-    public required RunLocation Location { get; set; }
+    private const string ManagedActionModuleId = "yuwancard";
+    private const string CombatActionKey = "right_click_combat";
+    private const string NonCombatActionKey = "right_click_noncombat";
+    private const string ManagedActionDisplayName = "YuWanCard.Core.RightClick.YuWanRightClickManagedGameAction";
 
-    public bool ShouldBroadcast => true;
-    public NetTransferMode Mode => NetTransferMode.Reliable;
-    public LogLevel LogLevel => LogLevel.Debug;
-    public bool ShouldBuffer => false;
+    private static readonly YuWanManagedNetActionDescriptor<YuWanRightClickManagedPayload> CombatDescriptor =
+        new(
+            ManagedActionModuleId,
+            CombatActionKey,
+            SerializePayload,
+            DeserializePayload,
+            ExecuteManaged,
+            GameActionType.CombatPlayPhaseOnly,
+            ManagedActionDisplayName);
 
-    RunLocation IRunLocationTargetedMessage.Location => Location;
+    private static readonly YuWanManagedNetActionDescriptor<YuWanRightClickManagedPayload> NonCombatDescriptor =
+        new(
+            ManagedActionModuleId,
+            NonCombatActionKey,
+            SerializePayload,
+            DeserializePayload,
+            ExecuteManaged,
+            GameActionType.NonCombat,
+            ManagedActionDisplayName);
 
-    public void Serialize(PacketWriter writer)
+    private static bool _registered;
+
+    public static void EnsureRegistered()
     {
-        writer.WriteULong(OwnerNetId);
-        writer.WriteEnum(Kind);
-        writer.WriteInt(ModelToken.Identity.Value);
-        writer.WriteFullModelId(ModelToken.ModelId);
-        writer.WriteBool(Trigger.IsController);
-        writer.WriteBool(Trigger.Metadata != null);
-        if (Trigger.Metadata != null)
+        if (_registered)
         {
-            writer.WriteString(Trigger.Metadata);
+            return;
         }
 
-        writer.WriteInt(BindingIds.Count);
-        foreach (YuWanRightClickBindingId bindingId in BindingIds)
+        YuWanManagedNetActions.Register(CombatDescriptor);
+        YuWanManagedNetActions.Register(NonCombatDescriptor);
+        _registered = true;
+    }
+
+    public static bool Request(
+        RunManager? runManager,
+        YuWanRightClickManagedPayload payload,
+        ulong? ownerNetId = null)
+    {
+        EnsureRegistered();
+        YuWanManagedNetActionDescriptor<YuWanRightClickManagedPayload> descriptor = CombatManager.Instance.IsInProgress
+            ? CombatDescriptor
+            : NonCombatDescriptor;
+        return YuWanManagedNetActions.Request(runManager, descriptor, payload, ownerNetId);
+    }
+
+    private static async Task ExecuteManaged(YuWanManagedNetActionContext<YuWanRightClickManagedPayload> context)
+    {
+        try
+        {
+            if (context.Message.OwnerNetId != context.Player.NetId)
+            {
+                return;
+            }
+
+            await YuWanRightClickRegistry.ExecuteManagedPayload(
+                context.Message,
+                context.PlayerChoiceContext,
+                context.Action);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"RightClick: managed action execution failed: {ex}");
+        }
+    }
+
+    private static byte[] SerializePayload(YuWanRightClickManagedPayload payload)
+    {
+        var writer = new PacketWriter();
+        writer.WriteULong(payload.OwnerNetId);
+        writer.WriteEnum(payload.Kind);
+        writer.WriteInt(payload.ModelToken.Identity.Value);
+        writer.WriteFullModelId(payload.ModelToken.ModelId);
+        writer.WriteBool(payload.Trigger.IsController);
+        writer.WriteBool(payload.Trigger.Metadata != null);
+        if (payload.Trigger.Metadata != null)
+        {
+            writer.WriteString(payload.Trigger.Metadata);
+        }
+
+        writer.WriteInt(payload.BindingIds.Count);
+        foreach (YuWanRightClickBindingId bindingId in payload.BindingIds)
         {
             writer.WriteString(bindingId.Id);
         }
 
-        writer.Write(Location);
+        return writer.Buffer[..(int)Math.Ceiling(writer.BitPosition / 8f)];
     }
 
-    public void Deserialize(PacketReader reader)
+    private static YuWanRightClickManagedPayload DeserializePayload(ReadOnlySpan<byte> bytes)
     {
-        OwnerNetId = reader.ReadULong();
-        Kind = reader.ReadEnum<YuWanRightClickModelKind>();
-        ModelToken = new MultiplayerModelIdentityToken(
+        var reader = new PacketReader();
+        reader.Reset(bytes.ToArray());
+
+        ulong ownerNetId = reader.ReadULong();
+        YuWanRightClickModelKind kind = reader.ReadEnum<YuWanRightClickModelKind>();
+        var token = new MultiplayerModelIdentityToken(
             new MultiplayerModelIdentity(reader.ReadInt()),
             reader.ReadFullModelId());
 
         bool isController = reader.ReadBool();
         string? metadata = reader.ReadBool() ? reader.ReadString() : null;
-        Trigger = new YuWanRightClickTrigger(isController, metadata);
 
         int bindingCount = reader.ReadInt();
         var bindingIds = new List<YuWanRightClickBindingId>(Math.Max(bindingCount, 0));
@@ -69,75 +134,11 @@ public struct YuWanRightClickSyncMessage : INetMessage, IPacketSerializable, IRu
             }
         }
 
-        BindingIds = bindingIds;
-        Location = reader.Read<RunLocation>();
-    }
-}
-
-public static class YuWanRightClickMessageHandler
-{
-    private static RunLocationTargetedMessageBuffer? _registeredBuffer;
-
-    public static void Register(INetGameService? _ = null)
-    {
-        RunLocationTargetedMessageBuffer? buffer = RunManager.Instance?.RunLocationTargetedBuffer;
-        if (buffer == null)
-        {
-            return;
-        }
-
-        if (ReferenceEquals(_registeredBuffer, buffer))
-        {
-            return;
-        }
-
-        if (_registeredBuffer != null)
-        {
-            Unregister();
-        }
-
-        buffer.RegisterMessageHandler<YuWanRightClickSyncMessage>(HandleMessage);
-        _registeredBuffer = buffer;
-    }
-
-    public static void Unregister(INetGameService? _ = null)
-    {
-        RunLocationTargetedMessageBuffer? buffer = _registeredBuffer ?? RunManager.Instance?.RunLocationTargetedBuffer;
-        if (buffer == null)
-        {
-            return;
-        }
-
-        buffer.UnregisterMessageHandler<YuWanRightClickSyncMessage>(HandleMessage);
-        if (ReferenceEquals(_registeredBuffer, buffer))
-        {
-            _registeredBuffer = null;
-        }
-    }
-
-    public static void Send(YuWanRightClickSyncMessage message)
-    {
-        INetGameService? netService = RunManager.Instance?.NetService;
-        if (netService == null || !netService.IsConnected)
-        {
-            return;
-        }
-
-        if (netService.Type is NetGameType.Singleplayer or NetGameType.Replay)
-        {
-            return;
-        }
-
-        netService.SendMessage(message);
-    }
-
-    private static void HandleMessage(YuWanRightClickSyncMessage message, ulong senderId)
-    {
-        if (LocalContext.NetId == senderId)
-        {
-            return;
-        }
-
-        YuWanRightClickRegistry.HandleRemoteMessage(message);
+        return new YuWanRightClickManagedPayload(
+            ownerNetId,
+            kind,
+            token,
+            new YuWanRightClickTrigger(isController, metadata),
+            bindingIds);
     }
 }

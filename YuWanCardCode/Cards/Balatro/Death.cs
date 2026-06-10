@@ -38,7 +38,20 @@ public sealed class Death : YuWanCardModel
             return;
         }
 
-        await CardPileCmd.RemoveFromDeck(selected.DeckVersion ?? selected);
+        CardModel? resolved = ResolveSelectedHandCard(selected);
+        if (resolved == null)
+        {
+            return;
+        }
+
+        CardModel deckCard = resolved.DeckVersion ?? selected.DeckVersion ?? resolved;
+        await CardPileCmd.RemoveFromCombat(resolved);
+        await CardPileCmd.RemoveFromDeck(deckCard);
         await PlayerCmd.GainGold(IsUpgraded ? 25 : 15, Owner);
+    }
+
+    private CardModel? ResolveSelectedHandCard(CardModel selectedCard)
+    {
+        return CombatCardStateHelper.ResolveSelectedHandCard(Owner, selectedCard);
     }
 }

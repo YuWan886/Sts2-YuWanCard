@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Core.Multiplayer;
 
@@ -54,63 +53,40 @@ public static class YuWanRightClickRegistry
 
     public static bool TryDispatch(YuWanRightClickContext context)
     {
-        var bindingIds = CollectBindingIds(context);
+        List<YuWanRightClickBindingId> bindingIds = CollectBindingIds(context);
         if (bindingIds.Count == 0)
         {
             return false;
         }
 
-        if (ShouldSync())
+        if (!TryCreatePayload(context, bindingIds, out YuWanRightClickManagedPayload payload))
         {
-            if (!TryCreateMessage(context, bindingIds, out YuWanRightClickSyncMessage message))
-            {
-                MainFile.Logger.Warn(
-                    $"RightClick: failed to build sync message for {context.Model.Id} ({context.Model.GetType().FullName}).");
-                return false;
-            }
-
-            ExecuteLocal(context.Player, context.Model, context.Trigger, bindingIds);
-            YuWanRightClickMessageHandler.Send(message);
-            return true;
+            MainFile.Logger.Warn(
+                $"RightClick: failed to build managed payload for {context.Model.Id} ({context.Model.GetType().FullName}).");
+            return false;
         }
 
-        ExecuteLocal(context.Player, context.Model, context.Trigger, bindingIds);
-        return true;
+        return YuWanRightClickManagedActions.Request(RunManager.Instance, payload);
     }
 
-    internal static void HandleRemoteMessage(YuWanRightClickSyncMessage message)
+    internal static async Task ExecuteManagedPayload(
+        YuWanRightClickManagedPayload payload,
+        GameActionPlayerChoiceContext? playerChoiceContext,
+        GameAction? action)
     {
-        ExecuteRemote(message);
-    }
-
-    private static void ExecuteLocal(
-        Player player,
-        AbstractModel model,
-        YuWanRightClickTrigger trigger,
-        IReadOnlyList<YuWanRightClickBindingId> bindingIds)
-    {
-        FireAndForget(async () =>
+        if (!TryGetPlayer(payload.OwnerNetId, out Player player))
         {
-            await ExecuteBindings(player, model, trigger, bindingIds, null, null);
-        }, $"local dispatch for {model.Id}");
-    }
+            MainFile.Logger.Warn($"RightClick: failed to resolve player for managed payload owner={payload.OwnerNetId} kind={payload.Kind} model={payload.ModelToken.ModelId}.");
+            return;
+        }
 
-    private static void ExecuteRemote(YuWanRightClickSyncMessage message)
-    {
-        FireAndForget(async () =>
+        if (!TryResolveModel(player, payload.Kind, payload.ModelToken, out AbstractModel model))
         {
-            if (!TryGetPlayer(message.OwnerNetId, out Player player))
-            {
-                return;
-            }
+            MainFile.Logger.Warn($"RightClick: failed to resolve model for managed payload owner={payload.OwnerNetId} kind={payload.Kind} model={payload.ModelToken.ModelId} token={payload.ModelToken.Identity.Value}.");
+            return;
+        }
 
-            if (!TryResolveModel(player, message.Kind, message.ModelToken, out AbstractModel model))
-            {
-                return;
-            }
-
-            await ExecuteBindings(player, model, message.Trigger, message.BindingIds, null, null);
-        }, $"remote dispatch for {message.ModelToken.ModelId}");
+        await ExecuteBindings(player, model, payload.Trigger, payload.BindingIds, playerChoiceContext, action);
     }
 
     private static async Task ExecuteBindings(
@@ -213,17 +189,12 @@ public static class YuWanRightClickRegistry
         ids.Insert(insertIndex, id);
     }
 
-    private static bool TryCreateMessage(
+    private static bool TryCreatePayload(
         YuWanRightClickContext context,
         IReadOnlyList<YuWanRightClickBindingId> bindingIds,
-        out YuWanRightClickSyncMessage message)
+        out YuWanRightClickManagedPayload payload)
     {
-        message = default;
-
-        if (RunManager.Instance?.RunLocationTargetedBuffer is not { } locationBuffer)
-        {
-            return false;
-        }
+        payload = default;
 
         if (!TryGetModelKind(context.Model, context.Player, out YuWanRightClickModelKind kind))
         {
@@ -236,15 +207,12 @@ public static class YuWanRightClickRegistry
             return false;
         }
 
-        message = new YuWanRightClickSyncMessage
-        {
-            OwnerNetId = context.Player.NetId,
-            Kind = kind,
-            ModelToken = token,
-            Trigger = context.Trigger,
-            BindingIds = [.. bindingIds],
-            Location = locationBuffer.CurrentLocation
-        };
+        payload = new YuWanRightClickManagedPayload(
+            context.Player.NetId,
+            kind,
+            token,
+            context.Trigger,
+            [.. bindingIds]);
         return true;
     }
 
@@ -303,15 +271,12 @@ public static class YuWanRightClickRegistry
         out AbstractModel model)
     {
         model = null!;
-        if (!MultiplayerModelIdentityRegistry.TryResolve(token, out AbstractModel resolved))
-        {
-            return false;
-        }
+        bool hasResolved = MultiplayerModelIdentityRegistry.TryResolve(token, out AbstractModel resolved);
 
         switch (kind)
         {
             case YuWanRightClickModelKind.Card:
-                if (resolved is not CardModel card || card.Owner != player || card.Pile?.Type != PileType.Hand)
+                if (!hasResolved || resolved is not CardModel card || card.Owner != player || card.Pile?.Type != PileType.Hand)
                 {
                     return false;
                 }
@@ -320,16 +285,25 @@ public static class YuWanRightClickRegistry
                 return true;
 
             case YuWanRightClickModelKind.Relic:
-                if (resolved is not RelicModel relic || relic.Owner != player)
+                if (hasResolved && resolved is RelicModel relic && relic.Owner == player)
+                {
+                    model = relic;
+                    return true;
+                }
+
+                List<RelicModel> fallbackRelics = player.Relics.Where(candidate => candidate.Id == token.ModelId).ToList();
+                if (fallbackRelics.Count != 1)
                 {
                     return false;
                 }
 
-                model = relic;
+                RelicModel fallbackRelic = fallbackRelics[0];
+                MultiplayerModelIdentityRegistry.EnsureRegistered(fallbackRelic);
+                model = fallbackRelic;
                 return true;
 
             case YuWanRightClickModelKind.Power:
-                if (resolved is not PowerModel power || !IsPowerReachableForPlayer(power, player))
+                if (!hasResolved || resolved is not PowerModel power || !IsPowerReachableForPlayer(power, player))
                 {
                     return false;
                 }
@@ -338,12 +312,21 @@ public static class YuWanRightClickRegistry
                 return true;
 
             case YuWanRightClickModelKind.Potion:
-                if (resolved is not PotionModel potion || potion.Owner != player)
+                if (hasResolved && resolved is PotionModel potion && potion.Owner == player)
+                {
+                    model = potion;
+                    return true;
+                }
+
+                List<PotionModel> fallbackPotions = player.PotionSlots.Where(candidate => candidate?.Id == token.ModelId).OfType<PotionModel>().ToList();
+                if (fallbackPotions.Count != 1)
                 {
                     return false;
                 }
 
-                model = potion;
+                PotionModel fallbackPotion = fallbackPotions[0];
+                MultiplayerModelIdentityRegistry.EnsureRegistered(fallbackPotion);
+                model = fallbackPotion;
                 return true;
 
             default:
@@ -358,14 +341,6 @@ public static class YuWanRightClickRegistry
             ?.Players
             .FirstOrDefault(candidate => candidate.NetId == ownerNetId)!;
         return player != null;
-    }
-
-    private static bool ShouldSync()
-    {
-        INetGameService? netService = RunManager.Instance?.NetService;
-        return netService is { IsConnected: true }
-               && netService.Type is not NetGameType.Singleplayer
-               and not NetGameType.Replay;
     }
 
     private static bool TryCanHandleLocal(RegisteredRightClickBinding binding, YuWanRightClickContext context)
@@ -457,23 +432,6 @@ public static class YuWanRightClickRegistry
             int priority = right.Priority.CompareTo(left.Priority);
             return priority != 0 ? priority : left.Sequence.CompareTo(right.Sequence);
         });
-    }
-
-    private static void FireAndForget(Func<Task> work, string description)
-    {
-        _ = ExecuteAsync(work, description);
-    }
-
-    private static async Task ExecuteAsync(Func<Task> work, string description)
-    {
-        try
-        {
-            await work();
-        }
-        catch (Exception ex)
-        {
-            MainFile.Logger.Warn($"RightClick: {description} failed: {ex}");
-        }
     }
 
     private sealed class RegisteredRightClickBinding(

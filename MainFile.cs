@@ -9,8 +9,6 @@ using YuWanCard.Characters;
 using YuWanCard.Config;
 using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
-using YuWanCard.Core.Multiplayer;
-using YuWanCard.Core.RightClick;
 using YuWanCard.Core.Transcendence;
 using YuWanCard.Multiplayer;
 using YuWanCard.Utils;
@@ -87,9 +85,6 @@ public partial class MainFile : Node
         Pig.RegisterScenes();
 
         TeammatePayMessageHandler.Register();
-        SavedPropertySyncMessageHandler.Register();
-        YuWanRightClickMessageHandler.Register();
-
         AssetPreloader.Preload();
         CloudAnalyticsService.Initialize();
 

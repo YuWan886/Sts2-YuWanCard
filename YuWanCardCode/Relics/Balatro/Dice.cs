@@ -8,9 +8,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// At turn start, randomly sets combo to 1-3 (does not decrease existing combo).
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class Dice : BalatroRelicModel
 {
@@ -32,7 +29,7 @@ public sealed class Dice : BalatroRelicModel
         }
 
         int roll = Owner.RunState.Rng.Niche.NextInt(1, 4);
-        modifier.ComboCounter = Math.Max(modifier.ComboCounter, roll);
+        modifier.SetComboAtLeast(Owner, roll);
     }
 
     private BalatroModifier? GetModifier()

@@ -8,9 +8,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// At combat start, gain +3 combo.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class Chip : BalatroRelicModel
 {
@@ -31,7 +28,7 @@ public sealed class Chip : BalatroRelicModel
             return;
         }
 
-        modifier.ComboCounter = Math.Min(30f, modifier.ComboCounter + 3f);
+        modifier.AddCombo(Owner, 3f);
     }
 
     private BalatroModifier? GetModifier()

@@ -27,7 +27,7 @@ public sealed class Dividend : YuWanCardModel
             return;
         }
 
-        int gold = (int)Math.Floor(modifier.ComboCounter / 5f) * 3;
+        int gold = (int)Math.Floor(modifier.GetComboCounter(Owner) / 5f) * 3;
         if (gold > 0)
         {
             await PlayerCmd.GainGold(gold, Owner);

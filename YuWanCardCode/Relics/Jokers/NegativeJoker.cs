@@ -1,25 +1,34 @@
-using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Gain +1 hand draw per turn.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class NegativeJoker : BalatroJokerRelicModel
 {
+    private const float ExtraPlayChance = 0.3f;
+
     public override RelicRarity Rarity => RelicRarity.Rare;
 
-    public override decimal ModifyHandDraw(Player player, decimal count)
+    public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount)
     {
-        if (Owner == null || player != Owner)
+        int result = base.ModifyCardPlayCount(card, target, playCount);
+
+        if (Owner == null || card.Owner != Owner)
         {
-            return base.ModifyHandDraw(player, count);
+            return result;
         }
 
-        return count + 1;
+        if (Owner.RunState.Rng.Niche.NextFloat() < ExtraPlayChance)
+        {
+            Flash();
+            result += EffectiveCount();
+        }
+
+        return result;
     }
+
 }

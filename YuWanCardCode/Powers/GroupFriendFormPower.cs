@@ -26,8 +26,11 @@ public class GroupFriendFormPower : YuWanPowerModel
         if (Owner.CombatState == null)
             return;
 
-        var newCard = CardCopyHelper.CreateCopy(cardPlay.Card, Owner.Player);
+        var newCard = CardCopyHelper.CreateCombatCopy(cardPlay.Card, Owner.Player);
+        if (newCard == null)
+            return;
 
-        await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Draw, cardPlay.Card.Owner);
+        CardPileAddResult addResult = await CardPileCmd.AddGeneratedCardToCombat(newCard, PileType.Draw, addedByPlayer: true);
+        CardCmd.PreviewCardPileAdd(addResult);
     }
 }

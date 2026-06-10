@@ -30,25 +30,14 @@ public sealed class BlankVoucher : BalatroRelicModel
             return;
         }
 
-        List<RelicModel> choices =
-        [
-            ModelDb.Relic<GreedJoker>(),
-            ModelDb.Relic<GluttonyJoker>(),
-            ModelDb.Relic<MirrorJoker>(),
-            ModelDb.Relic<MiserJoker>(),
-            ModelDb.Relic<CollectorJoker>(),
-            ModelDb.Relic<GamblerJoker>(),
-            ModelDb.Relic<PolychromeJoker>(),
-            ModelDb.Relic<NegativeJoker>(),
-            ModelDb.Relic<LegendJoker>(),
-            ModelDb.Relic<HolographicJoker>(),
-            ModelDb.Relic<BankerJoker>(),
-            ModelDb.Relic<InvestorJoker>()
-        ];
-        choices = choices
+        List<RelicModel> choices = BalatroJokerRelicModel.GetAvailableRewardableJokers(Owner)
             .OrderBy(_ => Owner.RunState.Rng.Niche.NextFloat())
             .Take(3)
             .ToList();
+        if (choices.Count == 0)
+        {
+            return;
+        }
 
         RelicModel? selected = await RelicSelectCmd.FromChooseARelicScreen(Owner, choices);
         if (selected != null)

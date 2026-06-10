@@ -33,14 +33,15 @@ public class SmallBenPig : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var amount = DynamicVars["DexterityPower"].IntValue;
-        await PowerCmd.Apply<SmallBenPigPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, amount, Owner.Creature, this);
+        await PowerCmd.Apply<SmallBenPigPower>(Owner.Creature, amount, Owner.Creature, this);
 
         var bigBenPig = CombatState!.CreateCard(ModelDb.Card<BigBenPig>(), Owner);
         if (IsUpgraded)
         {
             CardCmd.Upgrade(bigBenPig);
         }
-        await CardPileCmd.AddGeneratedCardToCombat(bigBenPig, PileType.Discard, Owner);
+        CardPileAddResult addResult = await CardPileCmd.AddGeneratedCardToCombat(bigBenPig, PileType.Discard, addedByPlayer: true);
+        CardCmd.PreviewCardPileAdd(addResult);
 
         VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
     }

@@ -13,9 +13,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// At turn start, copy the first card played last turn into hand.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class HolographicJoker : BalatroJokerRelicModel
 {
@@ -36,21 +33,30 @@ public sealed class HolographicJoker : BalatroJokerRelicModel
             return;
         }
 
-        SerializableCard? previousCard = modifier.PreviousTurnFirstCard;
+        SerializableCard? previousCard = modifier.GetPreviousTurnFirstCard(Owner);
         if (previousCard == null)
         {
             return;
         }
 
-        ICombatState? combatState = player.Creature?.CombatState;
+        CombatState? combatState = player.Creature?.CombatState;
         if (combatState == null)
         {
             return;
         }
 
-        CardModel copy = CardModel.FromSerializable(previousCard);
-        combatState.AddCard(copy, player);
-        await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, Owner);
+        int copyCount = EffectiveCount();
+        if (copyCount <= 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < copyCount; i++)
+        {
+            CardModel copy = CardModel.FromSerializable(previousCard);
+            combatState.AddCard(copy, player);
+            await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, addedByPlayer: true);
+        }
     }
 
     private BalatroModifier? GetModifier()

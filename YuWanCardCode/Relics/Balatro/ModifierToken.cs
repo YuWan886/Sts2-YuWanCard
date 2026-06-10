@@ -27,7 +27,7 @@ public sealed class ModifierToken : BalatroRelicModel
         if (Owner.RunState is RunState runState)
         {
             BalatroModifier? modifier = BalatroModifier.GetInstance(runState);
-            modifier?.AddModifierTokens(1);
+            modifier?.AddModifierTokens(Owner, 1);
         }
 
         await RelicCmd.Remove(this);

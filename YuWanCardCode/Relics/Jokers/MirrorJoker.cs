@@ -8,9 +8,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Playing the same card type consecutively grants an extra play.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class MirrorJoker : BalatroJokerRelicModel
 {
@@ -26,22 +23,12 @@ public sealed class MirrorJoker : BalatroJokerRelicModel
         }
 
         BalatroModifier? modifier = GetModifier();
-        if (modifier?.LastCardTypeThisTurn == card.Type)
+        if (modifier?.GetLastCardTypeThisTurn(Owner) == card.Type)
         {
             result += EffectiveCount();
         }
 
         return result;
-    }
-
-    private int EffectiveCount()
-    {
-        int count = 1;
-        if (Owner != null && Owner.GetRelic<Blueprint>() != null)
-        {
-            count *= 2;
-        }
-        return count;
     }
 
     private BalatroModifier? GetModifier()

@@ -8,9 +8,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// For each 0-cost card in hand, attack cards deal +1 damage.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class MiserJoker : BalatroJokerRelicModel
 {
@@ -34,13 +31,4 @@ public sealed class MiserJoker : BalatroJokerRelicModel
         return zeroCostCount * multiplier;
     }
 
-    private int EffectiveCount()
-    {
-        int count = 1;
-        if (Owner != null && Owner.GetRelic<Blueprint>() != null)
-        {
-            count *= 2;
-        }
-        return count;
-    }
 }

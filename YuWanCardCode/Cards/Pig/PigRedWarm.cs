@@ -23,6 +23,7 @@ public class PigRedWarm : YuWanCardModel
     protected override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(5);
+        DynamicVars["StrengthPower"].UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

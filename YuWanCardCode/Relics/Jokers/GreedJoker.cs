@@ -9,9 +9,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Every 3rd attack card played: gain 5 gold.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class GreedJoker : BalatroJokerRelicModel
 {
@@ -34,21 +31,11 @@ public sealed class GreedJoker : BalatroJokerRelicModel
             return;
         }
 
-        if (modifier.AttackCardsThisTurn % 3 == 0)
+        if (modifier.GetAttackCardsThisTurn(Owner) % 3 == 0)
         {
             int multiplier = EffectiveCount();
             await PlayerCmd.GainGold(GoldPerTrigger * multiplier, Owner);
         }
-    }
-
-    private int EffectiveCount()
-    {
-        int count = 1;
-        if (Owner != null && Owner.GetRelic<Blueprint>() != null)
-        {
-            count *= 2;
-        }
-        return count;
     }
 
     private BalatroModifier? GetModifier()

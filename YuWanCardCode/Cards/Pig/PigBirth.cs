@@ -46,9 +46,10 @@ public class PigBirth : YuWanCardModel
                 this
             );
 
-            if (cardsToDiscard.Any())
+            var discardList = cardsToDiscard.ToList();
+            if (discardList.Count > 0)
             {
-                await CardCmd.Discard(choiceContext, cardsToDiscard);
+                await CardCmd.Discard(choiceContext, discardList);
             }
         }
     }

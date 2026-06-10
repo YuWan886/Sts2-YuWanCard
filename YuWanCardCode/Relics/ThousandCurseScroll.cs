@@ -1,14 +1,13 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
-using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Persistence;
 
 namespace YuWanCard.Relics;
 
@@ -17,12 +16,14 @@ public class ThousandCurseScroll : YuWanRelicModel
 {
     private const int MaxStrengthGain = 5;
     private const int MaxDexterityGain = 5;
+    private static readonly SavedAttachedState<ThousandCurseScroll, int> GrantsThisCombatState =
+        new(nameof(GrantsThisCombat), () => 0);
 
-    [SavedProperty]
-    private int YUWANCARD_StrengthGrantedThisCombat { get; set; }
-
-    [SavedProperty]
-    private int YUWANCARD_DexterityGrantedThisCombat { get; set; }
+    private int GrantsThisCombat
+    {
+        get => GrantsThisCombatState.GetValueOrDefault(this, 0);
+        set => GrantsThisCombatState[this] = value;
+    }
 
     public override RelicRarity Rarity => RelicRarity.Event;
 
@@ -34,15 +35,13 @@ public class ThousandCurseScroll : YuWanRelicModel
 
     public override Task BeforeCombatStart()
     {
-        YUWANCARD_StrengthGrantedThisCombat = 0;
-        YUWANCARD_DexterityGrantedThisCombat = 0;
+        GrantsThisCombat = 0;
         return Task.CompletedTask;
     }
 
     public override Task AfterCombatEnd(CombatRoom room)
     {
-        YUWANCARD_StrengthGrantedThisCombat = 0;
-        YUWANCARD_DexterityGrantedThisCombat = 0;
+        GrantsThisCombat = 0;
         return Task.CompletedTask;
     }
 
@@ -76,19 +75,22 @@ public class ThousandCurseScroll : YuWanRelicModel
             return;
         }
 
-        int strengthToGain = Math.Max(0, MaxStrengthGain - YUWANCARD_StrengthGrantedThisCombat) > 0 ? 1 : 0;
-        int dexterityToGain = Math.Max(0, MaxDexterityGain - YUWANCARD_DexterityGrantedThisCombat) > 0 ? 1 : 0;
+        int strengthToGain = Math.Max(0, MaxStrengthGain - GrantsThisCombat) > 0 ? 1 : 0;
+        int dexterityToGain = Math.Max(0, MaxDexterityGain - GrantsThisCombat) > 0 ? 1 : 0;
 
         if (strengthToGain > 0)
         {
-            await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), ownerCreature, strengthToGain, ownerCreature, card);
-            YUWANCARD_StrengthGrantedThisCombat += strengthToGain;
+            await PowerCmd.Apply<StrengthPower>(ownerCreature, strengthToGain, ownerCreature, card);
         }
 
         if (dexterityToGain > 0)
         {
-            await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), ownerCreature, dexterityToGain, ownerCreature, card);
-            YUWANCARD_DexterityGrantedThisCombat += dexterityToGain;
+            await PowerCmd.Apply<DexterityPower>(ownerCreature, dexterityToGain, ownerCreature, card);
+        }
+
+        if (strengthToGain > 0 || dexterityToGain > 0)
+        {
+            GrantsThisCombat += 1;
         }
     }
 }

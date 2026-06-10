@@ -8,9 +8,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Every 7th card played triggers +2 extra times.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class LuckyCard : BalatroRelicModel
 {
@@ -26,7 +23,7 @@ public sealed class LuckyCard : BalatroRelicModel
         }
 
         BalatroModifier? modifier = GetModifier();
-        if (modifier != null && (modifier.CardsPlayedThisTurn + 1) % 7 == 0)
+        if (modifier != null && (modifier.GetCardsPlayedThisTurn(Owner) + 1) % 7 == 0)
         {
             result += 2;
         }

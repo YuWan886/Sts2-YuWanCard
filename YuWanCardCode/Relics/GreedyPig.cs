@@ -4,12 +4,12 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.HoverTips;
+using YuWanCard.Core.Persistence;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
@@ -17,8 +17,14 @@ namespace YuWanCard.Relics;
 [Pool(typeof(EventRelicPool))]
 public class GreedyPig : YuWanRelicModel
 {
-    [SavedProperty]
-    private bool HasAddedGreedThisCombat { get; set; }
+    private static readonly SavedAttachedState<GreedyPig, bool> HasAddedGreedThisCombatState =
+        new(nameof(HasAddedGreedThisCombat));
+
+    private bool HasAddedGreedThisCombat
+    {
+        get => HasAddedGreedThisCombatState.GetValueOrDefault(this, false);
+        set => HasAddedGreedThisCombatState[this] = value;
+    }
 
     private GoldModificationGuard? _goldGuard;
 
@@ -79,7 +85,8 @@ public class GreedyPig : YuWanRelicModel
 
         if (isHandFull)
         {
-            await CardPileCmd.Add(card, PileType.Draw, CardPilePosition.Top);
+            CardPileAddResult addResult = await CardPileCmd.Add(card, PileType.Draw, CardPilePosition.Top);
+            CardCmd.PreviewCardPileAdd(addResult);
         }
         else
         {

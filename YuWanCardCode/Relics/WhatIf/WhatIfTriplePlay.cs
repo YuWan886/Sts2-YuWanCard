@@ -3,12 +3,13 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.RelicPools;
 
 namespace YuWanCard.Relics;
 
 [Pool(typeof(WhatIfRelicPool))]
-public class WhatIfTriplePlay : WhatIfRelicModel
+public class WhatIfTriplePlay : WhatIfRelicModel, IWhatIfUniformRelicSource
 {
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         HoverTipFactory.FromRelic<TriplePlay>();
@@ -32,5 +33,10 @@ public class WhatIfTriplePlay : WhatIfRelicModel
             }
         }
         return true;
+    }
+
+    public RelicModel GetUniformRelic(IRunState runState)
+    {
+        return ModelDb.Relic<TriplePlay>();
     }
 }

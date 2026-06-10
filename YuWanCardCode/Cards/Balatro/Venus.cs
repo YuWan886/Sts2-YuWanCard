@@ -1,8 +1,9 @@
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Balatro;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Powers;
 
 namespace YuWanCard.Cards;
 
@@ -12,25 +13,16 @@ public sealed class Venus : YuWanCardModel
     public Venus() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
     {
         WithKeywords(CardKeyword.Exhaust);
+        WithPower<VenusPower>("BonusBlock", 1);
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars["BonusBlock"].BaseValue = 2;
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var combatState = Owner.PlayerCombatState;
-        if (combatState == null)
-        {
-            return;
-        }
-
-        int bonus = IsUpgraded ? 2 : 1;
-        foreach (CardModel card in combatState.AllCards.Where(card => card.Type == CardType.Skill))
-        {
-            if (card.DynamicVars.ContainsKey("Block"))
-            {
-                card.DynamicVars["Block"].BaseValue += bonus;
-            }
-        }
-
-        await Task.CompletedTask;
+        await PowerCmd.Apply<VenusPower>(Owner.Creature, DynamicVars["BonusBlock"].BaseValue, Owner.Creature, this);
     }
 }

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.RelicPools;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -18,6 +19,7 @@ namespace YuWanCard.Relics;
 public class RecycleBin : YuWanRelicModel
 {
     private const decimal RecoveryRate = 0.3m;
+    private const int InvalidMerchantCostSentinel = 999999999;
 
     static RecycleBin()
     {
@@ -39,7 +41,7 @@ public class RecycleBin : YuWanRelicModel
 
     public override async Task AfterRoomEntered(AbstractRoom room)
     {
-        if (Owner == null || YUWANCARD_PendingRecycleGold <= 0)
+        if (Owner == null || YUWANCARD_PendingRecycleGold <= 0 || !LocalContext.IsMe(Owner))
         {
             return;
         }
@@ -50,6 +52,7 @@ public class RecycleBin : YuWanRelicModel
 
         Flash();
         await PlayerCmd.GainGold(pendingGold, Owner);
+        RunManager.Instance?.RewardSynchronizer?.SyncLocalObtainedGold(pendingGold);
     }
 
     internal static void QueueSkippedReward(Reward reward)
@@ -65,19 +68,42 @@ public class RecycleBin : YuWanRelicModel
             return;
         }
 
-        decimal merchantValue = GetMerchantValue(reward);
-        if (merchantValue <= 0)
+        if (!TryGetRecycledGold(reward, out int recycledGold))
         {
             return;
         }
 
-        int recycledGold = GetRecycledGold(merchantValue);
-        if (recycledGold <= 0)
+        recycleBin.QueueRecycledGold(recycledGold, reward.GetType().Name, LocalContext.NetId ?? 0);
+    }
+
+    internal static void QueueSkippedCards(Player player, IEnumerable<CardModel> cards, string source)
+    {
+        if (!LocalContext.IsMe(player))
         {
             return;
         }
 
-        recycleBin.QueueRecycledGold(recycledGold, reward.GetType().Name);
+        List<CardModel> skippedCards = cards.ToList();
+        if (skippedCards.Count == 0)
+        {
+            return;
+        }
+
+        var recycleBin = GetOwnedRelic(player);
+        if (recycleBin == null)
+        {
+            return;
+        }
+
+        if (!TryGetRecycledGold(skippedCards, out int recycledGold))
+        {
+            return;
+        }
+
+        recycleBin.QueueRecycledGold(
+            recycledGold,
+            $"{nameof(CardReward)}[{skippedCards.Count}]/{source}",
+            LocalContext.NetId ?? 0);
     }
 
     private static RecycleBin? GetOwnedRelic(Player? player)
@@ -98,7 +124,7 @@ public class RecycleBin : YuWanRelicModel
         return null;
     }
 
-    private void QueueRecycledGold(int recycledGold, string rewardType)
+    private void QueueRecycledGold(int recycledGold, string rewardType, ulong senderId)
     {
         if (recycledGold <= 0)
         {
@@ -109,7 +135,35 @@ public class RecycleBin : YuWanRelicModel
         InvokeDisplayAmountChanged();
 
         MainFile.Logger.Info(
-            $"RecycleBin: queued {recycledGold} gold from skipped {rewardType}. Pending={YUWANCARD_PendingRecycleGold}.");
+            $"RecycleBin: queued {recycledGold} gold from skipped {rewardType} for player {Owner?.NetId} via sender {senderId}. Pending={YUWANCARD_PendingRecycleGold}.");
+    }
+
+    private static bool TryGetRecycledGold(Reward reward, out int recycledGold)
+    {
+        recycledGold = 0;
+
+        decimal merchantValue = GetMerchantValue(reward);
+        if (merchantValue <= 0)
+        {
+            return false;
+        }
+
+        recycledGold = GetRecycledGold(merchantValue);
+        return recycledGold > 0;
+    }
+
+    private static bool TryGetRecycledGold(IEnumerable<CardModel> skippedCards, out int recycledGold)
+    {
+        recycledGold = 0;
+        decimal merchantValue = skippedCards.Sum(GetCardMerchantValue);
+
+        if (merchantValue <= 0)
+        {
+            return false;
+        }
+
+        recycledGold = GetRecycledGold(merchantValue);
+        return recycledGold > 0;
     }
 
     private static int GetRecycledGold(decimal merchantValue)
@@ -158,6 +212,12 @@ public class RecycleBin : YuWanRelicModel
 
     private static decimal GetRelicMerchantValue(RelicModel relic)
     {
-        return relic.MerchantCost;
+        int merchantCost = relic.MerchantCost;
+        if (!relic.IsAllowedInShops || merchantCost <= 0 || merchantCost >= InvalidMerchantCostSentinel)
+        {
+            return 0m;
+        }
+
+        return merchantCost;
     }
 }

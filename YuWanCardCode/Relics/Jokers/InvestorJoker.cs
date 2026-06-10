@@ -7,9 +7,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Refunds 20% of gold spent in shops.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class InvestorJoker : BalatroJokerRelicModel
 {
@@ -39,13 +36,4 @@ public sealed class InvestorJoker : BalatroJokerRelicModel
         }
     }
 
-    private int EffectiveCount()
-    {
-        int count = 1;
-        if (Owner != null && Owner.GetRelic<Blueprint>() != null)
-        {
-            count *= 2;
-        }
-        return count;
-    }
 }

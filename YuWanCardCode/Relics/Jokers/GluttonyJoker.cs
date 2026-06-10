@@ -9,9 +9,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Every 4th skill card played: heal 3 HP.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class GluttonyJoker : BalatroJokerRelicModel
 {
@@ -34,21 +31,11 @@ public sealed class GluttonyJoker : BalatroJokerRelicModel
             return;
         }
 
-        if (modifier.SkillCardsThisTurn % 4 == 0)
+        if (modifier.GetSkillCardsThisTurn(Owner) % 4 == 0)
         {
             int multiplier = EffectiveCount();
             await CreatureCmd.Heal(Owner.Creature, HealPerTrigger * multiplier);
         }
-    }
-
-    private int EffectiveCount()
-    {
-        int count = 1;
-        if (Owner != null && Owner.GetRelic<Blueprint>() != null)
-        {
-            count *= 2;
-        }
-        return count;
     }
 
     private BalatroModifier? GetModifier()

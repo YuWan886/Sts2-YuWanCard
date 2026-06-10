@@ -6,9 +6,6 @@ using YuWanCard.Relics.Balatro;
 
 namespace YuWanCard.Relics;
 
-/// <summary>
-/// Each card played this turn adds +0.2x to the combo multiplier.
-/// </summary>
 [Pool(typeof(SharedRelicPool))]
 public sealed class LegendJoker : BalatroJokerRelicModel
 {
@@ -16,7 +13,7 @@ public sealed class LegendJoker : BalatroJokerRelicModel
 
     /// <summary>
     /// Returns the bonus multiplier: cardsPlayedThisTurn * 0.2 * effectiveCount.
-    /// Called by BalatroModifier.ComboMultiplier.
+    /// Called by BalatroModifier.GetComboMultiplier(Player).
     /// </summary>
     public float GetLegendBonus()
     {
@@ -31,17 +28,7 @@ public sealed class LegendJoker : BalatroJokerRelicModel
             return 0f;
         }
 
-        return modifier.CardsPlayedThisTurn * 0.2f * EffectiveCount();
-    }
-
-    private int EffectiveCount()
-    {
-        int count = 1;
-        if (Owner != null && Owner.GetRelic<Blueprint>() != null)
-        {
-            count *= 2;
-        }
-        return count;
+        return modifier.GetCardsPlayedThisTurn(Owner) * 0.2f * EffectiveCount();
     }
 
     private BalatroModifier? GetModifier()

@@ -9,6 +9,8 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigOffWork : YuWanCardModel
 {
+    public override int MaxUpgradeLevel => 0;
+    
     public PigOffWork() : base(
         baseCost: 4,
         type: CardType.Skill,
@@ -16,7 +18,6 @@ public class PigOffWork : YuWanCardModel
         target: TargetType.None)
     {
         WithKeywords(CardKeyword.Exhaust);
-        WithCostUpgradeBy(-1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

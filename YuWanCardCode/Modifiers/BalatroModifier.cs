@@ -1,4 +1,3 @@
-using System.Text.Json;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -19,8 +18,11 @@ using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Balatro;
 using YuWanCard.Cards;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Persistence;
 using YuWanCard.Powers;
 using YuWanCard.Relics;
+using YuWanCard.Relics.Balatro;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Modifiers;
 
@@ -38,6 +40,8 @@ public sealed class BalatroModifier : YuWanModifierModel
     private const float SteelJokerRetainRatio = 0.2f;
     private const float RetainedComboScale = 20f;
     private const float LegendBonusPerCard = 0.2f;
+    private const int NoCardType = -1;
+    private const string ActiveTurnPlayerNetIdStateName = "YUWANCARD_BalatroActiveTurnPlayerNetId";
 
     // Mod Station
     private const int ModStationRefreshCost = 25;
@@ -46,47 +50,55 @@ public sealed class BalatroModifier : YuWanModifierModel
     private const int ModStationPolychromeCost = 150;
     private const int ModStationNegativeCost = 250;
 
-    #region Saved Properties
+    #region Saved State
 
     public override bool AllowedInCustomRun => true;
 
-    [SavedProperty]
-    public int YUWANCARD_RetainedComboScaled { get; set; }
+    private static readonly SavedAttachedState<Player, int> RetainedComboScaledState =
+        new("YUWANCARD_BalatroRetainedComboScaled", () => 0);
 
-    [SavedProperty]
-    public int YUWANCARD_LastInterestFloor { get; set; }
+    private static readonly SavedAttachedState<Player, int> LastInterestFloorState =
+        new("YUWANCARD_BalatroLastInterestFloor", () => 0);
 
-    [SavedProperty]
-    public string YUWANCARD_CurrentTurnFirstCardJson { get; set; } = string.Empty;
+    private static readonly SavedAttachedState<Player, SerializableCard> CurrentTurnFirstCardState =
+        new("YUWANCARD_BalatroCurrentTurnFirstCard", _ => null!);
 
-    [SavedProperty]
-    public string YUWANCARD_PreviousTurnFirstCardJson { get; set; } = string.Empty;
+    private static readonly SavedAttachedState<Player, SerializableCard> PreviousTurnFirstCardState =
+        new("YUWANCARD_BalatroPreviousTurnFirstCard", _ => null!);
 
-    [SavedProperty]
-    public int YUWANCARD_ModifierTokens { get; set; }
+    private static readonly SavedAttachedState<Player, int> ModifierTokensState =
+        new("YUWANCARD_BalatroModifierTokens", () => 0);
 
-    [SavedProperty]
-    public int YUWANCARD_ModStationOffer1 { get; set; }
+    private static readonly SavedAttachedState<Player, int> ModStationOffer1State =
+        new("YUWANCARD_BalatroModStationOffer1", () => 0);
 
-    [SavedProperty]
-    public int YUWANCARD_ModStationOffer2 { get; set; }
+    private static readonly SavedAttachedState<Player, int> ModStationOffer2State =
+        new("YUWANCARD_BalatroModStationOffer2", () => 0);
 
-    [SavedProperty]
-    public int YUWANCARD_ModStationFloor { get; set; }
+    private static readonly SavedAttachedState<Player, int> ModStationFloorState =
+        new("YUWANCARD_BalatroModStationFloor", () => 0);
+
+    private static readonly SavedAttachedState<Player, int> ComboCounterScaledState =
+        new("YUWANCARD_BalatroComboCounterScaled", () => 0);
+
+    private static readonly SavedAttachedState<Player, int> CardsPlayedThisTurnState =
+        new("YUWANCARD_BalatroCardsPlayedThisTurn", () => 0);
+
+    private static readonly SavedAttachedState<Player, int> AttackCardsThisTurnState =
+        new("YUWANCARD_BalatroAttackCardsThisTurn", () => 0);
+
+    private static readonly SavedAttachedState<Player, int> SkillCardsThisTurnState =
+        new("YUWANCARD_BalatroSkillCardsThisTurn", () => 0);
+
+    private static readonly SavedAttachedState<Player, int> LastCardTypeThisTurnState =
+        new("YUWANCARD_BalatroLastCardTypeThisTurn", () => NoCardType);
+
+    private static readonly SavedAttachedState<RunState, string> ActiveTurnPlayerNetIdState =
+        new(ActiveTurnPlayerNetIdStateName, () => string.Empty);
 
     #endregion
 
     #region Runtime State
-
-    public float ComboCounter { get; set; }
-
-    public int CardsPlayedThisTurn { get; private set; }
-
-    public int AttackCardsThisTurn { get; private set; }
-
-    public int SkillCardsThisTurn { get; private set; }
-
-    public CardType? LastCardTypeThisTurn { get; private set; }
 
     public override bool AllowedInDailyRun => false;
 
@@ -106,26 +118,6 @@ public sealed class BalatroModifier : YuWanModifierModel
         base.AfterRunCreated(runState);
         MainFile.Logger.Info(
             $"[BalatroDebug] BalatroModifier.AfterRunCreated seed={runState.Rng.StringSeed} players={runState.Players.Count} act0={runState.Acts.FirstOrDefault()?.Id.Entry ?? "null"} modifiers=[{string.Join(", ", runState.Modifiers.Select(static m => m.Id.Entry))}]");
-    }
-
-    public float ComboMultiplier => 1f + ComboCounter * ComboMultiplierPerPoint + GetLegendBonus();
-
-    private float RetainedCombo
-    {
-        get => YUWANCARD_RetainedComboScaled / RetainedComboScale;
-        set => YUWANCARD_RetainedComboScaled = (int)MathF.Round(Math.Clamp(value, 0f, MaxCombo) * RetainedComboScale);
-    }
-
-    private SerializableCard? CurrentTurnFirstCard
-    {
-        get => DeserializeStoredCard(YUWANCARD_CurrentTurnFirstCardJson);
-        set => YUWANCARD_CurrentTurnFirstCardJson = SerializeStoredCard(value);
-    }
-
-    public SerializableCard? PreviousTurnFirstCard
-    {
-        get => DeserializeStoredCard(YUWANCARD_PreviousTurnFirstCardJson);
-        set => YUWANCARD_PreviousTurnFirstCardJson = SerializeStoredCard(value);
     }
 
     public override async Task BeforeCombatStart()
@@ -150,45 +142,11 @@ public sealed class BalatroModifier : YuWanModifierModel
         await base.AfterRoomEntered(room);
 
         MainFile.Logger.Info(
-            $"[BalatroDebug] BalatroModifier.AfterRoomEntered roomType={room.RoomType} totalFloor={RunState.TotalFloor} currentAct={RunState.CurrentActIndex} lastInterestFloor={YUWANCARD_LastInterestFloor}");
+            $"[BalatroDebug] BalatroModifier.AfterRoomEntered roomType={room.RoomType} totalFloor={RunState.TotalFloor} currentAct={RunState.CurrentActIndex}");
 
-        Player? player = GetBalatroPlayer();
-        if (player == null)
+        foreach (Player player in RunState.Players)
         {
-            MainFile.Logger.Info("[BalatroDebug] BalatroModifier.AfterRoomEntered aborted: player is null.");
-            return;
-        }
-
-        if (RunState.TotalFloor <= 0 || RunState.TotalFloor <= YUWANCARD_LastInterestFloor)
-        {
-            MainFile.Logger.Info(
-                $"[BalatroDebug] BalatroModifier.AfterRoomEntered skipped interest: totalFloor={RunState.TotalFloor}, lastInterestFloor={YUWANCARD_LastInterestFloor}.");
-            return;
-        }
-
-        YUWANCARD_LastInterestFloor = RunState.TotalFloor;
-
-        int interest = (int)Math.Floor(player.Gold * InterestRate);
-        if (interest <= 0)
-        {
-            return;
-        }
-
-        interest = Math.Min(interest, BaseInterestCap + GetCompoundInterestCapBonus(player));
-        interest += 3 * SimpleJokerCount<BankerJoker>(player);
-
-        if (interest > 0)
-        {
-            MainFile.Logger.Info(
-                $"[BalatroDebug] BalatroModifier.AfterRoomEntered granting interest={interest} currentGold={player.Gold}.");
-            await PlayerCmd.GainGold(interest, player);
-            MainFile.Logger.Info(
-                $"[BalatroDebug] BalatroModifier.AfterRoomEntered gain complete newGold={player.Gold}.");
-        }
-        else
-        {
-            MainFile.Logger.Info(
-                $"[BalatroDebug] BalatroModifier.AfterRoomEntered computed non-positive interest={interest}.");
+            await ApplyInterestForRoom(player);
         }
     }
 
@@ -196,47 +154,34 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     #region Turn & Card Hooks
 
-    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
-        if (player != GetBalatroPlayer())
+        SetActiveTurnPlayer(player);
+
+        float retainedCombo = GetRetainedCombo(player);
+        if (retainedCombo > 0f)
         {
-            return;
+            SetComboCounter(player, Math.Min(MaxCombo, retainedCombo));
+            SetRetainedCombo(player, 0f);
         }
 
-        if (RetainedCombo > 0f)
-        {
-            ComboCounter = Math.Min(MaxCombo, RetainedCombo);
-            RetainedCombo = 0f;
-        }
-
-        SerializableCard? previousTurnFirstCard = PreviousTurnFirstCard;
-        if (previousTurnFirstCard != null)
-        {
-            ICombatState? combatState = player.Creature.CombatState;
-            if (combatState == null)
-            {
-                return;
-            }
-
-            CardModel copy = CardModel.FromSerializable(previousTurnFirstCard);
-            combatState.AddCard(copy, player);
-            await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Hand, player);
-        }
+        return Task.CompletedTask;
     }
 
-    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
+    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
     {
-        Player? player = GetBalatroPlayer();
+        Player? player = GetActiveTurnPlayer();
         if (player == null || side != player.Creature.Side)
         {
             return;
         }
 
+        float comboCounter = GetComboCounter(player);
         float retainRatio = 0f;
-        if (ComboCounter >= RetainedComboThreshold)
+        if (comboCounter >= RetainedComboThreshold)
         {
             retainRatio = DefaultRetainRatio;
-            await PowerCmd.Apply<InertiaPower>(new ThrowingPlayerChoiceContext(), player.Creature, 1, player.Creature, null);
+            await PowerCmd.Apply<InertiaPower>(player.Creature, 1, player.Creature, null);
         }
 
         if (player.GetRelic<SteelJoker>() != null)
@@ -244,26 +189,26 @@ public sealed class BalatroModifier : YuWanModifierModel
             retainRatio = Math.Max(retainRatio, SteelJokerRetainRatio);
         }
 
-        RetainedCombo = retainRatio > 0f
-            ? MathF.Min(MaxCombo, ComboCounter * retainRatio)
-            : 0f;
-
-        PreviousTurnFirstCard = CurrentTurnFirstCard;
-        ResetTurnState();
+        SetRetainedCombo(player, retainRatio > 0f
+            ? MathF.Min(MaxCombo, comboCounter * retainRatio)
+            : 0f);
+        SetPreviousTurnFirstCard(player, GetCurrentTurnFirstCard(player));
+        ResetTurnState(player);
+        SetActiveTurnPlayer(null);
     }
 
     public override Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
-        Player? player = GetBalatroPlayer();
-        if (player == null || cardPlay.Card.Owner != player)
+        Player? player = cardPlay.Card.Owner;
+        if (player == null)
         {
             return Task.CompletedTask;
         }
 
         CardModel card = cardPlay.Card;
-        if (CurrentTurnFirstCard == null)
+        if (GetCurrentTurnFirstCard(player) == null)
         {
-            CurrentTurnFirstCard = card.ToSerializable();
+            SetCurrentTurnFirstCard(player, card.ToSerializable());
         }
 
         float comboGain = CalculateComboGain(player, card);
@@ -272,16 +217,16 @@ public sealed class BalatroModifier : YuWanModifierModel
             return Task.CompletedTask;
         }
 
-        AddCombo(comboGain);
-        CardsPlayedThisTurn++;
+        AddCombo(player, comboGain);
+        CardsPlayedThisTurnState[player] = GetCardsPlayedThisTurn(player) + 1;
 
         if (card.Type == CardType.Attack)
         {
-            AttackCardsThisTurn++;
+            AttackCardsThisTurnState[player] = GetAttackCardsThisTurn(player) + 1;
         }
         else if (card.Type == CardType.Skill)
         {
-            SkillCardsThisTurn++;
+            SkillCardsThisTurnState[player] = GetSkillCardsThisTurn(player) + 1;
         }
 
         return Task.CompletedTask;
@@ -289,8 +234,7 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount)
     {
-        Player? player = GetBalatroPlayer();
-        if (player == null || card.Owner != player)
+        if (card.Owner == null)
         {
             return playCount;
         }
@@ -311,13 +255,13 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        Player? player = GetBalatroPlayer();
+        Player? player = dealer?.Player;
         if (player == null || dealer != player.Creature || cardSource?.Type != CardType.Attack)
         {
             return 1m;
         }
 
-        return (decimal)ComboMultiplier;
+        return (decimal)GetComboMultiplier(player);
     }
 
     public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)
@@ -375,31 +319,37 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
 
         bool modified = false;
-        float chance = room.RoomType == RoomType.Boss ? 1f : 0.25f;
-        if (RunState.Rng.Niche.NextFloat() <= chance)
+        if (!HasBalatroRelicReward(rewards))
         {
-            List<RelicModel> available = GetAvailableJokers(player);
-            if (available.Count > 0)
+            float jokerChance = room.RoomType == RoomType.Boss ? 0.5f : 0.10f;
+            if (RunState.Rng.Niche.NextFloat() <= jokerChance)
             {
-                RelicModel reward = available[RunState.Rng.Niche.NextInt(available.Count)];
-                rewards.Add(new RelicReward(reward.ToMutable(), player));
-                modified = true;
+                List<RelicModel> available = GetAvailableJokers(player);
+                if (available.Count > 0)
+                {
+                    RelicModel reward = available[RunState.Rng.Niche.NextInt(available.Count)];
+                    rewards.Add(new RelicReward(reward.ToMutable(), player));
+                    modified = true;
+                }
             }
         }
 
-        float tokenChance = room.RoomType == RoomType.Boss ? 0.5f : 0.2f;
-        if (RunState.Rng.Niche.NextFloat() <= tokenChance)
+        if (!HasBalatroRelicReward(rewards))
         {
-            rewards.Add(new RelicReward(ModelDb.Relic<ModifierToken>().ToMutable(), player));
-            modified = true;
+            float tokenChance = room.RoomType == RoomType.Boss ? 0.20f : 0.05f;
+            if (RunState.Rng.Niche.NextFloat() <= tokenChance)
+            {
+                rewards.Add(new RelicReward(ModelDb.Relic<ModifierToken>().ToMutable(), player));
+                modified = true;
+            }
         }
 
         return modified;
     }
 
-    public override decimal ModifyGoldGained(Player player, decimal amount)
+    public override bool ShouldGainGold(decimal amount, Player player)
     {
-        return player == GetBalatroPlayer() ? amount : 0m;
+        return true;
     }
 
     public override async Task AfterItemPurchased(Player player, MerchantEntry itemPurchased, int goldSpent)
@@ -421,29 +371,95 @@ public sealed class BalatroModifier : YuWanModifierModel
         return runState is RunState state && GetInstance(state) != null;
     }
 
-    public string GetComboDisplayText()
+    public string GetComboDisplayText(Player? player)
     {
-        return $"COMBO {ComboCounter:0.#}  MULT x{ComboMultiplier:0.0}";
+        float combo = GetComboCounter(player);
+        float multiplier = GetComboMultiplier(player);
+        return $"COMBO {combo:0.#}  MULT x{multiplier:0.0}";
     }
 
-    public int ModifierTokenCount => YUWANCARD_ModifierTokens;
-
-    public void AddModifierTokens(int amount)
+    public float GetComboCounter(Player? player)
     {
-        if (amount <= 0)
+        return GetScaledState(ComboCounterScaledState, player);
+    }
+
+    public float GetComboMultiplier(Player? player)
+    {
+        return 1f + GetComboCounter(player) * ComboMultiplierPerPoint + GetLegendBonus(player);
+    }
+
+    public int GetCardsPlayedThisTurn(Player? player)
+    {
+        return player == null ? 0 : CardsPlayedThisTurnState.GetValueOrDefault(player, 0);
+    }
+
+    public int GetAttackCardsThisTurn(Player? player)
+    {
+        return player == null ? 0 : AttackCardsThisTurnState.GetValueOrDefault(player, 0);
+    }
+
+    public int GetSkillCardsThisTurn(Player? player)
+    {
+        return player == null ? 0 : SkillCardsThisTurnState.GetValueOrDefault(player, 0);
+    }
+
+    public CardType? GetLastCardTypeThisTurn(Player? player)
+    {
+        if (player == null)
+        {
+            return null;
+        }
+
+        int rawValue = LastCardTypeThisTurnState.GetValueOrDefault(player, NoCardType);
+        return rawValue == NoCardType ? null : (CardType)rawValue;
+    }
+
+    public SerializableCard? GetPreviousTurnFirstCard(Player? player)
+    {
+        return GetStoredCard(PreviousTurnFirstCardState, player);
+    }
+
+    public int GetModifierTokenCount(Player? player)
+    {
+        return player == null ? 0 : ModifierTokensState.GetValueOrDefault(player, 0);
+    }
+
+    public void AddModifierTokens(Player? player, int amount)
+    {
+        if (player == null || amount <= 0)
         {
             return;
         }
 
-        YUWANCARD_ModifierTokens += amount;
+        ModifierTokensState[player] = GetModifierTokenCount(player) + amount;
     }
 
-    public IReadOnlyList<BalatroCardEdition> GetModStationOffers()
+    public void AddCombo(Player? player, float amount)
+    {
+        if (player == null || amount <= 0f)
+        {
+            return;
+        }
+
+        SetComboCounter(player, GetComboCounter(player) + amount);
+    }
+
+    public void SetComboAtLeast(Player? player, float value)
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        SetComboCounter(player, Math.Max(GetComboCounter(player), value));
+    }
+
+    public IReadOnlyList<BalatroCardEdition> GetModStationOffers(Player? player)
     {
         return
         [
-            NormalizeEditionOffer(YUWANCARD_ModStationOffer1),
-            NormalizeEditionOffer(YUWANCARD_ModStationOffer2)
+            NormalizeEditionOffer(player == null ? 0 : ModStationOffer1State.GetValueOrDefault(player, 0)),
+            NormalizeEditionOffer(player == null ? 0 : ModStationOffer2State.GetValueOrDefault(player, 0))
         ];
     }
 
@@ -466,7 +482,7 @@ public sealed class BalatroModifier : YuWanModifierModel
             return;
         }
 
-        if (YUWANCARD_ModStationFloor != RunState.TotalFloor || !HasValidModStationOffers())
+        if (ModStationFloorState.GetValueOrDefault(player, 0) != RunState.TotalFloor || !HasValidModStationOffers(player))
         {
             RollModStationOffers(player);
         }
@@ -496,7 +512,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         }
 
         int cost = GetEditionShopCost(edition);
-        bool useToken = ModifierTokenCount > 0;
+        bool useToken = GetModifierTokenCount(player) > 0;
         if (!useToken && player.Gold < cost)
         {
             return false;
@@ -523,7 +539,7 @@ public sealed class BalatroModifier : YuWanModifierModel
 
         if (useToken)
         {
-            YUWANCARD_ModifierTokens = Math.Max(0, YUWANCARD_ModifierTokens - 1);
+            ModifierTokensState[player] = Math.Max(0, GetModifierTokenCount(player) - 1);
         }
         else
         {
@@ -554,25 +570,20 @@ public sealed class BalatroModifier : YuWanModifierModel
 
     private static List<RelicModel> GetAvailableJokers(Player player)
     {
-        return GetAllJokerModels()
-            .Where(relic => !player.Relics.Any(r => r.Id == relic.Id))
-            .ToList();
+        return BalatroJokerRelicModel.GetAvailableRewardableJokers(player);
+    }
+
+    private static bool HasBalatroRelicReward(IEnumerable<Reward> rewards)
+    {
+        return rewards
+            .OfType<RelicReward>()
+            .Select(reward => YuWanReflectionHelper.GetPrivateField<RelicModel>(reward, "_relic"))
+            .Any(relic => relic is BalatroRelicModel);
     }
 
     private static IEnumerable<RelicModel> GetAllJokerModels()
     {
-        yield return ModelDb.Relic<GreedJoker>();
-        yield return ModelDb.Relic<GluttonyJoker>();
-        yield return ModelDb.Relic<MirrorJoker>();
-        yield return ModelDb.Relic<MiserJoker>();
-        yield return ModelDb.Relic<CollectorJoker>();
-        yield return ModelDb.Relic<GamblerJoker>();
-        yield return ModelDb.Relic<PolychromeJoker>();
-        yield return ModelDb.Relic<NegativeJoker>();
-        yield return ModelDb.Relic<LegendJoker>();
-        yield return ModelDb.Relic<HolographicJoker>();
-        yield return ModelDb.Relic<BankerJoker>();
-        yield return ModelDb.Relic<InvestorJoker>();
+        return BalatroJokerRelicModel.GetRewardableJokers();
     }
 
     private float CalculateComboGain(Player player, CardModel card)
@@ -584,7 +595,7 @@ public sealed class BalatroModifier : YuWanModifierModel
                 return 0f;
             }
 
-            LastCardTypeThisTurn = card.Type;
+            SetLastCardTypeThisTurn(player, card.Type);
             return card.Type == CardType.Curse ? 2f : 0.5f;
         }
 
@@ -608,12 +619,13 @@ public sealed class BalatroModifier : YuWanModifierModel
             gain += 1f;
         }
 
-        if (LastCardTypeThisTurn.HasValue && LastCardTypeThisTurn.Value == card.Type)
+        CardType? lastCardType = GetLastCardTypeThisTurn(player);
+        if (lastCardType.HasValue && lastCardType.Value == card.Type)
         {
             gain += 1f;
         }
 
-        LastCardTypeThisTurn = card.Type;
+        SetLastCardTypeThisTurn(player, card.Type);
         return gain;
     }
 
@@ -622,9 +634,8 @@ public sealed class BalatroModifier : YuWanModifierModel
         return player.Creature.GetPower<CompoundInterestPower>()?.Amount ?? 0;
     }
 
-    private float GetLegendBonus()
+    private float GetLegendBonus(Player? player)
     {
-        Player? player = GetBalatroPlayer();
         if (player == null)
         {
             return 0f;
@@ -639,16 +650,6 @@ public sealed class BalatroModifier : YuWanModifierModel
         return legend.GetLegendBonus();
     }
 
-    private static int SimpleJokerCount<T>(Player player) where T : RelicModel
-    {
-        return player.GetRelic<T>() != null ? 1 : 0;
-    }
-
-    private Player? GetBalatroPlayer()
-    {
-        return LocalContext.GetMe(RunState) ?? RunState.Players.FirstOrDefault();
-    }
-
     private static BalatroCardEdition NormalizeEditionOffer(int savedValue)
     {
         return Enum.IsDefined(typeof(BalatroCardEdition), savedValue)
@@ -656,9 +657,9 @@ public sealed class BalatroModifier : YuWanModifierModel
             : BalatroCardEdition.None;
     }
 
-    private bool HasValidModStationOffers()
+    private bool HasValidModStationOffers(Player? player)
     {
-        IReadOnlyList<BalatroCardEdition> offers = GetModStationOffers();
+        IReadOnlyList<BalatroCardEdition> offers = GetModStationOffers(player);
         return offers.All(offer => offer != BalatroCardEdition.None) && offers.Distinct().Count() == offers.Count;
     }
 
@@ -687,9 +688,9 @@ public sealed class BalatroModifier : YuWanModifierModel
                 : BalatroCardEdition.Foil;
         }
 
-        YUWANCARD_ModStationOffer1 = (int)first;
-        YUWANCARD_ModStationOffer2 = (int)second;
-        YUWANCARD_ModStationFloor = RunState.TotalFloor;
+        ModStationOffer1State[player] = (int)first;
+        ModStationOffer2State[player] = (int)second;
+        ModStationFloorState[player] = RunState.TotalFloor;
     }
 
     private static BalatroCardEdition DrawEdition(Player player, List<BalatroCardEdition> pool)
@@ -703,53 +704,207 @@ public sealed class BalatroModifier : YuWanModifierModel
         return pool[index];
     }
 
-    private void AddCombo(float amount)
+    private async Task ApplyInterestForRoom(Player player)
     {
-        ComboCounter = Math.Clamp(ComboCounter + amount, 0f, MaxCombo);
+        int lastInterestFloor = LastInterestFloorState.GetValueOrDefault(player, 0);
+        MainFile.Logger.Info(
+            $"[BalatroDebug] BalatroModifier.AfterRoomEntered player={player.NetId} totalFloor={RunState.TotalFloor} lastInterestFloor={lastInterestFloor}");
+
+        if (RunState.TotalFloor <= 0 || RunState.TotalFloor <= lastInterestFloor)
+        {
+            MainFile.Logger.Info(
+                $"[BalatroDebug] BalatroModifier.AfterRoomEntered skipped interest for player={player.NetId}: totalFloor={RunState.TotalFloor}, lastInterestFloor={lastInterestFloor}.");
+            return;
+        }
+
+        LastInterestFloorState[player] = RunState.TotalFloor;
+
+        int interest = (int)Math.Floor(player.Gold * InterestRate);
+        if (interest <= 0)
+        {
+            return;
+        }
+
+        interest = Math.Min(interest, BaseInterestCap + GetCompoundInterestCapBonus(player));
+
+        BankerJoker? bankerJoker = player.GetRelic<BankerJoker>();
+        int bankerBonus = bankerJoker?.GetInterestBonusGold() ?? 0;
+        interest += bankerBonus;
+
+        if (interest <= 0)
+        {
+            MainFile.Logger.Info(
+                $"[BalatroDebug] BalatroModifier.AfterRoomEntered computed non-positive interest={interest} for player={player.NetId}.");
+            return;
+        }
+
+        if (bankerBonus > 0)
+        {
+            bankerJoker!.Flash();
+        }
+
+        MainFile.Logger.Info(
+            $"[BalatroDebug] BalatroModifier.AfterRoomEntered granting interest={interest} player={player.NetId} currentGold={player.Gold}.");
+        await PlayerCmd.GainGold(interest, player);
+        MainFile.Logger.Info(
+            $"[BalatroDebug] BalatroModifier.AfterRoomEntered gain complete player={player.NetId} newGold={player.Gold}.");
     }
 
     private void ResetCombatState()
     {
-        ComboCounter = 0f;
-        RetainedCombo = 0f;
-        YUWANCARD_LastInterestFloor = RunState.TotalFloor;
-        CurrentTurnFirstCard = null;
-        PreviousTurnFirstCard = null;
-        ResetTurnState();
+        foreach (Player player in RunState.Players)
+        {
+            ResetCombatState(player);
+        }
+
+        ActiveTurnPlayerNetIdState.Remove(RunState);
     }
 
-    private void ResetTurnState()
+    private void ResetCombatState(Player player)
     {
-        ComboCounter = 0f;
-        CardsPlayedThisTurn = 0;
-        AttackCardsThisTurn = 0;
-        SkillCardsThisTurn = 0;
-        LastCardTypeThisTurn = null;
-        CurrentTurnFirstCard = null;
+        SetComboCounter(player, 0f);
+        SetRetainedCombo(player, 0f);
+        LastInterestFloorState[player] = RunState.TotalFloor;
+        SetCurrentTurnFirstCard(player, null);
+        SetPreviousTurnFirstCard(player, null);
+        ResetTurnState(player);
     }
 
-    private static string SerializeStoredCard(SerializableCard? card)
+    private void ResetTurnState(Player? player)
     {
-        return card == null ? string.Empty : JsonSerializer.Serialize(card);
+        if (player == null)
+        {
+            return;
+        }
+
+        SetComboCounter(player, 0f);
+        CardsPlayedThisTurnState.Remove(player);
+        AttackCardsThisTurnState.Remove(player);
+        SkillCardsThisTurnState.Remove(player);
+        LastCardTypeThisTurnState.Remove(player);
+        SetCurrentTurnFirstCard(player, null);
     }
 
-    private static SerializableCard? DeserializeStoredCard(string? json)
+    private static float GetScaledState(SavedAttachedState<Player, int> state, Player? player)
     {
-        if (string.IsNullOrWhiteSpace(json))
+        if (player == null)
+        {
+            return 0f;
+        }
+
+        return state.GetValueOrDefault(player, 0) / RetainedComboScale;
+    }
+
+    private static void SetScaledState(SavedAttachedState<Player, int> state, Player? player, float value)
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        int scaledValue = (int)MathF.Round(Math.Clamp(value, 0f, MaxCombo) * RetainedComboScale);
+        if (scaledValue <= 0)
+        {
+            state.Remove(player);
+            return;
+        }
+
+        state[player] = scaledValue;
+    }
+
+    private float GetRetainedCombo(Player? player)
+    {
+        return GetScaledState(RetainedComboScaledState, player);
+    }
+
+    private void SetRetainedCombo(Player? player, float value)
+    {
+        SetScaledState(RetainedComboScaledState, player, value);
+    }
+
+    private void SetComboCounter(Player? player, float value)
+    {
+        SetScaledState(ComboCounterScaledState, player, value);
+    }
+
+    private static SerializableCard? GetStoredCard(SavedAttachedState<Player, SerializableCard> state, Player? player)
+    {
+        if (player == null)
         {
             return null;
         }
 
-        try
-        {
-            return JsonSerializer.Deserialize<SerializableCard>(json);
-        }
-        catch (Exception ex)
-        {
-            MainFile.Logger.Warn($"BalatroModifier: failed to deserialize stored card state: {ex.Message}");
-            return null;
-        }
+        return state.TryGetValue(player, out SerializableCard? card) ? card : null;
     }
 
+    private static void SetStoredCard(SavedAttachedState<Player, SerializableCard> state, Player? player, SerializableCard? card)
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        if (card == null)
+        {
+            state.Remove(player);
+            return;
+        }
+
+        state[player] = card;
+    }
+
+    private SerializableCard? GetCurrentTurnFirstCard(Player? player)
+    {
+        return GetStoredCard(CurrentTurnFirstCardState, player);
+    }
+
+    private void SetCurrentTurnFirstCard(Player? player, SerializableCard? card)
+    {
+        SetStoredCard(CurrentTurnFirstCardState, player, card);
+    }
+
+    private void SetPreviousTurnFirstCard(Player? player, SerializableCard? card)
+    {
+        SetStoredCard(PreviousTurnFirstCardState, player, card);
+    }
+
+    private void SetLastCardTypeThisTurn(Player? player, CardType? cardType)
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        if (!cardType.HasValue)
+        {
+            LastCardTypeThisTurnState.Remove(player);
+            return;
+        }
+
+        LastCardTypeThisTurnState[player] = (int)cardType.Value;
+    }
+
+    private void SetActiveTurnPlayer(Player? player)
+    {
+        if (player == null)
+        {
+            ActiveTurnPlayerNetIdState.Remove(RunState);
+            return;
+        }
+
+        ActiveTurnPlayerNetIdState[RunState] = player.NetId.ToString();
+    }
+
+    private Player? GetActiveTurnPlayer()
+    {
+        if (!ActiveTurnPlayerNetIdState.TryGetValue(RunState, out string? activeNetId)
+            || string.IsNullOrWhiteSpace(activeNetId)
+            || !ulong.TryParse(activeNetId, out ulong parsedNetId))
+        {
+            return null;
+        }
+
+        return RunState.Players.FirstOrDefault(player => player.NetId == parsedNetId);
+    }
     #endregion
 }

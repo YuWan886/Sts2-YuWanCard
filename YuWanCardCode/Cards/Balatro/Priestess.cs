@@ -37,10 +37,21 @@ public sealed class Priestess : YuWanCardModel
         }
 
         int count = IsUpgraded ? 2 : 1;
+        List<CardPileAddResult> results = new();
         for (int i = 0; i < count; i++)
         {
-            CardModel copy = CardCopyHelper.CreateCopy(selected, Owner);
-            await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Draw, Owner);
+            CardModel? copy = CardCopyHelper.CreateCombatCopy(selected, Owner);
+            if (copy == null)
+            {
+                return;
+            }
+
+            results.Add(await CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Draw, addedByPlayer: true));
+        }
+
+        if (results.Count > 0)
+        {
+            CardCmd.PreviewCardPileAdd(results);
         }
     }
 }

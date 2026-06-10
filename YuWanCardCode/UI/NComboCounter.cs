@@ -1,4 +1,5 @@
 using Godot;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
@@ -96,8 +97,9 @@ public partial class NComboCounter : Control
         }
 
         BalatroModifier? modifier = BalatroModifier.GetInstance(state);
+        Player? player = LocalContext.GetMe(state.Players) ?? state.Players.FirstOrDefault();
         bool inCombat = state.CurrentRoom is CombatRoom;
-        Visible = HudEnabled && modifier != null && inCombat;
+        Visible = HudEnabled && modifier != null && player != null && inCombat;
         if (!Visible || modifier == null ||
             _multLabel == null || _bonusLabel == null || _comboLabel == null ||
             _multShadowLabel == null || _bonusShadowLabel == null || _comboShadowLabel == null)
@@ -105,8 +107,8 @@ public partial class NComboCounter : Control
             return;
         }
 
-        float combo = modifier.ComboCounter;
-        float multiplier = modifier.ComboMultiplier;
+        float combo = modifier.GetComboCounter(player);
+        float multiplier = modifier.GetComboMultiplier(player);
         float comboBonus = combo * 0.1f;
         float nonComboBonus = Mathf.Max(0f, multiplier - 1f - comboBonus);
 
