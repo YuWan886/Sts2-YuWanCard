@@ -1,5 +1,6 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
@@ -121,11 +122,33 @@ class NeowSevenCursesPatch
     internal static IReadOnlyList<EventOption> CreateWhatIfScreen(AncientEventModel ancient)
     {
         var selected = SelectDeterministicWhatIfRelics(ancient);
+        return CreateWhatIfScreen(ancient, selected);
+    }
 
+    internal static bool IsShowingWhatIfScreen(AncientEventModel ancient)
+    {
+        return ancient.CurrentOptions.Any(static option =>
+            string.Equals(option.TextKey, "YUWANCARD-WHAT_IF_SKIP", StringComparison.Ordinal));
+    }
+
+    internal static IReadOnlyList<EventOption> CreateRandomizedWhatIfScreen(AncientEventModel ancient)
+    {
+        var currentRelicIds = ancient.CurrentOptions
+            .Select(static option => option.Relic?.Id.Entry)
+            .OfType<string>()
+            .ToHashSet(StringComparer.Ordinal);
+
+        var selected = SelectRandomWhatIfRelics(ancient, currentRelicIds);
+        return CreateWhatIfScreen(ancient, selected);
+    }
+
+    private static IReadOnlyList<EventOption> CreateWhatIfScreen(AncientEventModel ancient, IReadOnlyList<RelicModel> selected)
+    {
         var options = new List<EventOption>();
         foreach (var relic in selected)
         {
             var mutable = relic.ToMutable();
+            var description = BuildRelicOptionDescription(mutable);
             options.Add(new EventOption(
                 ancient,
                 async () =>
@@ -134,7 +157,7 @@ class NeowSevenCursesPatch
                     RestoreNormalOptionsOrFinish(ancient);
                 },
                 mutable.Title,
-                mutable.Description,
+                description,
                 mutable.Id.Entry + ".NEOW",
                 mutable.HoverTipsExcludingRelic
             ).WithRelic(mutable));
@@ -148,7 +171,7 @@ class NeowSevenCursesPatch
         return options;
     }
 
-    private static IReadOnlyList<RelicModel> SelectDeterministicWhatIfRelics(AncientEventModel ancient)
+    private static List<RelicModel> GetWhatIfCandidates(AncientEventModel ancient)
     {
         var pool = ModelDb.RelicPool<WhatIfRelicPool>();
         var runState = ancient.Owner?.RunState;
@@ -163,13 +186,50 @@ class NeowSevenCursesPatch
             candidates = candidates.Where(static relic => relic is not WhatIfAllRelics);
         }
 
-        string seed = runState?.Rng.StringSeed ?? string.Empty;
+        return candidates.ToList();
+    }
+
+    private static IReadOnlyList<RelicModel> SelectDeterministicWhatIfRelics(AncientEventModel ancient)
+    {
+        var candidates = GetWhatIfCandidates(ancient);
+        string seed = ancient.Owner?.RunState?.Rng.StringSeed ?? string.Empty;
 
         return candidates
             .OrderBy(relic => ComputeDeterministicSelectionKey(seed, relic.Id.Entry))
             .ThenBy(static relic => relic.Id.Entry, StringComparer.Ordinal)
             .Take(3)
             .ToList();
+    }
+
+    private static IReadOnlyList<RelicModel> SelectRandomWhatIfRelics(AncientEventModel ancient, ISet<string>? excludedRelicIds)
+    {
+        var candidates = GetWhatIfCandidates(ancient);
+        if (excludedRelicIds is { Count: > 0 })
+        {
+            var filtered = candidates
+                .Where(relic => !excludedRelicIds.Contains(relic.Id.Entry))
+                .ToList();
+            if (filtered.Count >= 3)
+            {
+                candidates = filtered;
+            }
+        }
+
+        return candidates
+            .UnstableShuffle(ancient.Rng)
+            .Take(3)
+            .ToList();
+    }
+
+    private static LocString BuildRelicOptionDescription(RelicModel relic)
+    {
+        var description = relic.Description;
+        foreach (var dynamicVar in relic.DynamicVars.Values)
+        {
+            description.Add(dynamicVar);
+        }
+
+        return description;
     }
 
     private static ulong ComputeDeterministicSelectionKey(string seed, string relicId)
