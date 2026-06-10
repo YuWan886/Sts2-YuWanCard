@@ -13,13 +13,13 @@ internal static class YummyCookieIconPatchHelper
 {
     public static RelicIconData? GetCustomIconData(RelicModel relic)
     {
-        if (relic is not YummyCookie)
+        if (relic is not YummyCookie || relic.IsCanonical)
         {
             return null;
         }
 
         CharacterModel? character = relic.Owner?.Character;
-        if (character == null && !relic.IsCanonical)
+        if (character == null)
         {
             character = LocalContext.GetMe(RunManager.Instance?.State)?.Character;
         }

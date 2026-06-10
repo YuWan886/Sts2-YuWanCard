@@ -1,7 +1,7 @@
-using System.Reflection;
+using System.Collections.Generic;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Relics;
 using YuWanCard.Core.Transcendence;
 
@@ -10,49 +10,44 @@ namespace YuWanCard.Core.Patches;
 [HarmonyPatch(typeof(ArchaicTooth))]
 public static class ArchaicToothPatch
 {
-    private static readonly FieldInfo StarterCardField = AccessTools.Field(typeof(ArchaicTooth), "_serializableStarterCard");
-    private static readonly FieldInfo AncientCardField = AccessTools.Field(typeof(ArchaicTooth), "_serializableAncientCard");
-    private static readonly MethodInfo UpdateHoverTipsMethod = AccessTools.Method(typeof(ArchaicTooth), "UpdateHoverTips");
+    [HarmonyPostfix]
+    [HarmonyPatch("GetTranscendenceStarterCard")]
+    public static void PostfixGetTranscendenceStarterCard(Player player, ref CardModel? __result)
+    {
+        if (__result != null)
+        {
+            return;
+        }
+
+        __result = player.Deck.Cards.FirstOrDefault(TranscendenceRegistry.IsStarterCard);
+    }
 
     [HarmonyPrefix]
-    [HarmonyPatch(nameof(ArchaicTooth.SetupForPlayer))]
-    public static bool PrefixSetupForPlayer(ArchaicTooth __instance, Player player)
+    [HarmonyPatch("GetTranscendenceTransformedCard")]
+    public static bool PrefixGetTranscendenceTransformedCard(CardModel starterCard, ref CardModel __result)
     {
-        var starterCard = player.Deck.Cards.FirstOrDefault(TranscendenceRegistry.IsStarterCard);
-        if (starterCard == null || !TranscendenceRegistry.TryGetAncientCard(starterCard, out _))
+        var transformedCard = TranscendenceRegistry.CreateTransformedCard(starterCard);
+        if (transformedCard == null)
         {
             return true;
         }
 
-        StarterCardField.SetValue(__instance, starterCard.ToSerializable());
-        AncientCardField.SetValue(__instance, TranscendenceRegistry.CreateTransformedCard(starterCard)!.ToSerializable());
-        UpdateHoverTipsMethod.Invoke(__instance, null);
+        __result = transformedCard;
         return false;
     }
 
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(ArchaicTooth.AfterObtained))]
-    public static bool PrefixAfterObtained(ArchaicTooth __instance, ref Task __result)
+    [HarmonyPostfix]
+    [HarmonyPatch("TranscendenceCards", MethodType.Getter)]
+    public static void PostfixTranscendenceCards(ref List<CardModel> __result)
     {
-        var task = AfterObtainedAsync(__instance);
-        __result = task;
-        return false;
-    }
-
-    private static async Task AfterObtainedAsync(ArchaicTooth relic)
-    {
-        var starterCard = relic.Owner?.Deck?.Cards.FirstOrDefault(TranscendenceRegistry.IsStarterCard);
-        if (starterCard == null)
+        foreach (var card in TranscendenceRegistry.GetRegisteredAncientCards())
         {
-            return;
-        }
+            if (__result.Exists(existing => existing.Id == card.Id))
+            {
+                continue;
+            }
 
-        var transformedCard = TranscendenceRegistry.CreateTransformedCard(starterCard);
-        if (transformedCard == null)
-        {
-            return;
+            __result.Add(card);
         }
-
-        await CardCmd.Transform(starterCard, transformedCard);
     }
 }

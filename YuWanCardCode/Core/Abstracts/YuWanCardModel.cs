@@ -454,3 +454,8 @@ public interface ITranscendenceCard
 {
     CardModel GetTranscendenceTransformedCard();
 }
+
+public interface IDustyTomeCard
+{
+    CharacterModel GetDustyTomeCharacter();
+}

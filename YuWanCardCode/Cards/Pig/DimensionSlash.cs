@@ -12,9 +12,11 @@ using YuWanCard.Utils;
 namespace YuWanCard.Cards;
 
 [Pool(typeof(PigCardPool))]
-public class DimensionSlash : YuWanCardModel
+public class DimensionSlash : YuWanCardModel, IDustyTomeCard
 {
     private readonly record struct DebuffCopy(PowerModel Canonical, decimal AmountToDouble, decimal AmountToCopy);
+
+    public CharacterModel GetDustyTomeCharacter() => ModelDb.Character<Pig>();
 
     public DimensionSlash() : base(
         baseCost: 0,

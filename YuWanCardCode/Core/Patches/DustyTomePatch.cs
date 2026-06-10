@@ -1,43 +1,23 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Relics;
 using YuWanCard.Core.Transcendence;
 
 namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(DustyTome))]
-class DustyTomePatch
+public static class DustyTomePatch
 {
     [HarmonyPrefix]
     [HarmonyPatch(nameof(DustyTome.SetupForPlayer))]
-    static bool Prefix(DustyTome __instance, Player player)
+    public static bool PrefixSetupForPlayer(DustyTome __instance, Player player)
     {
-        var ancientCards = player.Character.CardPool
-            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
-            .Where(c => c.Rarity == MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Ancient
-                && !TranscendenceRegistry.IsAncientCard(c))
-            .ToList();
-
-        if (ancientCards.Count == 0)
+        if (!TranscendenceRegistry.TryGetDustyTomeAncientCard(player, out var ancientCard))
         {
-            var colorlessPool = MegaCrit.Sts2.Core.Models.ModelDb.CardPool<ColorlessCardPool>();
-            ancientCards = colorlessPool
-                .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
-                .Where(c => c.Rarity == MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Ancient
-                    && !TranscendenceRegistry.IsAncientCard(c))
-                .ToList();
+            return true;
         }
 
-        if (ancientCards.Count > 0)
-        {
-            var selectedCard = player.PlayerRng.Rewards.NextItem(ancientCards);
-            if (selectedCard != null)
-            {
-                __instance.AncientCard = selectedCard.Id;
-            }
-        }
-
+        __instance.AncientCard = ancientCard.Id;
         return false;
     }
 }
