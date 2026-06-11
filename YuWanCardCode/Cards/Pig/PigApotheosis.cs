@@ -27,9 +27,11 @@ public class PigApotheosis : YuWanCardModel, IDustyTomeCard
     protected override void AddExtraArgsToDescription(LocString description)
     {
         description.Add("EffectText",
-            CurrentUpgradeLevel >= 2
-                ? "升级所有玩家的全部卡牌"
-                : "升级你的全部卡牌");
+            new LocString(
+                "cards",
+                CurrentUpgradeLevel >= 2
+                    ? $"{Id.Entry}.upgrade2EffectText"
+                    : $"{Id.Entry}.upgrade1EffectText").GetRawText());
     }
 
     protected override void OnUpgrade()
