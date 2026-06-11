@@ -12,16 +12,14 @@ using YuWanCard.Utils;
 namespace YuWanCard.Cards;
 
 [Pool(typeof(PigCardPool))]
-public class DimensionSlash : YuWanCardModel, IDustyTomeCard
+public class DimensionSlash : YuWanCardModel
 {
     private readonly record struct DebuffCopy(PowerModel Canonical, decimal AmountToDouble, decimal AmountToCopy);
 
-    public CharacterModel GetDustyTomeCharacter() => ModelDb.Character<Pig>();
-
     public DimensionSlash() : base(
-        baseCost: 0,
+        baseCost: 1,
         type: CardType.Attack,
-        rarity: CardRarity.Ancient,
+        rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy)
     {
         WithDamage(15);
@@ -29,7 +27,7 @@ public class DimensionSlash : YuWanCardModel, IDustyTomeCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3);
+        DynamicVars.Damage.UpgradeValueBy(5);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

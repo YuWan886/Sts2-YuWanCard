@@ -10,6 +10,17 @@ namespace YuWanCard.Utils;
 public static class CardUtils
 {
     private static readonly string[] DamageVarNames = ["Damage", "CalculatedDamage", "OstyDamage", "ExtraDamage"];
+    private static readonly HashSet<CardRarity> ExcludedPoolRarities =
+    [
+        CardRarity.None,
+        CardRarity.Basic,
+        CardRarity.Ancient,
+        CardRarity.Event,
+        CardRarity.Token,
+        CardRarity.Status,
+        CardRarity.Curse,
+        CardRarity.Quest
+    ];
 
     private static List<CardModel>? _foodPigCards;
     private static List<CardModel> FoodPigCards
@@ -36,6 +47,29 @@ public static class CardUtils
     public static CardModel CreateRandomFoodPigCard(Player player)
     {
         return player.RunState.CreateCard(GetRandomFoodPigCardCanonical(player), player);
+    }
+
+    public static HashSet<CardModel> GetAllUnlockedCards(Player player, HashSet<CardType>? cardTypes = null, bool colorlessOnly = false)
+    {
+        var allCards = new HashSet<CardModel>();
+
+        foreach (var pool in ModelDb.AllCardPools)
+        {
+            if (pool == null) continue;
+            if (colorlessOnly && !pool.IsColorless) continue;
+
+            foreach (var card in pool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint))
+            {
+                if (card == null) continue;
+                if (ExcludedPoolRarities.Contains(card.Rarity)) continue;
+                if (cardTypes == null || cardTypes.Contains(card.Type))
+                {
+                    allCards.Add(card);
+                }
+            }
+        }
+
+        return allCards;
     }
 
     public static string GetFoodPigIdentity(CardModel card)
@@ -79,7 +113,7 @@ public static class CardUtils
     public static List<CardModel> GetTransformableUnlockedCardsByType(Player player, CardType type, string? excludeCardEntry = null)
     {
         var types = new HashSet<CardType> { type };
-        return PigCardPoolUtils.GetAllUnlockedCards(player, types)
+        return GetAllUnlockedCards(player, types)
             .Where(card => card.IsTransformable && card.Id?.Entry != excludeCardEntry)
             .ToList();
     }

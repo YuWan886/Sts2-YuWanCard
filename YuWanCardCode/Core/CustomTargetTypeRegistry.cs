@@ -66,5 +66,7 @@ internal static class CustomTargetTypeRegistry
         RegisterSingleTargetType(CustomTargetType.AnyFriendly, CustomTargetType.IsAnyFriendlyTarget);
         RegisterMultiTargetType(CustomTargetType.Everyone, target => target is { IsAlive: true, IsPet: false });
         RegisterSingleTargetType(CustomTargetType.AnyPigMinion, CustomTargetType.IsAnyPigMinionTarget);
+        RegisterSingleTargetType(CustomTargetType.AnyYouArePigTarget, CustomTargetType.IsAnyYouArePigTarget);
+        RegisterSingleTargetType(CustomTargetType.AnyPigPawnTarget, CustomTargetType.IsAnyPigPawnTarget);
     }
 }

@@ -7,9 +7,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Characters;
-using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -35,23 +33,4 @@ public class PigGoldenCarrot : YuWanRelicModel
         }
     }
 
-    public override CardCreationOptions ModifyCardRewardCreationOptions(Player player, CardCreationOptions options)
-    {
-        if (player.Character is not Pig)
-        {
-            return options;
-        }
-
-        return PigCardPoolUtils.ModifyCardRewardOptions(player, options);
-    }
-
-    public override bool TryModifyCardRewardOptions(Player player, List<CardCreationResult> cardRewardOptions, CardCreationOptions creationOptions)
-    {
-        if (player.Character is not Pig)
-        {
-            return false;
-        }
-
-        return PigCardPoolUtils.TryNormalizePigCardRewardOptions(player, cardRewardOptions, creationOptions);
-    }
 }

@@ -11,6 +11,7 @@ using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
 using YuWanCard.Core.Transcendence;
 using YuWanCard.Multiplayer;
+using YuWanCard.Singletons;
 using YuWanCard.Utils;
 using YuWanCard.Hextech;
 
@@ -73,6 +74,7 @@ public partial class MainFile : Node
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
         SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
         TranscendenceRegistry.RegisterDefaults();
+        PigApotheosisObtainBridge.RegisterHooks();
         CustomBadgeRegistry.Register((run, playerId) => new PigTycoonBadge(run, playerId));
         CustomBadgeRegistry.Register((run, playerId) => new WerewolfBadge(run, playerId));
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistered);
