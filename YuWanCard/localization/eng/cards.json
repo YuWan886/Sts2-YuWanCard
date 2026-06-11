@@ -45,7 +45,7 @@
   "YUWANCARD-CLEAN_PIG.title": "Clean Pig",
   "YUWANCARD-CLEAN_PIG.description": "Remove all [gold]debuffs[/gold] from all players.",
   "YUWANCARD-BULLY_LITTLE_PIG.title": "Bully a Little Pig?",
-  "YUWANCARD-BULLY_LITTLE_PIG.description": "Gain {SkittishPower:diff()} [gold]Skittish[/gold] and {HardToKillPower:diff()} [gold]Hard To Kill[/gold].",
+  "YUWANCARD-BULLY_LITTLE_PIG.description": "Gain {BullyLittlePigSkittishPower:diff()} [gold]Skittish[/gold] and {HardToKillPower:diff()} [gold]Hard To Kill[/gold].",
   "YUWANCARD-PIG_BANKRUPTCY.title": "Pig Bankruptcy",
   "YUWANCARD-PIG_BANKRUPTCY.description": "All cards in hand cost 0 this turn and gain [gold]Exhaust[/gold].",
   "YUWANCARD-PIG_CHARGE.title": "Pig Charge",

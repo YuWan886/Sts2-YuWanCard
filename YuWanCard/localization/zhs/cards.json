@@ -45,7 +45,7 @@
   "YUWANCARD-CLEAN_PIG.title": "干净猪",
   "YUWANCARD-CLEAN_PIG.description": "移除所有玩家身上的[gold]减益能力[/gold]。",
   "YUWANCARD-BULLY_LITTLE_PIG.title": "欺负一只小猪？",
-  "YUWANCARD-BULLY_LITTLE_PIG.description": "获得{SkittishPower:diff()}层[gold]胆小[/gold]，{HardToKillPower:diff()}层[gold]难以杀灭[/gold]。",
+  "YUWANCARD-BULLY_LITTLE_PIG.description": "获得{BullyLittlePigSkittishPower:diff()}层[gold]胆小[/gold]，{HardToKillPower:diff()}层[gold]难以杀灭[/gold]。",
   "YUWANCARD-PIG_BANKRUPTCY.title": "猪破产",
   "YUWANCARD-PIG_BANKRUPTCY.description": "本回合内所有手牌耗能为0，并获得[gold]消耗[/gold]。",
   "YUWANCARD-PIG_CHARGE.title": "猪冲锋",

@@ -104,14 +104,11 @@ public class ReincarnatedEye : YuWanRelicModel
             return;
         }
 
-        var combatState = owner.Creature?.CombatState;
-        if (combatState == null)
+        CardModel? copiedCard = CardCopyHelper.CreateCombatCopy(cardToCopy, owner);
+        if (copiedCard == null)
         {
             return;
         }
-
-        CardModel copiedCard = CardModel.FromSerializable(cardToCopy.ToSerializable());
-        combatState.AddCard(copiedCard, owner);
 
         // 检查手牌是否已满（最大手牌数为 10）
         var hand = PileType.Hand.GetPile(owner);

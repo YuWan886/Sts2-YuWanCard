@@ -22,6 +22,7 @@ public class TurnToSpecimen : YuWanCardModel
         typeof(PersonalHivePower),
         typeof(ReattachPower),
         typeof(SkittishPower),
+        typeof(BullyLittlePigSkittishPower),
 
         // Malice Trait 基类
         typeof(MaliceTraitPowerBase),
