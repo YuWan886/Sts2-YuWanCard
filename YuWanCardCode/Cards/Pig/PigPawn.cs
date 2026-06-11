@@ -33,10 +33,16 @@ public class PigPawn : YuWanCardModel
         if (pig.Monster is not PigMinion)
             return;
 
-        int goldToGain = (int)(pig.CurrentHp / 5);
-        if (goldToGain > 0)
+        int damage = (int)Math.Ceiling(pig.CurrentHp / 2m);
+        if (damage > 0 && CombatState != null)
         {
-            await PlayerCmd.GainGold(goldToGain, Owner);
+            foreach (var enemy in CombatState.Enemies.Where(e => e.IsAlive).ToList())
+            {
+                await DamageCmd.Attack(damage)
+                    .FromCard(this)
+                    .Targeting(enemy)
+                    .Execute(choiceContext);
+            }
         }
 
         await PetManager.KillPet(pig);

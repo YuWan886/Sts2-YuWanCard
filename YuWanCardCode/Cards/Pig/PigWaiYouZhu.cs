@@ -17,13 +17,14 @@ public class PigWaiYouZhu : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.Self)
     {
-        WithBlock(15);
-        WithPower<PigFriendsPower>(3);
+        WithBlock(12);
+        WithPower<PigFriendsPower>(1);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(5);
+        DynamicVars.Block.UpgradeValueBy(4);
+        DynamicVars["PigFriendsPower"].UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

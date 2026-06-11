@@ -1,7 +1,4 @@
-using System.Linq;
 using MegaCrit.Sts2.Core.Models;
-using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Entities.Cards;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Rewards;
 using YuWanCard.Relics;

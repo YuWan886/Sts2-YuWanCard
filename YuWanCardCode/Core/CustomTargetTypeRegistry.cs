@@ -1,6 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using YuWanCard.Monsters;
 
 namespace YuWanCard.Core;
 
@@ -64,9 +63,8 @@ internal static class CustomTargetTypeRegistry
         MultiTargetPredicates.Clear();
 
         RegisterSingleTargetType(CustomTargetType.Anyone, target => target is { IsAlive: true, IsPet: false });
+        RegisterSingleTargetType(CustomTargetType.AnyFriendly, CustomTargetType.IsAnyFriendlyTarget);
         RegisterMultiTargetType(CustomTargetType.Everyone, target => target is { IsAlive: true, IsPet: false });
-        RegisterSingleTargetType(
-            CustomTargetType.AnyPigMinion,
-            target => target is { IsAlive: true, IsPet: true } && target.Monster is PigMinion);
+        RegisterSingleTargetType(CustomTargetType.AnyPigMinion, CustomTargetType.IsAnyPigMinionTarget);
     }
 }

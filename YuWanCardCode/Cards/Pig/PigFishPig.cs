@@ -15,7 +15,7 @@ public class PigFishPig : YuWanCardModel
         new("cards", "YUWANCARD-PIG_FISH_PIG.discardSelectionScreenPrompt");
 
     public PigFishPig() : base(
-        baseCost: 1,
+        baseCost: 0,
         type: CardType.Skill,
         rarity: CardRarity.Common,
         target: TargetType.Self)
@@ -24,7 +24,6 @@ public class PigFishPig : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

@@ -11,7 +11,7 @@ namespace YuWanCard.Cards;
 public class PigInspire : YuWanCardModel
 {
     public PigInspire() : base(
-        baseCost: 2,
+        baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Common,
         target: TargetType.AllAllies)
@@ -21,13 +21,15 @@ public class PigInspire : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars["StrengthPower"].UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var teammates = CombatState!.GetTeammatesOf(Owner.Creature);
-        foreach (var teammate in teammates)
+        var players = CombatState!.Players
+            .Select(p => p.Creature)
+            .Where(c => c is { IsAlive: true });
+        foreach (var teammate in players)
         {
             await PowerCmd.Apply<StrengthPower>(teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
         }

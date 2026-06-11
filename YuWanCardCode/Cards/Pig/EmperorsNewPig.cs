@@ -11,16 +11,21 @@ namespace YuWanCard.Cards;
 public class EmperorsNewPig : YuWanCardModel
 {
     public EmperorsNewPig() : base(
-        baseCost: 0,
+        baseCost: 1,
         type: CardType.Power,
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
-        WithVar("Turns", 1);
+        WithPower<EmperorsNewPigPower>(1);
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars["EmperorsNewPigPower"].UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<EmperorsNewPigPower>(Owner.Creature, 1, Owner.Creature, this);
+        await PowerCmd.Apply<EmperorsNewPigPower>(Owner.Creature, DynamicVars["EmperorsNewPigPower"].IntValue, Owner.Creature, this);
     }
 }

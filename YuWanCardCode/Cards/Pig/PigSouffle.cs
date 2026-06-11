@@ -31,6 +31,7 @@ public class PigSouffle : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await CardUtils.RecordFoodPigPlayed(this);
         await PlayerCmd.GainEnergy(DynamicVars["Energy"].IntValue, Owner);
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<DexterityPower>(Owner.Creature, DynamicVars["DexterityPower"].BaseValue, Owner.Creature, this);
