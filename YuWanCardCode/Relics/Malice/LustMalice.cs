@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
 using YuWanCard.RelicPools;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics.Malice;
 
@@ -39,7 +40,13 @@ public sealed class LustMalice : MaliceRelicModel
             return false;
         }
 
-        rewards.Add(new RelicReward(player));
+        RelicReward? reward = RelicRewardUtils.CreateStandardSharedRelicReward(player);
+        if (reward == null)
+        {
+            return false;
+        }
+
+        rewards.Add(reward);
         return true;
     }
 }

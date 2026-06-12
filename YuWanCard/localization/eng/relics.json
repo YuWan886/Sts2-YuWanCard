@@ -136,7 +136,7 @@
   "YUWANCARD-SHOPPING_CART.description": "Add items to your cart in the shop and buy them later. The cart can hold up to {Capacity} items.",
   "YUWANCARD-SHOPPING_CART.flavor": "Shopping made easier.",
   "YUWANCARD-TRANSFORM_TABLE.title": "Transform Table",
-  "YUWANCARD-TRANSFORM_TABLE.description": "Each turn, you may right-click this relic to convert 1 card in your hand's current energy cost into that much energy, then remove that card from combat. This can trigger up to [blue]3[/blue] times each turn. [blue]0[/blue]-cost cards and X-cost cards cannot be selected.",
+  "YUWANCARD-TRANSFORM_TABLE.description": "Each combat, you may right-click this relic to convert 1 card in your hand's current energy cost into that much energy, then remove that card from combat. This can trigger up to [blue]5[/blue] times each combat. [blue]0[/blue]-cost cards and X-cost cards cannot be selected.",
   "YUWANCARD-TRANSFORM_TABLE.flavor": "Cards on the table, energy under the table.",
   "YUWANCARD-TRANSFORM_TABLE.selectionPrompt": "Choose 1 hand card to convert its cost into energy and remove it from combat",
   "YUWANCARD-HEARTSTEEL.title": "Heartsteel",

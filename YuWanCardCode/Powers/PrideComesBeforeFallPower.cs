@@ -1,11 +1,11 @@
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Powers;
-using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Combat;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Powers;
 
@@ -25,8 +25,14 @@ public class PrideComesBeforeFallPower : YuWanPowerModel
             return Task.CompletedTask;
         }
 
+        RelicReward? reward = RelicRewardUtils.CreateStandardSharedRelicReward(Owner.Player);
+        if (reward == null)
+        {
+            return Task.CompletedTask;
+        }
+
         Flash();
-        room.AddExtraReward(Owner.Player, new RelicReward(RelicFactory.PullNextRelicFromFront(Owner.Player).ToMutable(), Owner.Player));
+        room.AddExtraReward(Owner.Player, reward);
         return Task.CompletedTask;
     }
 
