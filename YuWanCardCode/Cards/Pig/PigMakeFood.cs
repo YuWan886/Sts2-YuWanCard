@@ -18,7 +18,7 @@ public class PigMakeFood : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithVar("ExhaustCount", 1);
+        WithVar("ExhaustCount", 2);
         WithKeywords(CardKeyword.Exhaust);
     }
 

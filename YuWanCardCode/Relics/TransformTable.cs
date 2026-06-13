@@ -18,7 +18,7 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 {
-    private const int MaxTransformsPerTurn = 2;
+    private const int MaxTransformsPerCombat = 5;
     private static readonly LocString SelectionPrompt = new("relics", "YUWANCARD-TRANSFORM_TABLE.selectionPrompt");
     private static readonly SavedAttachedState<TransformTable, int> RemainingTransformsState =
         new(nameof(YUWANCARD_RemainingTransforms), () => 0);
@@ -43,7 +43,7 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
     {
         if (room is CombatRoom)
         {
-            SetRemainingTransforms(0);
+            SetRemainingTransforms(MaxTransformsPerCombat);
         }
 
         return Task.CompletedTask;
@@ -52,16 +52,6 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
     public override Task AfterCombatEnd(CombatRoom room)
     {
         SetRemainingTransforms(0);
-        return Task.CompletedTask;
-    }
-
-    public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
-    {
-        if (player == Owner)
-        {
-            SetRemainingTransforms(MaxTransformsPerTurn);
-        }
-
         return Task.CompletedTask;
     }
 

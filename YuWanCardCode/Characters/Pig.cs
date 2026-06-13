@@ -114,7 +114,7 @@ public class Pig : CharacterModel, IYuWanCharacter
         "vfx/vfx_starry_impact"
     ];
 
-    CreatureAnimator? IYuWanCharacter.SetupCustomAnimationStates(MegaSprite controller)
+    public static CreatureAnimator CreateCreatureAnimator(MegaSprite controller)
     {
         var animator = IYuWanCharacter.SetupAnimationState(controller,
             idleName: "idle_loop",
@@ -142,5 +142,10 @@ public class Pig : CharacterModel, IYuWanCharacter
         animator.AddAnyState("Tf2", tf2Anim);
 
         return animator;
+    }
+
+    CreatureAnimator? IYuWanCharacter.SetupCustomAnimationStates(MegaSprite controller)
+    {
+        return CreateCreatureAnimator(controller);
     }
 }

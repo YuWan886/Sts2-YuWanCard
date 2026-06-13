@@ -15,16 +15,21 @@ public class PigFishPig : YuWanCardModel
         new("cards", "YUWANCARD-PIG_FISH_PIG.discardSelectionScreenPrompt");
 
     public PigFishPig() : base(
-        baseCost: 1,
+        baseCost: 0,
         type: CardType.Skill,
         rarity: CardRarity.Common,
         target: TargetType.Self)
     {
+        WithVar("UpgradeCount", 1);
+    }
+
+    protected override void AddExtraArgsToDescription(LocString description)
+    {
+        description.Add("UpgradeCount", IsUpgraded ? 2 : 1);
     }
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -63,10 +68,11 @@ public class PigFishPig : YuWanCardModel
             return;
         }
 
+        int upgradeCount = Math.Min(IsUpgraded ? 2 : 1, upgradableCards.Count);
         var upgradePrefs = new CardSelectorPrefs(
             new LocString("cards", $"{Id.Entry}.selectionScreenPrompt"),
-            1,
-            1
+            upgradeCount,
+            upgradeCount
         );
 
         var cardsToUpgrade = await CardSelectCmd.FromHand(
@@ -77,8 +83,7 @@ public class PigFishPig : YuWanCardModel
             source: this
         );
 
-        var selectedCard = cardsToUpgrade.FirstOrDefault();
-        if (selectedCard != null)
+        foreach (var selectedCard in cardsToUpgrade)
         {
             CardCmd.Upgrade(selectedCard);
         }

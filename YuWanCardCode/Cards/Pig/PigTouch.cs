@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using YuWanCard.Characters;
+using YuWanCard.Powers;
 
 namespace YuWanCard.Cards;
 
@@ -16,12 +17,14 @@ public class PigTouch : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: CustomTargetType.AnyPigMinion)
     {
-        WithVars(new HealVar(5));
+        WithVars(new HealVar(6));
+        WithPower<PigTouchPower>("Strength", 1);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Heal.UpgradeValueBy(2);
+        DynamicVars.Heal.UpgradeValueBy(3);
+        DynamicVars["Strength"].UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -29,6 +32,7 @@ public class PigTouch : YuWanCardModel
         if (cardPlay.Target is { IsDead: false } pig)
         {
             await CreatureCmd.Heal(pig, DynamicVars.Heal.BaseValue);
+            await PowerCmd.Apply<PigTouchPower>(new ThrowingPlayerChoiceContext(), pig, DynamicVars["Strength"].IntValue, Owner.Creature, this);
         }
     }
 }

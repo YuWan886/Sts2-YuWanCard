@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Relics;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Ancients;
 
@@ -111,10 +112,22 @@ public class PigPig : YuWanAncientModel
     private async Task ChooseRandomRelic()
     {
         var sharedPool = ModelDb.RelicPool<SharedRelicPool>();
-        var commonRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Common).Select(r => r.ToMutable()).ToList().UnstableShuffle(Rng);
-        var uncommonRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Uncommon).Select(r => r.ToMutable()).ToList().UnstableShuffle(Rng);
-        var shopRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Shop).Select(r => r.ToMutable()).ToList().UnstableShuffle(Rng);
-        var rareRelics = sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Rare).Select(r => r.ToMutable()).ToList().UnstableShuffle(Rng);
+        var runState = Owner!.RunState;
+
+        List<RelicModel> GetRelicsByRarity(RelicRarity rarity)
+        {
+            return RelicRewardUtils.GetStandardSharedRewardCandidates(
+                    runState,
+                    sharedPool.AllRelics.Where(r => r.Rarity == rarity))
+                .Select(r => r.ToMutable())
+                .ToList()
+                .UnstableShuffle(Rng);
+        }
+
+        var commonRelics = GetRelicsByRarity(RelicRarity.Common);
+        var uncommonRelics = GetRelicsByRarity(RelicRarity.Uncommon);
+        var shopRelics = GetRelicsByRarity(RelicRarity.Shop);
+        var rareRelics = GetRelicsByRarity(RelicRarity.Rare);
         
         var relicsToOffer = new List<RelicModel>();
         relicsToOffer.AddRange(commonRelics.Take(1));

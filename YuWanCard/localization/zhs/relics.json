@@ -137,7 +137,7 @@
   "YUWANCARD-SHOPPING_CART.description": "可以在商店中将物品加入购物车，稍后购买。购物车最多容纳{Capacity}个物品。",
   "YUWANCARD-SHOPPING_CART.flavor": "购物车，让购物更轻松。",
   "YUWANCARD-TRANSFORM_TABLE.title": "转化桌",
-  "YUWANCARD-TRANSFORM_TABLE.description": "每回合可右键此遗物，将1张手牌当前的耗能转化为等量能量，然后将该牌移出战斗。\n每回合最多触发[blue]2[/blue]次，无法选择[blue]0[/blue]费牌和X费牌。",
+  "YUWANCARD-TRANSFORM_TABLE.description": "每场战斗可右键此遗物，将1张手牌当前的耗能转化为等量能量，然后将该牌移出战斗。\n每场战斗最多触发[blue]5[/blue]次，无法选择[blue]0[/blue]费牌和X费牌。",
   "YUWANCARD-TRANSFORM_TABLE.flavor": "EMC",
   "YUWANCARD-TRANSFORM_TABLE.selectionPrompt": "选择1张手牌，将其耗能转化为能量并移出战斗",
   "YUWANCARD-HEARTSTEEL.title": "心之钢",

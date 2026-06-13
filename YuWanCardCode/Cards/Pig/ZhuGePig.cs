@@ -11,7 +11,7 @@ namespace YuWanCard.Cards;
 public class ZhuGePig : YuWanCardModel
 {
     public ZhuGePig() : base(
-        baseCost: 3,
+        baseCost: 2,
         type: CardType.Power,
         rarity: CardRarity.Rare,
         target: TargetType.Self)

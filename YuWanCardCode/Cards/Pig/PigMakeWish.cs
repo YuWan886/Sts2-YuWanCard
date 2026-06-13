@@ -35,7 +35,7 @@ public class PigMakeWish : YuWanCardModel
         int cardCount = IsUpgraded ? 8 : 6;
         int maxSelect = IsUpgraded ? 3 : 2;
 
-        var allCards = PigCardPoolUtils.GetAllUnlockedCards(Owner);
+        var allCards = CardUtils.GetAllUnlockedCards(Owner);
         if (allCards.Count == 0) return;
 
         var shuffled = allCards.ToList().UnstableShuffle(Owner.RunState.Rng.CombatCardGeneration);

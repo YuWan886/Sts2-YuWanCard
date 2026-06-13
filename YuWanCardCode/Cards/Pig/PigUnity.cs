@@ -11,12 +11,12 @@ namespace YuWanCard.Cards;
 public class PigUnity : YuWanCardModel
 {
     public PigUnity() : base(
-        baseCost: 2,
+        baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(4);
+        WithDamage(6);
         WithPower<StrengthPower>(1);
     }
 
@@ -36,12 +36,12 @@ public class PigUnity : YuWanCardModel
                 .Execute(choiceContext);
         }
 
-        var teammates = CombatState!.GetTeammatesOf(Owner.Creature);
-        int aliveTeammates = teammates.Count(t => t.IsAlive);
+        bool hasLivingPig = CombatState!.Allies.Any(c => c.IsAlive && c.Monster is YuWanCard.Monsters.PigMinion);
+        bool hasOtherLivingPlayer = CombatState.Players.Any(p => p.Creature != Owner.Creature && !p.Creature.IsDead);
 
-        if (aliveTeammates > 0)
+        if (hasLivingPig || hasOtherLivingPlayer)
         {
-            foreach (var teammate in teammates.Where(t => t.IsAlive))
+            foreach (var teammate in CombatState.Players.Select(p => p.Creature).Where(c => c is { IsAlive: true }))
             {
                 await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(),teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
             }

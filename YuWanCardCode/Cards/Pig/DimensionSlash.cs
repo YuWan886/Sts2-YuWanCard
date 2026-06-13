@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.TestSupport;
 using YuWanCard.Characters;
 using YuWanCard.Utils;
@@ -14,12 +15,19 @@ namespace YuWanCard.Cards;
 [Pool(typeof(PigCardPool))]
 public class DimensionSlash : YuWanCardModel
 {
+    private static readonly HashSet<Type> s_safeDebuffWhitelist =
+    [
+        typeof(VulnerablePower),
+        typeof(WeakPower),
+        typeof(FrailPower),
+    ];
+
     private readonly record struct DebuffCopy(PowerModel Canonical, decimal AmountToDouble, decimal AmountToCopy);
 
     public DimensionSlash() : base(
-        baseCost: 0,
+        baseCost: 1,
         type: CardType.Attack,
-        rarity: CardRarity.Ancient,
+        rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy)
     {
         WithDamage(15);
@@ -27,7 +35,7 @@ public class DimensionSlash : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3);
+        DynamicVars.Damage.UpgradeValueBy(5);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -75,7 +83,9 @@ public class DimensionSlash : YuWanCardModel
 
     private static DebuffCopy? TryCaptureDebuffCopy(PowerModel power)
     {
-        if (power.InstanceType != PowerInstanceType.None || !PowerSafetyUtils.IsSafePower(power))
+        // Base game stack debuffs like Vulnerable are safe to re-create from canonical data,
+        // but our generic analyzer can conservatively reject them because of harmless dealer access.
+        if (!IsCopySafe(power))
         {
             return null;
         }
@@ -99,5 +109,12 @@ public class DimensionSlash : YuWanCardModel
             MainFile.Logger.Warn($"[DimensionSlash] 跳过无法复制的减益 {power.Id}：{ex.Message}");
             return null;
         }
+    }
+
+    private static bool IsCopySafe(PowerModel power)
+    {
+        var powerType = power.GetType();
+        return s_safeDebuffWhitelist.Any(t => t.IsAssignableFrom(powerType))
+               || PowerSafetyUtils.IsSafePower(power);
     }
 }

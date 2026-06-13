@@ -1,16 +1,12 @@
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Characters;
-using YuWanCard.Utils;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace YuWanCard.Relics;
 
@@ -36,23 +32,4 @@ public class PigGoldenCarrot : YuWanRelicModel
         }
     }
 
-    public override CardCreationOptions ModifyCardRewardCreationOptions(Player player, CardCreationOptions options)
-    {
-        if (player.Character is not Pig)
-        {
-            return options;
-        }
-
-        return PigCardPoolUtils.ModifyCardRewardOptions(player, options);
-    }
-
-    public override bool TryModifyCardRewardOptions(Player player, List<CardCreationResult> cardRewardOptions, CardCreationOptions creationOptions)
-    {
-        if (player.Character is not Pig)
-        {
-            return false;
-        }
-
-        return PigCardPoolUtils.TryNormalizePigCardRewardOptions(player, cardRewardOptions, creationOptions);
-    }
 }

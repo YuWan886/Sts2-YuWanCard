@@ -1,7 +1,6 @@
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Assets;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Runs;
@@ -13,13 +12,13 @@ internal static class YummyCookieIconPatchHelper
 {
     public static RelicIconData? GetCustomIconData(RelicModel relic)
     {
-        if (relic is not YummyCookie)
+        if (relic is not YummyCookie || relic.IsCanonical)
         {
             return null;
         }
 
         CharacterModel? character = relic.Owner?.Character;
-        if (character == null && !relic.IsCanonical)
+        if (character == null)
         {
             character = LocalContext.GetMe(RunManager.Instance?.State)?.Character;
         }

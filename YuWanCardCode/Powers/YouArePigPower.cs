@@ -1,4 +1,6 @@
 using YuWanCard.Core.Abstracts;
+using MegaCrit.Sts2.Core.Animation;
+using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -7,7 +9,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using YuWanCard.Characters;
 
 namespace YuWanCard.Powers;
 
@@ -25,6 +29,7 @@ public class YouArePigPower : YuWanPowerModel
     private NCreatureVisuals? _originalVisuals;
     private NCreature? _creatureNode;
     private Godot.Node2D? _originalBody;
+    private CreatureAnimator? _pigAnimator;
 
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
@@ -57,9 +62,11 @@ public class YouArePigPower : YuWanPowerModel
         if (_originalBody != null)
             _originalBody.Visible = false;
 
-        Flash();
+        await _pigVisuals.AwaitProcessFrame();
+        TryEnsurePigAnimator();
+        TriggerPigAnimation("Idle");
 
-        await Task.CompletedTask;
+        Flash();
     }
 
     public override async Task AfterRemoved(Creature oldOwner)
@@ -75,6 +82,7 @@ public class YouArePigPower : YuWanPowerModel
             _pigVisuals = null;
         }
 
+        _pigAnimator = null;
         _originalVisuals = null;
         _originalBody = null;
         _creatureNode = null;
@@ -88,5 +96,70 @@ public class YouArePigPower : YuWanPowerModel
         {
             await PowerCmd.Decrement(this);
         }
+    }
+
+    public void TriggerPigAnimation(string trigger)
+    {
+        if (!TryEnsurePigAnimator())
+        {
+            return;
+        }
+
+        var mappedTrigger = MapTrigger(trigger);
+        if (mappedTrigger == null)
+        {
+            return;
+        }
+
+        _pigAnimator?.SetTrigger(mappedTrigger);
+    }
+
+    private bool TryEnsurePigAnimator()
+    {
+        if (_pigAnimator != null)
+        {
+            return true;
+        }
+
+        if (_pigVisuals == null || !Godot.GodotObject.IsInstanceValid(_pigVisuals))
+        {
+            return false;
+        }
+
+        var visualsNode = _pigVisuals.GetNodeOrNull<Godot.Node2D>("%Visuals")
+            ?? _pigVisuals.GetNodeOrNull<Godot.Node2D>("Visuals");
+        if (visualsNode == null)
+        {
+            return false;
+        }
+
+        var controller = new MegaSprite(visualsNode);
+        if (controller.GetSkeleton()?.GetData() == null)
+        {
+            return false;
+        }
+
+        _pigAnimator = Pig.CreateCreatureAnimator(controller);
+        return true;
+    }
+
+    private static string? MapTrigger(string trigger)
+    {
+        return trigger switch
+        {
+            "Idle" => "Idle",
+            "Relaxed" => "Relaxed",
+            "Revive" => "Idle",
+            "Hit" => "Hit",
+            "Dead" => "Dead",
+            "Cast" => "Cast",
+            "PowerUp" => "Cast",
+            "Attack" => "Attack",
+            "AttackSingle" => "Attack",
+            "AttackTriple" => "Attack",
+            "Tf" => "Tf",
+            "Tf2" => "Tf2",
+            _ => null
+        };
     }
 }

@@ -28,6 +28,7 @@ public class PigPudding : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await CardUtils.RecordFoodPigPlayed(this);
         var debuffs = Owner.Creature.Powers
             .Where(p => p.Type == PowerType.Debuff)
             .ToList();

@@ -16,7 +16,7 @@ public class PigBurger : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
-        WithPower<PigBurgerPower>(6);
+        WithPower<PigBurgerPower>(3);
     }
 
     protected override void OnUpgrade()

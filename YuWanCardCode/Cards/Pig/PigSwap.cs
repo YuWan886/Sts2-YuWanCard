@@ -1,4 +1,5 @@
 using YuWanCard.Core.Abstracts;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using YuWanCard.Characters;
@@ -47,6 +48,6 @@ public class PigSwap : YuWanCardModel
             playerCombatState.Energy = playerCombatState.MaxEnergy - (playerCombatState.Energy + costPaid);
         }
 
-        return Task.CompletedTask;
+        return CardPileCmd.Draw(choiceContext, 1, Owner);
     }
 }

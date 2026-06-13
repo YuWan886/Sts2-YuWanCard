@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 using YuWanCard.Malice;
+using YuWanCard.Patches;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Commands;
@@ -32,8 +33,8 @@ public class YwDebugCmd : AbstractConsoleCmd
         "lustful_pig"
     ];
 
-    private static readonly MethodInfo? GenerateInitialOptionsMethod = 
-        typeof(EventModel).GetMethod("GenerateInitialOptions", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+    private static readonly MethodInfo? GenerateInitialOptionsWrapperMethod =
+        typeof(EventModel).GetMethod("GenerateInitialOptionsWrapper", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
     
     private static readonly MethodInfo? SetEventStateMethod = 
         typeof(EventModel).GetMethod("SetEventState", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, 
@@ -203,12 +204,22 @@ public class YwDebugCmd : AbstractConsoleCmd
 
         try
         {
-            if (GenerateInitialOptionsMethod?.Invoke(currentEvent, null) is not IReadOnlyList<EventOption> newOptions || newOptions.Count == 0)
+            if (NeowSevenCursesPatch.IsShowingWhatIfScreen(ancientEvent))
+            {
+                var refreshedWhatIfOptions = NeowSevenCursesPatch.CreateRandomizedWhatIfScreen(ancientEvent);
+                var whatIfDescription = currentEvent.Description ?? currentEvent.InitialDescription;
+                SetEventStateMethod?.Invoke(currentEvent, [whatIfDescription, refreshedWhatIfOptions]);
+
+                MainFile.Logger.Info($"YwDebugCmd: Refreshed What If options for ancient {ancientEvent.Id.Entry}");
+                return new CmdResult(true, $"Refreshed {Math.Max(0, refreshedWhatIfOptions.Count - 1)} What If relic options for ancient {ancientEvent.Id.Entry}!");
+            }
+
+            if (GenerateInitialOptionsWrapperMethod?.Invoke(currentEvent, null) is not IReadOnlyList<EventOption> newOptions || newOptions.Count == 0)
             {
                 return new CmdResult(false, "Failed to generate new options!");
             }
 
-            var description = currentEvent.InitialDescription;
+            var description = currentEvent.Description ?? currentEvent.InitialDescription;
             SetEventStateMethod?.Invoke(currentEvent, [description, newOptions]);
 
             MainFile.Logger.Info($"YwDebugCmd: Regenerated {newOptions.Count} options for ancient {ancientEvent.Id.Entry}");

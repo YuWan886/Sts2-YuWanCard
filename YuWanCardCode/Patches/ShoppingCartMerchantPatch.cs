@@ -51,6 +51,7 @@ public static class NMerchantSlot_ShoppingCartPatch
     {
         var entry = __instance.Entry;
         bool isReserved = ShoppingCartManager.IsEntryReserved(entry);
+        bool canAddToCart = ShoppingCartManager.CanAddToCart(entry);
 
         if (entry != null && entry.IsStocked)
         {
@@ -60,10 +61,10 @@ public static class NMerchantSlot_ShoppingCartPatch
 
         if (!_addToCartButtons.TryGetValue(__instance, out var button)) return;
 
-        button.Visible = entry != null && entry.IsStocked && !isReserved;
+        button.Visible = entry != null && entry.IsStocked && !isReserved && canAddToCart;
         button.Disabled = !ShoppingCartManager.HasShoppingCart() || 
                           ShoppingCartManager.GetCartData()?.IsFull == true ||
-                          !ShoppingCartManager.CanAddToCart(entry) ||
+                          !canAddToCart ||
                           isReserved;
     }
 

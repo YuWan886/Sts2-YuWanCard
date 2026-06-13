@@ -48,6 +48,6 @@ public sealed class SpeedyTrait : MaliceTraitPowerBase
     private static int GetMaxDexterityLoss(ICombatState combatState)
     {
         int actIndex = combatState.RunState?.CurrentActIndex ?? 0;
-        return 4 + Math.Min(Math.Max(actIndex, 0), 2);
+        return 3 + Math.Min(Math.Max(actIndex, 0), 2);
     }
 }

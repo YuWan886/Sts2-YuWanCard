@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -15,19 +16,20 @@ public class PigEat : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithVar("Heal", 2);
-        WithBlock(5);
-        WithKeywords(CardKeyword.Exhaust);
+        WithHeal(3, 2);
+        WithBlock(6, 2);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await CreatureCmd.Heal(Owner.Creature, DynamicVars["Heal"].BaseValue);
+        if (CardUtils.HasPlayedFoodPigThisTurn(Owner))
+        {
+            await CreatureCmd.Heal(Owner.Creature, DynamicVars.Heal.BaseValue);
+        }
     }
 }

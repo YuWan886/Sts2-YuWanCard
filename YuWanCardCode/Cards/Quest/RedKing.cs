@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards.Quest;
 
@@ -35,8 +36,9 @@ public class RedKing : YuWanCardModel
         if (CombatsCompleted >= DynamicVars["Combats"].BaseValue)
         {
             var sharedPool = ModelDb.RelicPool<SharedRelicPool>();
-            var ancientRelics = sharedPool.AllRelics
-                .Where(r => r.Rarity == RelicRarity.Ancient)
+            var ancientRelics = RelicRewardUtils.GetStandardSharedRewardCandidates(
+                    Owner.RunState,
+                    sharedPool.AllRelics.Where(r => r.Rarity == RelicRarity.Ancient))
                 .Select(r => r.ToMutable())
                 .ToList();
 

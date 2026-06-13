@@ -6,10 +6,11 @@ namespace YuWanCard.Core.Utils;
 
 internal static class CardCopyHelper
 {
-    public static CardModel CreateCopy(CardModel source, Player owner)
+    public static CardModel CreateCopy(CardModel source)
     {
         CardModel copy = CardModel.FromSerializable(source.ToSerializable());
-        copy.Owner = owner;
+        // Temporary/generated copies should keep runtime card state, but not keep mutating the source deck anchor.
+        copy.DeckVersion = null;
         return copy;
     }
 
@@ -21,7 +22,7 @@ internal static class CardCopyHelper
             return null;
         }
 
-        CardModel copy = CardModel.FromSerializable(source.ToSerializable());
+        CardModel copy = CreateCopy(source);
         combatState.AddCard(copy, owner);
         return copy;
     }

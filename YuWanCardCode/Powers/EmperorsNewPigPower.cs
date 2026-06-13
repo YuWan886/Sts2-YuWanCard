@@ -1,13 +1,10 @@
 using YuWanCard.Core.Abstracts;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Saves.Runs;
-using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YuWanCard.Powers;
 
@@ -16,78 +13,37 @@ public class EmperorsNewPigPower : YuWanPowerModel
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Turns", 1m)];
-
-    [SavedProperty]
-    public bool YUWANCARD_PreventDebuffs { get; set; } = false;
-
-    public override async Task BeforeApplied(Creature target, decimal amount, Creature? applier, CardModel? cardSource)
+    public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
-        if (cardSource is { IsUpgraded: true })
+        if (player != Owner.Player)
         {
-            YUWANCARD_PreventDebuffs = true;
+            return Task.CompletedTask;
         }
-        await base.BeforeApplied(target, amount, applier, cardSource);
-    }
 
-    public override bool TryModifyPowerAmountReceived(PowerModel canonicalPower, Creature target, decimal amount, Creature? applier, out decimal modifiedAmount)
-    {
-        modifiedAmount = amount;
-        if (!YUWANCARD_PreventDebuffs)
+        List<CardModel> candidates = PileType.Hand.GetPile(player).Cards
+            .Where(card => card.IsUpgradable)
+            .ToList();
+        if (candidates.Count == 0)
         {
-            return false;
+            return Task.CompletedTask;
         }
-        if (target != Owner)
+
+        var rng = player.RunState.Rng.CombatCardGeneration;
+        int upgrades = Math.Min((int)Amount, candidates.Count);
+        if (upgrades <= 0)
         {
-            return false;
-        }
-        if (canonicalPower.Type != PowerType.Debuff)
-        {
-            return false;
-        }
-        if (!canonicalPower.IsVisible)
-        {
-            return false;
+            return Task.CompletedTask;
         }
 
         Flash();
-        modifiedAmount = 0m;
-        return true;
-    }
-
-    public override decimal ModifyHpLostAfterOstyLate(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
-    {
-        if (!CombatManager.Instance.IsInProgress)
+        for (int i = 0; i < upgrades; i++)
         {
-            return amount;
-        }
-        if (target != Owner)
-        {
-            return amount;
-        }
-        if (dealer == null)
-        {
-            return amount;
-        }
-        if (dealer.Side == Owner.Side)
-        {
-            return amount;
+            int index = rng.NextInt(candidates.Count);
+            CardModel selectedCard = candidates[index];
+            candidates.RemoveAt(index);
+            CardCmd.Upgrade(selectedCard);
         }
 
-        Flash();
-        return 0m;
-    }
-
-    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
-    {
-        if (side != CombatSide.Enemy) return;
-
-        Flash();
-        SetAmount(Amount - 1);
-
-        if (Amount <= 0)
-        {
-            await PowerCmd.Remove(this);
-        }
+        return Task.CompletedTask;
     }
 }

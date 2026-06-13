@@ -2,7 +2,6 @@ using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Characters;
 using YuWanCard.Powers;
 
@@ -12,20 +11,20 @@ namespace YuWanCard.Cards;
 public class TragicMandarinDuck : YuWanCardModel
 {
     public TragicMandarinDuck() : base(
-        baseCost: 0,
+        baseCost: 1,
         type: CardType.Power,
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
-        WithPower<StrengthPower>(2);
-        WithPower<DexterityPower>(2);
-        WithVar("Damage", 6);
+        WithPower<TragicMandarinDuckPower>("GainStrength", 1);
+        WithPower<TragicMandarinDuckPower>("GainDexterity", 1);
+        WithVar("HpLoss", 1);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Strength.UpgradeValueBy(1);
-        DynamicVars.Dexterity.UpgradeValueBy(1);
+        DynamicVars["GainStrength"].UpgradeValueBy(1);
+        DynamicVars["GainDexterity"].UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

@@ -18,7 +18,7 @@ public class PigBlackHole : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AllEnemies)
     {
-        WithVar("Magic", 5);
+        WithVar("Magic", 6);
         WithKeywords(CardKeyword.Exhaust);
     }
 

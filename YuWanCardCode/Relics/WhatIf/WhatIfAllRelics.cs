@@ -32,7 +32,10 @@ public class WhatIfAllRelics : WhatIfRelicModel
         }
 
         var allCandidateRelics = ModelDb.AllRelics
-            .Where(relic => relic.Id != Id && Owner.GetRelicById(relic.Id) == null && IsWhitelistedRelicSource(relic))
+            .Where(relic => relic.Id != Id
+                && Owner.GetRelicById(relic.Id) == null
+                && relic.IsAllowed(Owner.RunState)
+                && IsWhitelistedRelicSource(relic))
             .ToList();
 
         var skippedPickupEffectRelics = allCandidateRelics
