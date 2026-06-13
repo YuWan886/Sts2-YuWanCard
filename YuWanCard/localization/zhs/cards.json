@@ -369,5 +369,7 @@
   "YUWANCARD-BANKRUPTCY.title": "破产",
   "YUWANCARD-BANKRUPTCY.description": "花费你的全部金币，对目标造成等同于所花金币{IfUpgraded:show:75%|50%}的伤害。",
   "YUWANCARD-INFLATION.title": "通货膨胀",
-  "YUWANCARD-INFLATION.description": "获得[gold]通货膨胀[/gold]。你之后获得金币时额外获得{IfUpgraded:show:75%|50%}，且你的非X费卡牌耗能+1。"
+  "YUWANCARD-INFLATION.description": "获得[gold]通货膨胀[/gold]。你之后获得金币时额外获得{IfUpgraded:show:75%|50%}，且你的非X费卡牌耗能+1。",
+  "YUWANCARD-PIGGY_BLESSING.title": "小猪的祝福",
+  "YUWANCARD-PIGGY_BLESSING.description": "获得{Block:diff()}点[gold]格挡[/gold]。\n抽{Cards}张牌。"
 }

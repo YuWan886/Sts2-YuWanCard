@@ -368,5 +368,7 @@
   "YUWANCARD-BANKRUPTCY.title": "Bankruptcy",
   "YUWANCARD-BANKRUPTCY.description": "Spend all your Gold. Deal damage equal to {IfUpgraded:show:75%|50%} of the Gold spent.",
   "YUWANCARD-INFLATION.title": "Inflation",
-  "YUWANCARD-INFLATION.description": "Gain [gold]Inflation[/gold]. Whenever you gain Gold, gain {IfUpgraded:show:75%|50%} more, and your non-X-cost cards cost 1 more."
+  "YUWANCARD-INFLATION.description": "Gain [gold]Inflation[/gold]. Whenever you gain Gold, gain {IfUpgraded:show:75%|50%} more, and your non-X-cost cards cost 1 more.",
+  "YUWANCARD-PIGGY_BLESSING.title": "Piggy's Blessing",
+  "YUWANCARD-PIGGY_BLESSING.description": "Gain {Block:diff()} [gold]Block[/gold].\nDraw {Cards} card."
 }

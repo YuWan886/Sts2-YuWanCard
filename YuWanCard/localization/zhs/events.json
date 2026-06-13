@@ -83,5 +83,19 @@
   "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.INITIAL.options.ADD_PIG_BURGER.title": "我只想先吃个汉堡吧",
   "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.INITIAL.options.ADD_PIG_BURGER.description": "获得1张[gold]猪堡[/gold]。",
   "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.RED_KING_ADDED.description": "一张闪烁着红色光芒的卡牌缓缓飘入你的手中。\n\n\"祂的到来，是救赎还是毁灭...\"",
-  "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.PIG_BURGER_ADDED.description": "一张散发着诱人香气的卡牌缓缓飘入你的手中。\n\n\"有时候，一个汉堡就是最好的答案。\""
+  "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.PIG_BURGER_ADDED.description": "一张散发着诱人香气的卡牌缓缓飘入你的手中。\n\n\"有时候，一个汉堡就是最好的答案。\"",
+  "YUWANCARD-HELLO_HUMAN.title": "人，你好。",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.description": "你推开一扇门，发现房间中央摆着一台正在发光的笔记本电脑。屏幕里，四只圆滚滚的粉色小猪正扒着边框朝你看，最右边的小猪还举着一朵红玫瑰，像是在和你打招呼。温暖的阳光从窗户洒进来，整个场景透着一种软乎乎的、不属于尖塔的温柔感。\n\n[gold]“你好呀，外面的人。”[/gold]最左边的小猪开口了，声音软得像棉花糖。\n[gold]“来和我们一起待一会儿吧~”[/gold]中间的小猪晃了晃耳朵。\n最右边的小猪把玫瑰往你面前递了递，眼睛亮晶晶的。",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.TAKE_ROSE.title": "接过玫瑰，和它们打个招呼",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.TAKE_ROSE.description": "回复[green]5[/green]点[gold]最大生命值[/gold]。获得1张[gold]小猪的祝福[/gold]。",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.CHAT.title": "和它们聊一会儿天，听它们说说话",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.CHAT.description": "获得[gold]25[/gold]金币。获得遗物[gold]软乎乎的暖意[/gold]。",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.LEAVE.title": "转身离开，不打扰它们的小世界",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.LEAVE.description": "获得遗物[gold]美好的邂逅[/gold]。",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.POKE.title": "伸手戳戳屏幕里的小猪",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.POKE.description": "失去[red]5[/red]点[gold]最大生命值[/gold]。获得遗物[gold]小猪玩偶[/gold]。",
+  "YUWANCARD-HELLO_HUMAN.pages.TOOK_ROSE.description": "你接过那朵红玫瑰，指尖触到的却是一阵暖洋洋的、毛茸茸的暖意。小猪们开心地哼起了歌，紧绷了许久的神经，在这一刻悄悄松了下来。\n\n[green]“嘿嘿，谢谢你愿意理我们~”[/green]",
+  "YUWANCARD-HELLO_HUMAN.pages.CHATTED.description": "你在电脑前坐下，听小猪们叽叽喳喳地讲着今天吃了什么、做了什么梦。不知不觉，时间过得飞快。临走前，它们偷偷从屏幕里塞给你一把金币当“见面礼”。\n\n[gold]“下次还要来玩哦~”[/gold]",
+  "YUWANCARD-HELLO_HUMAN.pages.LEFT.description": "你不忍心打扰它们的小世界，于是轻轻地关上了门。门缝合拢的前一刻，你听见小猪们齐声朝你道别。\n\n那份温柔，似乎被你一并带在了身上。",
+  "YUWANCARD-HELLO_HUMAN.pages.POKED.description": "你没忍住，伸手戳了戳最前面那只小猪圆乎乎的脸。屏幕“啵”地泛起一圈涟漪，小猪惊讶地瞪大了眼睛，随后“扑通”一声跳出屏幕，变成了一只软乎乎的玩偶落进你怀里。\n\n[red]（戳穿屏幕似乎也让你折损了一点元气……）[/red]"
 }

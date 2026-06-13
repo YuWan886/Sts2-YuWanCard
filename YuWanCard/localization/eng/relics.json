@@ -352,5 +352,14 @@
   "YUWANCARD-INVESTOR_JOKER.flavor": "That's not spending. That's capital allocation.",
   "YUWANCARD-MODIFIER_TOKEN.title": "Modifier Token",
   "YUWANCARD-MODIFIER_TOKEN.description": "When obtained, store 1 Modifier Token. Spend it in the Balatro Mod Station to buy an edition for 1 card without paying Gold.",
-  "YUWANCARD-MODIFIER_TOKEN.flavor": "It never reaches the table. It goes straight to the workshop."
+  "YUWANCARD-MODIFIER_TOKEN.flavor": "It never reaches the table. It goes straight to the workshop.",
+  "YUWANCARD-SOFT_WARMTH.title": "Soft Warmth",
+  "YUWANCARD-SOFT_WARMTH.description": "At the start of your next 3 combats, gain {DexterityPower} [gold]Dexterity[/gold].",
+  "YUWANCARD-SOFT_WARMTH.flavor": "The warmth from the other side of the screen wraps softly around you.",
+  "YUWANCARD-GOOD_ENCOUNTER.title": "Pleasant Encounter",
+  "YUWANCARD-GOOD_ENCOUNTER.description": "At the start of your next 5 combats, gain {StrengthPower} [gold]Strength[/gold].",
+  "YUWANCARD-GOOD_ENCOUNTER.flavor": "Some encounters are brief, yet enough to carry you further.",
+  "YUWANCARD-PIGGY_DOLL.title": "Piggy Doll",
+  "YUWANCARD-PIGGY_DOLL.description": "The first time you take damage each turn, reduce it by {DamageReduction}.\nAt the end of each turn, heal {Heal} HP.",
+  "YUWANCARD-PIGGY_DOLL.flavor": "Soft and squishy. Poke it and it boops right back."
 }

@@ -353,5 +353,15 @@
   "YUWANCARD-INVESTOR_JOKER.flavor": "这不叫花钱，这叫回收现金流。",
   "YUWANCARD-MODIFIER_TOKEN.title": "修饰器代币",
   "YUWANCARD-MODIFIER_TOKEN.description": "获得时，储存1个修饰器代币。你可以在 Balatro 商店加工站消耗它，免费为1张牌购买修饰器。",
-  "YUWANCARD-MODIFIER_TOKEN.flavor": "这枚筹码不进牌桌，只进加工站。"
+  "YUWANCARD-MODIFIER_TOKEN.flavor": "这枚筹码不进牌桌，只进加工站。",
+  "========== 事件 ==========": "========== 事件 ==========",
+  "YUWANCARD-SOFT_WARMTH.title": "软乎乎的暖意",
+  "YUWANCARD-SOFT_WARMTH.description": "在接下来的5场战斗开始时，获得{DexterityPower}点[gold]敏捷[/gold]。",
+  "YUWANCARD-SOFT_WARMTH.flavor": "屏幕那头传来的暖意，软乎乎地裹住了你。",
+  "YUWANCARD-GOOD_ENCOUNTER.title": "美好的邂逅",
+  "YUWANCARD-GOOD_ENCOUNTER.description": "在接下来的5场战斗开始时，获得{StrengthPower}点[gold]力量[/gold]。",
+  "YUWANCARD-GOOD_ENCOUNTER.flavor": "有些相遇虽然短暂，却足以让你走得更远。",
+  "YUWANCARD-PIGGY_DOLL.title": "小猪玩偶",
+  "YUWANCARD-PIGGY_DOLL.description": "每回合首次受到伤害时，减少{DamageReduction}点伤害。\n在你的回合结束时，恢复{Heal}点生命值。",
+  "YUWANCARD-PIGGY_DOLL.flavor": "软乎乎的，戳一下还会“啵”地弹回来。"
 }

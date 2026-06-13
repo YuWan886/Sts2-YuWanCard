@@ -83,5 +83,19 @@
   "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.INITIAL.options.ADD_PIG_BURGER.title": "I just want to eat a burger first",
   "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.INITIAL.options.ADD_PIG_BURGER.description": "Obtain 1 [gold]Pig Burger[/gold].",
   "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.RED_KING_ADDED.description": "A card glowing with red light slowly floats into your hand.\n\n\"His arrival, salvation or destruction...\"",
-  "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.PIG_BURGER_ADDED.description": "A card with an enticing aroma slowly floats into your hand.\n\n\"Sometimes, a burger is the best answer.\""
+  "YUWANCARD-ZHI_ZHAN_ZHI_SHANG.pages.PIG_BURGER_ADDED.description": "A card with an enticing aroma slowly floats into your hand.\n\n\"Sometimes, a burger is the best answer.\"",
+  "YUWANCARD-HELLO_HUMAN.title": "Hello, Human.",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.description": "You push open a door and find a glowing laptop sitting in the middle of the room. On the screen, four round little pink piglets are clinging to the edge, peering out at you. The one on the far right is holding up a red rose, as if greeting you. Warm sunlight spills through a window, and the whole scene radiates a soft, cozy tenderness that doesn't belong in the Spire.\n\n[gold]\"Hello there, person from the outside.\"[/gold] The leftmost piglet speaks, its voice soft as a marshmallow.\n[gold]\"Come stay with us for a while~\"[/gold] The middle piglet wiggles its ears.\nThe rightmost piglet nudges the rose toward you, eyes sparkling.",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.TAKE_ROSE.title": "Take the rose and greet them",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.TAKE_ROSE.description": "Take the rose and smile back at them.\nHeal [green]5[/green] [gold]Max HP[/gold] and gain 1 [gold]Piggy's Blessing[/gold].",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.CHAT.title": "Chat with them for a while",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.CHAT.description": "Sit by the laptop and quietly listen to the piglets chatter about their day.\nGain [gold]25[/gold] Gold and the Event Relic [gold]Soft Warmth[/gold].",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.LEAVE.title": "Turn and leave, not disturbing their little world",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.LEAVE.description": "Gently close the door, leaving this tenderness behind you.\nGain the Event Relic [gold]Pleasant Encounter[/gold].",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.POKE.title": "Reach out and poke the piglet on the screen",
+  "YUWANCARD-HELLO_HUMAN.pages.INITIAL.options.POKE.description": "You can't resist reaching out to poke the cheek of the frontmost piglet.\nLose [red]5[/red] [gold]Max HP[/gold] and gain the Event Relic [gold]Piggy Doll[/gold].",
+  "YUWANCARD-HELLO_HUMAN.pages.TOOK_ROSE.description": "You take the red rose, but what your fingertips feel is a warm, fuzzy gentleness. The piglets hum a happy little tune, and the tension you've carried for so long quietly melts away.\n\n[green]\"Hehe, thanks for paying attention to us~\"[/green]",
+  "YUWANCARD-HELLO_HUMAN.pages.CHATTED.description": "You sit down by the laptop and listen to the piglets chatter about what they ate today and what they dreamed about. Time flies by. Before you leave, they secretly slip you a handful of gold from inside the screen as a \"meeting gift.\"\n\n[gold]\"Come play again next time~\"[/gold]",
+  "YUWANCARD-HELLO_HUMAN.pages.LEFT.description": "You can't bear to disturb their little world, so you gently close the door. Just before it shuts, you hear the piglets bid you farewell in unison.\n\nThat tenderness seems to have come along with you.",
+  "YUWANCARD-HELLO_HUMAN.pages.POKED.description": "You can't help it. You reach out and poke the round cheek of the frontmost piglet. The screen ripples with a soft \"boop,\" and the piglet's eyes go wide in surprise before it leaps out with a \"plop,\" landing in your arms as a soft little doll.\n\n[red](Poking through the screen seems to have cost you a bit of vitality...)[/red]"
 }
