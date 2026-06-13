@@ -1,4 +1,6 @@
 {
+  "YUWANCARD-USER_GOT_ANGRY.title": "我操，用户怒了",
+  "YUWANCARD-USER_GOT_ANGRY.description": "将一张{IfUpgraded:show:[gold]愤怒+[/gold]|[gold]愤怒[/gold]}加入手牌。",
   "YUWANCARD-PIG_HURT.title": "猪受伤",
   "YUWANCARD-PIG_HURT.description": "对所有敌人施加{VulnerablePower:diff()}层[gold]易伤[/gold]。",
   "YUWANCARD-PIG_THINK.title": "猪思考",

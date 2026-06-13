@@ -1,4 +1,6 @@
 {
+  "YUWANCARD-USER_GOT_ANGRY.title": "F**k, the User is Angry",
+  "YUWANCARD-USER_GOT_ANGRY.description": "Add an {IfUpgraded:show:[gold]Anger+[/gold]|[gold]Anger[/gold]} to your hand.",
   "YUWANCARD-PIG_HURT.title": "Pig Hurt",
   "YUWANCARD-PIG_HURT.description": "Apply {VulnerablePower:diff()} [gold]Vulnerable[/gold] to all enemies.",
   "YUWANCARD-PIG_THINK.title": "Pig Think",
