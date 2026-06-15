@@ -15,8 +15,6 @@ public static class MaliceCustomRunReadyPatch
 {
     private const float MalicePanelScale = 0.7f;
     private const float MalicePanelTopGap = 8f;
-    private const float MalicePanelCharacterGap = 12f;
-    private const float MalicePanelFallbackOffsetY = 60f;
 
     [HarmonyPostfix]
     public static void Postfix(NCustomRunScreen __instance)
@@ -35,7 +33,7 @@ public static class MaliceCustomRunReadyPatch
         var malicePanel = (NAscensionPanel)ascensionPanel.Duplicate();
         malicePanel.Name = "MalicePanel";
         malicePanel.Scale = new Vector2(MalicePanelScale, MalicePanelScale);
-        ApplyMalicePanelLayout(__instance, malicePanel, ascensionPanel);
+        ApplyMalicePanelLayout(malicePanel, ascensionPanel);
         ApplyMalicePanelPivot(malicePanel);
         malicePanel.ZIndex = ascensionPanel.ZIndex;
         malicePanel.SetMeta("YUWANCARD_MALICE_PANEL", true);
@@ -48,27 +46,10 @@ public static class MaliceCustomRunReadyPatch
             $"[MaliceCustomRun] Created panel offsets=({malicePanel.OffsetLeft}, {malicePanel.OffsetTop}, {malicePanel.OffsetRight}, {malicePanel.OffsetBottom}) scale={malicePanel.Scale}");
     }
 
-    private static void ApplyMalicePanelLayout(NCustomRunScreen screen, NAscensionPanel malicePanel, NAscensionPanel ascensionPanel)
+    private static void ApplyMalicePanelLayout(NAscensionPanel malicePanel, NAscensionPanel ascensionPanel)
     {
-        if (ascensionPanel.GetParent() is Control parent
-            && screen.GetNodeOrNull<Control>("LeftContainer/CharSelectButtons/ButtonContainer") is { } buttonContainer)
-        {
-            Rect2 buttonRect = buttonContainer.GetGlobalRect();
-            Rect2 parentRect = parent.GetGlobalRect();
-            float panelHeight = ascensionPanel.OffsetBottom - ascensionPanel.OffsetTop;
-            float localTop = buttonRect.Position.Y - parentRect.Position.Y + buttonRect.Size.Y + MalicePanelCharacterGap;
-            float anchoredTop = localTop - parent.Size.Y;
-
-            malicePanel.OffsetLeft = ascensionPanel.OffsetLeft;
-            malicePanel.OffsetRight = ascensionPanel.OffsetRight;
-            malicePanel.OffsetTop = anchoredTop;
-            malicePanel.OffsetBottom = anchoredTop + panelHeight;
-            return;
-        }
-
-        float offsetY = ascensionPanel.Size.Y > 0f
-            ? ascensionPanel.Size.Y * MalicePanelScale + MalicePanelTopGap
-            : MalicePanelFallbackOffsetY;
+        float panelHeight = ascensionPanel.OffsetBottom - ascensionPanel.OffsetTop;
+        float offsetY = panelHeight * MalicePanelScale + MalicePanelTopGap + 180f;
 
         malicePanel.OffsetLeft = ascensionPanel.OffsetLeft;
         malicePanel.OffsetRight = ascensionPanel.OffsetRight;

@@ -31,3 +31,4 @@ wiki/node_modules/
 posthog.analytics.local.yaml
 *.csproj.lscache
 superpowers/
+bash.exe.stackdump

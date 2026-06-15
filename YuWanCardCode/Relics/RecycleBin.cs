@@ -26,14 +26,29 @@ public class RecycleBin : YuWanRelicModel
         SavedPropertyRegistration.RegisterType(typeof(RecycleBin));
     }
 
-    [SavedProperty]
-    private int YUWANCARD_PendingRecycleGold { get; set; }
+    // Runtime-authoritative pending gold. This counter only accrues/resets on the OWNING client:
+    // rewards are skipped/selected through that client's local rewards UI
+    // (RecycleBinRewardPatch -> NRewardsScreen.AfterOverlayClosed), NOT a synchronized GameAction,
+    // so the value is inherently per-client. All runtime logic reads/writes this field directly.
+    private int _pendingRecycleGold;
+
+    // Save bridge for single-player only. relic.ToSerializable() -> SavedProperties.From feeds BOTH
+    // the disk save AND the multiplayer state checksum (NetFullCombatState), so a per-client value
+    // here would diverge and trip StateDivergence (host disconnects the client). In real multiplayer
+    // the getter reports the type default, so SaveIfNotTypeDefault omits it entirely -> never in the
+    // checksum. The trade-off: pending gold is not persisted across a save/quit during an MP session.
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    private int YUWANCARD_PendingRecycleGold
+    {
+        get => RunManager.Instance?.IsSinglePlayerOrFakeMultiplayer == true ? _pendingRecycleGold : 0;
+        set => _pendingRecycleGold = value;
+    }
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 
-    public override bool ShowCounter => YUWANCARD_PendingRecycleGold > 0;
+    public override bool ShowCounter => _pendingRecycleGold > 0;
 
-    public override int DisplayAmount => YUWANCARD_PendingRecycleGold;
+    public override int DisplayAmount => _pendingRecycleGold;
 
     public RecycleBin() : base(true)
     {
@@ -41,13 +56,20 @@ public class RecycleBin : YuWanRelicModel
 
     public override async Task AfterRoomEntered(AbstractRoom room)
     {
-        if (Owner == null || YUWANCARD_PendingRecycleGold <= 0 || !LocalContext.IsMe(Owner))
+        // Only pay out at a NON-combat room. RewardSynchronizer buffers the gold-obtained message
+        // on remote clients until combat ends (HandleRewardObtainedMessage), while the owner applies
+        // it immediately on room-enter. Granting at a combat boundary therefore leaves owner.Gold
+        // ahead of the other clients for the whole fight, and the mid-combat checksum ("After player
+        // turn start") catches that transient -> StateDivergence. Deferring to the next non-combat
+        // room means both the local grant and the synced grant land outside combat and stay in step,
+        // mirroring vanilla MawBank/GoldReward, which only move gold outside combat.
+        if (Owner == null || _pendingRecycleGold <= 0 || !LocalContext.IsMe(Owner) || room is CombatRoom)
         {
             return;
         }
 
-        int pendingGold = YUWANCARD_PendingRecycleGold;
-        YUWANCARD_PendingRecycleGold = 0;
+        int pendingGold = _pendingRecycleGold;
+        _pendingRecycleGold = 0;
         InvokeDisplayAmountChanged();
 
         Flash();
@@ -131,11 +153,11 @@ public class RecycleBin : YuWanRelicModel
             return;
         }
 
-        YUWANCARD_PendingRecycleGold += recycledGold;
+        _pendingRecycleGold += recycledGold;
         InvokeDisplayAmountChanged();
 
         MainFile.Logger.Info(
-            $"RecycleBin: queued {recycledGold} gold from skipped {rewardType} for player {Owner?.NetId} via sender {senderId}. Pending={YUWANCARD_PendingRecycleGold}.");
+            $"RecycleBin: queued {recycledGold} gold from skipped {rewardType} for player {Owner?.NetId} via sender {senderId}. Pending={_pendingRecycleGold}.");
     }
 
     private static bool TryGetRecycledGold(Reward reward, out int recycledGold)

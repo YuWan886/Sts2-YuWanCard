@@ -2,11 +2,9 @@ using YuWanCard.Core.Abstracts;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.TestSupport;
+using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Characters;
 using YuWanCard.Utils;
 
@@ -18,6 +16,7 @@ public class BugPig : YuWanCardModel
     private const int BaseDamage = 7;
     private const int ErrorDamageBonus = 3;
     private const int ErrorDamageBonusUpgraded = 5;
+
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.SingleplayerOnly;
 
     public BugPig() : base(
@@ -26,12 +25,14 @@ public class BugPig : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
-        WithVars(new BugPigDamageVar(BaseDamage, ErrorDamageBonus, ErrorDamageBonusUpgraded));
+        // 最终伤害 = BaseDamage + 每个 ERROR 的加成 × 日志中的 ERROR 数量。
+        WithCalculatedDamage(
+            ValueProp.Move,
+            multiplierCalc: static (_, _) => CountTotalErrorsInLog(),
+            baseVal: BaseDamage,
+            extraVal: ErrorDamageBonus,
+            extraUpgrade: ErrorDamageBonusUpgraded - ErrorDamageBonus);
         WithKeywords(CardKeyword.Exhaust);
-    }
-
-    protected override void OnUpgrade()
-    {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -41,13 +42,9 @@ public class BugPig : YuWanCardModel
             return;
         }
 
-        int errorCount = CountTotalErrorsInLog();
-        int damageBonus = IsUpgraded ? errorCount * ErrorDamageBonusUpgraded : errorCount * ErrorDamageBonus;
-        int totalDamage = BaseDamage + damageBonus;
+        MainFile.Logger.Info($"BugPig: dealing {DynamicVars.CalculatedDamage} damage");
 
-        MainFile.Logger.Info($"BugPig: Singleplayer error count: {errorCount}, damage bonus: {damageBonus}, total damage: {totalDamage}");
-
-        await DamageCmd.Attack(totalDamage)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage)
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash")
@@ -97,22 +94,5 @@ public class BugPig : YuWanCardModel
             MainFile.Logger.Error($"BugPig: Error reading log file: {ex.Message}");
             return 0;
         }
-    }
-}
-
-public class BugPigDamageVar(int baseDamage, int errorBonus, int errorBonusUpgraded) : DynamicVar(Key, baseDamage)
-{
-    public const string Key = "BugPigDamage";
-    private readonly int _baseDamage = baseDamage;
-
-    public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
-    {
-        int errorCount = BugPig.CountTotalErrorsInLog();
-        bool isUpgraded = card.IsUpgraded;
-        int damageBonus = isUpgraded ? errorCount * errorBonusUpgraded : errorCount * errorBonus;
-
-        decimal totalDamage = _baseDamage + damageBonus;
-        BaseValue = totalDamage;
-        PreviewValue = totalDamage;
     }
 }
