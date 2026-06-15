@@ -27,3 +27,23 @@ public class ConfigHoverTipAttribute : Attribute
         Enabled = enabled;
     }
 }
+
+/// <summary>
+/// Renders a numeric property as a slider with the given range, step, and label format.
+/// </summary>
+[AttributeUsage(AttributeTargets.Property)]
+public class ConfigSliderAttribute : Attribute
+{
+    public double Min { get; }
+    public double Max { get; }
+    public double Step { get; }
+    public string? Format { get; }
+
+    public ConfigSliderAttribute(double min, double max, double step = 1d, string? format = null)
+    {
+        Min = min;
+        Max = max;
+        Step = step;
+        Format = format;
+    }
+}
