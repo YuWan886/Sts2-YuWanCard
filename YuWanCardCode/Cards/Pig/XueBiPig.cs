@@ -32,7 +32,7 @@ public class XueBiPig : YuWanCardModel
     {
         await CardUtils.RecordFoodPigPlayed(this);
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<DanseMacabrePower>(Owner.Creature, DynamicVars["DanseMacabrePower"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<BlurPower>(Owner.Creature, DynamicVars["BlurPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<DanseMacabrePower>(choiceContext, Owner.Creature, DynamicVars["DanseMacabrePower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<BlurPower>(choiceContext, Owner.Creature, DynamicVars["BlurPower"].BaseValue, Owner.Creature, this);
     }
 }

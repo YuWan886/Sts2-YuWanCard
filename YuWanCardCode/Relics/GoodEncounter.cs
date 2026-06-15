@@ -1,6 +1,7 @@
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -43,7 +44,7 @@ public sealed class GoodEncounter : YuWanRelicModel
 
         Flash();
         await PowerCmd.Apply<StrengthPower>(
-            Owner.Creature, DynamicVars.Strength.BaseValue, Owner.Creature, null);
+            new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars.Strength.BaseValue, Owner.Creature, null);
 
         RemainingCombats--;
         InvokeDisplayAmountChanged();

@@ -30,10 +30,10 @@ public class FatPig : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), new PlatingPower(), 
-            Owner.Creature, 
-            DynamicVars["PlatingPower"].IntValue, 
-            Owner.Creature, 
+        await PowerCmd.Apply<PlatingPower>(new ThrowingPlayerChoiceContext(),
+            Owner.Creature,
+            DynamicVars["PlatingPower"].IntValue,
+            Owner.Creature,
             this);
         
         VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);

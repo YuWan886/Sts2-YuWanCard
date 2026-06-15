@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
@@ -21,9 +22,9 @@ public class WhatIfAngry : WhatIfRelicModel
     {
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
-        await base.AfterTurnEnd(choiceContext, side);
+        await base.AfterSideTurnEnd(choiceContext, side, participants);
 
         if (side != CombatSide.Player || Owner?.Creature?.CombatState == null)
         {
@@ -33,7 +34,7 @@ public class WhatIfAngry : WhatIfRelicModel
         Flash();
 
         var anger = Owner.Creature.CombatState.CreateCard(ModelDb.Card<Anger>(), Owner);
-        var addResult = await CardPileCmd.AddGeneratedCardToCombat(anger, PileType.Discard, addedByPlayer: true);
+        var addResult = await CardPileCmd.AddGeneratedCardToCombat(anger, PileType.Discard, Owner);
         CardCmd.PreviewCardPileAdd(addResult);
     }
 }

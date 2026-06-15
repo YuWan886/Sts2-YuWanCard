@@ -21,7 +21,7 @@ public static class PetManager
 
     public static async Task<Creature?> SummonPigMinion(Player owner, int upgradeLevel = 0)
     {
-        if (owner == null) return null;
+        if (owner?.Creature?.CombatState == null) return null;
 
         var existingPig = FindPetByType<PigMinion>(owner.Creature);
         

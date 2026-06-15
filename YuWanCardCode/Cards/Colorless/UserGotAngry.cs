@@ -31,7 +31,7 @@ public class UserGotAngry : YuWanCardModel
         if (IsUpgraded) CardCmd.Upgrade(anger);
 
         CardCmd.PreviewCardPileAdd(
-            await CardPileCmd.AddGeneratedCardToCombat(anger, PileType.Hand, addedByPlayer: true),
+            await CardPileCmd.AddGeneratedCardToCombat(anger, PileType.Hand, Owner),
             2f);
     }
 }

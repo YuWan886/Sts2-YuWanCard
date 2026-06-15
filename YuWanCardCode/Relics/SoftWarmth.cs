@@ -1,6 +1,7 @@
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -43,7 +44,7 @@ public sealed class SoftWarmth : YuWanRelicModel
 
         Flash();
         await PowerCmd.Apply<DexterityPower>(
-            Owner.Creature, DynamicVars.Dexterity.BaseValue, Owner.Creature, null);
+            new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars.Dexterity.BaseValue, Owner.Creature, null);
 
         RemainingCombats--;
         InvokeDisplayAmountChanged();

@@ -40,7 +40,7 @@ public class RecycleBin : YuWanRelicModel
     [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
     private int YUWANCARD_PendingRecycleGold
     {
-        get => RunManager.Instance?.IsSinglePlayerOrFakeMultiplayer == true ? _pendingRecycleGold : 0;
+        get => RunManager.Instance?.IsSingleplayerOrFakeMultiplayer == true ? _pendingRecycleGold : 0;
         set => _pendingRecycleGold = value;
     }
 
