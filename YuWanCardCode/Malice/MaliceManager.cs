@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Godot;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Saves;
 
 namespace YuWanCard.Malice;
@@ -21,6 +22,11 @@ public static class MaliceManager
         if (characterId == ModelId.none)
         {
             return 0;
+        }
+
+        if (IsRandomCharacter(characterId))
+        {
+            return GetMaxMaliceAcrossAllCharacters();
         }
 
         var progress = GetOrCreateCharacterProgress(characterId);
@@ -182,12 +188,55 @@ public static class MaliceManager
 
     private static int GetAscensionCap(ModelId characterId)
     {
+        if (IsRandomCharacter(characterId))
+        {
+            return GetAscensionCapAcrossAllCharacters();
+        }
+
         var stats = SaveManager.Instance.Progress.GetStatsForCharacter(characterId);
         int rawAscension = stats?.MaxAscension ?? 0;
         // Ensure malice can progress independently at low ascension levels.
         // Minimum cap of 2 allows malice 1-2 to unlock regardless of ascension.
         int effectiveCap = rawAscension > 0 ? Math.Max(rawAscension, 2) : 0;
         return ClampLevel(effectiveCap, MaxMaliceLevel);
+    }
+
+    // Mirrors the vanilla random-character behaviour: the random option uses the highest
+    // progression across all playable characters so it is available whenever any character
+    // has unlocked malice/ascension.
+    private static bool IsRandomCharacter(ModelId characterId) =>
+        characterId == ModelDb.GetId<RandomCharacter>();
+
+    private static int GetAscensionCapAcrossAllCharacters()
+    {
+        int max = 0;
+        foreach (var character in ModelDb.AllCharacters)
+        {
+            if (character is RandomCharacter)
+            {
+                continue;
+            }
+
+            max = Math.Max(max, GetAscensionCap(character.Id));
+        }
+
+        return max;
+    }
+
+    private static int GetMaxMaliceAcrossAllCharacters()
+    {
+        int max = 0;
+        foreach (var character in ModelDb.AllCharacters)
+        {
+            if (character is RandomCharacter)
+            {
+                continue;
+            }
+
+            max = Math.Max(max, GetMaxMalice(character.Id));
+        }
+
+        return max;
     }
 
     private static int ClampLevel(int level, int max)

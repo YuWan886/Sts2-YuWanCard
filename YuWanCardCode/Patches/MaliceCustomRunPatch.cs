@@ -32,12 +32,12 @@ public static class MaliceCustomRunReadyPatch
 
         var malicePanel = (NAscensionPanel)ascensionPanel.Duplicate();
         malicePanel.Name = "MalicePanel";
+        MalicePanelStyler.MakeMaterialsUnique(malicePanel);
         malicePanel.Scale = new Vector2(MalicePanelScale, MalicePanelScale);
         ApplyMalicePanelLayout(malicePanel, ascensionPanel);
         ApplyMalicePanelPivot(malicePanel);
         malicePanel.ZIndex = ascensionPanel.ZIndex;
         malicePanel.SetMeta("YUWANCARD_MALICE_PANEL", true);
-        EnsureUniqueVisualResources(malicePanel);
         malicePanel.Visible = false;
 
         ascensionPanel.GetParent().AddChild(malicePanel);
@@ -62,17 +62,6 @@ public static class MaliceCustomRunReadyPatch
         float width = malicePanel.OffsetRight - malicePanel.OffsetLeft;
         float height = malicePanel.OffsetBottom - malicePanel.OffsetTop;
         malicePanel.PivotOffset = new Vector2(width / 2f, height / 2f);
-    }
-
-    private static void EnsureUniqueVisualResources(NAscensionPanel malicePanel)
-    {
-        var icon = malicePanel.GetNodeOrNull<Control>("%AscensionIcon");
-        if (icon?.Material is not ShaderMaterial shader)
-        {
-            return;
-        }
-
-        icon.Material = (ShaderMaterial)shader.Duplicate();
     }
 }
 
