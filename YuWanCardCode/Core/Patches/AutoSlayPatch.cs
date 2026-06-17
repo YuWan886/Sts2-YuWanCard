@@ -95,7 +95,7 @@ public static class AutoSlayCharacterPatch
         try
         {
             harmony.Patch(moveNextMethod, transpiler: new HarmonyMethod(transpilerMethod));
-            MainFile.Logger.Info($"[AutoSlay] Applied character select transpiler to {stateMachineType.Name}.MoveNext");
+            MainFile.Logger.Debug($"[AutoSlay] Applied character select transpiler to {stateMachineType.Name}.MoveNext");
         }
         catch (Exception ex)
         {
@@ -116,7 +116,7 @@ public static class AutoSlayCharacterPatch
                 methodInfo.DeclaringType == typeof(Rng))
             {
                 found = true;
-                MainFile.Logger.Info("[AutoSlay] Found NextItem call, replacing with SelectAutoSlayCharacter");
+                MainFile.Logger.Debug("[AutoSlay] Found NextItem call, replacing with SelectAutoSlayCharacter");
                 yield return new CodeInstruction(OpCodes.Call, SelectAutoSlayCharacterMethod);
             }
             else
@@ -144,7 +144,7 @@ public static class AutoSlayCharacterPatch
                 var entry = b.Character?.Id?.Entry;
                 if (entry != null && entry.Equals(characterArg, StringComparison.OrdinalIgnoreCase))
                 {
-                    MainFile.Logger.Info($"[AutoSlay] Auto-selecting character '{entry}' from {items.Count} buttons");
+                    MainFile.Logger.Debug($"[AutoSlay] Auto-selecting character '{entry}' from {items.Count} buttons");
                     return b;
                 }
             }
@@ -198,7 +198,7 @@ public static class AutoSlayOptionsPatch
         try
         {
             harmony.Patch(moveNextMethod, transpiler: new HarmonyMethod(transpilerMethod));
-            MainFile.Logger.Info($"[AutoSlay] Applied Options->PauseButton transpiler to {stateMachineType.Name}.MoveNext");
+            MainFile.Logger.Debug($"[AutoSlay] Applied Options->PauseButton transpiler to {stateMachineType.Name}.MoveNext");
         }
         catch (Exception ex)
         {
@@ -218,7 +218,7 @@ public static class AutoSlayOptionsPatch
                 str == OldPath)
             {
                 found = true;
-                MainFile.Logger.Info("[AutoSlay] Found Options path, replacing with PauseButton");
+                MainFile.Logger.Debug("[AutoSlay] Found Options path, replacing with PauseButton");
                 yield return new CodeInstruction(OpCodes.Ldstr, NewPath);
             }
             else

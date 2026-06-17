@@ -754,7 +754,7 @@ public static class VfxUtils
         {
             GetOrLoadScene(path);
         }
-        MainFile.Logger.Info($"VfxUtils: Preloaded {scenePaths.Length} scenes");
+        MainFile.Logger.Debug($"VfxUtils: Preloaded {scenePaths.Length} scenes");
     }
 
     public static void PreloadFrames(string framePathPrefix, int totalFrames)
@@ -780,7 +780,7 @@ public static class VfxUtils
         if (loadedCount > 0)
         {
             FrameCache[framePathPrefix] = frames;
-            MainFile.Logger.Info($"VfxUtils: Preloaded {loadedCount}/{totalFrames} frames for {framePathPrefix}");
+            MainFile.Logger.Debug($"VfxUtils: Preloaded {loadedCount}/{totalFrames} frames for {framePathPrefix}");
         }
     }
 
@@ -795,6 +795,6 @@ public static class VfxUtils
             }
         }
 
-        MainFile.Logger.Info($"VfxUtils: Preloaded {loadedCount}/{texturePaths.Length} textures");
+        MainFile.Logger.Debug($"VfxUtils: Preloaded {loadedCount}/{texturePaths.Length} textures");
     }
 }

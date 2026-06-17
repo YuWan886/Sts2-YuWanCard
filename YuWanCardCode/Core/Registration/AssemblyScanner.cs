@@ -19,7 +19,7 @@ internal static class AssemblyScanner
         {
             int loaderErrorCount = ex.LoaderExceptions.Count(e => e != null);
             if (loaderErrorCount > 0)
-                MainFile.Logger.Info(
+                MainFile.Logger.Debug(
                     $"[AssemblyScanner] {loaderErrorCount} type(s) skipped in {assembly.GetName().Name} " +
                     $"(first: {ex.LoaderExceptions.First(e => e != null)!.Message})");
             return ex.Types.Where(t => t != null).Cast<Type>().ToArray();

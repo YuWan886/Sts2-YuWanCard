@@ -18,7 +18,7 @@ public static class HextechRuntimeCompat
     private const string HextechForgeGrantHelperTypeName = "HextechRunes.HextechForgeGrantHelper";
     private const string RandomForgeShopRelicTypeName = "HextechRunes.RandomForgeShopRelic";
     private const string HextechRuneSelectionCoordinatorTypeName = "HextechRunes.HextechRuneSelectionCoordinator";
-    private const string HextechMayhemModifierTypeName = "HextechRunes.HextechMayhemModifier";
+    private const string HextechMayhemActRecoveryTypeName = "HextechRunes.HextechMayhemActRecovery";
     private const string HextechTelemetryTypeName = "HextechRunes.HextechTelemetry";
     private const string UnlockStateTypeName = "MegaCrit.Sts2.Core.Unlocks.UnlockState";
     private const string SaveManagerTypeName = "MegaCrit.Sts2.Core.Saves.SaveManager";
@@ -108,14 +108,15 @@ public static class HextechRuntimeCompat
             "BuildSelectableRunePool");
         context.PatchMethods(
             harmony,
-            context.ResolveType(HextechMayhemModifierTypeName),
+            context.ResolveType(HextechMayhemActRecoveryTypeName),
             typeof(HextechRuntimeCompat),
             nameof(BeginOwnedRuneRecognitionScope),
             nameof(EndOwnedRuneRecognitionScope),
+            "RecoverResolvedActs",
+            "GetMinimumPlayerHexCount",
             "GetHighestActResolvedByPlayerRuneCounts",
             "TryInferRarityForActFromPlayerRelics",
-            "DescribePlayerHexCounts",
-            "GetMinimumPlayerHexCount");
+            "DescribePlayerHexCounts");
         context.PatchMethods(
             harmony,
             context.ResolveType(HextechTelemetryTypeName),
