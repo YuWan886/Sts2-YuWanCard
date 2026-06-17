@@ -314,6 +314,8 @@
   "YUWANCARD-FITNESS_MOUSE.description": "在下个回合获得{Strength:diff()}点[gold]力量[/gold]。",
   "YUWANCARD-LIGHT_BOAT_PAST_MOUNTAINS.title": "轻舟已过万重山",
   "YUWANCARD-LIGHT_BOAT_PAST_MOUNTAINS.description": "打出[gold]消耗牌堆[/gold]的所有牌（不包括本卡牌）。",
+  "YUWANCARD-PIG_BUSY_COME.title": "猪忙的过来",
+  "YUWANCARD-PIG_BUSY_COME.description": "打出手牌中的所有牌。获得{SlothPower:diff()}层[gold]懒惰[/gold]。",
   "YUWANCARD-SHA.title": "杀",
   "YUWANCARD-SHA.description": "造成{Damage:diff()}点伤害。[gold]斩杀[/gold]时，此牌在本局游戏的重放次数+1。",
   "YUWANCARD-SHAN.title": "闪",
