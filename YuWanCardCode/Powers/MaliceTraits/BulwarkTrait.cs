@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -10,7 +11,7 @@ public sealed class BulwarkTrait : MaliceTraitPowerBase
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("BulwarkBlock", 6m)];
     protected override string[] AutoUpdateVarNames => ["BulwarkBlock"];
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side != Owner.Side || Owner.IsDead)
         {

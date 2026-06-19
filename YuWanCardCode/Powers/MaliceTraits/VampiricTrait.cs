@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 
 namespace YuWanCard.Powers.MaliceTraits;
@@ -10,7 +11,7 @@ public sealed class VampiricTrait : MaliceTraitPowerBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("VampPercent", 50m)];
 
-    public override async Task AfterAttack(AttackCommand command)
+    public override async Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)
     {
         if (command.Attacker != Owner || Owner.IsDead)
         {
@@ -18,11 +19,14 @@ public sealed class VampiricTrait : MaliceTraitPowerBase
         }
 
         int totalUnblocked = 0;
-        foreach (var result in command.Results)
+        foreach (var results in command.Results)
         {
-            if (result.Receiver.IsPlayer && result.UnblockedDamage > 0)
+            foreach (var result in results)
             {
-                totalUnblocked += (int)result.UnblockedDamage;
+                if (result.Receiver.IsPlayer && result.UnblockedDamage > 0)
+                {
+                    totalUnblocked += (int)result.UnblockedDamage;
+                }
             }
         }
 

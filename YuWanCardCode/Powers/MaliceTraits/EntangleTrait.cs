@@ -1,9 +1,9 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
-
 namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class EntangleTrait : MaliceTraitPowerBase
@@ -33,7 +33,7 @@ public sealed class EntangleTrait : MaliceTraitPowerBase
                 flashed = true;
             }
 
-            await PowerCmd.Apply<ConstrictPower>(player.Creature, 3 * Amount, Owner, null);
+            await PowerCmd.Apply<ConstrictPower>(new ThrowingPlayerChoiceContext(), player.Creature, 3 * Amount, Owner, null);
         }
     }
 }

@@ -20,6 +20,6 @@ public sealed class BerserkTrait : MaliceTraitPowerBase
         }
 
         Flash();
-        await PowerCmd.Apply<StrengthPower>(Owner, 2 * Amount, Owner, null);
+        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext() ,Owner, 2 * Amount, Owner, null);
     }
 }

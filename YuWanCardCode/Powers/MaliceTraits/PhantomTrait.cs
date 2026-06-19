@@ -1,5 +1,7 @@
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace YuWanCard.Powers.MaliceTraits;
@@ -15,7 +17,7 @@ public sealed class PhantomTrait : MaliceTraitPowerBase
 
     protected override object InitInternalData() => new Data();
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side != Owner.Side || Owner.IsDead)
         {
@@ -37,6 +39,6 @@ public sealed class PhantomTrait : MaliceTraitPowerBase
         // Intangible ticks down at the enemy's own turn end, so apply 2 to ensure
         // one stack survives into the following player turn where damage matters.
         Flash();
-        await PowerCmd.Apply<IntangiblePower>(Owner, 1 + Amount, Owner, null);
+        await PowerCmd.Apply<IntangiblePower>(new ThrowingPlayerChoiceContext(), Owner, 1 + Amount, Owner, null);
     }
 }

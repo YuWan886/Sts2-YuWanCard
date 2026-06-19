@@ -39,6 +39,6 @@ public class PigBusyCome : YuWanCardModel
             await CardCmd.AutoPlay(choiceContext, card, null);
         }
 
-        await PowerCmd.Apply<SlothPower>(Owner.Creature, DynamicVars["SlothPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<SlothPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars["SlothPower"].BaseValue, Owner.Creature, this);
     }
 }

@@ -1,5 +1,7 @@
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace YuWanCard.Powers.MaliceTraits;
@@ -8,7 +10,7 @@ public sealed class SteelTrait : MaliceTraitPowerBase
 {
     private const int MaxArtifact = 2;
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side != Owner.Side || Owner.IsDead)
         {
@@ -23,6 +25,6 @@ public sealed class SteelTrait : MaliceTraitPowerBase
         }
 
         Flash();
-        await PowerCmd.Apply<ArtifactPower>(Owner, toApply, Owner, null);
+        await PowerCmd.Apply<ArtifactPower>(new ThrowingPlayerChoiceContext(), Owner, toApply, Owner, null);
     }
 }
