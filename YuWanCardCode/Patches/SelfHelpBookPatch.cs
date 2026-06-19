@@ -30,7 +30,8 @@ public class SelfHelpBookPatch
         string LockedOptionKey,
         string DescriptionKey,
         Func<Player, bool> AvailabilityCheck,
-        Func<CardModel, bool> CardFilter
+        Func<CardModel, bool> CardFilter,
+        int EnchantAmount = _enchantAmount
     );
 
     private static readonly EnchantmentOptionDef[] _enchantmentPool =
@@ -96,7 +97,8 @@ public class SelfHelpBookPatch
             LockedOptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.INITIAL.options.LOYAL_LOCKED",
             DescriptionKey: "YUWANCARD-SELF_HELP_BOOK.pages.LOYAL.description",
             AvailabilityCheck: p => PlayerHasCardsForEnchant<Loyal>(p),
-            CardFilter: _ => true
+            CardFilter: _ => true,
+            EnchantAmount: 1
         ),
         new(
             typeof(Bite),
@@ -168,7 +170,7 @@ public class SelfHelpBookPatch
                 eventModel,
                 () => SelectAndEnchant(eventModel, owner, optionDef),
                 optionDef.OptionKey,
-                CreateHoverTip(optionDef.EnchantmentType) ?? Array.Empty<IHoverTip>()
+                CreateHoverTip(optionDef.EnchantmentType, optionDef.EnchantAmount) ?? Array.Empty<IHoverTip>()
             );
         }
         else
@@ -181,10 +183,10 @@ public class SelfHelpBookPatch
         }
     }
 
-    private static IEnumerable<IHoverTip>? CreateHoverTip(Type enchantmentType)
+    private static IEnumerable<IHoverTip>? CreateHoverTip(Type enchantmentType, int enchantAmount)
     {
         var method = typeof(HoverTipFactory).GetMethod("FromEnchantment")?.MakeGenericMethod(enchantmentType);
-        return method?.Invoke(null, [_enchantAmount]) as IEnumerable<IHoverTip>;
+        return method?.Invoke(null, [enchantAmount]) as IEnumerable<IHoverTip>;
     }
 
     private static bool PlayerHasCardsForType<T>(Player player, CardType cardType) where T : EnchantmentModel
@@ -220,14 +222,14 @@ public class SelfHelpBookPatch
         var cardModel = (await CardSelectCmd.FromDeckForEnchantment(
             owner,
             enchantment,
-            _enchantAmount,
+            optionDef.EnchantAmount,
             c => c is not null && c.Pile is not null && c.Pile.Type == PileType.Deck && enchantment!.CanEnchant(c) && optionDef!.CardFilter(c),
             prefs
         )).FirstOrDefault();
 
         if (cardModel != null)
         {
-            ApplyEnchantmentByType(cardModel, optionDef.EnchantmentType);
+            ApplyEnchantmentByType(cardModel, optionDef.EnchantmentType, optionDef.EnchantAmount);
         }
 
         var description = eventModel.L10NLookup(optionDef.DescriptionKey);
@@ -242,10 +244,10 @@ public class SelfHelpBookPatch
             ?? throw new InvalidOperationException($"Failed to get enchantment of type {enchantmentType.Name}");
     }
 
-    private static void ApplyEnchantmentByType(CardModel card, Type enchantmentType)
+    private static void ApplyEnchantmentByType(CardModel card, Type enchantmentType, int enchantAmount)
     {
         var enchantment = GetEnchantmentByType(enchantmentType).ToMutable();
-        CardCmd.Enchant(enchantment, card, _enchantAmount);
+        CardCmd.Enchant(enchantment, card, enchantAmount);
 
         var vfx = NCardEnchantVfx.Create(card);
         if (vfx != null)

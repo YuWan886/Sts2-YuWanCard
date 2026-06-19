@@ -23,7 +23,7 @@ namespace YuWanCard.Patches;
 /// 3. After What If resolves (or if disabled), normal Neow options are restored
 /// </summary>
 [HarmonyPatch(typeof(AncientEventModel))]
-class NeowSevenCursesPatch
+class StartingAncientOptionsPatch
 {
     private static readonly Dictionary<AncientEventModel, List<EventOption>> _normalOptions = [];
     private static readonly Dictionary<AncientEventModel, LocString> _normalDescriptions = [];
@@ -71,7 +71,7 @@ class NeowSevenCursesPatch
             return;
         }
 
-        MainFile.Logger.Info($"[NeowSevenCursesPatch] Injecting start options for {__instance.Id.Entry} via AncientEventModel.GenerateInitialOptionsWrapper seven={YuWanCardConfig.EnableSevenCursesRing} whatIf={YuWanCardConfig.EnableWhatIfRelics} originalCount={__result.Count}");
+        MainFile.Logger.Info($"[StartingAncientOptionsPatch] Injecting start options for {__instance.Id.Entry} via AncientEventModel.GenerateInitialOptionsWrapper seven={YuWanCardConfig.EnableSevenCursesRing} whatIf={YuWanCardConfig.EnableWhatIfRelics} originalCount={__result.Count}");
         var options = __result.ToList();
 
         _normalOptions[__instance] = options;
@@ -363,16 +363,16 @@ static class StartingAncientSetEventStatePatch
             return;
         }
 
-        NeowSevenCursesPatch.StoreOriginalState(ancient, description, originalOptions);
+        StartingAncientOptionsPatch.StoreOriginalState(ancient, description, originalOptions);
         var replacementOptions = YuWanCardConfig.EnableSevenCursesRing
-            ? NeowSevenCursesPatch.CreateSevenCursesOptions(ancient)
-            : NeowSevenCursesPatch.CreateWhatIfScreen(ancient);
+            ? StartingAncientOptionsPatch.CreateSevenCursesOptions(ancient)
+            : StartingAncientOptionsPatch.CreateWhatIfScreen(ancient);
 
-        MainFile.Logger.Info($"[NeowSevenCursesPatch] Injecting start options for {ancient.Id.Entry} via EventModel.SetEventState");
+        MainFile.Logger.Info($"[StartingAncientOptionsPatch] Injecting start options for {ancient.Id.Entry} via EventModel.SetEventState");
         _suppressInjection.Add(ancient);
         try
         {
-            NeowSevenCursesPatch.SetEventState(ancient, description, replacementOptions);
+            StartingAncientOptionsPatch.SetEventState(ancient, description, replacementOptions);
         }
         finally
         {
@@ -387,7 +387,7 @@ static class StartingAncientSetEventStatePatch
             return false;
         }
 
-        if (!NeowSevenCursesPatch.ShouldInjectStartingAncientOptions(ancient))
+        if (!StartingAncientOptionsPatch.ShouldInjectStartingAncientOptions(ancient))
         {
             return false;
         }
@@ -397,7 +397,7 @@ static class StartingAncientSetEventStatePatch
             return false;
         }
 
-        return !NeowSevenCursesPatch.HasStoredOriginalState(ancient);
+        return !StartingAncientOptionsPatch.HasStoredOriginalState(ancient);
     }
 }
 
@@ -437,7 +437,7 @@ static class NeowRuntimeModifierFilterPatch
 
         MainFile.Logger.Info(
             $"[BalatroDebug] NeowRuntimeModifierFilter prefix original=[{string.Join(", ", originalModifiers.Select(static m => m.Id.Entry))}] filtered=[{string.Join(", ", optionModifiers.Select(static m => m.Id.Entry))}]");
-        NeowSevenCursesPatch.StoreOriginalModifiers(__instance, originalModifiers);
+        StartingAncientOptionsPatch.StoreOriginalModifiers(__instance, originalModifiers);
         YuWanReflectionHelper.SetPrivateField(runState, "<Modifiers>k__BackingField", optionModifiers);
     }
 
@@ -461,7 +461,7 @@ static class NeowRuntimeModifierFilterPatch
             return __exception;
         }
 
-        if (!NeowSevenCursesPatch.TryTakeOriginalModifiers(__instance, out var originalModifiers))
+        if (!StartingAncientOptionsPatch.TryTakeOriginalModifiers(__instance, out var originalModifiers))
         {
             return __exception;
         }

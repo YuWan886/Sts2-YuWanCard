@@ -2,11 +2,11 @@
   "WEREWOLF.title": "Werewolf",
   "WEREWOLF.description": "Kill a teammate in a multiplayer run.",
   "PIG_TYCOON.bronzeTitle": "Pig Raiser Novice",
-  "PIG_TYCOON.bronzeDescription": "Accumulate 50 stacks of Pig Friends Power upon winning.",
+  "PIG_TYCOON.bronzeDescription": "Accumulate 50 stacks of [gold]Pig Friends[/gold] upon winning.",
   "PIG_TYCOON.silverTitle": "Pig Raiser Expert",
-  "PIG_TYCOON.silverDescription": "Accumulate 100 stacks of Pig Friends Power upon winning.",
+  "PIG_TYCOON.silverDescription": "Accumulate 100 stacks of [gold]Pig Friends[/gold] upon winning.",
   "PIG_TYCOON.goldTitle": "Pig Tycoon",
-  "PIG_TYCOON.goldDescription": "Accumulate 200 stacks of Pig Friends Power upon winning.",
+  "PIG_TYCOON.goldDescription": "Accumulate 200 stacks of [gold]Pig Friends[/gold] upon winning.",
   "PIG_TYCOON.title": "Pig Tycoon",
-  "PIG_TYCOON.description": "Accumulate Pig Friends Power stacks upon winning."
+  "PIG_TYCOON.description": "Accumulate [gold]Pig Friends[/gold] stacks upon winning."
 }

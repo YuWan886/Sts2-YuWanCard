@@ -1,8 +1,11 @@
 using System.Reflection;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Runs.History;
+using MegaCrit.Sts2.Core.Saves;
 using YuWanCard.Core.Interop;
 using YuWanCard.Relics;
 using YuWanCard.Hextech.Relics;
@@ -50,6 +53,7 @@ public static class HextechRuntimeCompat
         PatchHextechCatalog(harmony, context);
         PatchScopedRuntimeRecognition(harmony, context);
         PatchCompendiumDisplayCompat(harmony);
+        PatchForgeStacking(harmony);
         RegisterShoppingCartForgeResolver(context);
     }
 
@@ -71,7 +75,15 @@ public static class HextechRuntimeCompat
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetGenericSelectableRuneTypesPostfix), "GetGenericSelectableRuneTypes");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetGenericVisibleRuneTypesPostfix), "GetGenericVisibleRuneTypes");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetPlayerRuneTypesForRarityPostfix), "GetPlayerRuneTypesForRarity");
+        // NOTE: Normal/singleplayer runs build their rune pools via the "configurable"
+        // path (HextechRunePoolBuilder.BuildSelectableRunePool when ShouldApplyPlayerRuneConfiguration
+        // is true — which it is for Singleplayer/Host/Client). Pig runes are never registered in
+        // Hextech's own metadata, so IsPlayerRuneTypeConfigurable / GetConfigurablePlayerRuneTypesForRarity
+        // filter them out entirely. We must patch the configurable methods too, or pig runes effectively
+        // never appear in the per-act rune selection.
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetConfigurablePlayerRuneTypesForRarityPostfix), "GetConfigurablePlayerRuneTypesForRarity");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsPlayerRuneTypeSelectablePostfix), "IsPlayerRuneTypeSelectable");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsPlayerRuneTypeConfigurablePostfix), "IsPlayerRuneTypeConfigurable");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetPlayerRunePoolKeyPostfix), "GetPlayerRunePoolKey");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsPlayerRuneAllowedInActPostfix), "IsPlayerRuneAllowedInAct");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetCharacterRuneGroupsPostfix), "GetCharacterRuneGroups");
@@ -166,6 +178,61 @@ public static class HextechRuntimeCompat
         {
             MainFile.Logger.Warn("HextechRuntimeCompat: skipped patch EnergyIconHelper.GetPrefix");
         }
+    }
+
+    /// <summary>
+    /// Make pig forges stack like vanilla Hextech forges. Hextech's own RelicCmd.Obtain hook
+    /// only merges duplicates for relics that are its internal HextechForgeBase; pig forges are
+    /// a separate type, so we install a parallel prefix that increments the owned forge's stack
+    /// count instead of adding a second copy.
+    /// </summary>
+    private static void PatchForgeStacking(Harmony harmony)
+    {
+        MethodInfo? obtainMethod = AccessTools.Method(
+            typeof(RelicCmd),
+            nameof(RelicCmd.Obtain),
+            [typeof(RelicModel), typeof(Player), typeof(int)]);
+        MethodInfo? prefix = AccessTools.Method(typeof(HextechRuntimeCompat), nameof(PigForgeObtainPrefix));
+        if (obtainMethod != null && prefix != null)
+        {
+            harmony.Patch(obtainMethod, prefix: new HarmonyMethod(prefix));
+        }
+        else
+        {
+            MainFile.Logger.Warn("HextechRuntimeCompat: skipped patch RelicCmd.Obtain for pig forge stacking");
+        }
+    }
+
+    public static bool PigForgeObtainPrefix(RelicModel relic, Player player, ref Task<RelicModel> __result)
+    {
+        if (relic is not HextechPigForgeBase)
+        {
+            return true;
+        }
+
+        ModelId id = relic.CanonicalInstance?.Id ?? relic.Id;
+        HextechPigForgeBase? ownedForge = player.Relics
+            .OfType<HextechPigForgeBase>()
+            .FirstOrDefault(owned => (owned.CanonicalInstance?.Id ?? owned.Id) == id);
+        if (ownedForge == null || ReferenceEquals(ownedForge, relic))
+        {
+            return true;
+        }
+
+        player.RunState.CurrentMapPointHistoryEntry?
+            .GetEntry(player.NetId)
+            .RelicChoices
+            .Add(new ModelChoiceHistoryEntry(relic.Id, wasPicked: true));
+        SaveManager.Instance.MarkRelicAsSeen(relic);
+        __result = ObtainStackedPigForge(ownedForge);
+        return false;
+    }
+
+    private static async Task<RelicModel> ObtainStackedPigForge(HextechPigForgeBase ownedForge)
+    {
+        ownedForge.AddForgeStack(flash: !ownedForge.HasUponPickupEffect);
+        await ownedForge.AfterObtained();
+        return ownedForge;
     }
 
     public static void BeginOwnedRuneRecognitionScope(out bool __state)
@@ -264,6 +331,11 @@ public static class HextechRuntimeCompat
         __result = __result.Concat(GetPigRunesForHextechRarity(rarity)).Distinct().ToArray();
     }
 
+    public static void GetConfigurablePlayerRuneTypesForRarityPostfix(object rarity, ref IReadOnlyList<Type> __result)
+    {
+        __result = __result.Concat(GetPigRunesForHextechRarity(rarity)).Distinct().ToArray();
+    }
+
     public static void GetCharacterRuneGroupsPostfix(ref object __result)
     {
         IEnumerable<object> existingGroups = (__result as System.Collections.IEnumerable)?.Cast<object>()
@@ -328,6 +400,14 @@ public static class HextechRuntimeCompat
     }
 
     public static void IsPlayerRuneTypeSelectablePostfix(Type runeType, ref bool __result)
+    {
+        if (HextechPigRuneRegistry.GetAllRunes().Contains(runeType))
+        {
+            __result = true;
+        }
+    }
+
+    public static void IsPlayerRuneTypeConfigurablePostfix(Type runeType, ref bool __result)
     {
         if (HextechPigRuneRegistry.GetAllRunes().Contains(runeType))
         {

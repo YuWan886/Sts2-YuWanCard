@@ -204,9 +204,9 @@ public class YwDebugCmd : AbstractConsoleCmd
 
         try
         {
-            if (NeowSevenCursesPatch.IsShowingWhatIfScreen(ancientEvent))
+            if (StartingAncientOptionsPatch.IsShowingWhatIfScreen(ancientEvent))
             {
-                var refreshedWhatIfOptions = NeowSevenCursesPatch.CreateRandomizedWhatIfScreen(ancientEvent);
+                var refreshedWhatIfOptions = StartingAncientOptionsPatch.CreateRandomizedWhatIfScreen(ancientEvent);
                 var whatIfDescription = currentEvent.Description ?? currentEvent.InitialDescription;
                 SetEventStateMethod?.Invoke(currentEvent, [whatIfDescription, refreshedWhatIfOptions]);
 

@@ -1,7 +1,9 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Registration;
 using YuWanCard.Integrations.Hextech.RelicPools;
 
 namespace YuWanCard.Hextech.Relics;
@@ -19,6 +21,64 @@ public abstract class HextechPigForgeBase : YuWanRelicModel
 
     public abstract HextechForgeRarity HextechRarity { get; }
 
+    /// <summary>
+    /// Mirror of HextechRunes.HextechForgeBase stacking behavior. Pig forges cannot inherit
+    /// HextechForgeBase (it lives in the optional HextechRunes assembly), so we replicate the
+    /// stacking members here. Duplicate-obtain merging is handled by HextechRuntimeCompat's
+    /// RelicCmd.Obtain prefix, since Hextech's own stacking hook only recognizes its own
+    /// HextechForgeBase instances.
+    /// </summary>
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int SavedStackCount
+    {
+        get => StackCount;
+        set
+        {
+            int target = Math.Max(1, value);
+            while (StackCount < target)
+            {
+                IncrementStackCount();
+            }
+
+            InvokeDisplayAmountChanged();
+        }
+    }
+
+    public override bool IsStackable => true;
+
+    public override bool ShowCounter => true;
+
+    public override int DisplayAmount => !IsCanonical ? StackCount : 0;
+
+    protected int StackAmount => Math.Max(1, StackCount);
+
+    protected decimal StackMultiplier => StackAmount;
+
+    protected decimal Stacked(decimal value)
+    {
+        return value * StackMultiplier;
+    }
+
+    protected decimal StackedMultiplier(decimal value)
+    {
+        if (StackAmount <= 1)
+        {
+            return value;
+        }
+
+        return (decimal)Math.Pow((double)value, StackAmount);
+    }
+
+    public void AddForgeStack(bool flash = true)
+    {
+        IncrementStackCount();
+        InvokeDisplayAmountChanged();
+        if (flash)
+        {
+            Flash();
+        }
+    }
+
     public virtual bool IsAvailableForPlayer(Player player)
     {
         return player.Character.Id == ModelDb.GetId<Characters.Pig>();
@@ -26,6 +86,9 @@ public abstract class HextechPigForgeBase : YuWanRelicModel
 
     protected HextechPigForgeBase() : base(true)
     {
+        // SavedStackCount is declared on this abstract base; the registration scanner only
+        // registers concrete model types, so register the runtime type here (idempotent).
+        SavedPropertyRegistration.RegisterType(GetType());
     }
 
     private string GetForgeIconStem()
