@@ -22,7 +22,7 @@ namespace YuWanCard.Patches;
 /// 2. After Seven Curses resolves, the What If screen appears (if enabled)
 /// 3. After What If resolves (or if disabled), normal Neow options are restored
 /// </summary>
-[HarmonyPatch(typeof(Neow))]
+[HarmonyPatch(typeof(AncientEventModel))]
 class NeowSevenCursesPatch
 {
     private static readonly Dictionary<AncientEventModel, List<EventOption>> _normalOptions = [];
@@ -47,10 +47,14 @@ class NeowSevenCursesPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("GenerateInitialOptions")]
-    static void ModifyInitialOptions(Neow __instance, ref IReadOnlyList<EventOption> __result)
+    [HarmonyPatch("GenerateInitialOptionsWrapper")]
+    static void ModifyInitialOptions(AncientEventModel __instance, ref IReadOnlyList<EventOption> __result)
     {
-        if (__instance.Owner?.RunState == null)
+        // Polymorphic hook: fires for the starting ancient regardless of its concrete
+        // type. Other mods (e.g. RandomizerMod) can replace the starting Neow with an
+        // arbitrary AncientEventModel; gating on the floor boundary instead of the
+        // Neow type keeps Seven Curses / What If working in that case.
+        if (!ShouldInjectStartingAncientOptions(__instance))
         {
             return;
         }
@@ -60,7 +64,14 @@ class NeowSevenCursesPatch
             return;
         }
 
-        MainFile.Logger.Info($"[NeowSevenCursesPatch] Injecting start options for {__instance.Id.Entry} via Neow.GenerateInitialOptions seven={YuWanCardConfig.EnableSevenCursesRing} whatIf={YuWanCardConfig.EnableWhatIfRelics} originalCount={__result.Count}");
+        // The fallback SetEventState patch covers ancients that don't route option
+        // generation through this wrapper. If we inject here, suppress that fallback.
+        if (HasStoredOriginalState(__instance))
+        {
+            return;
+        }
+
+        MainFile.Logger.Info($"[NeowSevenCursesPatch] Injecting start options for {__instance.Id.Entry} via AncientEventModel.GenerateInitialOptionsWrapper seven={YuWanCardConfig.EnableSevenCursesRing} whatIf={YuWanCardConfig.EnableWhatIfRelics} originalCount={__result.Count}");
         var options = __result.ToList();
 
         _normalOptions[__instance] = options;
@@ -74,6 +85,11 @@ class NeowSevenCursesPatch
         {
             __result = CreateWhatIfScreen(__instance);
         }
+
+        // GenerateInitialOptionsWrapper has already cached the original options into
+        // the private GeneratedOptions field (used by run-history tracking). Keep it
+        // in sync with the options we actually display.
+        YuWanReflectionHelper.SetPrivateField(__instance, "_generatedOptions", __result.ToList());
     }
 
     // ── Seven Curses ────────────────────────────────────────
@@ -268,9 +284,11 @@ class NeowSevenCursesPatch
         }
 
         var runState = ancient.Owner.RunState;
-        // GenerateInitialOptions may run before EventRoom.LocalMutableEvent is fully
-        // assigned, so act0 + floor0 is the reliable "starting ancient" boundary.
-        return runState.CurrentActIndex == 0 && runState.TotalFloor == 0;
+        // The starting ancient (Neow, or whatever another mod swapped it for) is the
+        // very first map point of act 0. TotalFloor counts visited map points, so it is
+        // 1 once the starting ancient is recorded (observed at runtime). Use <= 1 to
+        // also tolerate a floor-0 timing on the vanilla path.
+        return runState.CurrentActIndex == 0 && runState.TotalFloor <= 1;
     }
 
     private static void RestoreNormalOptionsOrFinish(AncientEventModel ancient)

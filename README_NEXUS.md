@@ -1,335 +1,271 @@
 ## Short Description
 
-YuWan Card is a Slay the Spire 2 mod that adds a Pig character, 85+ cards, 30+ powers, 6 enchantments, 40+ relics, 1 Ancient, 3 monsters, 4 events, 2 modifiers, 2 orb types, 1 potion, 1 badge, and a rest site option. Features pig-themed cards, unique mechanics like energy doubling, What If relic series, multiplayer support, and shopping cart system.
+YuWan Card is a content-rich mod for Slay the Spire 2 that adds the Pig character along with 150+ cards, 90+ powers, 90+ relics, 6 enchantments, an Ancient, custom monsters and a boss, 6 events, 4 modifiers, orbs, potions, and badges. Highlights include a 60+ card colorless pool, the What If relic series, the Malice difficulty system (0-10, independent of Ascension), a Balatro mode, an Endless mode, the Ring of Seven Curses, dedicated multiplayer cards and relics, and Hextech cross-mod runes.
 ---
-YuWan Card 是一个《杀戮尖塔 2》模组，添加了猪角色、85+ 张卡牌、30+ 个能力、6 个附魔、40+ 个遗物、1 个先古之民、3 个怪物、4 个事件、2 个修饰符、2 种充能球、1 瓶药水、1 个成就徽章和休息处选项。
+YuWan Card 是一个内容丰富的《杀戮尖塔 2》模组，添加了猪角色，以及 150+ 张卡牌、90+ 个能力、90+ 个遗物、6 个附魔、1 个先古之民、自定义怪物与 Boss、6 个事件、4 个修饰符、充能球、药水和成就徽章。核心特色包括 60+ 张无色卡牌池、"假如"系列遗物、恶意难度系统（0-10 级，独立于进阶）、Balatro 模式、无尽模式、七咒之戒、专属多人联机卡牌与遗物，以及海克斯科技联动符文。
 
 ## Full Description
 
-[b]YuWan Card[/b] - A pig-themed mod for Slay the Spire 2!
+[h1]Pig Ascension[/h1]
+
+[hr]
+
+[b]YuWan Card[/b] – A feature-rich pig-themed mod for *Slay the Spire 2*!
+
+[hr]
+
+[size=4]🐷 Character – The Pig[/size]
 [list]
-[*][b]1 Character - Pig[/b] - 80 starting HP, can use all cards. Starting deck: Pig Strike, Pig Defend, Pig Hurt. Starting relics: Pig Carrot (6 Plating), Pig Roast Pork[/*]
-[*][b]85+ Cards[/b] - Pig-themed cards and unique mechanics: Rain Dark, Pig Bankruptcy, Pig Brain Overload, Pig Demon Form, Pig Frenzy, Black Hole, Justice Iron Fist, Call Companions, Gambler, Lolicon, Big Ben Pig, Zhu Ge Pig, and more[/*]
-[*][b]30+ Powers[/b] - Pig Doubt, Rain Dark (double energy), Pig Demon Form (scaling offense), Pig Burger (max HP scaling), Pig Bankruptcy, Pig Brain Overload, You Are Pig, Pig Friends, Perfect Thing, and many more[/*]
-[*][b]6 Enchantments[/b] - Arthropod Slayer, Sweeping Blade, Venomous, Loyal, Snake (generates Snakebite cards), Bite (applies poison)[/*]
-[*][b]40+ Relics[/b] - Ring of Seven Curses (Ancient), 10 Year Bamboo, Thousand Curse Scroll, Yang Sword Gourd, Black Flash, Triple Play, Heartsteel, All I Want, What If series, and 7 Deadly Sins pig relics[/*]
-[*][b]1 Ancient One[/b] - Piggy: choose a pig card, a relic, or upgrade up to 5 cards[/*]
-[*][b]3 Monsters[/b] - Killer (Elite) with hardened shell, Pig Minion (companion), Companion Placeholder[/*]
-[*][b]4 Events[/b] - Blacksmith (upgrade/fuse), Horizon Event (full heal choice), Sunken Statue Quest, Zhi Zhan Zhi Shang[/*]
-[*][b]2 Modifiers[/b] - Endless (infinite climb), Vakuu Tower (AI-controlled hand play)[/*]
-[*][b]2 Orb Types[/b] - Little Regent (generates Forge), Snake Bite (applies Poison)[/*]
-[*][b]1 Potion[/b] - Healing Potion (regen 5 HP/turn for 3 turns)[/*]
-[*][b]1 Badge[/b] - Pig Tycoon (tiered achievement: Bronze/Silver/Gold)[/*]
-[*][b]1 Rest Site Option[/b] - Roast Pork (heal action)[/*]
+[*]Fully playable character, starting with 80 HP, able to use cards of all colours
+[*]Exclusive pig-themed starting deck and relic, with independent card pool and relic pool
+[*]Custom portraits, animations, shop/rest site art, and the "Pig Tycoon" achievement badge
 [/list]
 
-[b]Character - Pig:[/b]
+[hr]
+
+[size=4]🃏 Colourless Card Pool[/size]
 [list]
-[*]Starting HP: 80, Gender: Neutral[/*]
-[*]Starting Relics: Pig Carrot (6 Plating), Pig Roast Pork (rest site option)[/*]
-[*]Starting Deck: 5 Pig Strike, 4 Pig Defend, 1 Pig Hurt[/*]
-[*]Exclusive Cards: Pig Strike, Pig Defend, Pig Shelter, Pig Friends[/*]
-[*]Exclusive Relics: Pig Carrot, Pig Golden Carrot, Pig Roast Pork[/*]
+[*]Over 60 colourless cards usable by all characters, not limited to the Pig
+[*]No matter which character you choose, they bring more variety and unique mechanics to each run
 [/list]
 
-[b]Card Highlights:[/b]
+[hr]
+
+[size=4]⚙️ "What If" Series Relics[/size]
 [list]
-[*]Rain Dark - Set all players' HP to 25%, gain 3 Intangible and double energy. Exhaust[/*]
-[*]Pig Bankruptcy - All cards cost 0 but have Exhaust this turn[/*]
-[*]Pig Brain Overload - Gain 3 energy and draw 2 cards. Receive Dazed every 2 turns. Exhaust[/*]
-[*]Pig Demon Form - 3-cost power: at end of turn, gain 2 Strength, 2 Plating, and lose 3 HP[/*]
-[*]Pig Frenzy - Deal 7 damage 3 times to an enemy (4 times when upgraded). Exhaust[/*]
-[*]Pig Melt - Gain 1 Buffer. End turn. Exhaust[/*]
-[*]Black Hole - Consume any number of cards. Each consumed card deals 5 damage. Exhaust[/*]
-[*]Pig King - Transform 3 cards into Pig Charge, Pig Barrage, and Pig Shield Break. Exhaust[/*]
-[*]Justice Iron Fist - Deal 20 damage and Stun target enemy. Exhaust[/*]
-[*]Call Companions - Apply CallCompanionsPower (singleplayer only). Exhaust[/*]
-[*]Gambler - Apply random Strength (-10 to +10). Ethereal. Upgraded: narrower range (-8 to +8)[/*]
-[*]Lolicon - Apply LoliconPower for the combat. Upgraded: cost reduces to 0[/*]
-[*]Emperors New Pig - Free power: applies EmperorsNewPigPower for 1 turn[/*]
-[*]Zhu Ge Pig - 3-cost power: applies ZhuGePigPower (3 stacks, 5 when upgraded)[/*]
-[*]Big Ben Pig - Free skill: apply Strength power and generate Small Ben Pig. Exhaust[/*]
-[*]Tiramisu Pig - 1-cost skill: 3 Block + apply 2 Regen power. Exhaust[/*]
-[*]Melancholy Is A Feeling - Gain Block equal to current HP[/*]
-[*]Sad Army Wins - Kill an enemy when HP is below 10%[/*]
-[*]Revive! - Resurrect a dead ally, restore 50% max HP (Multiplayer)[/*]
-[*]Pig Sacrifice - Give 50% of HP and Block to target ally (Multiplayer)[/*]
-[*]You Are Pig - Turn a teammate into a pig, give them 1 Buffer and 3 Regen (Multiplayer)[/*]
-[*]Pig Bite - Apply 4 Poison, 2 Weak, 2 Vulnerable, and 1 You Are Pig. Gains Retain when upgraded[/*]
-[*]Pig Stay Up Late - Deal 9 damage. Double damage if system time is 23:00-02:00. Gain Weak[/*]
-[*]Bug Pig - Deal 7 damage. Deals 3 extra damage for each ERROR in logs. Exhaust[/*]
-[*]Blood Wheel Eye - All cards gain Replay 1 this combat. Exhaust[/*]
-[*]Ten Thousand Swords - Stack all other players' Forge values onto yourself (Multiplayer). Exhaust[/*]
-[*]Pig Friends - Summon a pig companion. Every 3 stacks, it upgrades (+5 max HP, +1 Strength)[/*]
-[*]Perfect Thing - Gain 1 Energy every 3 cards played[/*]
-[*]Dimension Slash - Deal 15 damage. Copy all debuffs from target enemy to other enemies[/*]
-[*]Pig Dragon Ride - Deal 7 damage 3 times to an enemy. Exhaust[/*]
-[*]Pig Crash - Lose 2 HP, deal 14 damage to all enemies[/*]
-[*]Do Not Die - Heal ally for 10% max HP + apply Regen (Multiplayer). Exhaust[/*]
+[*]40+ rule‑breaking relics, each rewriting a core rule of the run
+[*]Reshape your card rewards, deck, or map – e.g., "Only Ancient Cards", "All Enemies Become Elites", "Only Attack Cards", "Infinite Upgrades", "Double Map Length", and many more
+[*]Can be toggled on/off in mod settings
 [/list]
 
-[b]Power Details:[/b]
+[hr]
+
+[size=4]💀 Malice Difficulty (0–10)[/size]
 [list]
-[*]Pig Doubt - Gain random Power each turn[/*]
-[*]Rain Dark - Double energy gained[/*]
-[*]Pig Demon Form - At end of turn: gain 2 Strength, 2 Plating, lose 3 HP[/*]
-[*]Pig Burger - Increases max HP each combat and provides scaling block[/*]
-[*]Pig Explosion - When stack reaches threshold, deal massive damage to all enemies[/*]
-[*]Pig Defection - Negate damage taken at a cost[/*]
-[*]Pig Bankruptcy - All cards in hand cost 0 but have Exhaust this turn[/*]
-[*]Pig Brain Overload - Receive 1 Dazed every 2 turns[/*]
-[*]You Are Pig - Turn into a pig for a number of turns[/*]
-[*]Pig Friends - Summon a pig companion that absorbs unblocked damage. Upgrades every 3 stacks[/*]
-[*]Perfect Thing - Gain 1 Energy every 3 cards played[/*]
-[*]Killing Intent - Scaling damage boost based on combat duration[/*]
-[*]Train You Well - Buff companion creatures over time[/*]
-[*]Group Friend Form - Enhance team synergy in multiplayer[/*]
+[*]An Ascension‑independent difficulty system with separate progress per character
+[*]Enemies gain random affixes at the start of combat – 36 affixes in total, graded by rarity and unlocked progressively as Malice level increases
+[*]Higher levels boost enemy HP and damage, and add affix slots for Normal, Elite, and Boss enemies
+[*]Defeating Elites and Bosses can drop exclusive Seven Deadly Sins relics
 [/list]
 
-[b]Enchantment Details:[/b]
+[hr]
+
+[size=4]🃏 Balatro Mode[/size]
 [list]
-[*]Arthropod Slayer - Deal true damage to arthropod enemies, ignoring armor[/*]
-[*]Sweeping Blade - Damage splashes, dealing 50% damage to other enemies[/*]
-[*]Venomous - Attacks apply 3 Poison to enemies[/*]
-[*]Loyal - Auto-play this card at start of each turn without consuming energy[/*]
-[*]Snake - Generates Snakebite cards equal to enchantment amount when played[/*]
-[*]Bite - Applies Poison (7 × amount) when card targets enemies[/*]
+[*]A modifier that brings Balatro‑style gameplay into the Spire: combo multipliers, interest, and card modifiers
+[*]Unlock a full set of exclusive Balatro cards (Tarot and Planet cards) along with Joker relics
 [/list]
 
-[b]Relic Highlights:[/b]
+[hr]
+
+[size=4]♾️ Endless Mode[/size]
 [list]
-[*][color=red]Ring of Seven Curses[/color] - Ancient relic: +1 energy, +1 draw, +50% BOSS damage, but -50% gold, -20% Block, -50% heal[/*]
-[*]Thousand Curse Scroll - Gain 1 Strength and 1 Dexterity for each Curse in hand at start of turn. Only drops for Seven Curses Ring holders[/*]
-[*]10 Year Bamboo - Gain 1 Block at start of turn. +1 Block when defeating Elite, +3 when defeating BOSS[/*]
-[*]Yang Sword Gourd - Gain 4 Forge each turn (Shop relic)[/*]
-[*]Black Flash - 10% chance to empower Strike cards, dealing 2.5× damage[/*]
-[*]Triple Play - Play 3 cards of the same type consecutively to multiply their effects[/*]
-[*]Heartsteel - Tracks total unblocked damage taken; when threshold is met, gain bonus damage and max HP[/*]
-[*]All I Want - Choose multiple cards from card reward screens[/*]
-[*]Small Deck - If deck ≤ 20 cards, replaces Act 1 boss with alternate encounter[/*]
-[*]White Scarf - Monster/Elite/Boss rewards offer 3 colorless cards instead of normal rewards[/*]
-[*]Haotian Hammer - Upgrade Sovereign Blade whenever it's added to any player's hand[/*]
-[*]Reincarnated Eye - At start of battle, choose a card from deck to copy to hand[/*]
-[*]Supreme Bone - At start of battle, choose 2 cards to Exhaust. When HP first drops below 30%, gain 2 energy and draw 3 cards[/*]
-[*]What If: Ancient Cards - Replace basic cards with Ancient cards. Card rewards only offer Ancient cards[/*]
-[*]What If: Dramatic Entrance - Transform all cards into Dramatic Entrance[/*]
-[*]What If: Monster Elite - Convert all normal monster rooms to Elite encounters[/*]
-[*]7 Deadly Sins Pig Relics - Arrogant, Jealous, Furious, Lazy, Greedy, Gluttonous, Lustful Pig[/*]
-[*]Teammate Pay - Teammates can pay for your purchases in shop (Multiplayer)[/*]
-[*]Shopping Cart - Add items to cart for later purchase. Holds up to 5 items[/*]
+[*]Climb the Spire without end until you fall
+[*]Enemies grow stronger with each cycle; gain extra maximum HP when choosing this challenge
 [/list]
 
-[b]Ancient One:[/b]
+[hr]
+
+[size=4]💍 Ring of Seven Curses[/size]
 [list]
-[*]Piggy - Choose a pig-themed card, choose a Ring of Seven Curses relic, randomly choose a relic, or upgrade up to 5 cards[/*]
+[*]A high‑risk, high‑reward core archetype built around the Ancient relic
+[*]Provides powerful bonuses (extra Energy, card draw, and Boss damage) at the cost of gold, block, and healing
+[*]Comes with a dedicated relic ecosystem, including curse‑synergy relics that appear only while wearing the Ring
 [/list]
 
-[b]Modifiers:[/b]
+[hr]
+
+[size=4]👥 Multiplayer Cards & Relics[/size]
 [list]
-[*]Endless - Climb the spire endlessly until death. Enemies scale with loop count (+20% HP/point, +1 Strength/point, BOSS extra enhancement). Gain 10 max HP when chosen[/*]
-[*]Vakuu Tower - AI-controlled hand play: the game plays your cards automatically with complex strategic scoring[/*]
+[*]Exclusive cooperative content designed for team play: revive fallen allies, sacrifice HP to teammates, turn teammates into pigs, share forge values, and more
+[*]Multiplayer relics like "Teammate Pays" (make a teammate pay for your shop purchases) and a shared shopping cart system
 [/list]
 
-[b]Orbs:[/b]
+[hr]
+
+[size=4]🎲 Events & Monsters[/size]
 [list]
-[*]Little Regent - Passive: Gain 3 Forge at end of turn. Channel: Gain 6 Forge[/*]
-[*]Snake Bite - Passive: Apply 3 Poison to a random enemy at end of turn. Channel: Apply 6 Poison[/*]
+[*]6 events, including the Blacksmith (upgrade or merge cards), "Ends of the Earth", and other mysterious encounters
+[*]Custom enemies: Killer Elite, and the Flame Demon Boss
 [/list]
 
-[b]Monsters:[/b]
+[hr]
+
+[size=4]📦 More Content[/size]
 [list]
-[*]Killer (Elite) - HP 180/190, starts with Hardened Shell. After awakening, gains 8 Strength, Hive, and Fearful. Attacks: Slash, Multi-Attack, Tenderizing Slime, Charge, Expand[/*]
-[*]Pig Minion - Companion creature summoned by Pig Friends. Upgrades every 3 stacks (+5 max HP, +1 Strength)[/*]
+[*]6 enchantments, 2 custom orb types, 1 healing potion, and rest site options
+[*]The Ancients (Piggy), the Waku‑enters‑the‑Spire modifier (AI auto‑plays cards), and a total of [b]150+ cards / 90+ powers / 90+ relics[/b]
 [/list]
 
-[b]Events:[/b]
+[hr]
+
+[size=4]🔗 Related Links[/size]
+[url=https://github.com/YuWan886/Sts2-YuWanCard]GitHub Repository[/url] | [url=https://space.bilibili.com/438381132]YuWan's Bilibili Page[/url]
+
+[hr]
+
+[size=4]💬 Community & Feedback[/size]
 [list]
-[*]Blacksmith - Upgrade Cards (choose 2 to upgrade) or Fuse Cards (choose 2 to fuse into higher rarity). Same rarity guarantees higher rarity, different rarities have 60% chance[/*]
-[*]Horizon Event - Act 2+: choose between adding the powerful Horizon card or restoring HP to full[/*]
-[*]Sunken Statue Quest - Choose: take StoneSword quest card + gold, or take damage[/*]
-[*]Zhi Zhan Zhi Shang - Act 2+: choose between RedKing quest card or PigBurger card[/*]
+[*][url=https://qm.qq.com/q/ohYkDqbe7K][b]QQ Group: 752913553[/b][/url]
+[*][url=https://discord.gg/tJT3a95Y8y][b]Discord Server[/b][/url]
 [/list]
 
-[b]Potion:[/b]
+[hr]
+
+[size=4]🔌 Mod Integrations[/size]
+When installed alongside the following mod, additional content will be unlocked:
 [list]
-[*]Healing Potion - Apply Healing Potion power: regenerate 5 HP per turn for 3 turns (Uncommon)[/*]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747501308]Hextech Runes - HextechRunes[/url]
 [/list]
 
-[b]Badge:[/b]
+[hr]
+
+[size=4]🙏 Credits[/size]
+Thanks to the following resources and creators for their contributions:
 [list]
-[*]Pig Tycoon - Tiered achievement badge. Bronze at 50+ stacks, Silver at 100+, Gold at 200+[/*]
+[*]Cute Piggy – [url=https://www.pighub.top/]PigHub[/url]
+[*]Ring of Seven Curses – [url=https://github.com/Aizistral-Studios/Enigmatic-Legacy]Enigmatic-Legacy[/url]
+[*]Spire Codex – [url=https://github.com/ptrlrd/spire-codex]Spire Codex[/url]
+[*]*Goddess "I Want to Reincarnate in Another World" – Me "The Hero's Rib"* – [url=https://natalie.mu/comic/news/663320]「勇者の肋骨」俺＆女神さまのボイス収めたカオスな本PV、キービジュアルも公開[/url]
+[*]Pig Spine Animations – [url=https://space.bilibili.com/51792041]mmmmm Gene[/url]
+[*]Affix Icons – [url=https://www.mcmod.cn/class/12008.html]L2Hostility[/url]
+[*]Flame Demon – [url=https://www.mcmod.cn/class/5214.html]L_Ender's Cataclysm[/url]
+[*]Balatro – [url=https://store.steampowered.com/app/2379780]Balatro[/url]
 [/list]
 
-[b]Rest Site Option:[/b]
-[list]
-[*]Roast Pork - Heal action at rest sites using the Pig Roast Pork relic[/*]
-[/list]
-
-[quote][b]Note:[/b] This mod is developed using AI, there may be errors.[/quote]
+[quote][b]Note:[/b] This mod is developed with AI assistance, there may be errors.[/quote]
 
 [b]GitHub repository: [url=https://github.com/YuWan886/Sts2-YuWanCard]YuWan886/Sts2-YuWanCard[/url][/b]
 
 ---
 
-[b]YuWan Card[/b] - 《杀戮尖塔 2》的猪主题模组！
+[h1]猪降临[/h1]
+
+[hr]
+
+[b]YuWan Card[/b] - 特色丰富的《杀戮尖塔 2》猪主题模组！
+
+[hr]
+
+[size=4]🐷 角色 – 猪[/size]
 [list]
-[*][b]1 个角色 - 猪[/b] - 起始生命值 80，可以使用所有卡牌。起始牌组：猪打击、猪防御、猪受伤。起始遗物：猪胡萝卜（6 层覆甲）、烤猪肉[/*]
-[*][b]85+ 张卡牌[/b] - 猪主题卡牌与独特机制：雨落狂流之暗、猪破产、猪脑过载、猪魔形态、猪狂怒、黑洞、正义铁拳、呼唤同伴、赌徒、萝莉控、大本钟猪、诸葛猪等[/*]
-[*][b]30+ 个能力[/b] - 猪疑惑、雨落狂流（能量翻倍）、猪魔形态（攻防成长）、猪汉堡（生命成长）、猪爆炸、猪破产、猪脑过载、你是猪、猪朋猪友、完美之物等[/*]
-[*][b]6 个附魔[/b] - 节肢杀手、横扫之刃、淬毒、忠诚、蛇（生成蛇咬牌）、咬（施加中毒）[/*]
-[*][b]40+ 个遗物[/b] - 七咒之戒（先古）、10 年孤竹、千咒卷轴、养剑葫、黑闪、三连击、心之钢、我全都要、假如系列遗物、七宗罪猪系列遗物等[/*]
-[*][b]1 个先古之民[/b] - 猪猪：选择猪主题卡牌、七咒之戒遗物、随机遗物，或升级最多 5 张卡牌[/*]
-[*][b]3 个怪物[/b] - 杀手（精英）、小猪（伙伴）、伙伴占位符[/*]
-[*][b]4 个事件[/b] - 铁匠铺（升级/融合）、地平线事件（回满血）、沉没雕像任务、智战之上[/*]
-[*][b]2 个修饰符[/b] - 无尽（无限攀登）、瓦库塔（AI 托管出牌）[/*]
-[*][b]2 种充能球[/b] - 小储君（获得锻造）、蛇咬（施加中毒）[/*]
-[*][b]1 瓶药水[/b] - 治疗药水（每回合回复 5 点生命，持续 3 回合）[/*]
-[*][b]1 个徽章[/b] - 猪大亨（分阶段成就：铜/银/金）[/*]
-[*][b]1 个休息处选项[/b] - 烤猪肉（治疗动作）[/*]
+[*]完整可玩角色，起始生命值 80，可使用所有颜色的卡牌
+[*]专属猪主题起始牌组与遗物，拥有独立的卡牌池与遗物池
+[*]自定义立绘、动画、商店/休息处美术，以及“养猪大亨”成就徽章
 [/list]
 
-[b]角色 - 猪：[/b]
+[hr]
+
+[size=4]🃏 无色卡牌池[/size]
 [list]
-[*]起始生命值：80，性别：中性[/*]
-[*]起始遗物：猪胡萝卜（6 层覆甲）、烤猪肉（休息处选项）[/*]
-[*]起始牌组：5 张猪打击、4 张猪防御、1 张猪受伤[/*]
-[*]专属卡牌：猪打击、猪防御、猪庇护、猪朋猪友[/*]
-[*]专属遗物：猪胡萝卜、金色猪胡萝卜、烤猪肉[/*]
+[*]超过 60 张无色卡牌，所有角色皆可使用，不限于猪角色
+[*]无论选择哪个角色，都能为对局带来更多变化与独特机制
 [/list]
 
-[b]卡牌亮点：[/b]
+[hr]
+
+[size=4]⚙️ “假如”系列遗物[/size]
 [list]
-[*]雨落狂流之暗 - 所有玩家血量变为 25%，获得 3 层无实体，能量翻倍。消耗[/*]
-[*]猪破产 - 本回合所有手牌耗能为 0，但自带消耗[/*]
-[*]猪脑过载 - 本回合获得 3 点能量，抽 2 张牌。每 2 回合获得 1 张晕眩。消耗[/*]
-[*]猪魔形态 - 3 费能力：每回合结束获得 2 力量、2 覆甲，失去 3 生命[/*]
-[*]猪狂怒 - 对一名敌人造成 7 点伤害 3 次（升级后 4 次）。消耗[/*]
-[*]猪融化 - 获得 1 层缓冲，结束回合。消耗[/*]
-[*]黑洞 - 消耗任意数量手牌，每张造成 5 点伤害。消耗[/*]
-[*]猪猪王 - 将 3 张手牌变化为猪冲锋、猪连射、猪拆盾。消耗[/*]
-[*]正义铁拳 - 造成 20 点伤害并眩晕目标敌人。消耗[/*]
-[*]呼唤同伴 - 施加呼唤同伴能力（仅限单人模式）。消耗[/*]
-[*]赌徒 - 施加随机力量（-10 到 +10）。虚无。升级后范围缩小（-8 到 +8）[/*]
-[*]萝莉控 - 施加萝莉控能力持续整场战斗。升级后耗能减为 0[/*]
-[*]皇帝的新猪 - 0 费能力：施加皇帝的新猪能力 1 回合[/*]
-[*]诸葛猪 - 3 费能力：施加诸葛猪能力（3 层，升级后 5 层）[/*]
-[*]大本钟猪 - 0 费技能：施加力量能力并生成小本钟猪。消耗[/*]
-[*]提拉米苏猪 - 1 费技能：3 点格挡 + 施加 2 层再生能力。消耗[/*]
-[*]忧郁是一种感觉 - 获得等同于当前生命值的格挡[/*]
-[*]哀兵必胜 - 血量 10% 以下时击杀一名敌人[/*]
-[*]复活吧！ - 复活死亡队友，恢复 50% 最大生命值（多人模式）[/*]
-[*]猪献祭 - 将 50% 生命和格挡给予目标队友（多人模式）[/*]
-[*]你是猪 - 让队友变成猪，获得 1 层缓冲和 3 层再生（多人模式）[/*]
-[*]猪咬 - 施加 4 层中毒、2 层虚弱、2 层易伤和 1 层你是猪。升级后获得保留[/*]
-[*]猪熬夜 - 造成 9 点伤害。系统时间 23:00-02:00 时伤害翻倍，获得虚弱[/*]
-[*]Bug 猪 - 造成 7 点伤害。日志中每出现 1 个 ERROR 额外造成 3 点伤害。消耗[/*]
-[*]血轮眼 - 本场战斗所有卡牌获得重放 1。消耗[/*]
-[*]万剑归宗 - 将其他玩家锻造值叠加到自己身上（多人模式）。消耗[/*]
-[*]猪朋猪友 - 召唤小猪伙伴。每 3 层升级一次（+5 最大生命，+1 力量）[/*]
-[*]完美之物 - 每打出 3 张牌获得 1 点能量[/*]
-[*]次元斩 - 造成 15 点伤害。将目标敌人减益复制给其他敌人[/*]
-[*]猪登龙 - 对一名敌人造成 7 点伤害 3 次。消耗[/*]
-[*]猪坠机 - 扣除 2 点生命，对所有敌人造成 14 点伤害[/*]
-[*]不要死 - 为队友回复 10% 最大生命 + 施加再生（多人模式）。消耗[/*]
+[*]40+ 个颠覆规则的遗物，每个都会改写对局的一条核心规则
+[*]重塑你的卡牌奖励、牌组或地图——例如“只有先古牌”“小怪全变精英”“只有攻击牌”“无限升级”“地图长度翻倍”等等
+[*]可在模组设置中开关
 [/list]
 
-[b]能力说明：[/b]
+[hr]
+
+[size=4]💀 恶意难度（0–10）[/size]
 [list]
-[*]猪疑惑 - 每回合获得随机能力[/*]
-[*]雨落狂流 - 获得的能量翻倍[/*]
-[*]猪魔形态 - 每回合结束：获得 2 力量、2 覆甲，失去 3 生命[/*]
-[*]猪汉堡 - 每场战斗提升最大生命值并提供格挡[/*]
-[*]猪爆炸 - 层数达到阈值时对所有敌人造成大量伤害[/*]
-[*]猪变节 - 以代价抵消受到的伤害[/*]
-[*]猪破产 - 本回合所有手牌消耗为 0，但自带消耗[/*]
-[*]猪脑过载 - 每 2 回合获得 1 张晕眩[/*]
-[*]你是猪 - 变成一只猪，持续若干回合[/*]
-[*]猪朋猪友 - 召唤小猪，吸收未格挡伤害。每 3 层升级（+5 最大生命，+1 力量）[/*]
-[*]完美之物 - 每打出 3 张牌获得 1 点能量[/*]
-[*]杀意 - 战斗持续越久伤害加成越高[/*]
-[*]训练有素 - 随时间强化伙伴生物[/*]
-[*]群友形态 - 多人模式中增强团队协同[/*]
+[*]独立于进阶的难度系统，拥有按角色独立的存档进度
+[*]敌人在战斗开始时获得随机词条——共 36 个词条，按稀有度分级，随恶意等级提升逐步解锁
+[*]更高等级提升敌人生命与伤害，并为普通、精英、Boss 敌人增加词条槽位
+[*]击败精英与 Boss 可掉落专属的七宗罪罪孽遗物
 [/list]
 
-[b]附魔说明：[/b]
+[hr]
+
+[size=4]🃏 Balatro 模式[/size]
 [list]
-[*]节肢杀手 - 对节肢类敌人造成真实伤害，无视护甲[/*]
-[*]横扫之刃 - 伤害溅射，对其它敌人造成 50% 伤害[/*]
-[*]淬毒 - 攻击给予敌人 3 层中毒[/*]
-[*]忠诚 - 回合开始时自动打出此卡牌，不消耗能量[/*]
-[*]蛇 - 打出时生成等同于附魔数量的蛇咬牌[/*]
-[*]咬 - 攻击目标敌人时施加中毒（7 × 附魔层数）[/*]
+[*]将 Balatro 风格玩法带入尖塔的修饰符：连击乘数、利息与卡牌修饰器
+[*]解锁一整套专属 Balatro 卡牌（塔罗牌与星球牌）以及小丑遗物
 [/list]
 
-[b]遗物亮点：[/b]
+[hr]
+
+[size=4]♾️ 无尽模式[/size]
 [list]
-[*][color=red]七咒之戒[/color] - 先古遗物：+1 能量、+1 抽牌、+50% BOSS 伤害，但 -50% 金币、-20% 格挡、-50% 治疗[/*]
-[*]千咒卷轴 - 回合开始时手牌中每有 1 张诅咒牌获得 1 力量、1 敏捷。仅七咒之戒持有者可掉落[/*]
-[*]10 年孤竹 - 每回合开始获得 1 点格挡。击败精英 +1 格挡，击败 BOSS +3 格挡[/*]
-[*]养剑葫 - 每回合获得 4 点锻造（商店遗物）[/*]
-[*]黑闪 - 10% 概率强化打击牌，造成 2.5 倍伤害[/*]
-[*]三连击 - 连续打出 3 张同类型卡牌时触发倍数效果[/*]
-[*]心之钢 - 累计承受的未格挡伤害，达到阈值时获得额外伤害和最大生命[/*]
-[*]我全都要 - 卡牌奖励中可选择多张卡牌[/*]
-[*]小卡组 - 牌组 ≤ 20 张时替换第一层 BOSS[/*]
-[*]白围巾 - 怪物/精英/BOSS 奖励改为 3 张无色牌[/*]
-[*]昊天锤 - 每当君王之剑被添加到手牌时将其升级[/*]
-[*]重瞳 - 每场战斗开始时，选择牌库中一张卡牌复制加入手牌[/*]
-[*]至尊骨 - 每场战斗开始时选择 2 张卡牌施加消耗。生命值首次低于 30% 时获得 2 点能量并抽 3 张牌[/*]
-[*]假如只有先古牌 - 移除基础牌，卡牌奖励只有先古牌[/*]
-[*]假如只有闪亮登场 - 将所有卡牌变化为闪亮登场[/*]
-[*]假如小怪全变精英 - 将所有普通怪房间变成精英房间[/*]
-[*]七宗罪猪系列 - 傲慢猪、嫉妒猪、暴怒猪、懒惰猪、贪婪猪、暴食猪、色欲猪[/*]
-[*]队友帮付 - 商店中队友可以为你购买商品（多人模式）[/*]
-[*]购物车 - 可将物品加入购物车稍后购买，最多容纳 5 个物品[/*]
+[*]爬塔无止境，直至死亡
+[*]敌人随每次循环不断增强，选择该挑战时获得额外最大生命
 [/list]
 
-[b]先古之民：[/b]
+[hr]
+
+[size=4]💍 七咒之戒[/size]
 [list]
-[*]猪猪 - 选择猪主题卡牌、七咒之戒遗物、随机遗物，或升级最多 5 张卡牌[/*]
+[*]高风险高回报的先古遗物核心流派
+[*]提供强大增益（额外能量、抽牌与 Boss 伤害），代价是金币、格挡与治疗
+[*]围绕它构建了专属遗物生态，包括仅在佩戴时才会出现的诅咒协同遗物
 [/list]
 
-[b]修饰符：[/b]
+[hr]
+
+[size=4]👥 多人联机卡牌与遗物[/size]
 [list]
-[*]无尽 - 爬塔无止境，直至死亡。敌人随循环增强（血量 +20%/点，力量 +1/点，BOSS 额外增强）。选择时获得 10 点最大生命[/*]
-[*]瓦库塔 - AI 托管出牌：游戏自动根据复杂策略评分打出你的手牌[/*]
+[*]为团队协作打造的专属合作内容：复活倒下的队友、向队友献祭生命、把队友变成猪、共享锻造值等等
+[*]多人遗物如“队友帮付”（让队友为你的商店购买买单）以及共享购物车系统
 [/list]
 
-[b]充能球：[/b]
+[hr]
+
+[size=4]🎲 事件与怪物[/size]
 [list]
-[*]小储君 - 被动：回合结束时获得 3 点锻造。激发：获得 6 点锻造[/*]
-[*]蛇咬 - 被动：回合结束时对随机敌人施加 3 层中毒。激发：施加 6 层中毒[/*]
+[*]6 个事件，包含铁匠铺（升级或融合卡牌）、天涯海角等神秘相遇
+[*]自定义敌人：杀手精英、焰魔 Boss
 [/list]
 
-[b]怪物：[/b]
+[hr]
+
+[size=4]📦 更多内容[/size]
 [list]
-[*]杀手（精英）- 血量 180/190，开局获得硬化外壳。苏醒后获得 8 点力量、人体蜂房和胆小。攻击：斩击、多重攻击、嫩化黏液、突进、膨胀[/*]
-[*]小猪（伙伴）- 猪朋猪友召唤的伙伴生物。每 3 层升级（+5 最大生命，+1 力量）[/*]
+[*]6 个附魔、2 种自定义充能球、1 瓶治疗药水以及休息处选项
+[*]先古之民（猪猪）、瓦库进塔修饰符（AI 自动托管出牌），以及总计 [b]150+ 张卡牌 / 90+ 个能力 / 90+ 个遗物[/b]
 [/list]
 
-[b]事件：[/b]
+[hr]
+
+[size=4]🔗 相关链接[/size]
+[url=https://github.com/YuWan886/Sts2-YuWanCard]GitHub 仓库[/url] | [url=https://space.bilibili.com/438381132]鱼丸的 B 站主页[/url]
+
+[hr]
+
+[size=4]💬 交流与反馈[/size]
 [list]
-[*]铁匠铺 - 升级卡牌（选择 2 张升级）或融合卡牌（选择 2 张融合为更高稀有度）。相同稀有度必出更高稀有度，不同稀有度 60% 概率[/*]
-[*]地平线 - 第 2 章+：选择获得强大的天涯海角卡牌或回复全部生命值[/*]
-[*]沉没雕像 - 选择：获得石中剑任务牌 + 金币，承受伤害[/*]
-[*]止战之殇 - 第 2 章+：选择获得红王任务牌或猪汉堡牌[/*]
+[*][url=https://qm.qq.com/q/ohYkDqbe7K][b]QQ 群：752913553[/b][/url]
+[*][url=https://discord.gg/tJT3a95Y8y][b]Discord 服务器[/b][/url]
 [/list]
 
-[b]药水：[/b]
+[hr]
+
+[size=4]🔌 模组联动[/size]
+以下模组与猪降临一同安装时，将触发额外的游戏内容：
 [list]
-[*]治疗药水 - 施加治疗药水能力：每回合回复 5 点生命值，持续 3 回合（罕见）[/*]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747501308]海克斯符文 - HextechRunes[/url]
 [/list]
 
-[b]徽章：[/b]
+[hr]
+
+[size=4]🙏 致谢 (CREDITS)[/size]
+感谢以下资源与创作者的贡献：
 [list]
-[*]养猪大亨 - 分阶段成就徽章。50+ 层得铜牌，100+ 层得银牌，200+ 层得金牌[/*]
+[*]可爱的猪猪 – [url=https://www.pighub.top/]PigHub[/url]
+[*]七咒之戒 – [url=https://github.com/Aizistral-Studios/Enigmatic-Legacy]Enigmatic-Legacy[/url]
+[*]Spire Codex – [url=https://github.com/ptrlrd/spire-codex]Spire Codex[/url]
+[*]《女神『转生异世界想成为什么』我「勇者的肋骨」》 – [url=https://natalie.mu/comic/news/663320]「勇者の肋骨」俺＆女神さまのボイス収めたカオスな本PV、キービジュアルも公開[/url]
+[*]猪的 Spine 动画 – [url=https://space.bilibili.com/51792041]mmmmm 基因[/url]
+[*]词条图标 – [url=https://www.mcmod.cn/class/12008.html]莱特兰恶意 (L2Hostility)[/url]
+[*]焰魔 – [url=https://www.mcmod.cn/class/5214.html]灾变 (L_Ender's Cataclysm)[/url]
+[*]Balatro – [url=https://store.steampowered.com/app/2379780]Balatri[/url]
 [/list]
 
-[b]休息处选项：[/b]
-[list]
-[*]烤猪肉 - 使用烤猪肉遗物在休息处执行治疗动作[/*]
-[/list]
-
-[quote][b]注意：[/b] 本模组使用 AI 开发，可能存在错误。[/quote]
+[quote][b]注意：[/b] 本模组使用 AI 辅助开发，可能存在错误。[/quote]
 
 [b]GitHub 仓库：[url=https://github.com/YuWan886/Sts2-YuWanCard]YuWan886/Sts2-YuWanCard[/url][/b]
