@@ -12,6 +12,19 @@ internal static class MalicePanelStyler
     public static bool IsMalicePanel(NAscensionPanel panel) =>
         panel.HasMeta("YUWANCARD_MALICE_PANEL") && panel.GetMeta("YUWANCARD_MALICE_PANEL").AsBool();
 
+    public static void MakeMaterialsUnique(Node node)
+    {
+        if (node is CanvasItem canvasItem && canvasItem.Material is ShaderMaterial shader)
+        {
+            canvasItem.Material = (ShaderMaterial)shader.Duplicate(true);
+        }
+
+        foreach (Node child in node.GetChildren())
+        {
+            MakeMaterialsUnique(child);
+        }
+    }
+
     public static void Apply(NAscensionPanel panel)
     {
         if (!IsMalicePanel(panel))

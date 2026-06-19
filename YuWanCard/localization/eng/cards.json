@@ -314,6 +314,8 @@
   "YUWANCARD-FITNESS_MOUSE.description": "Gain {Strength:diff()} [gold]Strength[/gold] next turn.",
   "YUWANCARD-LIGHT_BOAT_PAST_MOUNTAINS.title": "Light Boat Past Mountains",
   "YUWANCARD-LIGHT_BOAT_PAST_MOUNTAINS.description": "Play all cards in your [gold]Exhaust Pile[/gold] except this one. ",
+  "YUWANCARD-PIG_BUSY_COME.title": "Pig Comes Busy",
+  "YUWANCARD-PIG_BUSY_COME.description": "Play all cards in your hand. Gain {SlothPower:diff()} [gold]Sloth[/gold].",
   "YUWANCARD-SHA.title": "Kill",
   "YUWANCARD-SHA.description": "Deal {Damage:diff()} damage. On kill, this card's replay count +1.",
   "YUWANCARD-SHAN.title": "Dodge",

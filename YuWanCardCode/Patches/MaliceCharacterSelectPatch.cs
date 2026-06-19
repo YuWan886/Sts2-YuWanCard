@@ -31,10 +31,10 @@ public static class MaliceCharacterSelectReadyPatch
 
         var malicePanel = (NAscensionPanel)ascensionPanel.Duplicate();
         malicePanel.Name = "MalicePanel";
+        MalicePanelStyler.MakeMaterialsUnique(malicePanel);
         ascensionPanel.GetParent().AddChild(malicePanel);
         malicePanel.Position = GetMalicePanelPosition(ascensionPanel);
         malicePanel.SetMeta("YUWANCARD_MALICE_PANEL", true);
-        EnsureUniqueVisualResources(malicePanel);
         malicePanel.Visible = false;
     }
 
@@ -44,17 +44,6 @@ public static class MaliceCharacterSelectReadyPatch
             ? ascensionPanel.Size.Y + MalicePanelTopGap
             : MalicePanelFallbackOffsetY;
         return ascensionPanel.Position + new Vector2(0f, -offsetY);
-    }
-
-    private static void EnsureUniqueVisualResources(NAscensionPanel malicePanel)
-    {
-        var icon = malicePanel.GetNodeOrNull<Control>("%AscensionIcon");
-        if (icon?.Material is not ShaderMaterial shader)
-        {
-            return;
-        }
-
-        icon.Material = (ShaderMaterial)shader.Duplicate();
     }
 }
 
