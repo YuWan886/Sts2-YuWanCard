@@ -19,7 +19,7 @@ public sealed class BulwarkTrait : MaliceTraitPowerBase
         }
 
         int actIndex = combatState.RunState?.CurrentActIndex ?? 0;
-        int blockAmount = (6 + 2 * Math.Min(Math.Max(actIndex, 0), 2)) * (int)Amount;
+        int blockAmount = (4 + 2 * Math.Min(Math.Max(actIndex, 0), 2)) * (int)Amount;
 
         Flash();
         await CreatureCmd.GainBlock(Owner, blockAmount, ValueProp.Unpowered, null);

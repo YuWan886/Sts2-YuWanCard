@@ -33,7 +33,7 @@ public sealed class EntangleTrait : MaliceTraitPowerBase
                 flashed = true;
             }
 
-            await PowerCmd.Apply<ConstrictPower>(new ThrowingPlayerChoiceContext(), player.Creature, 3 * Amount, Owner, null);
+            await PowerCmd.Apply<ConstrictPower>(new ThrowingPlayerChoiceContext(), player.Creature, 2 * Amount, Owner, null);
         }
     }
 }

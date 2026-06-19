@@ -6,9 +6,6 @@ using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Powers.MaliceTraits;
 
-/// <summary>
-/// 下回合开始时失去能量
-/// </summary>
 public sealed class CorrosionEnergyLossPower : YuWanPowerModel
 {
     public override PowerType Type => PowerType.Debuff;

@@ -8,7 +8,7 @@ namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class PhantomTrait : MaliceTraitPowerBase
 {
-    private const int Interval = 4;
+    private const int Interval = 3;
 
     private class Data
     {
