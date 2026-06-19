@@ -50,6 +50,8 @@ Malice 共 10 个等级，效果累积：
 | Weakness（虚弱） | 攻击命中时施加 1 层 虚弱 |
 | Slowness（迟缓） | 攻击命中时施加 1 层 脆弱 |
 | Gravity（重力） | 每 2 回合使所有玩家失去力量，上限随幕数增加 |
+| Vampiric（吸血） | 攻击命中时回复所造成未格挡伤害 50% 的生命值 |
+| Bulwark（壁垒） | 每回合开始获得 6/8/10 点格挡（随幕数提升） |
 
 ### 罕见词条（Uncommon，Malice 4+）
 
@@ -61,6 +63,9 @@ Malice 共 10 个等级，效果累积：
 | Wither（凋零） | 攻击命中时减少玩家 力量 |
 | Blindness（致盲） | 攻击命中时向玩家抽牌堆塞入 晕眩 |
 | Shulker（潜影） | 己方回合开始时获得 1 层 滑溜。上限 3 层 |
+| Expose（破绽） | 攻击命中时施加 1 层 易伤 |
+| Scorch（焦灼） | 攻击命中时向玩家弃牌堆塞入 1 张 灼烧 |
+| Entangle（缠绕） | 战斗开始时使所有玩家获得 3 层 缠绕（每回合结束受到不可格挡伤害） |
 
 ### 稀有词条（Rare，Malice 6+）
 
@@ -73,6 +78,9 @@ Malice 共 10 个等级，效果累积：
 | Adaptive（适应） | 来自相同来源的连续伤害降低 30% |
 | Invisible（隐形） | 己方回合开始时若没有 缓冲 则获得 缓冲 |
 | Dispell（破魔） | 使卡牌上的附魔失效。|
+| Steel（钢化） | 己方回合开始时将 武器 补足至 2 层 |
+| Berserk（狂暴） | 每次受到未格挡伤害后获得 2 力量 |
+| Phantom（幻影） | 每 4 回合获得 虚无，将下一回合所受伤害降为 1 |
 
 ### 传说词条（Legendary，Malice 9+）
 
@@ -84,6 +92,8 @@ Malice 共 10 个等级，效果累积：
 | Master（主宰） | 己方回合开始时召唤随机小怪 |
 | Killer Aura（杀手光环） | 玩家攻击牌费用 +1 |
 | Ragnarok（诸神黄昏） | 每回合使玩家的一个遗物失效 |
+| Cataclysm（灾变） | 己方回合开始时对所有玩家造成 5/7/9 点不可格挡伤害（随幕数提升） |
+| Enervate（虚弱光环） | 己方回合开始时使所有玩家下个回合损失 1 能量 |
 
 ## 词条分配机制
 
@@ -99,10 +109,10 @@ Malice 共 10 个等级，效果累积：
    - 根据当前 Malice 等级确定可用稀有度池
    - | 稀有度 | 解锁等级 | 数量 |
      |--------|----------|------|
-     | 常见（Common） | Malice 1+ | 7 |
-     | 罕见（Uncommon） | Malice 4+ | 6 |
-     | 稀有（Rare） | Malice 6+ | 7 |
-     | 传说（Legendary） | Malice 9+ | 6 |
+     | 常见（Common） | Malice 1+ | 9 |
+     | 罕见（Uncommon） | Malice 4+ | 9 |
+     | 稀有（Rare） | Malice 6+ | 10 |
+     | 传说（Legendary） | Malice 9+ | 8 |
    - 召唤物（Minion）只能获得常见和罕见词条
 
 3. **词条权重**（按幕数，非恶意等级）
@@ -170,7 +180,7 @@ Daily / Custom 模式不影响 Malice 进度。多人模式下恶意仍由主机
 YuWanCardCode/
 ├── Modifiers/
 │   └── MaliceModifier.cs              # 恶意难度修饰符
-├── Powers/MaliceTraits/               # 26 个词条 Power
+├── Powers/MaliceTraits/               # 36 个词条 Power
 │   ├── MaliceTraitPowerBase.cs        # 词条基类（PowerType=Buff, StackType=Counter）
 │   ├── TankTrait.cs, SpeedyTrait.cs, ...
 │   └── RagnarokTrait.cs

@@ -27,6 +27,8 @@ public static class MaliceTraitDistributor
         (typeof(WeaknessTrait), TraitRarity.Common),
         (typeof(SlownessTrait), TraitRarity.Common),
         (typeof(GravityTrait), TraitRarity.Common),
+        (typeof(VampiricTrait), TraitRarity.Common),
+        (typeof(BulwarkTrait), TraitRarity.Common),
 
         (typeof(PoisonTrait), TraitRarity.Uncommon),
         (typeof(ReflectTrait), TraitRarity.Uncommon),
@@ -34,6 +36,9 @@ public static class MaliceTraitDistributor
         (typeof(WitherTrait), TraitRarity.Uncommon),
         (typeof(BlindnessTrait), TraitRarity.Uncommon),
         (typeof(ShulkerTrait), TraitRarity.Uncommon),
+        (typeof(ExposeTrait), TraitRarity.Uncommon),
+        (typeof(ScorchTrait), TraitRarity.Uncommon),
+        (typeof(EntangleTrait), TraitRarity.Uncommon),
 
         (typeof(DrainTrait), TraitRarity.Rare),
         (typeof(GrowthTrait), TraitRarity.Rare),
@@ -42,13 +47,18 @@ public static class MaliceTraitDistributor
         (typeof(AdaptiveTrait), TraitRarity.Rare),
         (typeof(InvisibleTrait), TraitRarity.Rare),
         (typeof(DispellTrait), TraitRarity.Rare),
+        (typeof(SteelTrait), TraitRarity.Rare),
+        (typeof(BerserkTrait), TraitRarity.Rare),
+        (typeof(PhantomTrait), TraitRarity.Rare),
 
         (typeof(UndyingTrait), TraitRarity.Legendary),
         (typeof(DementorTrait), TraitRarity.Legendary),
         (typeof(SplitTrait), TraitRarity.Legendary),
         (typeof(MasterTrait), TraitRarity.Legendary),
         (typeof(KillerAuraTrait), TraitRarity.Legendary),
-        (typeof(RagnarokTrait), TraitRarity.Legendary)
+        (typeof(RagnarokTrait), TraitRarity.Legendary),
+        (typeof(CataclysmTrait), TraitRarity.Legendary),
+        (typeof(EnervateTrait), TraitRarity.Legendary)
     ];
 
     public static async Task AssignTraits(Creature creature, int maliceLevel, MaliceModifier modifier)

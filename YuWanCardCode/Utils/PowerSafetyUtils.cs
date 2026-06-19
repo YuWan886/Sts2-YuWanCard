@@ -31,6 +31,7 @@ public static class PowerSafetyUtils
         ModelDb.Power<RampartPower>,
         ModelDb.Power<GalvanicPower>,
         ModelDb.Power<EscapeArtistPower>,
+        ModelDb.Power<IllusionPower>,
 
         // Malice Traits
         ModelDb.Power<MaliceTraitMarkerPower>,
