@@ -1,6 +1,7 @@
 using System.Reflection;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using YuWanCard.Config;
 
@@ -38,19 +39,42 @@ public static class CursorReplacePatch
     [HarmonyPostfix]
     public static void OnEnterTree(NCursorManager __instance)
     {
-        _activeManager = __instance;
-        _capturedOriginals = false;
+        SetActiveManager(__instance);
         RefreshCursor();
+    }
+
+    private static NCursorManager? ResolveManager()
+    {
+        if (_activeManager != null && GodotObject.IsInstanceValid(_activeManager))
+            return _activeManager;
+
+        var manager = NGame.Instance?.CursorManager;
+        if (manager != null && GodotObject.IsInstanceValid(manager))
+        {
+            SetActiveManager(manager);
+            return manager;
+        }
+
+        _activeManager = null;
+        return null;
+    }
+
+    private static void SetActiveManager(NCursorManager manager)
+    {
+        if (!ReferenceEquals(_activeManager, manager))
+        {
+            _activeManager = manager;
+            _capturedOriginals = false;
+            _originalNotTilted = null;
+            _originalTilted = null;
+        }
     }
 
     public static void RefreshCursor()
     {
-        var manager = _activeManager;
-        if (manager == null || !GodotObject.IsInstanceValid(manager))
-        {
-            _activeManager = null;
+        var manager = ResolveManager();
+        if (manager == null)
             return;
-        }
 
         if (CursorNotTiltedField == null || CursorTiltedField == null)
             return;

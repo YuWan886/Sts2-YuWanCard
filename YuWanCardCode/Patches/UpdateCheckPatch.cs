@@ -27,6 +27,12 @@ public static class UpdateCheckPatch
             return;
         }
 
+        if (UpdateChecker.IsWorkshopInstall())
+        {
+            MainFile.Logger.Info("Mod installed via Steam Workshop, skipping update check (Steam handles updates)");
+            return;
+        }
+
         _updateCheckTriggered = true;
 
         _ = Task.Run(async () =>

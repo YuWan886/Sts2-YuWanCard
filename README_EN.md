@@ -17,7 +17,7 @@
 
 ## Installation
 
-1. Download the latest [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149) | [Backup](https://pan.quark.cn/s/734161e964f3)
+1. Download the latest [**WorkShop**](https://steamcommunity.com/sharedfiles/filedetails/?id=3747566068) | [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149) | [Backup](https://pan.quark.cn/s/734161e964f3)
 2. Extract to the `mods` folder in the game directory
 3. Game logs are in `%AppData%\SlayTheSpire2\logs\` folder
 4. Install [RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib) or [BaseLib](https://github.com/Alchyr/BaseLib-StS2) to see the piggy's config interface. This is **optional**.

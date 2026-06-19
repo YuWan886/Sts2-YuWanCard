@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MegaCrit.Sts2.Core.Modding;
 
 namespace YuWanCard.Utils;
 
@@ -83,54 +84,48 @@ public static class UpdateChecker
         return version;
     }
 
+    /// <summary>
+    /// Locates the loaded YuWanCard mod via the game's ModManager.
+    /// Returns null if the ModManager is unavailable or the mod isn't found.
+    /// </summary>
+    private static Mod? FindLoadedMod()
+    {
+        try
+        {
+            return ModManager.Mods?.FirstOrDefault(m => m?.manifest?.id == ModId);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Debug($"Failed to query ModManager: {ex.Message}");
+            return null;
+        }
+    }
+
+    public static bool IsWorkshopInstall()
+    {
+        var mod = FindLoadedMod();
+        if (mod == null)
+        {
+            MainFile.Logger.Debug("Could not locate mod in ModManager; assuming local install");
+            return false;
+        }
+
+        bool isWorkshop = mod.modSource == ModSource.SteamWorkshop;
+        MainFile.Logger.Debug($"Mod source: {mod.modSource}");
+        return isWorkshop;
+    }
+
     private static string? GetVersionFromModManager()
     {
-        var modManagerType = Type.GetType("MegaCrit.Sts2.Core.Modding.ModManager, sts2");
-        if (modManagerType == null)
+        var mod = FindLoadedMod();
+        var version = mod?.manifest?.version;
+        if (string.IsNullOrEmpty(version))
         {
-            MainFile.Logger.Debug("ModManager type not found");
+            MainFile.Logger.Debug($"Mod with id '{ModId}' not found in ModManager or has no version");
             return null;
         }
 
-        var modsProperty = modManagerType.GetProperty("Mods");
-        if (modsProperty == null)
-        {
-            MainFile.Logger.Debug("Mods property not found on ModManager");
-            return null;
-        }
-
-        var mods = modsProperty.GetValue(null) as System.Collections.IEnumerable;
-        if (mods == null)
-        {
-            MainFile.Logger.Debug("Mods property returned null");
-            return null;
-        }
-
-        foreach (var mod in mods)
-        {
-            var manifestField = mod.GetType().GetField("manifest");
-            if (manifestField == null) continue;
-
-            var manifest = manifestField.GetValue(mod);
-            if (manifest == null) continue;
-
-            var idField = manifest.GetType().GetField("id");
-            var versionField = manifest.GetType().GetField("version");
-
-            if (idField == null || versionField == null) continue;
-
-            var id = idField.GetValue(manifest) as string;
-            if (id != ModId) continue;
-
-            var version = versionField.GetValue(manifest) as string;
-            if (!string.IsNullOrEmpty(version))
-            {
-                return version;
-            }
-        }
-
-        MainFile.Logger.Debug($"Mod with id '{ModId}' not found in ModManager");
-        return null;
+        return version;
     }
 
     private static string? GetVersionFromManifest()
@@ -188,48 +183,14 @@ public static class UpdateChecker
     {
         try
         {
-            var modManagerType = Type.GetType("MegaCrit.Sts2.Core.Modding.ModManager, sts2");
-            if (modManagerType == null) return null;
-
-            var modsProperty = modManagerType.GetProperty("Mods");
-            if (modsProperty == null) return null;
-
-            var mods = modsProperty.GetValue(null) as System.Collections.IEnumerable;
-            if (mods == null) return null;
-
-            foreach (var mod in mods)
+            // The mod's install directory lives on the Mod object (mod.path), not on the
+            // manifest. This resolves correctly for both local (mods/) and Steam Workshop
+            // (steamapps/workshop/content/2868840/<id>/) installs.
+            var mod = FindLoadedMod();
+            var modPath = mod?.path;
+            if (!string.IsNullOrEmpty(modPath))
             {
-                var manifestField = mod.GetType().GetField("manifest");
-                if (manifestField == null) continue;
-
-                var manifest = manifestField.GetValue(mod);
-                if (manifest == null) continue;
-
-                var idField = manifest.GetType().GetField("id");
-                if (idField == null) continue;
-
-                var id = idField.GetValue(manifest) as string;
-                if (id != ModId) continue;
-
-                var pathField = manifest.GetType().GetField("path");
-                if (pathField != null)
-                {
-                    var modPath = pathField.GetValue(manifest) as string;
-                    if (!string.IsNullOrEmpty(modPath))
-                    {
-                        return Path.Combine(modPath, $"{ModId}.json");
-                    }
-                }
-
-                var directoryField = manifest.GetType().GetField("directory");
-                if (directoryField != null)
-                {
-                    var directory = directoryField.GetValue(manifest) as string;
-                    if (!string.IsNullOrEmpty(directory))
-                    {
-                        return Path.Combine(directory, $"{ModId}.json");
-                    }
-                }
+                return Path.Combine(modPath, $"{ModId}.json");
             }
         }
         catch { }
@@ -245,25 +206,66 @@ public static class UpdateChecker
             string? gameDirectory = Path.GetDirectoryName(executablePath);
             if (string.IsNullOrEmpty(gameDirectory)) return null;
 
+            // Local install: mods/ directory next to the executable.
             string modsDirectory = Path.Combine(gameDirectory, "mods");
-            if (!Directory.Exists(modsDirectory)) return null;
+            string? localPath = FindManifestInModsRoot(modsDirectory);
+            if (localPath != null) return localPath;
 
-            string directPath = Path.Combine(modsDirectory, ModId, $"{ModId}.json");
-            if (File.Exists(directPath))
-            {
-                return directPath;
-            }
-
-            foreach (var subDir in Directory.GetDirectories(modsDirectory))
-            {
-                string manifestPath = Path.Combine(subDir, $"{ModId}.json");
-                if (File.Exists(manifestPath))
-                {
-                    return manifestPath;
-                }
-            }
+            // Workshop install: ../../workshop/content/2868840/<itemId>/...
+            // The executable lives in steamapps/common/SlayTheSpire2/, so the workshop
+            // content dir is a sibling of "common" two levels up.
+            string? workshopPath = FindManifestInWorkshop(gameDirectory);
+            if (workshopPath != null) return workshopPath;
         }
         catch { }
+
+        return null;
+    }
+
+    private const string Sts2SteamAppId = "2868840";
+
+    private static string? FindManifestInModsRoot(string modsDirectory)
+    {
+        if (!Directory.Exists(modsDirectory)) return null;
+
+        string directPath = Path.Combine(modsDirectory, ModId, $"{ModId}.json");
+        if (File.Exists(directPath))
+        {
+            return directPath;
+        }
+
+        foreach (var subDir in Directory.GetDirectories(modsDirectory))
+        {
+            string manifestPath = Path.Combine(subDir, $"{ModId}.json");
+            if (File.Exists(manifestPath))
+            {
+                return manifestPath;
+            }
+        }
+
+        return null;
+    }
+
+    private static string? FindManifestInWorkshop(string gameDirectory)
+    {
+        // gameDirectory = .../steamapps/common/SlayTheSpire2 -> steamapps is two levels up.
+        var commonDir = Directory.GetParent(gameDirectory);
+        var steamAppsDir = commonDir?.Parent;
+        if (steamAppsDir == null) return null;
+
+        string workshopContent = Path.Combine(steamAppsDir.FullName, "workshop", "content", Sts2SteamAppId);
+        if (!Directory.Exists(workshopContent)) return null;
+
+        // Each subscribed item is its own numeric directory; the manifest may sit at the
+        // root or one level deeper, so reuse the same shallow scan.
+        foreach (var itemDir in Directory.GetDirectories(workshopContent))
+        {
+            string rootManifest = Path.Combine(itemDir, $"{ModId}.json");
+            if (File.Exists(rootManifest)) return rootManifest;
+
+            string? nested = FindManifestInModsRoot(itemDir);
+            if (nested != null) return nested;
+        }
 
         return null;
     }

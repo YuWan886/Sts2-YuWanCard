@@ -19,12 +19,23 @@ public static class MaliceCustomRunReadyPatch
     [HarmonyPostfix]
     public static void Postfix(NCustomRunScreen __instance)
     {
-        if (__instance.GetNodeOrNull<NAscensionPanel>("MalicePanel") != null)
+        EnsureMalicePanelExists(__instance);
+    }
+
+    /// <summary>
+    /// Ensures the malice panel node exists (created lazily, once). Visibility is driven
+    /// separately by the config toggle in SyncMalicePanel, so enabling/disabling takes
+    /// effect on re-entering the screen without a game restart. We never destroy the panel
+    /// — recreating it left it stuck invisible when the sync path early-returned.
+    /// </summary>
+    internal static void EnsureMalicePanelExists(NCustomRunScreen screen)
+    {
+        if (MaliceCustomRunPanelSync.GetMalicePanel(screen) != null)
         {
             return;
         }
 
-        NAscensionPanel? ascensionPanel = __instance.GetNodeOrNull<NAscensionPanel>("%AscensionPanel");
+        NAscensionPanel? ascensionPanel = screen.GetNodeOrNull<NAscensionPanel>("%AscensionPanel");
         if (ascensionPanel?.GetParent() == null)
         {
             return;
@@ -69,13 +80,23 @@ public static class MaliceCustomRunPanelSync
 {
     public static void SyncMalicePanel(NCustomRunScreen screen)
     {
-        EnsureMalicePanelInitialized(screen);
+        MaliceCustomRunReadyPatch.EnsureMalicePanelExists(screen);
 
         var malicePanel = GetMalicePanel(screen);
         if (malicePanel == null)
         {
             return;
         }
+
+        // Config toggle drives visibility. When disabled, hide and stop — when enabled,
+        // SetMaxAscension below restores visibility (game sets Visible = _maxAscension > 0).
+        if (!Config.YuWanCardConfig.EnableMaliceSelection)
+        {
+            malicePanel.Visible = false;
+            return;
+        }
+
+        EnsureMalicePanelInitialized(screen);
 
         int authoritativeMaliceLevel = MaliceModifierPatchHelpers.GetMaliceLevel(screen.Lobby.Modifiers);
         if (screen.Lobby.NetService.Type == NetGameType.Client)

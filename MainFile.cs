@@ -119,6 +119,7 @@ public static class NMainMenu_ConfigRegisterPatch
     {
         ConfigRegistrar.TryDeferredRegister();
         HextechRuntimeCompat.TryInstallIfAvailable();
+        Patches.CursorReplacePatch.RefreshCursor();
     }
 }
 
