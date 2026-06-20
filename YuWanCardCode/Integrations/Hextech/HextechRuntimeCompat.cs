@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -23,9 +24,11 @@ public static class HextechRuntimeCompat
     private const string HextechRuneSelectionCoordinatorTypeName = "HextechRunes.HextechRuneSelectionCoordinator";
     private const string HextechMayhemActRecoveryTypeName = "HextechRunes.HextechMayhemActRecovery";
     private const string HextechTelemetryTypeName = "HextechRunes.HextechTelemetry";
+    private const string HextechRuneConfigurationTypeName = "HextechRunes.HextechRuneConfiguration";
     private const string UnlockStateTypeName = "MegaCrit.Sts2.Core.Unlocks.UnlockState";
     private const string SaveManagerTypeName = "MegaCrit.Sts2.Core.Saves.SaveManager";
     private const string EnergyIconHelperTypeName = "MegaCrit.Sts2.Core.Helpers.EnergyIconHelper";
+    private const string PigRuneMirrorFileName = "hextech_pig_disabled_rune_ids.json";
 
     private static bool _installed;
     private static readonly AsyncLocal<int> OwnedRuneRecognitionScopeDepth = new();
@@ -33,6 +36,9 @@ public static class HextechRuntimeCompat
     private static Type? _randomForgeShopRelicType;
     private static MethodInfo? _tryCreateRandomForgeMethod;
     private static MethodInfo? _isHextechCustomRelicMethod;
+    private static MethodInfo? _isPlayerRuneEnabledByIdMethod;
+    private static MethodInfo? _getDisabledPlayerRuneIdsMethod;
+    private static MethodInfo? _saveDisabledPlayerRuneIdsMethod;
     private static bool _resolvedHextechCatalogLookupMethods;
 
     public static void TryInstall(Harmony harmony)
@@ -51,10 +57,12 @@ public static class HextechRuntimeCompat
         _installed = true;
         MainFile.Logger.Info("HextechRuntimeCompat: HextechRunes detected, applying Pig rune runtime integration");
         PatchHextechCatalog(harmony, context);
+        PatchHextechConfiguration(harmony, context);
         PatchScopedRuntimeRecognition(harmony, context);
         PatchCompendiumDisplayCompat(harmony);
         PatchForgeStacking(harmony);
         RegisterShoppingCartForgeResolver(context);
+        RestoreMirroredPigRuneDisabledIds();
     }
 
     public static void TryInstallIfAvailable()
@@ -72,6 +80,8 @@ public static class HextechRuntimeCompat
         }
 
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetAllSelectableRuneTypesPostfix), "GetAllSelectableRuneTypes");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetAllConfigurableRuneTypesPostfix), "GetAllConfigurableRuneTypes");
+        context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetConfigurablePlayerRuneIdsPostfix), "GetConfigurablePlayerRuneIds");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetGenericSelectableRuneTypesPostfix), "GetGenericSelectableRuneTypes");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetGenericVisibleRuneTypesPostfix), "GetGenericVisibleRuneTypes");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(GetPlayerRuneTypesForRarityPostfix), "GetPlayerRuneTypesForRarity");
@@ -99,6 +109,24 @@ public static class HextechRuntimeCompat
         // causes a hard freeze during overlay dismissal.
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsHextechRelicScopedPostfix), "IsHextechRelic");
         context.PatchMethods(harmony, catalogType, typeof(HextechRuntimeCompat), null, nameof(IsHextechForgeRelicPostfix), "IsHextechForgeRelic");
+    }
+
+    private static void PatchHextechConfiguration(Harmony harmony, ModCompatContext context)
+    {
+        Type? configurationType = context.ResolveType(HextechRuneConfigurationTypeName);
+        if (configurationType == null)
+        {
+            MainFile.Logger.Warn("HextechRuntimeCompat: HextechRuneConfiguration type not found");
+            return;
+        }
+
+        context.PatchMethods(
+            harmony,
+            configurationType,
+            typeof(HextechRuntimeCompat),
+            null,
+            nameof(SaveDisabledPlayerRuneIdsPostfix),
+            "SaveDisabledPlayerRuneIds");
     }
 
     private static void PatchScopedRuntimeRecognition(Harmony harmony, ModCompatContext context)
@@ -268,6 +296,12 @@ public static class HextechRuntimeCompat
         };
     }
 
+    private static IEnumerable<Type> GetEnabledPigRunesForHextechRarity(object rarity)
+    {
+        return GetPigRunesForHextechRarity(rarity)
+            .Where(IsPigRuneEnabledByConfiguration);
+    }
+
     private static IReadOnlyList<RelicModel> GetPigForgeRelics()
     {
         return HextechForgeRegistry.GetAllForges()
@@ -278,6 +312,18 @@ public static class HextechRuntimeCompat
     public static void GetAllSelectableRuneTypesPostfix(ref IReadOnlyList<Type> __result)
     {
         __result = __result.Concat(HextechPigRuneRegistry.GetAllRunes()).Distinct().ToArray();
+    }
+
+    public static void GetAllConfigurableRuneTypesPostfix(ref IReadOnlyList<Type> __result)
+    {
+        __result = __result.Concat(HextechPigRuneRegistry.GetAllRunes()).Distinct().ToArray();
+    }
+
+    public static void GetConfigurablePlayerRuneIdsPostfix(ref IReadOnlySet<ModelId> __result)
+    {
+        HashSet<ModelId> ids = __result.ToHashSet();
+        ids.UnionWith(HextechPigRuneRegistry.GetAllRunes().Select(ModelDb.GetId));
+        __result = ids;
     }
 
     public static void GetGenericSelectableRuneTypesPostfix(ref IReadOnlyList<Type> __result)
@@ -328,12 +374,30 @@ public static class HextechRuntimeCompat
 
     public static void GetPlayerRuneTypesForRarityPostfix(object rarity, ref IReadOnlyList<Type> __result)
     {
-        __result = __result.Concat(GetPigRunesForHextechRarity(rarity)).Distinct().ToArray();
+        __result = __result.Concat(GetEnabledPigRunesForHextechRarity(rarity)).Distinct().ToArray();
     }
 
     public static void GetConfigurablePlayerRuneTypesForRarityPostfix(object rarity, ref IReadOnlyList<Type> __result)
     {
         __result = __result.Concat(GetPigRunesForHextechRarity(rarity)).Distinct().ToArray();
+    }
+
+    public static void SaveDisabledPlayerRuneIdsPostfix(IEnumerable<string> disabledIds)
+    {
+        try
+        {
+            HashSet<string> pigIds = (disabledIds ?? Array.Empty<string>())
+                .Where(static id => !string.IsNullOrWhiteSpace(id))
+                .Select(static id => id.Trim())
+                .Where(IsPigRuneId)
+                .ToHashSet(StringComparer.Ordinal);
+
+            SaveMirroredPigRuneDisabledIds(pigIds);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"HextechRuntimeCompat: failed to mirror pig rune disabled ids after save: {ex.Message}");
+        }
     }
 
     public static void GetCharacterRuneGroupsPostfix(ref object __result)
@@ -575,6 +639,130 @@ public static class HextechRuntimeCompat
         }
     }
 
+    private static bool IsPigRuneEnabledByConfiguration(Type runeType)
+    {
+        EnsureHextechCatalogLookupMethodsResolved();
+        if (_isPlayerRuneEnabledByIdMethod == null)
+        {
+            return true;
+        }
+
+        try
+        {
+            string id = ModelDb.GetId(runeType).Entry;
+            return _isPlayerRuneEnabledByIdMethod.Invoke(null, [id]) as bool? != false;
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"HextechRuntimeCompat: failed to query rune enabled state for {runeType.Name}: {ex.Message}");
+            return true;
+        }
+    }
+
+    private static void RestoreMirroredPigRuneDisabledIds()
+    {
+        try
+        {
+            EnsureHextechCatalogLookupMethodsResolved();
+            if (_getDisabledPlayerRuneIdsMethod == null || _saveDisabledPlayerRuneIdsMethod == null)
+            {
+                return;
+            }
+
+            HashSet<string> mirroredPigIds = LoadMirroredPigRuneDisabledIds();
+            if (mirroredPigIds.Count == 0)
+            {
+                return;
+            }
+
+            IEnumerable<string> currentDisabledIds =
+                _getDisabledPlayerRuneIdsMethod.Invoke(null, null) as IEnumerable<string>
+                ?? Array.Empty<string>();
+
+            HashSet<string> merged = currentDisabledIds.ToHashSet(StringComparer.Ordinal);
+            int before = merged.Count;
+            merged.UnionWith(mirroredPigIds);
+            if (merged.Count == before)
+            {
+                return;
+            }
+
+            _saveDisabledPlayerRuneIdsMethod.Invoke(null, [merged]);
+            MainFile.Logger.Info($"HextechRuntimeCompat: restored {merged.Count - before} mirrored pig rune disabled id(s) into Hextech configuration");
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"HextechRuntimeCompat: failed to restore mirrored pig rune disabled ids: {ex.Message}");
+        }
+    }
+
+    private static bool IsPigRuneId(string id)
+    {
+        foreach (Type runeType in HextechPigRuneRegistry.GetAllRunes())
+        {
+            if (string.Equals(ModelDb.GetId(runeType).Entry, id, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static HashSet<string> LoadMirroredPigRuneDisabledIds()
+    {
+        string path = GetPigRuneMirrorPath();
+        if (!File.Exists(path))
+        {
+            return [];
+        }
+
+        string json = File.ReadAllText(path);
+        string[]? ids = JsonSerializer.Deserialize<string[]>(json);
+        return (ids ?? Array.Empty<string>())
+            .Where(static id => !string.IsNullOrWhiteSpace(id))
+            .Select(static id => id.Trim())
+            .Where(IsPigRuneId)
+            .ToHashSet(StringComparer.Ordinal);
+    }
+
+    private static void SaveMirroredPigRuneDisabledIds(HashSet<string> ids)
+    {
+        string path = GetPigRuneMirrorPath();
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        string json = JsonSerializer.Serialize(ids.OrderBy(static id => id, StringComparer.Ordinal).ToArray());
+        File.WriteAllText(path, json);
+    }
+
+    private static string GetPigRuneMirrorPath()
+    {
+        return Path.Combine(GetHextechConfigDirectory(), PigRuneMirrorFileName);
+    }
+
+    private static string GetHextechConfigDirectory()
+    {
+        try
+        {
+            string godotUserDir = Godot.OS.GetUserDataDir();
+            if (!string.IsNullOrWhiteSpace(godotUserDir))
+            {
+                return Path.Combine(godotUserDir, HextechModId);
+            }
+        }
+        catch
+        {
+            // Fall back to a normal per-user directory when Godot paths are unavailable.
+        }
+
+        string baseDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        if (string.IsNullOrWhiteSpace(baseDir))
+        {
+            baseDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+
+        return Path.Combine(baseDir, "SlayTheSpire2", HextechModId);
+    }
+
     private static void EnsureHextechCatalogLookupMethodsResolved()
     {
         if (_resolvedHextechCatalogLookupMethods)
@@ -584,12 +772,16 @@ public static class HextechRuntimeCompat
 
         _resolvedHextechCatalogLookupMethods = true;
         Type? catalogType = AccessTools.TypeByName(HextechCatalogTypeName);
+        Type? configurationType = AccessTools.TypeByName(HextechRuneConfigurationTypeName);
         if (catalogType == null)
         {
             return;
         }
 
         _isHextechCustomRelicMethod = AccessTools.Method(catalogType, "IsHextechCustomRelic", [typeof(RelicModel)]);
+        _isPlayerRuneEnabledByIdMethod = AccessTools.Method(configurationType, "IsPlayerRuneEnabled", [typeof(string)]);
+        _getDisabledPlayerRuneIdsMethod = AccessTools.Method(configurationType, "GetDisabledPlayerRuneIds");
+        _saveDisabledPlayerRuneIdsMethod = AccessTools.Method(configurationType, "SaveDisabledPlayerRuneIds", [typeof(IEnumerable<string>)]);
     }
 
     private static void RegisterShoppingCartForgeResolver(ModCompatContext context)

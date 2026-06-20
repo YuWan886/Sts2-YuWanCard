@@ -116,8 +116,6 @@ public sealed class BalatroModifier : YuWanModifierModel
     protected override void AfterRunCreated(RunState runState)
     {
         base.AfterRunCreated(runState);
-        MainFile.Logger.Info(
-            $"[BalatroDebug] BalatroModifier.AfterRunCreated seed={runState.Rng.StringSeed} players={runState.Players.Count} act0={runState.Acts.FirstOrDefault()?.Id.Entry ?? "null"} modifiers=[{string.Join(", ", runState.Modifiers.Select(static m => m.Id.Entry))}]");
     }
 
     public override async Task BeforeCombatStart()
@@ -140,9 +138,6 @@ public sealed class BalatroModifier : YuWanModifierModel
     public override async Task AfterRoomEntered(AbstractRoom room)
     {
         await base.AfterRoomEntered(room);
-
-        MainFile.Logger.Info(
-            $"[BalatroDebug] BalatroModifier.AfterRoomEntered roomType={room.RoomType} totalFloor={RunState.TotalFloor} currentAct={RunState.CurrentActIndex}");
 
         foreach (Player player in RunState.Players)
         {
@@ -707,13 +702,9 @@ public sealed class BalatroModifier : YuWanModifierModel
     private async Task ApplyInterestForRoom(Player player)
     {
         int lastInterestFloor = LastInterestFloorState.GetValueOrDefault(player, 0);
-        MainFile.Logger.Info(
-            $"[BalatroDebug] BalatroModifier.AfterRoomEntered player={player.NetId} totalFloor={RunState.TotalFloor} lastInterestFloor={lastInterestFloor}");
 
         if (RunState.TotalFloor <= 0 || RunState.TotalFloor <= lastInterestFloor)
         {
-            MainFile.Logger.Info(
-                $"[BalatroDebug] BalatroModifier.AfterRoomEntered skipped interest for player={player.NetId}: totalFloor={RunState.TotalFloor}, lastInterestFloor={lastInterestFloor}.");
             return;
         }
 
@@ -733,8 +724,6 @@ public sealed class BalatroModifier : YuWanModifierModel
 
         if (interest <= 0)
         {
-            MainFile.Logger.Info(
-                $"[BalatroDebug] BalatroModifier.AfterRoomEntered computed non-positive interest={interest} for player={player.NetId}.");
             return;
         }
 
@@ -743,11 +732,7 @@ public sealed class BalatroModifier : YuWanModifierModel
             bankerJoker!.Flash();
         }
 
-        MainFile.Logger.Info(
-            $"[BalatroDebug] BalatroModifier.AfterRoomEntered granting interest={interest} player={player.NetId} currentGold={player.Gold}.");
         await PlayerCmd.GainGold(interest, player);
-        MainFile.Logger.Info(
-            $"[BalatroDebug] BalatroModifier.AfterRoomEntered gain complete player={player.NetId} newGold={player.Gold}.");
     }
 
     private void ResetCombatState()

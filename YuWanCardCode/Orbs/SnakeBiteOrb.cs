@@ -10,16 +10,41 @@ namespace YuWanCard.Orbs;
 [RegisterOrb]
 public class SnakeBiteOrb : YuWanOrbModel
 {
+    private const string CompatibleOrbScenePath = "res://scenes/orbs/orb_visuals/dark_orb.tscn";
+    private const string DisplayIconPath = "res://YuWanCard/images/enchantments/snake.png";
+    private const string TriggerIconPath = "res://YuWanCard/images/enchantments/bite.png";
+
     public override Color DarkenedColor => new Color("4CAF50");
 
     public override decimal PassiveVal => 3m;
     public override decimal EvokeVal => 6m;
 
-    public override string? CustomIconPath => "res://YuWanCard/images/orbs/snake_bite.png";
+    public override string? CustomIconPath => DisplayIconPath;
+    public override string? CustomTriggerIconPath => TriggerIconPath;
 
-    public override string? CustomSpritePath => "res://YuWanCard/scenes/orbs/snake_bite.tscn";
+    public override string? CustomSpritePath => CompatibleOrbScenePath;
 
     protected override string ChannelSfx => "event:/sfx/characters/defect/defect_plasma_channel";
+
+    public override Node2D? CreateCustomSprite()
+    {
+        var sprite = base.CreateCustomSprite();
+        if (sprite == null || CustomIconPath is not string iconPath)
+            return sprite;
+
+        var texture = GD.Load<Texture2D>(iconPath);
+        if (texture == null)
+            return sprite;
+
+        var icon = new Sprite2D
+        {
+            Name = "SnakeIcon",
+            Texture = texture,
+            Scale = new Vector2(0.3f, 0.3f)
+        };
+        sprite.AddChild(icon);
+        return sprite;
+    }
 
     public override async Task BeforeTurnEndOrbTrigger(PlayerChoiceContext choiceContext)
     {

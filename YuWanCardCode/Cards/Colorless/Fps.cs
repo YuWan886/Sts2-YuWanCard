@@ -15,9 +15,10 @@ public class Fps : YuWanCardModel
     public Fps() : base(
         baseCost: 2,
         type: CardType.Attack,
-        rarity: CardRarity.Uncommon,
+        rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy)
     {
+        WithKeywords(CardKeyword.Exhaust);
     }
 
     protected override void OnUpgrade()

@@ -57,7 +57,7 @@
   "YUWANCARD-SKULL_GOLD_RUSH.title": "骷髅打金服",
   "YUWANCARD-SKULL_GOLD_RUSH.pages.INITIAL.description": "嘟嘟哒嘟嘟哒……\n\n三只戴着礼帽的骷髅正合着洗脑的节拍，在你面前跳着僵硬又魔性的舞步。绿色的荧光与耀眼的“+999%爆率”大字晃得你眼晕。\n\n空气中弥漫着廉价网游广告的气息。",
   "YUWANCARD-SKULL_GOLD_RUSH.pages.INITIAL.options.OBTAIN_RELIC.title": "挂机领专属神器",
-  "YUWANCARD-SKULL_GOLD_RUSH.pages.INITIAL.options.OBTAIN_RELIC.description": "原地发呆三分钟，获得事件遗物[gold]骷髅打金[/gold]。",
+  "YUWANCARD-SKULL_GOLD_RUSH.pages.INITIAL.options.OBTAIN_RELIC.description": "原地发呆三分钟，获得遗物[gold]骷髅打金[/gold]。",
   "YUWANCARD-SKULL_GOLD_RUSH.pages.ALL.options.GAMBLE.title": "击杀骷髅，赢充值卡",
   "YUWANCARD-SKULL_GOLD_RUSH.pages.ALL.options.GAMBLE.description": "花费[gold]{DrawCost}[/gold]金币进行“全屏爆金”",
   "YUWANCARD-SKULL_GOLD_RUSH.pages.ALL.options.GAMBLE_LOCKED.title": "攻速不足（金币不够）",

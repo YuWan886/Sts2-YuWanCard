@@ -15,7 +15,7 @@ public class PigClimbTower : YuWanCardModel
 {
     public PigClimbTower() : base(
         baseCost: 2,
-        type: CardType.Skill,
+        type: CardType.Attack,
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {

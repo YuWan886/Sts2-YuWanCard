@@ -11,7 +11,7 @@
 | | Ascension（进阶） | Malice（恶意） |
 |---|---|---|
 | **等级范围** | 0-10 | 0-10 |
-| **解锁方式** | 胜利后解锁下一级 | 独立解锁（不超过 MaxAscension） |
+| **解锁方式** | 胜利后解锁下一级 | 独立解锁（解锁进阶后可单独推进到 10） |
 | **核心机制** | 数值调整（HP/伤害/金币/掉落等） | 词条分配（敌人获得随机能力） |
 | **同时生效** | 是 | 是 |
 | **UI** | 红色火焰图标 | 紫色恶意图标 |
@@ -169,7 +169,7 @@ Malice 共 10 个等级，效果累积：
 - **MaxMalice**：已解锁的最高等级
 - **PreferredMalice**：当前选择的等级
 - 数据存储在 `%AppData%/SlayTheSpire2/malice_progress.json`
-- 等级上限不超过该角色的 MaxAscension
+- 角色只要已解锁进阶模式，恶意等级就可以独立推进到 10
 - 胜利时若当前 Malice = MaxMalice 且 MaxMalice < 10，则 MaxMalice +1
 
 Daily / Custom 模式不影响 Malice 进度。多人模式下恶意仍由主机统一选择，但不会把客机本地偏好带入对局。

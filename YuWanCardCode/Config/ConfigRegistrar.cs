@@ -312,14 +312,6 @@ internal static class ConfigRegistrar
                 sliderAttrType, bindingAttrType, bindingSourceType);
             if (dynamicType == null) return false;
 
-            if (MainFile.Config != null)
-            {
-                foreach (var t in ToggleProps)
-                    SetDynamicBool(dynamicType, t.PropertyName, GetConfigBool(t.PropertyName));
-                foreach (var s in SliderProps)
-                    SetDynamicDouble(dynamicType, s.PropertyName, GetConfigDouble(s.PropertyName));
-            }
-
             var frameworkType = ResolveTypeAcrossAssemblies("STS2RitsuLib.RitsuLibFramework");
             if (frameworkType == null)
             {
@@ -432,10 +424,6 @@ internal static class ConfigRegistrar
         Type? bindingAttrType, Type? bindingSourceType,
         string propName, string toggleId, string dataKey, string label, string? description, int order)
     {
-        var field = typeBuilder.DefineField(
-            $"<{propName}>k__BackingField", typeof(bool),
-            FieldAttributes.Private | FieldAttributes.Static);
-
         var prop = typeBuilder.DefineProperty(propName, PropertyAttributes.None, typeof(bool), null);
 
         prop.SetCustomAttribute(BuildEntryAttribute(
@@ -446,22 +434,23 @@ internal static class ConfigRegistrar
 
         var getter = typeBuilder.DefineMethod(
             $"get_{propName}",
-            MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
+            MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
             typeof(bool), Type.EmptyTypes);
         var getIL = getter.GetILGenerator();
-        getIL.Emit(OpCodes.Ldsfld, field);
+        getIL.Emit(OpCodes.Ldstr, propName);
+        getIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
+            nameof(RitsuConfigRuntimeBridge.ReadRuntimeBool),
+            BindingFlags.Public | BindingFlags.Static)!);
         getIL.Emit(OpCodes.Ret);
         prop.SetGetMethod(getter);
 
         var setter = typeBuilder.DefineMethod(
             $"set_{propName}",
-            MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
+            MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
             null, [typeof(bool)]);
         var setIL = setter.GetILGenerator();
-        setIL.Emit(OpCodes.Ldarg_0);
-        setIL.Emit(OpCodes.Stsfld, field);
         setIL.Emit(OpCodes.Ldstr, propName);
-        setIL.Emit(OpCodes.Ldarg_0);
+        setIL.Emit(OpCodes.Ldarg_1);
         setIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
             nameof(RitsuConfigRuntimeBridge.ApplyRuntimeBool),
             BindingFlags.Public | BindingFlags.Static)!);
@@ -476,10 +465,6 @@ internal static class ConfigRegistrar
         string propName, string entryId, string dataKey, string label, string? description,
         double min, double max, double step, int order)
     {
-        var field = typeBuilder.DefineField(
-            $"<{propName}>k__BackingField", typeof(double),
-            FieldAttributes.Private | FieldAttributes.Static);
-
         var prop = typeBuilder.DefineProperty(propName, PropertyAttributes.None, typeof(double), null);
 
         prop.SetCustomAttribute(BuildEntryAttribute(
@@ -490,22 +475,23 @@ internal static class ConfigRegistrar
 
         var getter = typeBuilder.DefineMethod(
             $"get_{propName}",
-            MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
+            MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
             typeof(double), Type.EmptyTypes);
         var getIL = getter.GetILGenerator();
-        getIL.Emit(OpCodes.Ldsfld, field);
+        getIL.Emit(OpCodes.Ldstr, propName);
+        getIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
+            nameof(RitsuConfigRuntimeBridge.ReadRuntimeDouble),
+            BindingFlags.Public | BindingFlags.Static)!);
         getIL.Emit(OpCodes.Ret);
         prop.SetGetMethod(getter);
 
         var setter = typeBuilder.DefineMethod(
             $"set_{propName}",
-            MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
+            MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
             null, [typeof(double)]);
         var setIL = setter.GetILGenerator();
-        setIL.Emit(OpCodes.Ldarg_0);
-        setIL.Emit(OpCodes.Stsfld, field);
         setIL.Emit(OpCodes.Ldstr, propName);
-        setIL.Emit(OpCodes.Ldarg_0);
+        setIL.Emit(OpCodes.Ldarg_1);
         setIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
             nameof(RitsuConfigRuntimeBridge.ApplyRuntimeDouble),
             BindingFlags.Public | BindingFlags.Static)!);
@@ -580,18 +566,6 @@ internal static class ConfigRegistrar
     }
 
     // ── helpers ─────────────────────────────────────────
-
-    private static void SetDynamicBool(Type dynamicType, string name, bool value)
-    {
-        try { dynamicType.GetProperty(name)?.SetValue(null, value); }
-        catch { }
-    }
-
-    private static void SetDynamicDouble(Type dynamicType, string name, double value)
-    {
-        try { dynamicType.GetProperty(name)?.SetValue(null, value); }
-        catch { }
-    }
 
     /// <summary>Builds a RitsuLib ordered-entry attribute (toggle/slider), setting Label, Description,
     /// and Order named properties when available on the attribute type.</summary>
@@ -697,12 +671,22 @@ internal static class ConfigRegistrar
 
 public static class RitsuConfigRuntimeBridge
 {
+    public static bool ReadRuntimeBool(string propertyName)
+    {
+        return (bool)typeof(Config.YuWanCardConfig).GetProperty(propertyName)!.GetValue(null)!;
+    }
+
     public static void ApplyRuntimeBool(string propertyName, bool value)
     {
         typeof(Config.YuWanCardConfig).GetProperty(propertyName)?.SetValue(null, value);
 
         if (propertyName == nameof(Config.YuWanCardConfig.EnableCustomCursor))
             Patches.CursorReplacePatch.RefreshCursor();
+    }
+
+    public static double ReadRuntimeDouble(string propertyName)
+    {
+        return (double)typeof(Config.YuWanCardConfig).GetProperty(propertyName)!.GetValue(null)!;
     }
 
     public static void ApplyRuntimeDouble(string propertyName, double value)

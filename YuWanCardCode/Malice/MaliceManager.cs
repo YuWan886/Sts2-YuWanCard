@@ -1,5 +1,7 @@
+using System.Reflection;
 using System.Text.Json;
 using Godot;
+using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Saves;
@@ -9,11 +11,14 @@ namespace YuWanCard.Malice;
 public static class MaliceManager
 {
     public const int MaxMaliceLevel = 10;
+    private const string SaveFileName = "malice_progress.json";
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true
     };
+    private static readonly AccessTools.FieldRef<SaveManager, ISaveStore> SaveStoreRef =
+        AccessTools.FieldRefAccess<SaveManager, ISaveStore>("_saveStore");
 
     private static MaliceProgressData? _cache;
 
@@ -195,9 +200,9 @@ public static class MaliceManager
 
         var stats = SaveManager.Instance.Progress.GetStatsForCharacter(characterId);
         int rawAscension = stats?.MaxAscension ?? 0;
-        // Ensure malice can progress independently at low ascension levels.
-        // Minimum cap of 2 allows malice 1-2 to unlock regardless of ascension.
-        int effectiveCap = rawAscension > 0 ? Math.Max(rawAscension, 2) : 0;
+        // Malice still requires the character to have unlocked ascension mode at least once,
+        // but after that it progresses independently up to Malice 10.
+        int effectiveCap = rawAscension > 0 ? MaxMaliceLevel : 0;
         return ClampLevel(effectiveCap, MaxMaliceLevel);
     }
 
@@ -253,11 +258,31 @@ public static class MaliceManager
 
         try
         {
-            string path = GetResolvedSavePath();
-            if (File.Exists(path))
+            var saveStore = GetSaveStore();
+            string relativePath = GetSaveRelativePath();
+            string path = saveStore.GetFullPath(relativePath);
+            string? legacyPath = GetLegacySavePath();
+            bool loadedFromLegacy = false;
+            string? json = null;
+
+            if (saveStore.FileExists(relativePath))
             {
-                string json = File.ReadAllText(path);
+                json = saveStore.ReadFile(relativePath);
+            }
+            else if (!string.IsNullOrEmpty(legacyPath) && File.Exists(legacyPath))
+            {
+                json = File.ReadAllText(legacyPath);
+                loadedFromLegacy = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(json))
+            {
                 _cache = JsonSerializer.Deserialize<MaliceProgressData>(json, JsonOptions) ?? new MaliceProgressData();
+                if (loadedFromLegacy)
+                {
+                    Save();
+                    MainFile.Logger.Info($"MaliceManager: migrated malice progress from legacy path to {path}");
+                }
             }
             else
             {
@@ -277,15 +302,9 @@ public static class MaliceManager
     {
         try
         {
-            string path = GetResolvedSavePath();
-            string? dir = Path.GetDirectoryName(path);
-            if (!string.IsNullOrEmpty(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-
+            var saveStore = GetSaveStore();
             string json = JsonSerializer.Serialize(Load(), JsonOptions);
-            File.WriteAllText(path, json);
+            saveStore.WriteFile(GetSaveRelativePath(), json);
         }
         catch (Exception ex)
         {
@@ -293,9 +312,37 @@ public static class MaliceManager
         }
     }
 
-    private static string GetResolvedSavePath()
+    private static ISaveStore GetSaveStore()
     {
-        string relative = Path.Combine(UserDataPathProvider.GetProfileDir(SaveManager.Instance.CurrentProfileId), UserDataPathProvider.SavesDir, "malice_progress.json");
-        return ProjectSettings.GlobalizePath($"user://{relative.Replace('\\', '/')}");
+        try
+        {
+            return SaveStoreRef(SaveManager.Instance);
+        }
+        catch (Exception ex) when (ex is MissingFieldException or ArgumentException or NullReferenceException)
+        {
+            throw new InvalidOperationException("MaliceManager: could not access SaveManager save store", ex);
+        }
+    }
+
+    private static string GetSaveRelativePath()
+    {
+        return Path.Combine(UserDataPathProvider.GetProfileDir(SaveManager.Instance.CurrentProfileId), UserDataPathProvider.SavesDir, SaveFileName);
+    }
+
+    private static string? GetLegacySavePath()
+    {
+        try
+        {
+            string relative = Path.Combine(
+                UserDataPathProvider.GetProfileDir(SaveManager.Instance.CurrentProfileId),
+                UserDataPathProvider.SavesDir,
+                SaveFileName);
+            return ProjectSettings.GlobalizePath($"user://{relative.Replace('\\', '/')}");
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"MaliceManager: failed to resolve legacy malice progress path: {ex}");
+            return null;
+        }
     }
 }

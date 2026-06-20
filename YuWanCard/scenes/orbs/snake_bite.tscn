@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://megsnq8c4cxc"]
-
-[ext_resource type="Texture2D" uid="uid://cpbw7hdg1yexn" path="res://YuWanCard/images/enchantments/snake.png" id="1_643wp"]
-
-[node name="SnakeBiteOrb" type="Node2D"]
-
-[node name="Icon" type="Sprite2D" parent="."]
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("1_643wp")

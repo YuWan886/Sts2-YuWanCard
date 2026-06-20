@@ -137,6 +137,28 @@ static class AllAbstractModelSubtypesDedupPatch
 {
     static void Postfix(ref Type[] __result)
     {
-        __result = __result.Distinct().ToArray();
+        var seenKeys = new HashSet<string>(StringComparer.Ordinal);
+        var deduped = new List<Type>(__result.Length);
+
+        foreach (var type in __result)
+        {
+            string key = GetTypeIdentityKey(type);
+            if (!seenKeys.Add(key))
+            {
+                MainFile.Logger.Warn($"Deduplicated duplicate AbstractModel subtype registration: {key}");
+                continue;
+            }
+
+            deduped.Add(type);
+        }
+
+        __result = deduped.ToArray();
+    }
+
+    private static string GetTypeIdentityKey(Type type)
+    {
+        string assemblyName = type.Assembly.GetName().Name ?? "<unknown>";
+        string fullName = type.FullName ?? type.Name;
+        return $"{assemblyName}:{fullName}";
     }
 }

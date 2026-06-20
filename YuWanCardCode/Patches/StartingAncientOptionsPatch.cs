@@ -435,8 +435,6 @@ static class NeowRuntimeModifierFilterPatch
             return;
         }
 
-        MainFile.Logger.Info(
-            $"[BalatroDebug] NeowRuntimeModifierFilter prefix original=[{string.Join(", ", originalModifiers.Select(static m => m.Id.Entry))}] filtered=[{string.Join(", ", optionModifiers.Select(static m => m.Id.Entry))}]");
         StartingAncientOptionsPatch.StoreOriginalModifiers(__instance, originalModifiers);
         YuWanReflectionHelper.SetPrivateField(runState, "<Modifiers>k__BackingField", optionModifiers);
     }
@@ -467,8 +465,6 @@ static class NeowRuntimeModifierFilterPatch
         }
 
         YuWanReflectionHelper.SetPrivateField(__instance.Owner.RunState, "<Modifiers>k__BackingField", originalModifiers);
-        MainFile.Logger.Info(
-            $"[BalatroDebug] NeowRuntimeModifierFilter restore modifiers=[{string.Join(", ", originalModifiers.Select(static m => m.Id.Entry))}] exception={__exception?.GetType().Name ?? "null"}");
         return __exception;
     }
 }

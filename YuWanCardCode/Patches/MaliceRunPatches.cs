@@ -148,8 +148,6 @@ public static class MaliceModifierPatchHelpers
         PendingModifiers.GetOrCreateValue(lobby).Value = modifiers.Count > 0
             ? CloneModifiers(modifiers)
             : null;
-        MainFile.Logger.Info(
-            $"[BalatroDebug] SetPendingRunModifiers net={lobby.NetService.Type} count={modifiers.Count} modifiers=[{string.Join(", ", modifiers.Select(static m => m.Id.Entry))}]");
     }
 
     public static IReadOnlyList<ModifierModel>? TakePendingRunModifiers(StartRunLobby lobby)
@@ -161,8 +159,6 @@ public static class MaliceModifierPatchHelpers
 
         var modifiers = box.Value;
         box.Value = null;
-        MainFile.Logger.Info(
-            $"[BalatroDebug] TakePendingRunModifiers net={lobby.NetService.Type} count={modifiers?.Count ?? 0} modifiers=[{string.Join(", ", modifiers?.Select(static m => m.Id.Entry) ?? [])}]");
         return modifiers;
     }
 
@@ -171,16 +167,12 @@ public static class MaliceModifierPatchHelpers
         PendingSingleplayerModifiers = modifiers.Count > 0
             ? CloneModifiers(modifiers)
             : null;
-        MainFile.Logger.Info(
-            $"[BalatroDebug] SetPendingSingleplayerModifiers count={modifiers.Count} modifiers=[{string.Join(", ", modifiers.Select(static m => m.Id.Entry))}]");
     }
 
     public static IReadOnlyList<ModifierModel>? TakePendingSingleplayerModifiers()
     {
         var modifiers = PendingSingleplayerModifiers;
         PendingSingleplayerModifiers = null;
-        MainFile.Logger.Info(
-            $"[BalatroDebug] TakePendingSingleplayerModifiers count={modifiers?.Count ?? 0} modifiers=[{string.Join(", ", modifiers?.Select(static m => m.Id.Entry) ?? [])}]");
         return modifiers;
     }
 }
@@ -198,8 +190,6 @@ public static class MaliceStartNewMultiplayerRunPatch
 
         if (MaliceModifierPatchHelpers.TakePendingRunModifiers(lobby) is { Count: > 0 } pendingModifiers)
         {
-            MainFile.Logger.Info(
-                $"[BalatroDebug] StartNewMultiplayerRun injected pending modifiers=[{string.Join(", ", pendingModifiers.Select(static m => m.Id.Entry))}]");
             modifiers = pendingModifiers;
             return;
         }
@@ -207,8 +197,6 @@ public static class MaliceStartNewMultiplayerRunPatch
         if (lobby.Modifiers.Count > 0)
         {
             modifiers = MaliceModifierPatchHelpers.CloneModifiers(lobby.Modifiers);
-            MainFile.Logger.Info(
-                $"[BalatroDebug] StartNewMultiplayerRun cloned lobby modifiers=[{string.Join(", ", modifiers.Select(static m => m.Id.Entry))}]");
         }
     }
 }
@@ -226,14 +214,7 @@ public static class MaliceStartNewSingleplayerRunPatch
 
         if (MaliceModifierPatchHelpers.TakePendingSingleplayerModifiers() is { Count: > 0 } pendingModifiers)
         {
-            MainFile.Logger.Info(
-                $"[BalatroDebug] StartNewSingleplayerRun injected pending modifiers=[{string.Join(", ", pendingModifiers.Select(static m => m.Id.Entry))}]");
             modifiers = pendingModifiers;
-        }
-        else
-        {
-            MainFile.Logger.Info(
-                $"[BalatroDebug] StartNewSingleplayerRun no pending modifiers; incoming modifiers=[{string.Join(", ", modifiers.Select(static m => m.Id.Entry))}]");
         }
     }
 }
