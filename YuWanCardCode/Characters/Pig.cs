@@ -19,6 +19,7 @@ public class Pig : CharacterModel, IYuWanCharacter
     private const string PigEnergyCounterPath = "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
     private const string PigRestSitePath = "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
     private const string PigYummyCookiePath = "res://YuWanCard/images/relics/pig_yummy_cookie.png";
+    internal const string PigCharacterSelectSfxPath = "res://YuWanCard/sounds/characters/pig_select.mp3";
 
     /// <summary>
     /// Registers Pig-specific scene type conversions with NodeFactory
@@ -59,7 +60,7 @@ public class Pig : CharacterModel, IYuWanCharacter
 
     public override string CharacterTransitionSfx => "event:/sfx/ui/wipe_ironclad";
 
-    public override string CharacterSelectSfx => "res://YuWanCard/sounds/characters/pig_select.mp3";
+    public override string CharacterSelectSfx => PigCharacterSelectSfxPath;
 
     string? IYuWanCharacter.CustomCharacterSelectIconPath
         => "res://YuWanCard/images/characters/char_select_pig.png";

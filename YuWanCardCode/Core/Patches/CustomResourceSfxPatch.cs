@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Nodes.Audio;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Core.Patches;
@@ -21,6 +23,44 @@ public static class CustomResourceSfxPatch
         }
 
         AudioUtils.Play(sfx, volume: volume);
+        return false;
+    }
+}
+
+/// <summary>
+/// Some game UI flows reach the audio manager directly or bypass patched callers
+/// due to runtime inlining, so intercept the final one-shot dispatch as well.
+/// </summary>
+[HarmonyPatch(typeof(NAudioManager), nameof(NAudioManager.PlayOneShot), typeof(string), typeof(float))]
+public static class CustomResourceAudioManagerSfxPatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(string path, float volume)
+    {
+        if (string.IsNullOrWhiteSpace(path) ||
+            !path.StartsWith("res://", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        AudioUtils.Play(path, volume: volume);
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(NAudioManager), nameof(NAudioManager.PlayOneShot), typeof(string), typeof(Dictionary<string, float>), typeof(float))]
+public static class CustomResourceAudioManagerParameterizedSfxPatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(string path, Dictionary<string, float> parameters, float volume)
+    {
+        if (string.IsNullOrWhiteSpace(path) ||
+            !path.StartsWith("res://", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        AudioUtils.Play(path, volume: volume);
         return false;
     }
 }
