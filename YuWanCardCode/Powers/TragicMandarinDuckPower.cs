@@ -83,7 +83,7 @@ public class TragicMandarinDuckPower : YuWanPowerModel
         if (!data.AttackPlayedThisTurn)
         {
             Flash();
-            await CreatureCmd.Damage(choiceContext, Owner, DynamicVars["HpLoss"].IntValue, ValueProp.Move, Owner);
+            await CreatureCmd.Damage(choiceContext, Owner, DynamicVars["HpLoss"].IntValue, ValueProp.Unpowered, Owner);
         }
     }
 }

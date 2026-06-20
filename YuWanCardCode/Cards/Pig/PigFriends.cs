@@ -24,11 +24,6 @@ public class PigFriends : YuWanCardModel
         EnergyCost.UpgradeBy(-1);
     }
 
-    protected override PileType GetResultPileTypeForCardPlay()
-    {
-        return PileType.Discard;
-    }
-
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
