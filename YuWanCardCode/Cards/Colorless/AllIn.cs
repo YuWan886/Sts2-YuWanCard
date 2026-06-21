@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Extensions;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -38,7 +39,7 @@ public class AllIn : YuWanCardModel
             return;
 
         int count = DynamicVars["Magic"].IntValue;
-        var cardsToPlay = allCards.OrderBy(_ => Owner.RunState.Rng.Niche.NextFloat()).Take(count).ToList();
+        var cardsToPlay = DeterministicRandomUtils.TakeStableRandom(allCards, count, Owner.RunState.Rng.CombatCardSelection);
 
         foreach (var card in cardsToPlay)
         {

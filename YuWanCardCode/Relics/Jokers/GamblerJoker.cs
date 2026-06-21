@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Modifiers;
 using YuWanCard.Relics.Balatro;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -50,16 +51,13 @@ public sealed class GamblerJoker : BalatroJokerRelicModel
 
         for (int i = 0; i < triggerCount; i++)
         {
-            Creature? target = combatState.Enemies
-                .Where(enemy => !enemy.IsDead)
-                .OrderBy(_ => Owner.RunState.Rng.Niche.NextFloat())
-                .FirstOrDefault();
+            Creature? target = CombatTargetingUtils.GetDeterministicRandomLivingEnemy(Owner);
             if (target == null)
             {
                 break;
             }
 
-            int damage = Owner.RunState.Rng.Niche.NextInt(MinDamage, MaxDamage);
+            int damage = Owner.RunState.Rng.CombatCardSelection.NextInt(MinDamage, MaxDamage);
             await CreatureCmd.Damage(context, target, damage, ValueProp.Move, Owner.Creature, null);
         }
     }

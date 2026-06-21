@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -63,10 +64,7 @@ public sealed class CrystalPig : YuWanRelicModel
             return;
         }
 
-        Creature? target = Owner.Creature.CombatState?.Enemies
-            .Where(enemy => !enemy.IsDead)
-            .OrderBy(_ => Owner.RunState.Rng.Niche.NextFloat())
-            .FirstOrDefault();
+        Creature? target = CombatTargetingUtils.GetDeterministicRandomLivingEnemy(Owner);
 
         if (target == null)
         {

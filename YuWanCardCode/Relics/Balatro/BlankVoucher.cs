@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Modifiers;
 using YuWanCard.Relics.Balatro;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -30,10 +31,10 @@ public sealed class BlankVoucher : BalatroRelicModel
             return;
         }
 
-        List<RelicModel> choices = BalatroJokerRelicModel.GetAvailableRewardableJokers(Owner)
-            .OrderBy(_ => Owner.RunState.Rng.Niche.NextFloat())
-            .Take(3)
-            .ToList();
+        List<RelicModel> choices = DeterministicRandomUtils.TakeStableRandom(
+            BalatroJokerRelicModel.GetAvailableRewardableJokers(Owner),
+            3,
+            Owner.RunState.Rng.Niche);
         if (choices.Count == 0)
         {
             return;

@@ -109,7 +109,7 @@ public class LazyPig : YuWanRelicModel
                 nonAttackIndex++;
             }
 
-            if (attackIndex < attackCards.Count && Owner.RunState.Rng.Niche.NextFloat() >= 0.5f)
+            if (attackIndex < attackCards.Count && Owner.RunState.Rng.Shuffle.NextFloat() >= 0.5f)
             {
                 result.Add(attackCards[attackIndex]);
                 attackIndex++;

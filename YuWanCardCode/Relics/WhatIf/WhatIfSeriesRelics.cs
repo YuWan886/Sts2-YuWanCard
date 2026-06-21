@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Runs;
 using System.Security.Cryptography;
 using System.Text;
 using YuWanCard.RelicPools;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -39,8 +40,11 @@ public class WhatIfSeriesRelics : WhatIfRelicModel, IWhatIfUniformRelicSource
         {
             if (rewards[i] is RelicReward)
             {
-                var sinRelic = relics[Owner!.RunState.Rng.Niche.NextInt(relics.Length)].ToMutable();
-                rewards[i] = new RelicReward(sinRelic, player);
+                RelicModel? sinRelic = DeterministicRandomUtils.PickDeterministicRelic(relics, player.PlayerRng.Rewards);
+                if (sinRelic != null)
+                {
+                    rewards[i] = new RelicReward(sinRelic.ToMutable(), player);
+                }
             }
         }
         return true;

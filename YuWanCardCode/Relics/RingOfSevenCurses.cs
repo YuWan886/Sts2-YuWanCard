@@ -79,7 +79,7 @@ public class RingOfSevenCurses : YuWanRelicModel
             return;
         }
         Flash();
-        CardModel? curseCard = Owner.RunState.Rng.Niche.NextItem(availableCurses);
+        CardModel? curseCard = Owner.RunState.Rng.CombatCardGeneration.NextItem(availableCurses);
         if (curseCard == null || Owner.Creature.CombatState == null)
         {
             return;
@@ -161,7 +161,8 @@ public class RingOfSevenCurses : YuWanRelicModel
             rewards.Add(new RelicReward(ModelDb.Relic<ThousandCurseScroll>().ToMutable(), player));
         }
 
-        if (room.RoomType == RoomType.Monster && Owner.RunState.Rng.Niche.NextFloat() <= 0.7f)
+        if (room.RoomType == RoomType.Monster
+            && DeterministicRandomUtils.RollProbability(player.PlayerRng.Rewards, 0.7f))
         {
             RelicReward? reward = RelicRewardUtils.CreateStandardSharedRelicReward(player);
             if (reward != null)

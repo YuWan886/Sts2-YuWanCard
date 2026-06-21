@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -96,9 +97,6 @@ public sealed class TrapPig : YuWanRelicModel
 
     private Creature? SelectTarget()
     {
-        return Owner?.Creature?.CombatState?.Enemies
-            .Where(enemy => !enemy.IsDead)
-            .OrderBy(_ => Owner.RunState.Rng.Niche.NextFloat())
-            .FirstOrDefault();
+        return CombatTargetingUtils.GetDeterministicRandomLivingEnemy(Owner);
     }
 }

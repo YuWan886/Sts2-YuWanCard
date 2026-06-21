@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Modifiers;
 using YuWanCard.Relics.Balatro;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -28,7 +29,7 @@ public sealed class Dice : BalatroRelicModel
             return;
         }
 
-        int roll = Owner.RunState.Rng.Niche.NextInt(1, 4);
+        int roll = DeterministicRandomUtils.NextInclusive(Owner.RunState.Rng.CombatCardSelection, 1, 3);
         modifier.SetComboAtLeast(Owner, roll);
     }
 

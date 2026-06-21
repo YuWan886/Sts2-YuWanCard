@@ -34,8 +34,7 @@ public sealed class LustMalice : MaliceRelicModel
             return false;
         }
 
-        float roll = runState.Rng.Niche.NextFloat();
-        if (roll > 0.4f)
+        if (!DeterministicRandomUtils.RollProbability(player.PlayerRng.Rewards, 0.4f))
         {
             return false;
         }

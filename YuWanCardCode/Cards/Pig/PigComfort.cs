@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -38,10 +39,9 @@ public class PigComfort : YuWanCardModel
 
         foreach (var ally in allies)
         {
-            var debuff = ally.Powers
-                .Where(p => p.Type == PowerType.Debuff)
-                .OrderBy(_ => Owner.RunState.Rng.CombatCardGeneration.NextFloat())
-                .FirstOrDefault();
+            var debuff = DeterministicRandomUtils.PickStableRandom(
+                ally.Powers.Where(p => p.Type == PowerType.Debuff),
+                Owner.RunState.Rng.CombatCardGeneration);
             if (debuff != null)
             {
                 await PowerCmd.Remove(debuff);

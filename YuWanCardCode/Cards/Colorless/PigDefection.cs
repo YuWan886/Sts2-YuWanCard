@@ -29,21 +29,18 @@ public class PigDefection : YuWanCardModel
     {
         if (CombatState == null || Owner == null) return;
 
-        var rng = Owner.RunState?.Rng?.Niche;
-        if (rng == null) return;
-
         var enemies = CombatState.HittableEnemies;
         if (enemies.Count == 0) return;
 
         var target = cardPlay.Target;
         if (target == null || target.IsDead)
         {
-            target = rng.NextItem(enemies);
+            target = CombatTargetingUtils.GetDeterministicRandomTarget(Owner, enemies);
         }
 
         if (target == null) return;
 
-        bool success = rng.NextInt(100) < DefectionChance;
+        bool success = DeterministicRandomUtils.RollProbability(Owner.RunState.Rng.CombatCardSelection, DefectionChance / 100f);
 
         if (success)
         {

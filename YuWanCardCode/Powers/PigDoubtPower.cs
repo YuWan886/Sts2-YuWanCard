@@ -61,7 +61,7 @@ public class PigDoubtPower : YuWanPowerModel
 
         if (filteredPowers.Count == 0) return null;
 
-        return rng.Niche.NextItem(filteredPowers);
+        return DeterministicRandomUtils.PickDeterministicBuffPower(filteredPowers, rng.CombatCardSelection);
     }
 
     private bool IsValidPower(PowerModel power)

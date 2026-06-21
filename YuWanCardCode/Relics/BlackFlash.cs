@@ -30,7 +30,7 @@ public class BlackFlash : YuWanRelicModel
         if (!cardPlay.Card.Tags.Contains(CardTag.Strike)) return Task.CompletedTask;
         if (cardPlay.Target == null || cardPlay.Target.Side != CombatSide.Enemy) return Task.CompletedTask;
 
-        if (Owner.RunState.Rng.Niche.NextFloat() < 0.1f)
+        if (DeterministicRandomUtils.RollProbability(Owner.RunState.Rng.CombatCardSelection, 0.1f))
         {
             _empoweredAttack = cardPlay.Card;
             MainFile.Logger.Info($"BlackFlash triggered on {cardPlay.Card.Title}, dealing 2.5x damage");

@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
 using MegaCrit.Sts2.Core.ValueProps;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Powers;
 
@@ -80,13 +81,10 @@ public class PigDefectionPower : YuWanPowerModel
         if (Owner.IsDead) return;
         if (CombatManager.Instance?.IsEnding != false) return;
 
-        var enemies = combatState.HittableEnemies;
-        if (enemies == null || enemies.Count == 0) return;
+        var targetOwner = Owner.Player ?? Owner.PetOwner;
+        if (targetOwner == null) return;
 
-        var rng = Owner.Player?.RunState?.Rng?.Niche ?? Owner.PetOwner?.RunState?.Rng?.Niche;
-        if (rng == null) return;
-
-        var target = rng.NextItem(enemies);
+        var target = CombatTargetingUtils.GetDeterministicRandomTarget(targetOwner, combatState.HittableEnemies);
         if (target == null) return;
 
         Flash();

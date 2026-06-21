@@ -17,6 +17,7 @@ using YuWanCard.Malice;
 using YuWanCard.Powers;
 using YuWanCard.Powers.MaliceTraits;
 using YuWanCard.Relics.Malice;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Modifiers;
 
@@ -108,16 +109,16 @@ public sealed class MaliceModifier : YuWanModifierModel
             return false;
 
         float chance = isBoss ? 1.0f : 0.10f;
-        if (RunState.Rng.Niche.NextFloat() > chance)
+        if (!DeterministicRandomUtils.RollProbability(player.PlayerRng.Rewards, chance))
             return false;
 
         List<RelicModel> availableMaliceRelics = GetAvailableMaliceRelics(player);
-        if (availableMaliceRelics.Count <= 0)
+        RelicModel? relic = DeterministicRandomUtils.PickDeterministicRelic(availableMaliceRelics, player.PlayerRng.Rewards);
+        if (relic == null)
         {
             return false;
         }
 
-        var relic = availableMaliceRelics[RunState.Rng.Niche.NextInt(availableMaliceRelics.Count)];
         rewards.Add(new RelicReward(relic.ToMutable(), player));
         return true;
     }

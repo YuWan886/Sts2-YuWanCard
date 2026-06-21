@@ -50,7 +50,7 @@ public sealed class Obsidian : YuWanCardModel
                 .ToList();
             if (removable.Count > 0)
             {
-                CardModel removed = removable[Owner.RunState.Rng.Niche.NextInt(removable.Count)];
+                CardModel removed = removable[Owner.RunState.Rng.CombatCardSelection.NextInt(removable.Count)];
                 await CardPileCmd.RemoveFromDeck(removed, showPreview: false);
             }
         }

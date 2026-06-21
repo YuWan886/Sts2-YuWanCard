@@ -40,9 +40,8 @@ public static class CardUtils
 
     public static CardModel GetRandomFoodPigCardCanonical(Player player)
     {
-        return FoodPigCards
-            .OrderBy(_ => player.RunState.Rng.CombatCardGeneration.NextFloat())
-            .First();
+        return DeterministicRandomUtils.PickStableRandom(FoodPigCards, player.RunState.Rng.CombatCardGeneration)
+               ?? FoodPigCards.First();
     }
 
     public static CardModel CreateRandomFoodPigCard(Player player)

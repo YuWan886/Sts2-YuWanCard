@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using YuWanCard.Relics.Balatro;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
 
@@ -22,7 +23,7 @@ public sealed class NegativeJoker : BalatroJokerRelicModel
             return result;
         }
 
-        if (Owner.RunState.Rng.Niche.NextFloat() < ExtraPlayChance)
+        if (DeterministicRandomUtils.RollProbability(Owner.RunState.Rng.CombatCardSelection, ExtraPlayChance))
         {
             Flash();
             result += EffectiveCount();

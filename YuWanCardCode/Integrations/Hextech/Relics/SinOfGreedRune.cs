@@ -40,13 +40,7 @@ public sealed class SinOfGreedRune : HextechSharedRuneBase
                 return;
             }
 
-            var enemies = Owner.Creature.CombatState.HittableEnemies;
-            if (enemies.Count == 0)
-            {
-                return;
-            }
-
-            Creature? target = Owner.RunState.Rng.Niche.NextItem(enemies);
+            Creature? target = CombatTargetingUtils.GetDeterministicRandomTarget(Owner, Owner.Creature.CombatState.HittableEnemies);
             if (target == null)
             {
                 return;

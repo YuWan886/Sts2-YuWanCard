@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Relics;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Hextech;
 
@@ -23,6 +24,7 @@ public static class HextechPigRuneSharedState
         }
 
         float chance = relic.Owner?.GetRelic<RingOfSevenCurses>() == null ? baseChance : baseChance + ringBonusChance;
-        return relic.Owner?.RunState?.Rng?.Niche.NextFloat() < chance;
+        return relic.Owner?.RunState?.Rng != null
+               && DeterministicRandomUtils.RollProbability(relic.Owner.RunState.Rng.CombatCardSelection, chance);
     }
 }

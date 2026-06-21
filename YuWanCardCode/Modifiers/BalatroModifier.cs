@@ -317,12 +317,12 @@ public sealed class BalatroModifier : YuWanModifierModel
         if (!HasBalatroRelicReward(rewards))
         {
             float jokerChance = room.RoomType == RoomType.Boss ? 0.5f : 0.10f;
-            if (RunState.Rng.Niche.NextFloat() <= jokerChance)
+            if (DeterministicRandomUtils.RollProbability(player.PlayerRng.Rewards, jokerChance))
             {
                 List<RelicModel> available = GetAvailableJokers(player);
-                if (available.Count > 0)
+                RelicModel? reward = DeterministicRandomUtils.PickDeterministicRelic(available, player.PlayerRng.Rewards);
+                if (reward != null)
                 {
-                    RelicModel reward = available[RunState.Rng.Niche.NextInt(available.Count)];
                     rewards.Add(new RelicReward(reward.ToMutable(), player));
                     modified = true;
                 }
@@ -332,7 +332,7 @@ public sealed class BalatroModifier : YuWanModifierModel
         if (!HasBalatroRelicReward(rewards))
         {
             float tokenChance = room.RoomType == RoomType.Boss ? 0.20f : 0.05f;
-            if (RunState.Rng.Niche.NextFloat() <= tokenChance)
+            if (DeterministicRandomUtils.RollProbability(player.PlayerRng.Rewards, tokenChance))
             {
                 rewards.Add(new RelicReward(ModelDb.Relic<ModifierToken>().ToMutable(), player));
                 modified = true;
