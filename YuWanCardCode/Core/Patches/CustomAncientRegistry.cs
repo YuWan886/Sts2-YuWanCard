@@ -1,5 +1,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Unlocks;
+using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Core.Patches;
 
@@ -43,5 +45,45 @@ static class AllSharedAncientsPatch
     static IEnumerable<AncientEventModel> AddCustomAncients(IEnumerable<AncientEventModel> __result)
     {
         return [.. __result, .. CustomAncientRegistry.CustomAncients];
+    }
+}
+
+/// <summary>
+/// The relic compendium only builds ancient subcategories for ancients present in
+/// the unlock state's shared-ancient set. Include custom ancients there so their
+/// relic options can be listed under the Ancient relic page.
+/// </summary>
+[HarmonyPatch(typeof(UnlockState), nameof(UnlockState.SharedAncients), MethodType.Getter)]
+static class UnlockStateSharedAncientsPatch
+{
+    [HarmonyPostfix]
+    static IEnumerable<AncientEventModel> AddCustomUnlockedAncients(IEnumerable<AncientEventModel> __result)
+    {
+        return __result
+            .Concat(CustomAncientRegistry.CustomAncients)
+            .Distinct();
+    }
+}
+
+/// <summary>
+/// Custom ancients can constrain themselves to a specific act. Keep shared-ancient
+/// distribution consistent with that rule when RunManager fans shared ancients out
+/// across later acts.
+/// </summary>
+[HarmonyPatch(typeof(ActModel), nameof(ActModel.SetSharedAncientSubset))]
+static class ActSharedAncientSubsetFilterPatch
+{
+    [HarmonyPrefix]
+    static void FilterInvalidCustomAncients(ActModel __instance, ref List<AncientEventModel> sharedAncientSubset)
+    {
+        if (sharedAncientSubset.Count == 0)
+        {
+            return;
+        }
+
+        ActModel act = __instance.CanonicalInstance;
+        sharedAncientSubset = sharedAncientSubset
+            .Where(ancient => ancient is not YuWanAncientModel customAncient || customAncient.IsValidForAct(act))
+            .ToList();
     }
 }

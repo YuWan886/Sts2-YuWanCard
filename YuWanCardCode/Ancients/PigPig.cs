@@ -1,18 +1,12 @@
 using System.Reflection;
 using YuWanCard.Core.Abstracts;
-using MegaCrit.Sts2.Core.CardSelection;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ancients;
-using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Acts;
-using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Relics;
-using YuWanCard.Utils;
 
 namespace YuWanCard.Ancients;
 
@@ -28,7 +22,12 @@ public class PigPig : YuWanAncientModel
         ModelDb.Relic<LazyPig>(),
         ModelDb.Relic<GreedyPig>(),
         ModelDb.Relic<GluttonousPig>(),
-        ModelDb.Relic<LustfulPig>()
+        ModelDb.Relic<LustfulPig>(),
+        ModelDb.Relic<PigStandChicken>(),
+        ModelDb.Relic<HongMengPig>(),
+        ModelDb.Relic<TankPig>(),
+        ModelDb.Relic<TrapPig>(),
+        ModelDb.Relic<CrystalPig>()
     ]);
 
     public PigPig()
@@ -92,95 +91,16 @@ public class PigPig : YuWanAncientModel
         MakePool(Array.Empty<RelicModel>())
     );
 
-    public override IEnumerable<EventOption> AllPossibleOptions => _validRelics.Value.Select(r => RelicOption(r.ToMutable(), "INITIAL"));
+    public override IEnumerable<EventOption> AllPossibleOptions =>
+        _validRelics.Value.Select(relic => RelicOption(relic.ToMutable(), "INITIAL"));
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
-        var randomSevenSinsIndex = Rng.NextInt(_validRelics.Value.Length);
-        var selectedRelic = _validRelics.Value[randomSevenSinsIndex].ToMutable();
-
-        var eventOptions = new List<EventOption>
-        {
-            RelicOption(selectedRelic, "INITIAL"),
-            new(this, ChooseRandomRelic, $"{Id.Entry}.pages.INITIAL.options.CHOOSE_RELIC"),
-            new(this, UpgradeCards, $"{Id.Entry}.pages.INITIAL.options.UPGRADE_CARDS")
-        };
-
-        return eventOptions;
-    }
-
-    private async Task ChooseRandomRelic()
-    {
-        var sharedPool = ModelDb.RelicPool<SharedRelicPool>();
-        var runState = Owner!.RunState;
-
-        List<RelicModel> GetRelicsByRarity(RelicRarity rarity)
-        {
-            return RelicRewardUtils.GetStandardSharedRewardCandidates(
-                    runState,
-                    sharedPool.AllRelics.Where(r => r.Rarity == rarity))
-                .Select(r => r.ToMutable())
-                .ToList()
-                .UnstableShuffle(Rng);
-        }
-
-        var commonRelics = GetRelicsByRarity(RelicRarity.Common);
-        var uncommonRelics = GetRelicsByRarity(RelicRarity.Uncommon);
-        var shopRelics = GetRelicsByRarity(RelicRarity.Shop);
-        var rareRelics = GetRelicsByRarity(RelicRarity.Rare);
-        
-        var relicsToOffer = new List<RelicModel>();
-        relicsToOffer.AddRange(commonRelics.Take(1));
-        relicsToOffer.AddRange(uncommonRelics.Take(2));
-        relicsToOffer.AddRange(shopRelics.Take(1));
-        relicsToOffer.AddRange(rareRelics.Take(1));
-        
-        if (relicsToOffer.Count == 0)
-        {
-            Done();
-            return;
-        }
-        
-        var firstRelic = await RelicSelectCmd.FromChooseARelicScreen(Owner!, relicsToOffer);
-        if (firstRelic != null)
-        {
-            await RelicCmd.Obtain(firstRelic, Owner!);
-            relicsToOffer.Remove(firstRelic);
-        }
-        
-        if (relicsToOffer.Count > 0)
-        {
-            var secondRelic = await RelicSelectCmd.FromChooseARelicScreen(Owner!, relicsToOffer);
-            if (secondRelic != null)
-            {
-                await RelicCmd.Obtain(secondRelic, Owner!);
-            }
-        }
-        
-        Done();
-    }
-
-    private async Task UpgradeCards()
-    {
-        var upgradeableCards = PileType.Deck.GetPile(Owner!).Cards
-            .Where(c => c.IsUpgradable)
+        return _validRelics.Value
+            .Select(relic => RelicOption(relic.ToMutable(), "INITIAL"))
+            .ToList()
+            .UnstableShuffle(Rng)
+            .Take(3)
             .ToList();
-
-        if (upgradeableCards.Count == 0)
-        {
-            await ChooseRandomRelic();
-            return;
-        }
-
-        var cardsToUpgrade = await CardSelectCmd.FromDeckForUpgrade(
-            Owner!,
-            new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, Math.Min(3, upgradeableCards.Count))
-        );
-
-        foreach (var card in cardsToUpgrade)
-        {
-            CardCmd.Upgrade(card);
-        }
-        Done();
     }
 }

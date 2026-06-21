@@ -1,11 +1,7 @@
 {
   "YUWANCARD-PIG_PIG.title": "Pig Pig",
   "YUWANCARD-PIG_PIG.epithet": "The Mysterious Pig",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.description": "A pig appears before you. It seems to want to give you something...",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC.title": "Choose Relic",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC.description": "Choose one relic from 3 random relics.",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.title": "Upgrade Cards",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.description": "Choose up to 3 cards to upgrade.",
+  "YUWANCARD-PIG_PIG.pages.INITIAL.description": "A pig appears before you, lays out a whole row of pig relics, and motions for you to take one.",
   "YUWANCARD-PIG_PIG.pages.DONE.description": "The pig leaves, satisfied...",
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-0.ancient": "Oink oink... Stranger, you have entered my domain.",
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-0.next": "Continue",
@@ -180,6 +176,5 @@
   "THE_ARCHITECT.talk.YUWANCARD-PIG.2-0r.next": "Continue",
   "THE_ARCHITECT.talk.YUWANCARD-PIG.2-1r.char": "What did pig eat... that makes pig stop waiting?\n[i][font_size=22]Pig tilts its head in confusion.[/font_size][/i]",
   "THE_ARCHITECT.talk.YUWANCARD-PIG.2-1r.next": "Continue",
-  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-2r.ancient": "It will. So don't eat. Keep starving—hunger is your only reliable compass.",
-  "YUWANCARD-WHAT_IF_MENU.description": "Choose a relic..."
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-2r.ancient": "It will. So don't eat. Keep starving—hunger is your only reliable compass."
 }

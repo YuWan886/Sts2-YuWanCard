@@ -1,4 +1,7 @@
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
@@ -33,14 +36,25 @@ public sealed class SinOfSlothRune : HextechSharedRuneBase
         return Task.CompletedTask;
     }
 
-    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    public override Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
-        if (player != Owner)
+        if (cardPlay.Card.Owner == Owner)
+        {
+            _cardsPlayedThisTurn++;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
+    {
+        if (Owner == null
+            || side != CombatSide.Player
+            || !participants.Contains(Owner.Creature))
         {
             return;
         }
 
-        // Check previous turn's card count before resetting
         if (_cardsPlayedThisTurn > 0 && _cardsPlayedThisTurn <= DynamicVars["CardThreshold"].IntValue)
         {
             Flash();

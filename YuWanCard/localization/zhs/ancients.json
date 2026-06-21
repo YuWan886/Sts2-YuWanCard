@@ -1,11 +1,7 @@
 {
   "YUWANCARD-PIG_PIG.title": "猪猪",
   "YUWANCARD-PIG_PIG.epithet": "神秘的猪猪",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.description": "猪猪出现在你面前，它似乎想给你一些东西...",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC.title": "选择遗物",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.CHOOSE_RELIC.description": "从3个随机遗物中选择一个。",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.title": "升级卡牌",
-  "YUWANCARD-PIG_PIG.pages.INITIAL.options.UPGRADE_CARDS.description": "选择最多3张卡牌进行升级。",
+  "YUWANCARD-PIG_PIG.pages.INITIAL.description": "猪猪出现在你面前，摆出一整排猪猪遗物，示意你从中选一个带走。",
   "YUWANCARD-PIG_PIG.pages.DONE.description": "猪猪满意地离开了...",
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-0.ancient": "哼哼...陌生的旅人，你来到了我的领地。",
   "YUWANCARD-PIG_PIG.talk.firstVisitEver.0-0.next": "继续",
@@ -180,6 +176,5 @@
   "THE_ARCHITECT.talk.YUWANCARD-PIG.2-0r.next": "继续",
   "THE_ARCHITECT.talk.YUWANCARD-PIG.2-1r.char": "吃了什么……会让猪不再等吗？\n[i][font_size=22]猪困惑地歪了歪头。[/font_size][/i]",
   "THE_ARCHITECT.talk.YUWANCARD-PIG.2-1r.next": "继续",
-  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-2r.ancient": "会。所以别吃。继续饿着——饥饿是你唯一可靠的指南针。",
-  "YUWANCARD-WHAT_IF_MENU.description": "选择一个遗物..."
+  "THE_ARCHITECT.talk.YUWANCARD-PIG.2-2r.ancient": "会。所以别吃。继续饿着——饥饿是你唯一可靠的指南针。"
 }
