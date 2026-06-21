@@ -16,6 +16,6 @@ public sealed class PigletCollarForge : HextechPigForgeBase
         }
 
         Flash();
-        await PowerCmd.Apply<PigFriendsPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, 1, Owner.Creature, null);
+        await PowerCmd.Apply<PigFriendsPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, Stacked(1), Owner.Creature, null);
     }
 }

@@ -1,4 +1,5 @@
 using YuWanCard.Core.Abstracts;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -17,19 +18,22 @@ public class PigOffWork : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.None)
     {
-        WithKeywords(CardKeyword.Exhaust);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var primaryEnemies = CombatState!.Enemies
-            .Where(e => e.IsAlive && e.IsPrimaryEnemy)
+        var enemies = CombatState!.Enemies
+            .Where(e => e.IsAlive)
             .ToList();
 
-        foreach (var enemy in primaryEnemies)
+        foreach (var enemy in enemies)
         {
+            enemy.RemoveAllPowersInternalExcept();
             await CreatureCmd.Kill(enemy, true);
         }
+
+        if (CombatManager.Instance != null)
+            await CombatManager.Instance.CheckWinCondition();
 
         if (DeckVersion != null)
         {

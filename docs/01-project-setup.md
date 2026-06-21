@@ -118,7 +118,7 @@ YourMod/
 │   ├── Patches/               # Harmony 补丁
 │   ├── Utils/                 # 项目工具类
 │   └── Core/                  # 核心框架
-│       ├── Abstracts/         # 抽象基类（17个）
+│       ├── Abstracts/         # 抽象基类（19个）
 │       ├── Registration/      # 注册系统
 │       ├── Patching/          # 补丁系统
 │       ├── Lifecycle/         # 生命周期管理
@@ -126,6 +126,14 @@ YourMod/
 │       ├── Interop/           # 模组互操作
 │       ├── Extensions/        # 扩展方法
 │       ├── Badges/            # 徽章系统
+│       ├── HandGlow/          # 手牌高亮系统
+│       ├── HealthBar/         # 生命条覆盖系统
+│       ├── Transcendence/     # 超脱卡牌注册
+│       ├── Multiplayer/       # 多人游戏基础设施
+│       ├── Persistence/       # 持久化基础设施
+│       ├── RightClick/        # 右键菜单系统
+│       ├── Singletons/        # 单例管理
+│       ├── Balatro/           # Balatro 模式核心定义
 │       └── Utils/             # 核心工具类
 ├── others/                    # 参考资源目录（不参与编译）
 ├── MainFile.cs                # 模组入口文件
@@ -191,33 +199,82 @@ public interface IYuWanContent
 
 ## IYuWanCharacter 接口
 
-自定义角色应实现 `IYuWanCharacter` 接口，提供角色特有的视觉资源路径（20+ 个可自定义路径）：
+自定义角色应实现 `IYuWanCharacter` 接口，该接口的所有成员都有默认实现，通过 `PlaceholderID` 自动推导资源路径：
 
 ```csharp
 namespace YuWanCard.Core;
 
 public interface IYuWanCharacter : IYuWanContent
 {
-    string? CustomVisualPath => null;
-    string? CustomEnergyCounterPath => null;
-    string? CustomCharacterSelectIconPath => null;
-    string? CustomCharacterSelectLockedIconPath => null;
-    string? CustomCharacterSelectBg => null;
-    string? CustomIconPath => null;
-    string? CustomIconTexturePath => null;
-    string? CustomIconOutlineTexturePath => null;
-    string? CustomMerchantAnimPath => null;
-    string? CustomRestSiteAnimPath => null;
-    string? CustomArmPointingTexturePath => null;
-    string? CustomArmRockTexturePath => null;
-    string? CustomArmPaperTexturePath => null;
-    string? CustomArmScissorsTexturePath => null;
-    string? CustomAttackSfx => null;
-    string? CustomCastSfx => null;
-    string? CustomDeathSfx => null;
+    // 核心标识：用于自动推导所有资源路径（默认 "ironclad"）
+    string PlaceholderID => "ironclad";
 
+    // 多人游戏初始遗物
+    IReadOnlyList<RelicModel> MultiplayerStartingRelics => [];
+
+    // 视觉效果路径（基于 PlaceholderID 自动推导）
+    string? CustomVisualPath => SceneHelper.GetScenePath("creature_visuals/" + PlaceholderID);
+    string? CustomTrailPath => SceneHelper.GetScenePath("vfx/card_trail_" + PlaceholderID);
+    string? CustomIconTexturePath => ImageHelper.GetImagePath("ui/top_panel/character_icon_" + PlaceholderID + ".png");
+    string? CustomIconOutlineTexturePath => null;
+    string? CustomIconPath => SceneHelper.GetScenePath("ui/character_icons/" + PlaceholderID + "_icon");
+    Control? CustomIcon => null;
+    string? CustomEnergyCounterPath => SceneHelper.GetScenePath("combat/energy_counters/" + PlaceholderID + "_energy_counter");
+    string? CustomRestSiteAnimPath => SceneHelper.GetScenePath("rest_site/characters/" + PlaceholderID + "_rest_site");
+    string? CustomMerchantAnimPath => SceneHelper.GetScenePath("merchant/characters/" + PlaceholderID + "_merchant");
+
+    // 多人游戏手势
+    string? CustomArmPointingTexturePath => ImageHelper.GetImagePath("ui/hands/" + PlaceholderID + "_arm_point.png");
+    string? CustomArmRockTexturePath => ImageHelper.GetImagePath("ui/hands/" + PlaceholderID + "_arm_rock.png");
+    string? CustomArmPaperTexturePath => ImageHelper.GetImagePath("ui/hands/" + PlaceholderID + "_arm_paper.png");
+    string? CustomArmScissorsTexturePath => ImageHelper.GetImagePath("ui/hands/" + PlaceholderID + "_arm_scissors.png");
+
+    // 角色选择界面
+    string? CustomCharacterSelectBg => SceneHelper.GetScenePath("screens/char_select/char_select_bg_" + PlaceholderID);
+    string? CustomCharacterSelectIconPath => ImageHelper.GetImagePath("packed/character_select/char_select_" + PlaceholderID + ".png");
+    string? CustomCharacterSelectLockedIconPath => ImageHelper.GetImagePath("packed/character_select/char_select_" + PlaceholderID + "_locked.png");
+    string? CustomCharacterSelectTransitionPath => "res://materials/transitions/" + PlaceholderID + "_transition_mat.tres";
+    string? CustomMapMarkerPath => ImageHelper.GetImagePath("packed/map/icons/map_marker_" + PlaceholderID + ".png");
+
+    // 音效（基于 PlaceholderID 自动推导）
+    string? CustomAttackSfx => $"event:/sfx/characters/{PlaceholderID}/{PlaceholderID}_attack";
+    string? CustomCastSfx => $"event:/sfx/characters/{PlaceholderID}/{PlaceholderID}_cast";
+    string? CustomDeathSfx => $"event:/sfx/characters/{PlaceholderID}/{PlaceholderID}_die";
+
+    // 美味小饼干图标
+    RelicIconData? CustomYummyCookie => null;
+
+    // 动画延迟
+    float AttackAnimDelay => 0.15f;
+    float CastAnimDelay => 0.25f;
+
+    // 解锁条件
+    CharacterModel? UnlocksAfterRunAs => null;
+
+    // 原版角色选择界面行为
+    bool HideFromVanillaCharacterSelect => false;
+    bool AllowInVanillaRandomCharacterSelect => true;
+
+    // 动画和视觉
     NCreatureVisuals? CreateCustomVisuals() => null;
     CreatureAnimator? SetupCustomAnimationStates(MegaSprite controller) => null;
+
+    // 辅助方法：快速创建标准动画状态机
+    protected static CreatureAnimator SetupAnimationState(MegaSprite controller,
+        string idleName, string? deadName = null, bool deadLoop = false,
+        string? hitName = null, bool hitLoop = false,
+        string? attackName = null, bool attackLoop = false,
+        string? castName = null, bool castLoop = false,
+        string? relaxedName = null, bool relaxedLoop = true) { ... }
+}
+```
+
+**使用示例**：只需设置 `PlaceholderID`，大部分路径自动推导：
+```csharp
+public class Pig : CharacterModel, IYuWanCharacter
+{
+    string IYuWanCharacter.PlaceholderID => "pig";
+    // 其他成员按需覆盖
 }
 ```
 
@@ -243,6 +300,9 @@ protected virtual string PowerId => CamelCaseRegex.Replace(GetType().Name, "$1_$
 ```csharp
 global using MegaCrit.Sts2.Core.Context;
 global using YuWanCard.Core;
+global using YuWanCard.Core.HandGlow;
+global using YuWanCard.Core.Lifecycle;
+global using YuWanCard.Core.Patching;
 global using YuWanCard.Core.Registration;
 global using YuWanCard.Core.Utils;
 ```

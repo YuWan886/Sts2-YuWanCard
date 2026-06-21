@@ -379,7 +379,7 @@ public class PigDoubtPower : YuWanPowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars => 
         [new DynamicVar("PigDoubtPower", 1m)];
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side == Owner.Side)
         {
@@ -435,7 +435,7 @@ public class PigDoubtPower : YuWanPowerModel
 | `Single` | 不叠加（施加后不显示数字，只存在或不存在） |
 | `None` | 无叠加显示（能力存在但不显示层数） |
 
-**注意**：Duration 的持续效果使用 `StackType = Counter`，然后利用 `SkipNextDurationTick` 控制每回合递减。
+**注意**：游戏引擎只提供这三种 StackType。Duration 效果通过 `StackType = Counter` 配合 `SkipNextDurationTick` 实现每回合递减。
 
 ### 常用钩子方法
 
@@ -444,11 +444,14 @@ public class PigDoubtPower : YuWanPowerModel
 | `AfterApplied(Creature?, CardModel?)` | 能力被施加后 |
 | `BeforeApplied(Creature?, CardModel?)` | 能力被施加前 |
 | `AfterPowerAmountChanged(int, int)` | 能力层数变化后 |
-| `AfterSideTurnStart(CombatSide, CombatState)` | 任意方回合开始时 |
-| `AfterSideTurnEnd(CombatSide, CombatState)` | 任意方回合结束时 |
-| `BeforeTurnStart(CombatTurn)` | 回合开始前 |
-| `AfterPlayerTurnStart()` | 玩家回合开始时 |
-| `AfterPlayerTurnEnd()` | 玩家回合结束时 |
+| `BeforeSideTurnStart(PlayerChoiceContext, CombatSide, IReadOnlyList<Creature>, ICombatState)` | 任意方回合开始前 |
+| `AfterSideTurnStart(CombatSide, IReadOnlyList<Creature>, ICombatState)` | 任意方回合开始后 |
+| `AfterSideTurnStartLate(CombatSide, IReadOnlyList<Creature>, ICombatState)` | 任意方回合开始后（晚） |
+| `BeforeSideTurnEnd(PlayerChoiceContext, CombatSide, IEnumerable<Creature>)` | 任意方回合结束前 |
+| `AfterSideTurnEnd(PlayerChoiceContext, CombatSide, IEnumerable<Creature>)` | 任意方回合结束后 |
+| `AfterPlayerTurnStart(PlayerChoiceContext, Player)` | 玩家回合开始时 |
+| `AfterPlayerTurnStartEarly(PlayerChoiceContext, Player)` | 玩家回合开始时（早） |
+| `AfterPlayerTurnStartLate(PlayerChoiceContext, Player)` | 玩家回合开始时（晚） |
 | `ModifyDamage(decimal, DamageInfo, Creature)` | 修改伤害值 |
 | `ModifyBlock(decimal, Creature)` | 修改格挡值 |
 | `OnAttack(DamageInfo, Creature)` | 攻击时触发 |
@@ -603,6 +606,9 @@ public class PigCarrot : YuWanRelicModel
 | `ModifyMaxEnergy(Player, decimal)` | 修改最大能量 |
 | `ModifyHandDraw(Player, int)` | 修改抽牌数 |
 | `ModifyRestSiteHealAmount(Player, decimal)` | 修改休息处回复量 |
+| `ModifyGoldGained(Player, decimal)` | 修改金币获得量（返回修改后的值） |
+| `ModifyPowerAmountGivenAdditive(PowerModel, Creature, decimal, Creature?, CardModel?)` | 修改能力施加量（加法） |
+| `ModifyPowerAmountGivenMultiplicative(PowerModel, Creature, decimal, Creature?, CardModel?)` | 修改能力施加量（乘法） |
 
 **卡牌/奖励钩子**：
 | 方法 | 说明 |
@@ -610,8 +616,7 @@ public class PigCarrot : YuWanRelicModel
 | `AfterCardPlayed(Card)` | 打出卡牌后 |
 | `AfterCardExhausted(Card)` | 卡牌被消耗后 |
 | `TryModifyRewards(Rewards)` | 修改战斗奖励 |
-| `ShouldGainGold(decimal, Player)` | 获得金币前（返回 false 阻止） |
-| `AfterGoldGained(Player)` | 获得金币后 |
+| `AfterModifyingGoldGained(Player, decimal)` | 金币修改后（触发副作用） |
 
 ### 遗物升级链
 
@@ -770,39 +775,51 @@ public class Pig : CharacterModel, IYuWanCharacter
 
 ### IYuWanCharacter 接口
 
-实现此接口可自定义角色视觉资源（20+ 个路径属性）：
+实现此接口可自定义角色视觉资源。所有成员都有基于 `PlaceholderID` 的默认实现，只需设置 `PlaceholderID` 即可自动推导大部分路径：
 
 ```csharp
 public class Pig : CharacterModel, IYuWanCharacter
 {
-    // 自定义视觉效果路径
+    // 核心标识：所有资源路径自动推导的基础
+    string IYuWanCharacter.PlaceholderID => "pig";
+
+    // 自定义视觉效果路径（覆盖默认推导）
     string? IYuWanCharacter.CustomVisualPath => "res://YuWanCard/scenes/characters/pig.tscn";
     string? IYuWanCharacter.CustomEnergyCounterPath => "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
     string? IYuWanCharacter.CustomMerchantAnimPath => "res://YuWanCard/scenes/characters/pig_merchant.tscn";
     string? IYuWanCharacter.CustomRestSiteAnimPath => "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
-    
+
     // 角色选择界面
     string? IYuWanCharacter.CustomCharacterSelectIconPath => "res://YuWanCard/images/characters/char_select_pig.png";
     string? IYuWanCharacter.CustomCharacterSelectLockedIconPath => "res://YuWanCard/images/characters/char_select_pig.png";
     string? IYuWanCharacter.CustomCharacterSelectBg => "res://YuWanCard/scenes/characters/char_select_bg_pig.tscn";
-    
+
     // UI 图标
     string? IYuWanCharacter.CustomIconPath => "res://YuWanCard/scenes/ui/character_icons/pig_icon.tscn";
     string? IYuWanCharacter.CustomIconTexturePath => "res://YuWanCard/images/characters/character_icon_pig.png";
-    string? IYuWanCharacter.CustomIconOutlineTexturePath => "res://YuWanCard/images/characters/character_icon_pig.png";
-    
+
     // 多人游戏手势
     string? IYuWanCharacter.CustomArmPointingTexturePath => "res://YuWanCard/images/characters/multiplayer_hand/pig_point.png";
-    
-    // 音效
+
+    // 音效（如不覆盖则使用 PlaceholderID 自动推导）
     string? IYuWanCharacter.CustomAttackSfx => null;
     string? IYuWanCharacter.CustomCastSfx => null;
     string? IYuWanCharacter.CustomDeathSfx => null;
-    
-    // 动画
-    CreatureAnimator? IYuWanCharacter.SetupCustomAnimationStates(MegaSprite controller) { ... }
 }
 ```
+
+**关键特性**：
+- **PlaceholderID**：核心属性，设置后大部分路径自动推导（如 `CustomVisualPath` → `creature_visuals/pig`）
+- **MultiplayerStartingRelics**：多人游戏初始遗物列表
+- **CustomTrailPath**：卡牌拖尾特效路径
+- **CustomCharacterSelectTransitionPath**：角色选择过渡材质路径
+- **CustomMapMarkerPath**：地图标记图标路径
+- **CustomYummyCookie**：美味小饼干遗物图标
+- **AttackAnimDelay / CastAnimDelay**：攻击/施法动画延迟
+- **UnlocksAfterRunAs**：使用指定角色通关后解锁
+- **HideFromVanillaCharacterSelect**：在原版角色选择界面隐藏
+- **AllowInVanillaRandomCharacterSelect**：允许在原版随机角色选择中出现
+- **SetupAnimationState**：静态辅助方法，快速创建标准动画状态机
 
 **角色选择界面自动集成**：`CharacterSelectScreenPatch` 和 `CharacterSelectMonitor` 自动确保自定义角色按钮出现在角色选择屏幕上。
 

@@ -40,7 +40,7 @@ public override CardMultiplayerConstraint MultiplayerConstraint
 
 ### Q: 如何正确处理金币修改？
 
-使用 `GoldModificationGuard` 避免递归调用：
+使用 `GoldModificationGuard` 避免递归调用，搭配新版 API：
 
 ```csharp
 private GoldModificationGuard? _goldGuard;
@@ -51,14 +51,14 @@ private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGu
     async amount => await PlayerCmd.LoseGold(amount, Owner!)
 );
 
-public override bool ShouldGainGold(decimal amount, Player player)
+public override decimal ModifyGoldGained(Player player, decimal amount)
 {
-    return GoldGuard.ShouldGainGold(amount, player);
+    return GoldGuard.ModifyGoldGained(player, amount);
 }
 
-public override async Task AfterGoldGained(Player player)
+public override async Task AfterModifyingGoldGained(Player player, decimal amount)
 {
-    await GoldGuard.AfterGoldGained(player);
+    await GoldGuard.AfterModifyingGoldGained(player, amount);
 }
 ```
 

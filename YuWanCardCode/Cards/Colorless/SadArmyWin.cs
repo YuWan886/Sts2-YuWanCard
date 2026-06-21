@@ -1,7 +1,7 @@
 using YuWanCard.Core.Abstracts;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
 
@@ -28,25 +28,25 @@ public class SadArmyWin : YuWanCardModel
         var maxHp = Owner.Creature.MaxHp;
         var currentHp = Owner.Creature.CurrentHp;
 
-        if (maxHp <= 0) return;
+        if (maxHp <= 0)
+            return;
 
         var healthPercent = (float)currentHp / maxHp;
 
         if (healthPercent <= 0.1f)
         {
-            var primaryEnemies = CombatState!.Enemies
-                .Where(e => e.IsAlive && e.IsPrimaryEnemy)
+            var enemies = CombatState!.Enemies
+                .Where(e => e.IsAlive)
                 .ToList();
 
-            foreach (var enemy in primaryEnemies)
+            foreach (var enemy in enemies)
             {
-                await KillEnemy(choiceContext, enemy, Owner.Creature);
+                enemy.RemoveAllPowersInternalExcept();
+                await CreatureCmd.Kill(enemy, true);
             }
-        }
-    }
 
-    private static async Task KillEnemy(PlayerChoiceContext choiceContext, Creature enemy, Creature source)
-    {
-        await CreatureCmd.Kill(enemy, true);
+            if (CombatManager.Instance != null)
+                await CombatManager.Instance.CheckWinCondition();
+        }
     }
 }

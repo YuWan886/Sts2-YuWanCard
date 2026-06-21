@@ -57,6 +57,7 @@ static class InitDeDuplicationPatch
         MainFile.Logger.Info(
             $"Init: {allTypes.Length} types, {created} created, {skipped} skipped");
 
+        RegisterExistingCanonicalInstances();
         RunPostInitLogic();
 
         ContentRegistry.Freeze();
@@ -97,6 +98,38 @@ static class InitDeDuplicationPatch
         }
 
         AutoRegisterCharacters();
+    }
+
+    /// <summary>
+    /// When another framework has already populated ModelDb before our prefix runs,
+    /// the creation loop above skips every type. We still need to backfill our own
+    /// registries from the existing canonical instances before freezing.
+    /// </summary>
+    private static void RegisterExistingCanonicalInstances()
+    {
+        RegisterExistingInstances<EventModel>(ContentRegistry.EventTypes);
+        RegisterExistingInstances<AncientEventModel>(ContentRegistry.AncientTypes);
+        RegisterExistingInstances<CharacterModel>(ContentRegistry.CharacterTypes);
+        RegisterExistingInstances<RelicPoolModel>(ContentRegistry.RelicPoolTypes);
+    }
+
+    private static void RegisterExistingInstances<TModel>(IEnumerable<Type> types)
+        where TModel : AbstractModel
+    {
+        foreach (var type in types)
+        {
+            try
+            {
+                var instance = ModelDb.GetById<TModel>(ModelDb.GetId(type));
+                if (instance != null)
+                    RegisterCanonicalInstance(type, instance);
+            }
+            catch (Exception ex)
+            {
+                MainFile.Logger.Warn(
+                    $"Failed to backfill canonical registration for {type.Name}: {ex.Message}");
+            }
+        }
     }
 
     /// <summary>

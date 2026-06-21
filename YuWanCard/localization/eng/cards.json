@@ -21,7 +21,7 @@
   "YUWANCARD-GIVE_YOU.description": "Choose a card from your hand and give it to target teammate.",
   "YUWANCARD-GIVE_YOU.selectionScreenPrompt": "Choose 1 card from hand to give to teammate",
   "YUWANCARD-WYJK.title": "Now I Just Cried",
-  "YUWANCARD-WYJK.description": "All players gain {Energy:energyIcons()}.",
+  "YUWANCARD-WYJK.description": "Gain {Energy:energyIcons()}.",
   "YUWANCARD-MELANCHOLY_RABBIT.title": "Melancholy Rabbit",
   "YUWANCARD-MELANCHOLY_RABBIT.description": "Gain [gold]Block[/gold] equal to your current HP.",
   "YUWANCARD-VICTORY_BREEDS_ARROGANCE.title": "Victory Breeds Arrogance",

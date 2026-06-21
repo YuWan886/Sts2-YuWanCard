@@ -21,7 +21,7 @@
   "YUWANCARD-GIVE_YOU.description": "选择一张手牌交给一名队友。",
   "YUWANCARD-GIVE_YOU.selectionScreenPrompt": "选择1张手牌交给队友",
   "YUWANCARD-WYJK.title": "我已急哭",
-  "YUWANCARD-WYJK.description": "所有玩家获得{Energy:energyIcons()}。",
+  "YUWANCARD-WYJK.description": "获得{Energy:energyIcons()}。",
   "YUWANCARD-MELANCHOLY_RABBIT.title": "忧郁是一种感觉",
   "YUWANCARD-MELANCHOLY_RABBIT.description": "获得等同于当前生命值的[gold]格挡[/gold]。",
   "YUWANCARD-VICTORY_BREEDS_ARROGANCE.title": "胜兵必骄",

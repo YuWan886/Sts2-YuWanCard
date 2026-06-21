@@ -2,7 +2,7 @@
 
 ## 游戏版本
 
-项目当前支持的游戏版本：**0.103.2**
+项目当前支持的游戏版本：**0.107.1**
 
 ### 版本检测
 
@@ -15,10 +15,10 @@ using YuWanCard.Utils;
 var version = GameVersionCompat.GameVersion;
 
 // 当前版本常量
-var currentVersion = GameVersionCompat.CurrentVersion; // 0.103.2
+var currentVersion = GameVersionCompat.CurrentVersion; // 0.107.1
 
 // 版本比较
-if (GameVersionCompat.GameVersion >= new Version(0, 103, 2))
+if (GameVersionCompat.GameVersion >= new Version(0, 107, 1))
 {
     // 使用新 API
 }
@@ -28,7 +28,7 @@ if (GameVersionCompat.GameVersion >= new Version(0, 103, 2))
 
 | 游戏版本 | 模组版本 | 说明 |
 |----------|----------|------|
-| 0.103.2 | v0.5.1 | 当前版本 |
+| 0.107.1 | v0.5.7 | 当前版本 |
 
 ---
 

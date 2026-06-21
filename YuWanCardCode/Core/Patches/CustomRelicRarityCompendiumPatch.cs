@@ -100,6 +100,9 @@ static class CustomRelicRarityCompendiumPatch
 
     private static List<CustomRarityGroup> GetCustomRarityGroups()
     {
+        // Safe to cache after ModelDb.Init: ContentRegistry is frozen and
+        // AllRelicsPatch ensures custom pool relics (WhatIf/Malice) are always
+        // included in the ModelDb.AllRelics baseline.
         return _cachedCustomRarityGroups ??= ModelDb.AllRelics
             .OfType<YuWanRelicModel>()
             .Select(relic => new

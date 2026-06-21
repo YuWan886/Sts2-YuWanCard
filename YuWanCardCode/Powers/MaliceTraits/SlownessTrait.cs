@@ -16,7 +16,17 @@ public sealed class SlownessTrait : MaliceTraitPowerBase
             return;
         }
 
+        int currentFrail = target.GetPower<FrailPower>()?.Amount ?? 0;
+        int maxFrail = GetMaxFrailAmount();
+        int toApply = Math.Min((int)Amount, Math.Max(0, maxFrail - currentFrail));
+        if (toApply <= 0)
+        {
+            return;
+        }
+
         Flash();
-        await PowerCmd.Apply<FrailPower>(new ThrowingPlayerChoiceContext(), target, Amount, Owner, null);
+        await PowerCmd.Apply<FrailPower>(new ThrowingPlayerChoiceContext(), target, toApply, Owner, null);
     }
+
+    private int GetMaxFrailAmount() => Math.Min(4, Math.Max(1, (int)Amount) + 1);
 }

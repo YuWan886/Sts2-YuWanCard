@@ -200,7 +200,7 @@ public class PigDoubtPower : YuWanPowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars => 
         [new DynamicVar("PigDoubtPower", 1m)];
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         if (side == Owner.Side)
         {

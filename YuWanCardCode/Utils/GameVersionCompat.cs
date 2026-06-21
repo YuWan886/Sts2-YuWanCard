@@ -6,7 +6,7 @@ public static class GameVersionCompat
 {
     #region Version Constants
 
-    public static readonly Version CurrentVersion = new(0, 103, 3);
+    public static readonly Version CurrentVersion = new(0, 107, 1);
 
     #endregion
 

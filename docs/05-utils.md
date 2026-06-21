@@ -217,6 +217,37 @@ CreatureCompat.SetMaxHp(creature, newMaxHp);
 CreatureCompat.SetMaxAndCurrentHp(creature, newMaxHp);
 ```
 
+### RuntimePlatform
+
+平台检测工具，用于条件代码路径：
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 检测是否为移动端平台（Android/iOS）
+if (RuntimePlatform.IsMobileLike)
+{
+    // 移动端特殊处理
+}
+
+// 检测是否支持动态代码生成
+if (RuntimePlatform.SupportsDynamicCode)
+{
+    // 使用 Emit/Reflection 等动态特性
+}
+```
+
+### CardCopyHelper
+
+卡牌复制辅助工具，用于安全创建卡牌副本：
+
+```csharp
+using YuWanCard.Core.Utils;
+
+// 安全复制卡牌（处理修饰器状态等）
+var copy = CardCopyHelper.CopyCard(originalCard);
+```
+
 ---
 
 ## Utils 目录
@@ -256,7 +287,7 @@ private bool IsSafePower(PowerModel power)
 
 ### GoldModificationGuard
 
-金币修改保护器，避免递归调用：
+金币修改保护器，避免递归调用。使用新版 API（`ModifyGoldGained` / `AfterModifyingGoldGained`）：
 
 ```csharp
 using YuWanCard.Utils;
@@ -271,14 +302,14 @@ public class MyRelic : YuWanRelicModel
         async amount => await PlayerCmd.LoseGold(amount, Owner!)
     );
 
-    public override bool ShouldGainGold(decimal amount, Player player)
+    public override decimal ModifyGoldGained(Player player, decimal amount)
     {
-        return GoldGuard.ShouldGainGold(amount, player);
+        return GoldGuard.ModifyGoldGained(player, amount);
     }
 
-    public override async Task AfterGoldGained(Player player)
+    public override async Task AfterModifyingGoldGained(Player player, decimal amount)
     {
-        await GoldGuard.AfterGoldGained(player);
+        await GoldGuard.AfterModifyingGoldGained(player, amount);
     }
 }
 ```
@@ -294,7 +325,7 @@ using YuWanCard.Utils;
 var version = GameVersionCompat.GameVersion;
 
 // 当前版本常量
-var currentVersion = GameVersionCompat.CurrentVersion; // 0.103.2
+var currentVersion = GameVersionCompat.CurrentVersion; // 0.103.3
 ```
 
 ### PetManager

@@ -16,7 +16,17 @@ public sealed class WeaknessTrait : MaliceTraitPowerBase
             return;
         }
 
+        int currentWeak = target.GetPower<WeakPower>()?.Amount ?? 0;
+        int maxWeak = GetMaxWeakAmount();
+        int toApply = Math.Min((int)Amount, Math.Max(0, maxWeak - currentWeak));
+        if (toApply <= 0)
+        {
+            return;
+        }
+
         Flash();
-        await PowerCmd.Apply<WeakPower>(new ThrowingPlayerChoiceContext(), target, Amount, Owner, null);
+        await PowerCmd.Apply<WeakPower>(new ThrowingPlayerChoiceContext(), target, toApply, Owner, null);
     }
+
+    private int GetMaxWeakAmount() => Math.Min(4, Math.Max(1, (int)Amount) + 1);
 }

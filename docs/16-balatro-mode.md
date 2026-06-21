@@ -329,7 +329,7 @@ modifier.AddModifierTokens(1);
 
 ### 6.3 金币修饰保护
 
-`InflationPower` 使用 `GoldModificationGuard` 防止无限递归——当金币加成事件触发自身时，Guard 检测递归深度并跳过重复触发。`ShouldGainGold` 和 `AfterGoldGained` 代理给 Guard 处理。
+`InflationPower` 使用 `GoldModificationGuard` 防止无限递归——当金币加成事件触发自身时，Guard 检测递归深度并跳过重复触发。`ModifyGoldGained` 和 `AfterModifyingGoldGained` 代理给 Guard 处理。
 
 ---
 
@@ -427,7 +427,7 @@ modifier.AddModifierTokens(1);
 | **Dice** (骰子) | Common | 每回合开始时，随机将连击设为 1~3（不降低已有连击）。效果在 `Dice.AfterPlayerTurnStart` 中实现 |
 | **Chip** (筹码) | Common | 每回合开始时，连击 +3。效果在 `Chip.AfterPlayerTurnStart` 中实现 |
 | **WildCard** (万能牌) | Uncommon | 打出状态牌计入连击（+0.5），诅咒牌额外 +2。效果在 `BalatroModifier.CalculateComboGain` 中 |
-| **SteelJoker** (钢制小丑) | Uncommon | 回合结束时保留 20% 连击。效果在 `BalatroModifier.AfterTurnEnd` 中 |
+| **SteelJoker** (钢制小丑) | Uncommon | 回合结束时保留 20% 连击。效果在 `BalatroModifier.AfterSideTurnEnd` 中 |
 | **GrowingJoker** (成长小丑) | Uncommon | 每次给卡牌添加修饰器，永久获得 3 最大生命值。效果在 `BalatroCardEditionHelper.TryApplyEdition` 中 |
 | **BlankVoucher** (空白兑换券) | Rare | 获得时从 3 个随机 Joker 中选择 1 个获得 |
 | **Blueprint** (蓝图) | Rare | 复制每个 Joker 的效果（每个 Joker 通过 `EffectiveCount()` 自行翻倍） |
@@ -439,7 +439,7 @@ modifier.AddModifierTokens(1);
 - **Dice**：覆写 `AfterPlayerTurnStart`，通过 `BalatroModifier.GetInstance()` 访问修改器，设置 `ComboCounter = Math.Max(ComboCounter, Random.Range(1, 4))`
 - **Chip**：覆写 `AfterPlayerTurnStart`，通过 `BalatroModifier.GetInstance()` 访问修改器，设置 `ComboCounter = Math.Min(30f, ComboCounter + 3f)`
 - **WildCard**：纯标记类，在 `BalatroModifier.CalculateComboGain` 中通过 `player.GetRelic<WildCard>()` 检查
-- **SteelJoker**：纯标记类，在 `BalatroModifier.AfterTurnEnd` 中通过 `player.GetRelic<SteelJoker>()` 检查，保留比例取 Max(0.1, 0.2)
+- **SteelJoker**：纯标记类，在 `BalatroModifier.AfterSideTurnEnd` 中通过 `player.GetRelic<SteelJoker>()` 检查，保留比例取 Max(0.1, 0.2)
 - **GrowingJoker**：纯标记类，`BalatroCardEditionHelper.TryApplyEdition` 中检测并触发 `GainMaxHp(3)`
 - **BlankVoucher**：`AfterObtained` 中从可用 Joker 池随机 3 个，弹出选择界面
 - **Blueprint**：纯标记类，每个 Joker 通过 `EffectiveCount()` 自行检查并翻倍
@@ -467,7 +467,7 @@ modifier.AddModifierTokens(1);
 
 ### InflationPower 特殊实现
 
-使用 `GoldModificationGuard` 来防止无限递归（金币加成触发自身）。`ShouldGainGold` 和 `AfterGoldGained` 代理给 Guard 处理，确保每次金币获得事件只触发一次额外金币。
+使用 `GoldModificationGuard` 来防止无限递归（金币加成触发自身）。`ModifyGoldGained` 和 `AfterModifyingGoldGained` 代理给 Guard 处理，确保每次金币获得事件只触发一次额外金币。
 
 ### InertiaPower 生命周期
 
