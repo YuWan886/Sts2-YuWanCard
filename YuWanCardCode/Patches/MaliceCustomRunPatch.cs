@@ -92,6 +92,11 @@ public static class MaliceCustomRunPanelSync
         // SetMaxAscension below restores visibility (game sets Visible = _maxAscension > 0).
         if (!Config.YuWanCardConfig.EnableMaliceSelection)
         {
+            if (screen.Lobby.NetService.Type != NetGameType.Client)
+            {
+                SyncLobbyMalice(screen, 0);
+            }
+
             malicePanel.Visible = false;
             return;
         }
@@ -330,8 +335,11 @@ public static class MaliceCustomRunBeginRunPatch
     [HarmonyPrefix]
     public static void Prefix(NCustomRunScreen __instance, ref IReadOnlyList<ModifierModel> modifiers)
     {
-        int maliceLevel = MaliceCustomRunPanelSync.GetMalicePanel(__instance)?.Ascension
-            ?? MaliceModifierPatchHelpers.GetMaliceLevel(modifiers);
+        int maliceLevel = !Config.YuWanCardConfig.EnableMaliceSelection
+            && __instance.Lobby.NetService.Type != NetGameType.Client
+            ? 0
+            : MaliceCustomRunPanelSync.GetMalicePanel(__instance)?.Ascension
+                ?? MaliceModifierPatchHelpers.GetMaliceLevel(modifiers);
         modifiers = MaliceModifierPatchHelpers.EnsureMaliceModifier(modifiers, maliceLevel);
     }
 }

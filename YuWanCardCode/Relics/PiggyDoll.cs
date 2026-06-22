@@ -62,11 +62,20 @@ public sealed class PiggyDoll : YuWanRelicModel
             return 0m;
         }
 
-        _reductionAvailableThisTurn = false;
-        Flash();
-
         // 负值表示减伤；最多抵消到 0。
         return -Math.Min(DynamicVars["DamageReduction"].BaseValue, amount);
+    }
+
+    public override Task AfterModifyingDamageAmount(CardModel? cardSource)
+    {
+        if (!_reductionAvailableThisTurn)
+        {
+            return Task.CompletedTask;
+        }
+
+        _reductionAvailableThisTurn = false;
+        Flash();
+        return Task.CompletedTask;
     }
 
     public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)

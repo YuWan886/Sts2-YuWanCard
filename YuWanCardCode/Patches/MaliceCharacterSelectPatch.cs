@@ -81,6 +81,11 @@ public static class MaliceCharacterSelectSyncPatch
         // SetMaxAscension below restores visibility (game sets Visible = _maxAscension > 0).
         if (!Config.YuWanCardConfig.EnableMaliceSelection)
         {
+            if (screen.Lobby.NetService.Type != NetGameType.Client)
+            {
+                SyncLobbyMalice(screen, 0);
+            }
+
             malicePanel.Visible = false;
             return;
         }
@@ -272,6 +277,12 @@ public static class MaliceCharacterSelectBeginRunPatch
         if (__instance.Lobby.GameMode != MegaCrit.Sts2.Core.Runs.GameMode.Standard)
         {
             return;
+        }
+
+        if (!Config.YuWanCardConfig.EnableMaliceSelection
+            && __instance.Lobby.NetService.Type != NetGameType.Client)
+        {
+            modifiers = MaliceModifierPatchHelpers.EnsureMaliceModifier(modifiers, 0);
         }
 
         MaliceModifierPatchHelpers.SetPendingRunModifiers(__instance.Lobby, modifiers);

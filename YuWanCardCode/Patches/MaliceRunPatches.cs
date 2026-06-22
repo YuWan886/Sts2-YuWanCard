@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Config;
 using YuWanCard.Malice;
 using YuWanCard.Modifiers;
 using YuWanCard.Utils;
@@ -57,7 +58,9 @@ public static class MaliceRunStateCreatePatch
 
         MaliceManager.EnsureConsistency(localPlayer.Character.Id);
 
-        int level = MaliceManager.GetPreferredMalice(localPlayer.Character.Id);
+        int level = YuWanCardConfig.EnableMaliceSelection
+            ? MaliceManager.GetPreferredMalice(localPlayer.Character.Id)
+            : 0;
         var modifiers = MaliceModifierPatchHelpers.EnsureMaliceModifier(__result.Modifiers, level);
         if (!ReferenceEquals(modifiers, __result.Modifiers))
         {
