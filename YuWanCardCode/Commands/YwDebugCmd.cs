@@ -204,16 +204,6 @@ public class YwDebugCmd : AbstractConsoleCmd
 
         try
         {
-            if (StartingAncientOptionsPatch.IsShowingWhatIfScreen(ancientEvent))
-            {
-                var refreshedWhatIfOptions = StartingAncientOptionsPatch.CreateRandomizedWhatIfScreen(ancientEvent);
-                var whatIfDescription = currentEvent.Description ?? currentEvent.InitialDescription;
-                SetEventStateMethod?.Invoke(currentEvent, [whatIfDescription, refreshedWhatIfOptions]);
-
-                MainFile.Logger.Info($"YwDebugCmd: Refreshed What If options for ancient {ancientEvent.Id.Entry}");
-                return new CmdResult(true, $"Refreshed {Math.Max(0, refreshedWhatIfOptions.Count - 1)} What If relic options for ancient {ancientEvent.Id.Entry}!");
-            }
-
             if (GenerateInitialOptionsWrapperMethod?.Invoke(currentEvent, null) is not IReadOnlyList<EventOption> newOptions || newOptions.Count == 0)
             {
                 return new CmdResult(false, "Failed to generate new options!");

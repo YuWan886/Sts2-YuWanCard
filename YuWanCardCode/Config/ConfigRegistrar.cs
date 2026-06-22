@@ -29,8 +29,7 @@ internal static class ConfigRegistrar
         ("BypassModelDbHashCheck", "多人游戏设置", "bypass_modeldb_check", "config_bypass_modeldb_hash_check", "跳过哈希检查", "多人模式下跳过ModelDb哈希校验", 3),
         ("EnableAutoUpdateCheck", "更新设置", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新", 4),
         ("EnableSevenCursesRing", "游戏设置", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒", 5),
-        ("EnableWhatIfRelics", "游戏设置", "enable_what_if_relics", "config_enable_what_if_relics", "假如遗物", "在Neow处可选择假如系列遗物", 6),
-        ("EnableMaliceSelection", "游戏设置", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 7),
+        ("EnableMaliceSelection", "游戏设置", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 6),
     ];
 
     // Double slider settings: (Property, Section, RitsuId, DataKey, Label, Description, Min, Max, Step, Format, Order).

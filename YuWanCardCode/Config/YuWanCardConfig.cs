@@ -31,10 +31,6 @@ public class YuWanCardConfig : FallbackSimpleModConfig
 
     [ConfigSection("游戏设置")]
     [ConfigHoverTip]
-    public static bool EnableWhatIfRelics { get; set; } = false;
-
-    [ConfigSection("游戏设置")]
-    [ConfigHoverTip]
     public static bool EnableMaliceSelection { get; set; } = true;
 
     public YuWanCardConfig() : base() { }
