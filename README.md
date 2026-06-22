@@ -49,6 +49,7 @@
 > 下面mods和猪猪一起安装会有额外游戏内容。
 
 - [海克斯符文-HextechRunes](https://www.bilibili.com/video/BV1AE9xByEuM/)
+- [假如遗物-WhatIfRelics](https://github.com/YuWan886/STS2-WhatIfRelics)
 
 ## CREDITS
 

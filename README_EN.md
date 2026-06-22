@@ -48,6 +48,7 @@ When you first enter the main menu, a consent dialog will appear. **Data is only
 > Installing these mods together with this mod will provide additional game content.
 
 - [海克斯符文-HextechRunes](https://www.bilibili.com/video/BV1AE9xByEuM/)
+- [假如遗物-WhatIfRelics](https://github.com/YuWan886/STS2-WhatIfRelics)
 
 ## CREDITS
 
