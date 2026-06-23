@@ -12,7 +12,7 @@ public class PigSmash : YuWanCardModel
 {
     public PigSmash() : base(
         baseCost: 2,
-        type: CardType.Skill,
+        type: CardType.Attack,
         rarity: CardRarity.Common,
         target: TargetType.AnyEnemy)
     {

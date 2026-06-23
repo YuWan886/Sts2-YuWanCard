@@ -14,14 +14,13 @@ public class RainDark : YuWanCardModel
 {
     public RainDark() : base(
         baseCost: 3,
-        type: CardType.Skill,
+        type: CardType.Power,
         rarity: CardRarity.Ancient,
         target: TargetType.AllAllies)
     {
         WithPower<IntangiblePower>(3);
         WithPower<RainDarkPower>(3);
         WithVar("HpPercentage", 25);
-        WithKeywords(CardKeyword.Exhaust);
     }
 
     public float HpPercentage => DynamicVars["HpPercentage"].IntValue / 100f;

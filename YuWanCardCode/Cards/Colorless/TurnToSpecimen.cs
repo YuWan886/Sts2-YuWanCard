@@ -36,9 +36,9 @@ public class TurnToSpecimen : YuWanCardModel
     }
 
     public TurnToSpecimen() : base(
-            baseCost: 1,
+            baseCost: 3,
             type: CardType.Skill,
-            rarity: CardRarity.Uncommon,
+            rarity: CardRarity.Rare,
             target: TargetType.AllEnemies)
     {
         WithKeywords(CardKeyword.Exhaust);
