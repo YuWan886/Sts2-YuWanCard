@@ -44,30 +44,30 @@ public class PigClimbTower : YuWanCardModel
     }
 }
 
-public class PigClimbTowerDamageVar : DynamicVar
+public class PigClimbTowerDamageVar : DamageVar
 {
     public const string Key = "PigClimbTowerDamage";
 
-    public PigClimbTowerDamageVar() : base(Key, 0) { }
+    public PigClimbTowerDamageVar() : base(Key, 0, ValueProp.Move) { }
 
     public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
     {
         int floor = card.Owner?.RunState.TotalFloor ?? 0;
         BaseValue = floor;
-        PreviewValue = floor;
+        base.UpdateCardPreview(card, previewMode, target, runGlobalHooks);
     }
 }
 
-public class PigClimbTowerBlockVar : DynamicVar
+public class PigClimbTowerBlockVar : BlockVar
 {
     public const string Key = "PigClimbTowerBlock";
 
-    public PigClimbTowerBlockVar() : base(Key, 0) { }
+    public PigClimbTowerBlockVar() : base(Key, 0, ValueProp.Unpowered) { }
 
     public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
     {
         int floor = card.Owner?.RunState.TotalFloor ?? 0;
         BaseValue = floor;
-        PreviewValue = floor;
+        base.UpdateCardPreview(card, previewMode, target, runGlobalHooks);
     }
 }

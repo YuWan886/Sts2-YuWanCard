@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using YuWanCard.Characters;
 using YuWanCard.Powers;
 using MegaCrit.Sts2.Core.Models;
@@ -19,7 +20,7 @@ public class BigBenPig : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.Self)
     {
-        WithTip(typeof(SmallBenPig));
+        WithTip(card => HoverTipFactory.FromCard<SmallBenPig>(card.IsUpgraded));
         WithTip(typeof(BigBenPigPower));
         WithPower<StrengthPower>(1);
         WithKeywords(CardKeyword.Exhaust);

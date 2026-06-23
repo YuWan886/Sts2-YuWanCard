@@ -46,7 +46,14 @@ public static class CardUtils
 
     public static CardModel CreateRandomFoodPigCard(Player player)
     {
-        return player.RunState.CreateCard(GetRandomFoodPigCardCanonical(player), player);
+        CardModel canonicalCard = GetRandomFoodPigCardCanonical(player);
+        var combatState = player.Creature?.CombatState;
+        if (combatState != null)
+        {
+            return combatState.CreateCard(canonicalCard, player);
+        }
+
+        return player.RunState.CreateCard(canonicalCard, player);
     }
 
     public static HashSet<CardModel> GetAllUnlockedCards(Player player, HashSet<CardType>? cardTypes = null, bool colorlessOnly = false)

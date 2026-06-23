@@ -2,6 +2,7 @@ using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Cards;
 
@@ -19,7 +20,7 @@ public class StoneCarryingKing : YuWanCardModel
         target: TargetType.AnyAlly)
     {
         WithKeywords(CardKeyword.Exhaust);
-        WithTip(typeof(GiantRock));
+        WithTip(card => HoverTipFactory.FromCard<GiantRock>(card.IsUpgraded));
     }
 
     protected override void OnUpgrade()

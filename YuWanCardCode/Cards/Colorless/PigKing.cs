@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 
@@ -18,9 +19,9 @@ public class PigKing : YuWanCardModel
         target: TargetType.Self)
     {
         WithKeywords(CardKeyword.Exhaust);
-        WithTip(typeof(PigCharge));
-        WithTip(typeof(PigMultiShot));
-        WithTip(typeof(PigShieldBreak));
+        WithTip(card => HoverTipFactory.FromCard<PigCharge>(card.IsUpgraded));
+        WithTip(card => HoverTipFactory.FromCard<PigMultiShot>(card.IsUpgraded));
+        WithTip(card => HoverTipFactory.FromCard<PigShieldBreak>(card.IsUpgraded));
     }
 
     protected override void OnUpgrade()
