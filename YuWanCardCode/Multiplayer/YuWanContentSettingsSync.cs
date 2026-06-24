@@ -18,6 +18,7 @@ public static class YuWanContentSettingsSync
     private static YuWanContentSettingsSnapshot? _hostSnapshot;
     private static int _clientSnapshotVersion = -1;
     private static YuWanContentSettingsSnapshot? _clientSnapshot;
+    private static bool _hasLoggedAwaitingSnapshot;
 
     public static void Register(INetGameService? netService = null)
     {
@@ -104,6 +105,7 @@ public static class YuWanContentSettingsSync
             return;
         }
 
+        Register(client);
         MaybeRequestSnapshot(client, force: true);
     }
 
@@ -118,6 +120,24 @@ public static class YuWanContentSettingsSync
 
         snapshot = default;
         return false;
+    }
+
+    public static bool IsClientAwaitingAuthoritativeSnapshot()
+    {
+        return TryGetConnectedClient(out _)
+            && _clientSnapshot == null;
+    }
+
+    public static void LogAwaitingAuthoritativeSnapshotUse(string contentKind, Type contentType)
+    {
+        if (_hasLoggedAwaitingSnapshot || !IsClientAwaitingAuthoritativeSnapshot())
+        {
+            return;
+        }
+
+        _hasLoggedAwaitingSnapshot = true;
+        MainFile.Logger.Debug(
+            $"YuWanContentSettings: Client awaiting host snapshot; suppressing local fallback for {contentKind} {contentType.Name}");
     }
 
     private static void MaybeRequestSnapshot(NetClientGameService client, bool force)
@@ -145,9 +165,14 @@ public static class YuWanContentSettingsSync
             return;
         }
 
-        var response = CreateSnapshotMessage();
+        YuWanContentSettingsSnapshot snapshot = YuWanContentSettingsSnapshot.CaptureLocal();
+        if (_hostSnapshot is not { } previous || !previous.ContentEquals(snapshot))
+        {
+            _hostSnapshot = snapshot;
+            _hostSnapshotVersion++;
+        }
 
-        hostNetService.SendMessage(response, senderId);
+        hostNetService.SendMessage(CreateSnapshotMessage(snapshot, _hostSnapshotVersion), senderId);
     }
 
     private static void HandleSnapshotMessage(YuWanContentSettingsSnapshotMessage message, ulong senderId)
@@ -164,6 +189,7 @@ public static class YuWanContentSettingsSync
 
         _clientSnapshotVersion = message.Version;
         _clientSnapshot = message.ToSnapshot();
+        _hasLoggedAwaitingSnapshot = false;
         MainFile.Logger.Debug($"YuWanContentSettings: Received authoritative snapshot v{message.Version} from {senderId}");
     }
 
@@ -172,12 +198,26 @@ public static class YuWanContentSettingsSync
         _lastRequestUtc = DateTime.MinValue;
         _clientSnapshotVersion = -1;
         _clientSnapshot = null;
+        _hasLoggedAwaitingSnapshot = false;
+    }
+
+    private static bool TryGetConnectedClient(out NetClientGameService? client)
+    {
+        INetGameService? netService = _registeredNetService ?? RunManager.Instance?.NetService;
+        if (netService is NetClientGameService connectedClient && connectedClient.IsConnected)
+        {
+            client = connectedClient;
+            return true;
+        }
+
+        client = null;
+        return false;
     }
 
     private static void BroadcastSnapshotIfChanged(NetHostGameService host)
     {
         YuWanContentSettingsSnapshot snapshot = YuWanContentSettingsSnapshot.CaptureLocal();
-        if (_hostSnapshot is { } previous && previous == snapshot)
+        if (_hostSnapshot is { } previous && previous.ContentEquals(snapshot))
         {
             return;
         }
@@ -185,18 +225,6 @@ public static class YuWanContentSettingsSync
         _hostSnapshot = snapshot;
         _hostSnapshotVersion++;
         host.SendMessage(CreateSnapshotMessage(snapshot, _hostSnapshotVersion));
-    }
-
-    private static YuWanContentSettingsSnapshotMessage CreateSnapshotMessage()
-    {
-        YuWanContentSettingsSnapshot snapshot = YuWanContentSettingsSnapshot.CaptureLocal();
-        if (_hostSnapshot is not { } previous || previous != snapshot)
-        {
-            _hostSnapshot = snapshot;
-            _hostSnapshotVersion++;
-        }
-
-        return CreateSnapshotMessage(snapshot, _hostSnapshotVersion);
     }
 
     private static YuWanContentSettingsSnapshotMessage CreateSnapshotMessage(
@@ -215,7 +243,14 @@ public static class YuWanContentSettingsSync
             EnableHorizonEvent = snapshot.EnableHorizonEvent,
             EnableSkullGoldRushEvent = snapshot.EnableSkullGoldRushEvent,
             EnableSunkenStatueQuestEvent = snapshot.EnableSunkenStatueQuestEvent,
-            EnableZhiZhanZhiShangEvent = snapshot.EnableZhiZhanZhiShangEvent
+            EnableZhiZhanZhiShangEvent = snapshot.EnableZhiZhanZhiShangEvent,
+            EnabledColorlessCards = YuWanColorlessCardCatalog.Cards
+                .Select(definition => new YuWanColorlessCardState
+                {
+                    Key = definition.Key,
+                    Enabled = snapshot.EnabledColorlessCards.GetValueOrDefault(definition.Key, true)
+                })
+                .ToList()
         };
     }
 }
@@ -249,6 +284,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
     public required bool EnableSkullGoldRushEvent { get; set; }
     public required bool EnableSunkenStatueQuestEvent { get; set; }
     public required bool EnableZhiZhanZhiShangEvent { get; set; }
+    public required List<YuWanColorlessCardState> EnabledColorlessCards { get; set; }
 
     public bool ShouldBroadcast => false;
     public NetTransferMode Mode => NetTransferMode.Reliable;
@@ -268,6 +304,12 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
         writer.WriteBool(EnableSkullGoldRushEvent);
         writer.WriteBool(EnableSunkenStatueQuestEvent);
         writer.WriteBool(EnableZhiZhanZhiShangEvent);
+        writer.WriteInt(EnabledColorlessCards.Count);
+        foreach (var entry in EnabledColorlessCards)
+        {
+            writer.WriteString(entry.Key);
+            writer.WriteBool(entry.Enabled);
+        }
     }
 
     public void Deserialize(PacketReader reader)
@@ -283,6 +325,16 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
         EnableSkullGoldRushEvent = reader.ReadBool();
         EnableSunkenStatueQuestEvent = reader.ReadBool();
         EnableZhiZhanZhiShangEvent = reader.ReadBool();
+        int count = reader.ReadInt();
+        EnabledColorlessCards = new List<YuWanColorlessCardState>(count);
+        for (int i = 0; i < count; i++)
+        {
+            EnabledColorlessCards.Add(new YuWanColorlessCardState
+            {
+                Key = reader.ReadString(),
+                Enabled = reader.ReadBool()
+            });
+        }
     }
 
     public YuWanContentSettingsSnapshot ToSnapshot()
@@ -297,6 +349,14 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
             EnableHorizonEvent,
             EnableSkullGoldRushEvent,
             EnableSunkenStatueQuestEvent,
-            EnableZhiZhanZhiShangEvent);
+            EnableZhiZhanZhiShangEvent,
+            EnabledColorlessCards.ToDictionary(static entry => entry.Key, static entry => entry.Enabled,
+                StringComparer.Ordinal));
     }
+}
+
+public struct YuWanColorlessCardState
+{
+    public required string Key { get; set; }
+    public required bool Enabled { get; set; }
 }

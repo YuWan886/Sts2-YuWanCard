@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Config;
 using YuWanCard.Hextech;
 using YuWanCard.Relics;
 
@@ -300,6 +301,12 @@ public static class ShoppingCartManager
         if (cardModel == null)
         {
             MainFile.Logger.Warn($"ShoppingCartManager: Card not found: {item.ItemId}");
+            return false;
+        }
+
+        if (!YuWanContentAvailability.IsCardEnabled(cardModel))
+        {
+            MainFile.Logger.Info($"ShoppingCartManager: Blocked disabled colorless card purchase {item.ItemId}");
             return false;
         }
 

@@ -1,5 +1,11 @@
 using System.Reflection;
 using System.Reflection.Emit;
+using Godot;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.HoverTips;
+using YuWanCard.Config;
 
 namespace YuWanCard;
 
@@ -14,6 +20,7 @@ internal static class ConfigRegistrar
     private const string ModId = MainFile.ModId;
     private const string RootPageId = "yuwan_card";
     private const string ContentPageId = "game_content";
+    private const string ColorlessCardsPageId = "content_colorless_cards";
 
     private static bool s_registered;
     private static bool s_ritsuRegistered;
@@ -29,14 +36,18 @@ internal static class ConfigRegistrar
         string? Description,
         int SortOrder,
         string? ParentPageId = null,
-        string? ModDisplayName = null);
+        string? ModDisplayName = null,
+        string? TitleLocKey = null,
+        string? DescriptionLocKey = null);
 
     private sealed record ConfigSectionDefinition(
         string PageId,
         string SectionId,
         string Title,
         string? Description,
-        int SortOrder);
+        int SortOrder,
+        string? TitleLocKey = null,
+        string? DescriptionLocKey = null);
 
     private sealed record ToggleSettingDefinition(
         string PropertyName,
@@ -73,12 +84,29 @@ internal static class ConfigRegistrar
         string Label,
         string? Description,
         string? ButtonText,
-        int Order);
+        int Order,
+        string? LabelLocKey = null,
+        string? DescriptionLocKey = null,
+        string? ButtonTextLocKey = null);
+
+    private sealed record CustomEntrySettingDefinition(
+        string RitsuPageId,
+        string RitsuSectionId,
+        string EntryId,
+        string MethodName,
+        string Label,
+        string? Description,
+        int Order,
+        string? LabelLocKey = null,
+        string? DescriptionLocKey = null);
 
     private static readonly ConfigPageDefinition[] RitsuPages =
     [
-        new("YuWanCardRitsuConfigProvider", RootPageId, "YuWanCard 设置", null, 0, null, "YuWanCard"),
-        new("YuWanCardRitsuContentConfigProvider", ContentPageId, "游戏内容设置", "控制本模组敌人和事件是否会出现在对局中", 100, RootPageId, "YuWanCard"),
+        new("YuWanCardRitsuConfigProvider", RootPageId, "YuWanCard 设置", null, 0, null, "YuWanCard", "YUWANCARD-RITSU_ROOT_PAGE.title"),
+        new("YuWanCardRitsuContentConfigProvider", ContentPageId, "游戏内容设置", "控制本模组敌人、事件和新增无色卡牌是否会出现在对局中", 100, RootPageId, "YuWanCard",
+            "YUWANCARD-RITSU_GAME_CONTENT_PAGE.title", "YUWANCARD-RITSU_GAME_CONTENT_PAGE.desc"),
+        new("YuWanCardRitsuColorlessCardConfigProvider", ColorlessCardsPageId, "无色卡牌设置", "控制本模组新增无色卡牌是否会出现在对局中。悬停按钮可查看卡牌提示。", 200, ContentPageId, "YuWanCard",
+            "YUWANCARD-RITSU_COLORLESS_PAGE.title", "YUWANCARD-RITSU_COLORLESS_PAGE.desc"),
     ];
 
     private static readonly ConfigSectionDefinition[] RitsuSections =
@@ -87,8 +115,11 @@ internal static class ConfigRegistrar
         new(RootPageId, "multiplayer", "多人游戏设置", null, 100),
         new(RootPageId, "updates", "更新设置", null, 200),
         new(RootPageId, "gameplay", "游戏设置", null, 300),
-        new(ContentPageId, "enemy_encounters", "敌人遭遇", null, 0),
-        new(ContentPageId, "events", "事件", null, 100),
+        new(ContentPageId, "cards", "卡牌", null, 0, "YUWANCARD-RITSU_GAME_CONTENT_CARDS.title"),
+        new(ContentPageId, "enemy_encounters", "敌人遭遇", null, 100),
+        new(ContentPageId, "events", "事件", null, 200),
+        new(ColorlessCardsPageId, YuWanColorlessCardCatalog.SectionId, "无色卡牌画廊", "按按钮开启或关闭对应卡牌。", 0,
+            "YUWANCARD-RITSU_COLORLESS_SECTION.title", "YUWANCARD-RITSU_COLORLESS_SECTION.desc"),
     ];
 
     // Boolean toggle settings. BaseLib and RitsuLib use independent grouping metadata.
@@ -101,7 +132,7 @@ internal static class ConfigRegistrar
         new("EnableSevenCursesRing", "游戏设置", RootPageId, "gameplay", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒", 0),
         new("EnableMaliceSelection", "游戏设置", RootPageId, "gameplay", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 1),
         new("EnableYuWanEnemyEncounters", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_yuwan_enemy_encounters", "config_enable_yuwan_enemy_encounters", "启用本模组敌人", "控制 YuWanCard 的敌人遭遇是否会出现在对局中", 0),
-        new("EnableIgnisBossEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_ignis_boss_encounter", "config_enable_ignis_boss_encounter", "焰魔", "允许焰魔首领遭遇出现在对局中", 1),
+        new("EnableIgnisBossEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_ignis_boss_encounter", "config_enable_ignis_boss_encounter", "焰魔", "允许焰魔Boss遭遇出现在对局中", 1),
         new("EnableKillerEliteEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_killer_elite_encounter", "config_enable_killer_elite_encounter", "杀手", "允许杀手精英遭遇出现在对局中", 2),
         new("EnableYuWanEvents", "游戏内容设置", ContentPageId, "events", "enable_yuwan_events", "config_enable_yuwan_events", "启用本模组事件", "控制 YuWanCard 的事件是否会出现在对局中", 0),
         new("EnableBlacksmithEvent", "游戏内容设置", ContentPageId, "events", "enable_blacksmith_event", "config_enable_blacksmith_event", "铁匠铺", "允许铁匠铺事件出现在对局中", 1),
@@ -121,7 +152,18 @@ internal static class ConfigRegistrar
     private static readonly SubpageSettingDefinition[] SubpageProps =
     [
         new(RootPageId, "gameplay", "open_game_content_settings", ContentPageId, "OpenGameContentSettingsPage",
-            "游戏内容设置", "打开游戏内容设置页面。", "打开", 100),
+            "游戏内容设置", "打开游戏内容设置页面。", "打开", 100,
+            "YUWANCARD-RITSU_OPEN_GAME_CONTENT.title", "YUWANCARD-RITSU_OPEN_GAME_CONTENT.desc", "YUWANCARD-RITSU_OPEN.button"),
+        new(ContentPageId, "cards", "open_colorless_card_settings", ColorlessCardsPageId, "OpenColorlessCardSettingsPage",
+            "无色卡牌设置", "使用画廊视图控制本模组新增无色卡牌是否会出现在对局中。", "打开", 0,
+            "YUWANCARD-RITSU_OPEN_COLORLESS.title", "YUWANCARD-RITSU_OPEN_COLORLESS.desc", "YUWANCARD-RITSU_OPEN.button"),
+    ];
+
+    private static readonly CustomEntrySettingDefinition[] CustomEntryProps =
+    [
+        new(ColorlessCardsPageId, YuWanColorlessCardCatalog.SectionId, "colorless_card_gallery", "BuildColorlessCardGallery",
+            "卡牌开关", "每行 5 个按钮；按钮文字为卡牌名，悬停可查看提示框。", 0,
+            "YUWANCARD-RITSU_COLORLESS_GALLERY.title", "YUWANCARD-RITSU_COLORLESS_GALLERY.desc"),
     ];
 
     public static void TryDeferredRegister()
@@ -385,6 +427,7 @@ internal static class ConfigRegistrar
             var toggleAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsToggleAttribute");
             var sliderAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsSliderAttribute");
             var subpageAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsSubpageAttribute");
+            var customEntryAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsCustomEntryAttribute");
             var bindingAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsBindingAttribute");
             var bindingSourceType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsReflectionBindingSource");
 
@@ -392,6 +435,7 @@ internal static class ConfigRegistrar
                 return false;
 
             var dynamicTypes = CreateRitsuConfigTypes(pageAttrType, sectionAttrType, toggleAttrType, subpageAttrType,
+                customEntryAttrType,
                 sliderAttrType, bindingAttrType, bindingSourceType);
             if (dynamicTypes.Length == 0) return false;
 
@@ -432,7 +476,7 @@ internal static class ConfigRegistrar
 
     private static Type[] CreateRitsuConfigTypes(
         Type pageAttrType, Type sectionAttrType, Type toggleAttrType, Type? subpageAttrType,
-        Type? sliderAttrType, Type? bindingAttrType, Type? bindingSourceType)
+        Type? customEntryAttrType, Type? sliderAttrType, Type? bindingAttrType, Type? bindingSourceType)
     {
         try
         {
@@ -452,6 +496,10 @@ internal static class ConfigRegistrar
             var subpageDescProp = subpageAttrType?.GetProperty("Description");
             var subpageOrderProp = subpageAttrType?.GetProperty("Order");
             var subpageButtonTextProp = subpageAttrType?.GetProperty("ButtonText");
+            var customEntryCtor = customEntryAttrType?.GetConstructor([typeof(string), typeof(string)]);
+            var customEntryLabelProp = customEntryAttrType?.GetProperty("Label");
+            var customEntryDescProp = customEntryAttrType?.GetProperty("Description");
+            var customEntryOrderProp = customEntryAttrType?.GetProperty("Order");
 
             var labelProp = toggleAttrType.GetProperty("Label");
             var descProp = toggleAttrType.GetProperty("Description");
@@ -490,6 +538,11 @@ internal static class ConfigRegistrar
                         EmitRitsuSubpageMethod(typeBuilder, subpageCtor, subpageLabelProp, subpageDescProp,
                             subpageOrderProp, subpageButtonTextProp, s);
 
+                if (customEntryCtor != null)
+                    foreach (var s in CustomEntryProps.Where(p => string.Equals(p.RitsuPageId, page.PageId, StringComparison.Ordinal)))
+                        EmitRitsuCustomEntryMethod(typeBuilder, customEntryCtor, customEntryLabelProp, customEntryDescProp,
+                            customEntryOrderProp, s);
+
                 if (typeBuilder.CreateType() is { } createdType)
                     providerTypes.Add(createdType);
             }
@@ -518,6 +571,10 @@ internal static class ConfigRegistrar
         AddNamedAttrValue(pageAttrType, props, values, "ModDisplayName", page.ModDisplayName);
         AddNamedAttrValue(pageAttrType, props, values, "ParentPageId", page.ParentPageId);
         AddNamedAttrValue(pageAttrType, props, values, "SortOrder", page.SortOrder);
+        AddNamedAttrValue(pageAttrType, props, values, "TitleLocTable", "settings_ui");
+        AddNamedAttrValue(pageAttrType, props, values, "TitleLocKey", page.TitleLocKey);
+        AddNamedAttrValue(pageAttrType, props, values, "DescriptionLocTable", "settings_ui");
+        AddNamedAttrValue(pageAttrType, props, values, "DescriptionLocKey", page.DescriptionLocKey);
 
         typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
             pageCtor,
@@ -545,6 +602,10 @@ internal static class ConfigRegistrar
             AddNamedAttrValue(sectionAttrType, props, values, "Title", section.Title);
             AddNamedAttrValue(sectionAttrType, props, values, "Description", section.Description);
             AddNamedAttrValue(sectionAttrType, props, values, "SortOrder", section.SortOrder);
+            AddNamedAttrValue(sectionAttrType, props, values, "TitleLocTable", "settings_ui");
+            AddNamedAttrValue(sectionAttrType, props, values, "TitleLocKey", section.TitleLocKey);
+            AddNamedAttrValue(sectionAttrType, props, values, "DescriptionLocTable", "settings_ui");
+            AddNamedAttrValue(sectionAttrType, props, values, "DescriptionLocKey", section.DescriptionLocKey);
 
             typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
                 sectionCtor,
@@ -666,11 +727,19 @@ internal static class ConfigRegistrar
             values.Add(setting.Description);
         }
 
+        AddOptionalLocProperty(subpageCtor.DeclaringType, props, values, "LabelLocTable", "settings_ui");
+        AddOptionalLocProperty(subpageCtor.DeclaringType, props, values, "LabelLocKey", setting.LabelLocKey);
+        AddOptionalLocProperty(subpageCtor.DeclaringType, props, values, "DescriptionLocTable", "settings_ui");
+        AddOptionalLocProperty(subpageCtor.DeclaringType, props, values, "DescriptionLocKey", setting.DescriptionLocKey);
+
         if (buttonTextProp != null && setting.ButtonText != null)
         {
             props.Add(buttonTextProp);
             values.Add(setting.ButtonText);
         }
+
+        AddOptionalLocProperty(subpageCtor.DeclaringType, props, values, "ButtonTextLocTable", "settings_ui");
+        AddOptionalLocProperty(subpageCtor.DeclaringType, props, values, "ButtonTextLocKey", setting.ButtonTextLocKey);
 
         if (orderProp != null)
         {
@@ -683,6 +752,38 @@ internal static class ConfigRegistrar
             [setting.EntryId, setting.RitsuSectionId, setting.TargetPageId],
             props.ToArray(),
             values.ToArray()));
+    }
+
+    private static void EmitRitsuCustomEntryMethod(
+        TypeBuilder typeBuilder,
+        ConstructorInfo customEntryCtor,
+        PropertyInfo? labelProp,
+        PropertyInfo? descProp,
+        PropertyInfo? orderProp,
+        CustomEntrySettingDefinition setting)
+    {
+        var method = typeBuilder.DefineMethod(
+            setting.MethodName,
+            MethodAttributes.Public | MethodAttributes.Static,
+            typeof(Control),
+            Type.EmptyTypes);
+        var il = method.GetILGenerator();
+        il.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
+            nameof(RitsuConfigRuntimeBridge.CreateColorlessCardSettingsControl),
+            BindingFlags.Public | BindingFlags.Static)!);
+        il.Emit(OpCodes.Ret);
+
+        method.SetCustomAttribute(BuildEntryAttribute(
+            customEntryCtor,
+            [setting.EntryId, setting.RitsuSectionId],
+            labelProp,
+            descProp,
+            orderProp,
+            setting.Label,
+            setting.Description,
+            setting.Order,
+            setting.LabelLocKey,
+            setting.DescriptionLocKey));
     }
 
     // ── sync ─────────────────────────────────────────────
@@ -758,7 +859,8 @@ internal static class ConfigRegistrar
     private static CustomAttributeBuilder BuildEntryAttribute(
         ConstructorInfo ctor, object[] ctorArgs,
         PropertyInfo? labelProp, PropertyInfo? descProp, PropertyInfo? orderProp,
-        string label, string? description, int order)
+        string label, string? description, int order,
+        string? labelLocKey = null, string? descriptionLocKey = null)
     {
         var props = new List<PropertyInfo>();
         var values = new List<object>();
@@ -766,6 +868,10 @@ internal static class ConfigRegistrar
         if (labelProp != null) { props.Add(labelProp); values.Add(label); }
         if (descProp != null && description != null) { props.Add(descProp); values.Add(description); }
         if (orderProp != null) { props.Add(orderProp); values.Add(order); }
+        AddOptionalLocProperty(ctor.DeclaringType, props, values, "LabelLocTable", "settings_ui");
+        AddOptionalLocProperty(ctor.DeclaringType, props, values, "LabelLocKey", labelLocKey);
+        AddOptionalLocProperty(ctor.DeclaringType, props, values, "DescriptionLocTable", "settings_ui");
+        AddOptionalLocProperty(ctor.DeclaringType, props, values, "DescriptionLocKey", descriptionLocKey);
 
         return new CustomAttributeBuilder(ctor, ctorArgs, props.ToArray(), values.ToArray());
     }
@@ -779,6 +885,25 @@ internal static class ConfigRegistrar
     {
         if (value == null)
             return;
+
+        if (attributeType.GetProperty(propertyName) is { } prop)
+        {
+            props.Add(prop);
+            values.Add(value);
+        }
+    }
+
+    private static void AddOptionalLocProperty(
+        Type? attributeType,
+        List<PropertyInfo> props,
+        List<object> values,
+        string propertyName,
+        object? value)
+    {
+        if (attributeType == null || value == null)
+        {
+            return;
+        }
 
         if (attributeType.GetProperty(propertyName) is { } prop)
         {
@@ -874,6 +999,11 @@ internal static class ConfigRegistrar
 
 public static class RitsuConfigRuntimeBridge
 {
+    private static readonly Color EnabledButtonColor = new("4D8B31");
+    private static readonly Color DisabledButtonColor = new("6B2F2F");
+    private static readonly Color SummaryTextColor = new(0.9f, 0.9f, 0.9f);
+    private const string SettingsLocTable = "settings_ui";
+
     public static bool ReadRuntimeBool(string propertyName)
     {
         return (bool)typeof(Config.YuWanCardConfig).GetProperty(propertyName)!.GetValue(null)!;
@@ -898,5 +1028,241 @@ public static class RitsuConfigRuntimeBridge
 
         if (propertyName == nameof(Config.YuWanCardConfig.CursorScale))
             Patches.CursorReplacePatch.RefreshCursor();
+    }
+
+    public static Control CreateColorlessCardSettingsControl()
+    {
+        var root = new VBoxContainer
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            SizeFlagsVertical = Control.SizeFlags.ExpandFill,
+            ThemeTypeVariation = "PanelContainer"
+        };
+
+        var description = new Godot.Label
+        {
+            Text = GetSettingsLocText("YUWANCARD-RITSU_COLORLESS_CONTROL.desc"),
+            AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        description.AddThemeColorOverride("font_color", SummaryTextColor);
+        root.AddChild(description);
+
+        var toolbar = new HBoxContainer
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        root.AddChild(toolbar);
+
+        var summaryLabel = new Godot.Label
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        summaryLabel.AddThemeColorOverride("font_color", SummaryTextColor);
+
+        var grid = new GridContainer
+        {
+            Columns = YuWanColorlessCardCatalog.ButtonsPerRow,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            SizeFlagsVertical = Control.SizeFlags.ExpandFill
+        };
+
+        var buttonsByKey = new Dictionary<string, Button>(StringComparer.Ordinal);
+
+        Button CreateActionButton(string text, Action onPressed)
+        {
+            var button = new Button
+            {
+                Text = text,
+                CustomMinimumSize = new Vector2(120f, 42f),
+                FocusMode = Control.FocusModeEnum.None
+            };
+            button.Pressed += onPressed;
+            return button;
+        }
+
+        void RefreshSummary()
+        {
+            int enabledCount = buttonsByKey.Values.Count(static button => button.ButtonPressed);
+            summaryLabel.Text = string.Format(GetSettingsLocText("YUWANCARD-RITSU_COLORLESS_SUMMARY.text"), enabledCount, YuWanColorlessCardCatalog.Cards.Count);
+        }
+
+        void RefreshButtonVisual(Button button)
+        {
+            button.Modulate = button.ButtonPressed ? Colors.White : new Color(0.78f, 0.78f, 0.78f, 0.95f);
+
+            var normalStyle = new StyleBoxFlat
+            {
+                BgColor = button.ButtonPressed ? EnabledButtonColor : DisabledButtonColor,
+                BorderWidthBottom = 2,
+                BorderWidthLeft = 2,
+                BorderWidthRight = 2,
+                BorderWidthTop = 2,
+                BorderColor = new Color(0f, 0f, 0f, 0.35f),
+                CornerRadiusBottomLeft = 8,
+                CornerRadiusBottomRight = 8,
+                CornerRadiusTopLeft = 8,
+                CornerRadiusTopRight = 8
+            };
+
+            var hoverStyle = (StyleBoxFlat)normalStyle.Duplicate();
+            hoverStyle.BgColor = button.ButtonPressed
+                ? EnabledButtonColor.Lightened(0.12f)
+                : DisabledButtonColor.Lightened(0.12f);
+
+            var pressedStyle = (StyleBoxFlat)normalStyle.Duplicate();
+            pressedStyle.BgColor = button.ButtonPressed
+                ? EnabledButtonColor.Darkened(0.08f)
+                : DisabledButtonColor.Darkened(0.08f);
+
+            button.AddThemeStyleboxOverride("normal", normalStyle);
+            button.AddThemeStyleboxOverride("hover", hoverStyle);
+            button.AddThemeStyleboxOverride("pressed", pressedStyle);
+            button.AddThemeStyleboxOverride("focus", hoverStyle);
+        }
+
+        void RefreshAllButtons()
+        {
+            foreach (var button in buttonsByKey.Values)
+            {
+                RefreshButtonVisual(button);
+            }
+
+            RefreshSummary();
+        }
+
+        toolbar.AddChild(CreateActionButton(GetSettingsLocText("YUWANCARD-RITSU_COLORLESS_ENABLE_ALL.button"), () =>
+        {
+            if (!YuWanColorlessCardSettings.SetAll(true))
+            {
+                return;
+            }
+
+            foreach (var button in buttonsByKey.Values)
+            {
+                button.SetPressedNoSignal(true);
+            }
+
+            RefreshAllButtons();
+        }));
+
+        toolbar.AddChild(CreateActionButton(GetSettingsLocText("YUWANCARD-RITSU_COLORLESS_DISABLE_ALL.button"), () =>
+        {
+            if (!YuWanColorlessCardSettings.SetAll(false))
+            {
+                return;
+            }
+
+            foreach (var button in buttonsByKey.Values)
+            {
+                button.SetPressedNoSignal(false);
+            }
+
+            RefreshAllButtons();
+        }));
+
+        toolbar.AddChild(CreateActionButton(GetSettingsLocText("YUWANCARD-RITSU_COLORLESS_INVERT.button"), () =>
+        {
+            bool changed = false;
+            foreach (var (key, button) in buttonsByKey)
+            {
+                bool nextValue = !button.ButtonPressed;
+                changed |= YuWanColorlessCardSettings.SetEnabled(key, nextValue);
+                button.SetPressedNoSignal(nextValue);
+            }
+
+            if (changed)
+            {
+                RefreshAllButtons();
+            }
+        }));
+
+        toolbar.AddChild(summaryLabel);
+
+        foreach (var definition in YuWanColorlessCardCatalog.Cards)
+        {
+            CardModel canonicalCard = YuWanColorlessCardCatalog.CreateCanonicalCard(definition);
+            string label = canonicalCard.Title;
+            bool enabled = YuWanColorlessCardSettings.IsEnabled(definition.CardType);
+
+            var button = new Button
+            {
+                Text = label,
+                ToggleMode = true,
+                ButtonPressed = enabled,
+                FocusMode = Control.FocusModeEnum.None,
+                CustomMinimumSize = new Vector2(0f, 52f),
+                ClipText = true,
+                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+            };
+
+            button.Toggled += isPressed =>
+            {
+                YuWanColorlessCardSettings.SetEnabled(definition.Key, isPressed);
+                RefreshButtonVisual(button);
+                RefreshSummary();
+            };
+
+            button.MouseEntered += () =>
+            {
+                var hoverTips = BuildColorlessCardHoverTips(canonicalCard);
+                if (!hoverTips.Any())
+                {
+                    return;
+                }
+
+                NHoverTipSet.Remove(button);
+                var alignment = HoverTip.GetHoverTipAlignment(button);
+                var tipSet = NHoverTipSet.CreateAndShow(button, hoverTips, alignment);
+                if (tipSet != null)
+                {
+                    PositionColorlessCardHoverTip(button, tipSet, alignment);
+                }
+            };
+
+            button.MouseExited += () => NHoverTipSet.Remove(button);
+            button.TreeExiting += () => NHoverTipSet.Remove(button);
+
+            buttonsByKey[definition.Key] = button;
+            RefreshButtonVisual(button);
+            grid.AddChild(button);
+        }
+
+        RefreshSummary();
+        root.AddChild(grid);
+        return root;
+    }
+
+    private static IReadOnlyList<IHoverTip> BuildColorlessCardHoverTips(CardModel canonicalCard)
+    {
+        return
+        [
+            HoverTipFactory.FromCard(canonicalCard, canonicalCard.IsUpgraded),
+            .. canonicalCard.HoverTips
+        ];
+    }
+
+    private static void PositionColorlessCardHoverTip(Button button, NHoverTipSet tipSet, HoverTipAlignment alignment)
+    {
+        if (alignment != HoverTipAlignment.Right)
+        {
+            return;
+        }
+
+        var cardContainer = tipSet.GetNodeOrNull<Control>("cardHoverTipContainer");
+        var textContainer = tipSet.GetNodeOrNull<Control>("textHoverTipContainer");
+        if (cardContainer == null || textContainer == null)
+        {
+            return;
+        }
+
+        var anchor = button.GlobalPosition + new Vector2(button.Size.X + 12f, 0f);
+        cardContainer.GlobalPosition = anchor;
+        textContainer.GlobalPosition = anchor + new Vector2(cardContainer.Size.X + 18f, 0f);
+    }
+
+    private static string GetSettingsLocText(string key)
+    {
+        return new LocString(SettingsLocTable, key).GetRawText();
     }
 }

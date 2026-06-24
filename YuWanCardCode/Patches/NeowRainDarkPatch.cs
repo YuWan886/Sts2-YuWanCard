@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 using YuWanCard.Cards;
+using YuWanCard.Config;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Patches;
@@ -18,6 +19,11 @@ class NeowRainDarkPatch
     [HarmonyPatch("PositiveOptions", MethodType.Getter)]
     static void AddRainDarkToPositiveOptions(Neow __instance, ref IEnumerable<EventOption> __result)
     {
+        if (!YuWanContentAvailability.IsCardTypeEnabled<RainDark>())
+        {
+            return;
+        }
+
         __result = __result.Concat(new[] { CreateRainDarkOption(__instance) });
     }
 
@@ -34,7 +40,7 @@ class NeowRainDarkPatch
                 {
                     var card = neow.Owner.RunState.CreateCard(ModelDb.Card<RainDark>(), neow.Owner);
                     CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck));
-                    
+
                     YuWanReflectionHelper.CallPrivateMethod(neow, "SetEventFinished", new LocString("events", "NEOW.pages.DONE.POSITIVE.description"));
                 }
             },

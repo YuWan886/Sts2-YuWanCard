@@ -111,7 +111,7 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
             return;
         }
 
-        CardModel? resolvedCard = ResolveSelectedHandCard(selectedCard);
+        CardModel? resolvedCard = ResolveSelectedHandCard(selectedCard, convertibleCards);
         if (resolvedCard == null)
         {
             MainFile.Logger.Warn(
@@ -158,9 +158,23 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
         return card.EnergyCost.GetResolved();
     }
 
-    private CardModel? ResolveSelectedHandCard(CardModel? selectedCard)
+    private static CardModel? ResolveSelectedHandCard(CardModel? selectedCard, IReadOnlyCollection<CardModel> convertibleCards)
     {
-        return CombatCardStateHelper.ResolveSelectedHandCard(Owner, selectedCard);
+        if (selectedCard == null)
+        {
+            return null;
+        }
+
+        // CardSelectCmd.FromHand already synchronizes combat-card selections. Preserve that
+        // identity when possible so duplicate serialized cards in hand do not get re-matched
+        // to a different instance on another peer.
+        if (convertibleCards.Any(card => ReferenceEquals(card, selectedCard)))
+        {
+            return selectedCard;
+        }
+
+        return convertibleCards.FirstOrDefault(card => card.Id == selectedCard.Id
+            && card.EnergyCost?.GetResolved() == selectedCard.EnergyCost?.GetResolved());
     }
 
     private void SetRemainingTransforms(int value)
