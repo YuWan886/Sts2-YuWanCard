@@ -33,5 +33,45 @@ public class YuWanCardConfig : FallbackSimpleModConfig
     [ConfigHoverTip]
     public static bool EnableMaliceSelection { get; set; } = true;
 
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableYuWanEnemyEncounters { get; set; } = true;
+
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableIgnisBossEncounter { get; set; } = true;
+
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableKillerEliteEncounter { get; set; } = true;
+
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableYuWanEvents { get; set; } = true;
+
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableBlacksmithEvent { get; set; } = true;
+
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableHelloHumanEvent { get; set; } = true;
+
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableHorizonEvent { get; set; } = true;
+
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableSkullGoldRushEvent { get; set; } = true;
+
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableSunkenStatueQuestEvent { get; set; } = true;
+
+    [ConfigSection("游戏内容设置")]
+    [ConfigHoverTip]
+    public static bool EnableZhiZhanZhiShangEvent { get; set; } = true;
+
     public YuWanCardConfig() : base() { }
 }

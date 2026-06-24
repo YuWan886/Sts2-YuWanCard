@@ -7,7 +7,6 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Relics;
-using YuWanCard.Core.Registration;
 
 namespace YuWanCard.Ancients;
 

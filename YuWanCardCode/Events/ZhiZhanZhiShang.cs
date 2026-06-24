@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Cards;
 using YuWanCard.Cards.Quest;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Config;
 
 namespace YuWanCard.Events;
 
@@ -16,7 +17,8 @@ public sealed class ZhiZhanZhiShang : YuWanEventModel
 
     public override bool IsAllowed(IRunState runState)
     {
-        return runState.CurrentActIndex >= 2;
+        return YuWanContentAvailability.IsEventTypeEnabled<ZhiZhanZhiShang>() &&
+               runState.CurrentActIndex >= 2;
     }
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()

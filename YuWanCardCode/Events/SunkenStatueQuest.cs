@@ -7,7 +7,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
+using YuWanCard.Config;
 
 namespace YuWanCard.Events;
 
@@ -16,6 +18,11 @@ public sealed class SunkenStatueQuest : YuWanEventModel
     public override ActModel[] Acts => [];
 
     protected override string? CustomEventImagePath => "res://images/events/sunken_statue.png";
+
+    public override bool IsAllowed(IRunState runState)
+    {
+        return YuWanContentAvailability.IsEventTypeEnabled<SunkenStatueQuest>();
+    }
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

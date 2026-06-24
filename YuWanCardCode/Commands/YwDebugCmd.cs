@@ -15,7 +15,6 @@ using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 using YuWanCard.Malice;
-using YuWanCard.Patches;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Commands;

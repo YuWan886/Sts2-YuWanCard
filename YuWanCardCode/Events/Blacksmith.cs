@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Config;
 
 namespace YuWanCard.Events;
 
@@ -15,7 +16,8 @@ public sealed class Blacksmith : YuWanEventModel
 
     public override bool IsAllowed(IRunState runState)
     {
-        return runState.Players.Any(p => p.Deck.Cards.Any(c => c.IsUpgradable) || p.Deck.Cards.Count(c => CanFuse(c)) >= 2);
+        return YuWanContentAvailability.IsEventTypeEnabled<Blacksmith>() &&
+               runState.Players.Any(p => p.Deck.Cards.Any(c => c.IsUpgradable) || p.Deck.Cards.Count(c => CanFuse(c)) >= 2);
     }
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()

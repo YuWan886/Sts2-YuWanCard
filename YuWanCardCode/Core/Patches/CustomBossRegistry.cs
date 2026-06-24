@@ -1,6 +1,7 @@
 using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
+using YuWanCard.Config;
 
 namespace YuWanCard.Core.Patches;
 
@@ -22,6 +23,11 @@ public static class CustomBossRegistry
 
             EncounterModel? encounter = TryResolveEncounter(registration.EncounterType);
             if (encounter == null || encounter.RoomType != MegaCrit.Sts2.Core.Rooms.RoomType.Boss)
+            {
+                continue;
+            }
+
+            if (!YuWanContentAvailability.IsEncounterTypeEnabled(registration.EncounterType))
             {
                 continue;
             }

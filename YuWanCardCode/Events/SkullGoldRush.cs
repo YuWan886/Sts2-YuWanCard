@@ -3,6 +3,8 @@ using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Config;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Relics;
 using YuWanCard.Utils;
@@ -18,6 +20,11 @@ public sealed class SkullGoldRush : YuWanEventModel
         new GoldVar("DrawCost", DrawCost),
         new GoldVar("PrizeGold", DrawCost)
     ];
+
+    public override bool IsAllowed(IRunState runState)
+    {
+        return YuWanContentAvailability.IsEventTypeEnabled<SkullGoldRush>();
+    }
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {

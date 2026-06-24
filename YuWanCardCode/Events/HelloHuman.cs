@@ -7,6 +7,8 @@ using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Config;
 
 namespace YuWanCard.Events;
 
@@ -18,6 +20,11 @@ public sealed class HelloHuman : YuWanEventModel
     private const int MaxHpLoss = 5;
 
     public override ActModel[] Acts => [];
+
+    public override bool IsAllowed(IRunState runState)
+    {
+        return YuWanContentAvailability.IsEventTypeEnabled<HelloHuman>();
+    }
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {

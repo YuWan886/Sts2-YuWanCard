@@ -12,32 +12,116 @@ namespace YuWanCard;
 internal static class ConfigRegistrar
 {
     private const string ModId = MainFile.ModId;
+    private const string RootPageId = "yuwan_card";
+    private const string ContentPageId = "game_content";
 
     private static bool s_registered;
     private static bool s_ritsuRegistered;
 
     private static Type? s_dynamicAdapterType;
     private static object? s_dynamicAdapterInstance;
+    private static Type[]? s_dynamicRitsuProviderTypes;
 
-    // Boolean toggle settings. Section is the BaseLib section title; RitsuLib uses a fixed "display" section.
-    // Order controls UI position (shared across both backends; lower = earlier).
-    private static readonly (string PropertyName, string Section, string RitsuId, string DataKey, string Label, string? Description, int Order)[]
-        ToggleProps =
+    private sealed record ConfigPageDefinition(
+        string TypeName,
+        string PageId,
+        string Title,
+        string? Description,
+        int SortOrder,
+        string? ParentPageId = null,
+        string? ModDisplayName = null);
+
+    private sealed record ConfigSectionDefinition(
+        string PageId,
+        string SectionId,
+        string Title,
+        string? Description,
+        int SortOrder);
+
+    private sealed record ToggleSettingDefinition(
+        string PropertyName,
+        string BaseLibSection,
+        string RitsuPageId,
+        string RitsuSectionId,
+        string RitsuId,
+        string DataKey,
+        string Label,
+        string? Description,
+        int Order);
+
+    private sealed record SliderSettingDefinition(
+        string PropertyName,
+        string BaseLibSection,
+        string RitsuPageId,
+        string RitsuSectionId,
+        string RitsuId,
+        string DataKey,
+        string Label,
+        string? Description,
+        double Min,
+        double Max,
+        double Step,
+        string Format,
+        int Order);
+
+    private sealed record SubpageSettingDefinition(
+        string RitsuPageId,
+        string RitsuSectionId,
+        string EntryId,
+        string TargetPageId,
+        string MethodName,
+        string Label,
+        string? Description,
+        string? ButtonText,
+        int Order);
+
+    private static readonly ConfigPageDefinition[] RitsuPages =
     [
-        ("EnableDeathEffect", "显示设置", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效", 0),
-        ("EnableCustomCursor", "显示设置", "enable_custom_cursor", "config_enable_custom_cursor", "自定义鼠标指针", "用猪猪主题指针替换游戏默认鼠标指针", 1),
-        ("BypassModelDbHashCheck", "多人游戏设置", "bypass_modeldb_check", "config_bypass_modeldb_hash_check", "跳过哈希检查", "多人模式下跳过ModelDb哈希校验", 3),
-        ("EnableAutoUpdateCheck", "更新设置", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新", 4),
-        ("EnableSevenCursesRing", "游戏设置", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒", 5),
-        ("EnableMaliceSelection", "游戏设置", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 6),
+        new("YuWanCardRitsuConfigProvider", RootPageId, "YuWanCard 设置", null, 0, null, "YuWanCard"),
+        new("YuWanCardRitsuContentConfigProvider", ContentPageId, "游戏内容设置", "控制本模组敌人和事件是否会出现在对局中", 100, RootPageId, "YuWanCard"),
     ];
 
-    // Double slider settings: (Property, Section, RitsuId, DataKey, Label, Description, Min, Max, Step, Format, Order).
-    private static readonly (string PropertyName, string Section, string RitsuId, string DataKey, string Label,
-        string? Description, double Min, double Max, double Step, string Format, int Order)[] SliderProps =
+    private static readonly ConfigSectionDefinition[] RitsuSections =
     [
-        ("CursorScale", "显示设置", "cursor_scale", "config_cursor_scale", "鼠标指针缩放",
+        new(RootPageId, "display", "显示设置", null, 0),
+        new(RootPageId, "multiplayer", "多人游戏设置", null, 100),
+        new(RootPageId, "updates", "更新设置", null, 200),
+        new(RootPageId, "gameplay", "游戏设置", null, 300),
+        new(ContentPageId, "enemy_encounters", "敌人遭遇", null, 0),
+        new(ContentPageId, "events", "事件", null, 100),
+    ];
+
+    // Boolean toggle settings. BaseLib and RitsuLib use independent grouping metadata.
+    private static readonly ToggleSettingDefinition[] ToggleProps =
+    [
+        new("EnableDeathEffect", "显示设置", RootPageId, "display", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效", 0),
+        new("EnableCustomCursor", "显示设置", RootPageId, "display", "enable_custom_cursor", "config_enable_custom_cursor", "自定义鼠标指针", "用猪猪主题指针替换游戏默认鼠标指针", 1),
+        new("BypassModelDbHashCheck", "多人游戏设置", RootPageId, "multiplayer", "bypass_modeldb_check", "config_bypass_modeldb_hash_check", "跳过哈希检查", "多人模式下跳过ModelDb哈希校验", 0),
+        new("EnableAutoUpdateCheck", "更新设置", RootPageId, "updates", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新", 0),
+        new("EnableSevenCursesRing", "游戏设置", RootPageId, "gameplay", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒", 0),
+        new("EnableMaliceSelection", "游戏设置", RootPageId, "gameplay", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 1),
+        new("EnableYuWanEnemyEncounters", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_yuwan_enemy_encounters", "config_enable_yuwan_enemy_encounters", "启用本模组敌人", "控制 YuWanCard 的敌人遭遇是否会出现在对局中", 0),
+        new("EnableIgnisBossEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_ignis_boss_encounter", "config_enable_ignis_boss_encounter", "焰魔", "允许焰魔首领遭遇出现在对局中", 1),
+        new("EnableKillerEliteEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_killer_elite_encounter", "config_enable_killer_elite_encounter", "杀手", "允许杀手精英遭遇出现在对局中", 2),
+        new("EnableYuWanEvents", "游戏内容设置", ContentPageId, "events", "enable_yuwan_events", "config_enable_yuwan_events", "启用本模组事件", "控制 YuWanCard 的事件是否会出现在对局中", 0),
+        new("EnableBlacksmithEvent", "游戏内容设置", ContentPageId, "events", "enable_blacksmith_event", "config_enable_blacksmith_event", "铁匠铺", "允许铁匠铺事件出现在对局中", 1),
+        new("EnableHelloHumanEvent", "游戏内容设置", ContentPageId, "events", "enable_hello_human_event", "config_enable_hello_human_event", "人，你好。", "允许“人，你好。”事件出现在对局中", 2),
+        new("EnableHorizonEvent", "游戏内容设置", ContentPageId, "events", "enable_horizon_event", "config_enable_horizon_event", "天涯海角", "允许天涯海角事件出现在对局中", 3),
+        new("EnableSkullGoldRushEvent", "游戏内容设置", ContentPageId, "events", "enable_skull_gold_rush_event", "config_enable_skull_gold_rush_event", "骷髅打金服", "允许骷髅打金服事件出现在对局中", 4),
+        new("EnableSunkenStatueQuestEvent", "游戏内容设置", ContentPageId, "events", "enable_sunken_statue_quest_event", "config_enable_sunken_statue_quest_event", "沉没的石像", "允许沉没的石像事件出现在对局中", 5),
+        new("EnableZhiZhanZhiShangEvent", "游戏内容设置", ContentPageId, "events", "enable_zhi_zhan_zhi_shang_event", "config_enable_zhi_zhan_zhi_shang_event", "止战之殇", "允许止战之殇事件出现在对局中", 6),
+    ];
+
+    private static readonly SliderSettingDefinition[] SliderProps =
+    [
+        new("CursorScale", "显示设置", RootPageId, "display", "cursor_scale", "config_cursor_scale", "鼠标指针缩放",
             "自定义鼠标指针的大小，1.0x 约为原版的 64px", 0.1, 10.0, 0.1, "{0}x", 2),
+    ];
+
+    private static readonly SubpageSettingDefinition[] SubpageProps =
+    [
+        new(RootPageId, "gameplay", "open_game_content_settings", ContentPageId, "OpenGameContentSettingsPage",
+            "游戏内容设置", "打开游戏内容设置页面。", "打开", 100),
     ];
 
     public static void TryDeferredRegister()
@@ -135,7 +219,7 @@ internal static class ConfigRegistrar
             // Emit in a unified Order sequence so BaseLib (which groups by section in emit order)
             // keeps same-section settings contiguous instead of creating duplicate section headers.
             var toggleByOrder = ToggleProps.Select(t => (t.Order, Emit: (Action)(() =>
-                EmitBaseLibBoolProperty(typeBuilder, sectionCtor, hoverTipCtor, t.PropertyName, t.Section))));
+                EmitBaseLibBoolProperty(typeBuilder, sectionCtor, hoverTipCtor, t.PropertyName, t.BaseLibSection))));
             var sliderByOrder = SliderProps.Select(s => (s.Order, Emit: (Action)(() =>
             {
                 if (sliderCtor != null)
@@ -191,8 +275,7 @@ internal static class ConfigRegistrar
     private static void EmitBaseLibDoubleProperty(
         TypeBuilder typeBuilder, ConstructorInfo? sectionCtor, ConstructorInfo? hoverTipCtor,
         ConstructorInfo? sliderCtor, PropertyInfo? formatProp,
-        (string PropertyName, string Section, string RitsuId, string DataKey, string Label,
-            string? Description, double Min, double Max, double Step, string Format, int Order) s)
+        SliderSettingDefinition s)
     {
         var field = typeBuilder.DefineField(
             $"<{s.PropertyName}>k__BackingField", typeof(double),
@@ -201,7 +284,7 @@ internal static class ConfigRegistrar
         var prop = typeBuilder.DefineProperty(s.PropertyName, PropertyAttributes.None, typeof(double), null);
 
         if (sectionCtor != null)
-            prop.SetCustomAttribute(new CustomAttributeBuilder(sectionCtor, [s.Section]));
+            prop.SetCustomAttribute(new CustomAttributeBuilder(sectionCtor, [s.BaseLibSection]));
         ApplyHoverTip(prop, hoverTipCtor);
 
         if (sliderCtor != null)
@@ -301,15 +384,16 @@ internal static class ConfigRegistrar
             var sectionAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsSectionAttribute");
             var toggleAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsToggleAttribute");
             var sliderAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsSliderAttribute");
+            var subpageAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsSubpageAttribute");
             var bindingAttrType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsBindingAttribute");
             var bindingSourceType = ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsReflectionBindingSource");
 
             if (pageAttrType == null || sectionAttrType == null || toggleAttrType == null)
                 return false;
 
-            var dynamicType = CreateRitsuConfigType(pageAttrType, sectionAttrType, toggleAttrType,
+            var dynamicTypes = CreateRitsuConfigTypes(pageAttrType, sectionAttrType, toggleAttrType, subpageAttrType,
                 sliderAttrType, bindingAttrType, bindingSourceType);
-            if (dynamicType == null) return false;
+            if (dynamicTypes.Length == 0) return false;
 
             var frameworkType = ResolveTypeAcrossAssemblies("STS2RitsuLib.RitsuLibFramework");
             if (frameworkType == null)
@@ -326,8 +410,11 @@ internal static class ConfigRegistrar
                 return false;
             }
 
-            var pagesRegistered = registerMethod.Invoke(null, [dynamicType]) as int?;
-            MainFile.Logger.Info($"Registered {pagesRegistered ?? 0} config page(s) via STS2-RitsuLib (direct reflection)");
+            var pagesRegistered = 0;
+            foreach (var dynamicType in dynamicTypes)
+                pagesRegistered += registerMethod.Invoke(null, [dynamicType]) as int? ?? 0;
+
+            MainFile.Logger.Info($"Registered {pagesRegistered} config page(s) via STS2-RitsuLib (direct reflection)");
 
             SyncRitsuLibToConfig();
 
@@ -343,77 +430,127 @@ internal static class ConfigRegistrar
 
     // ── dynamic provider for RitsuLib ─────────────────────
 
-    private static Type? CreateRitsuConfigType(
-        Type pageAttrType, Type sectionAttrType, Type toggleAttrType,
+    private static Type[] CreateRitsuConfigTypes(
+        Type pageAttrType, Type sectionAttrType, Type toggleAttrType, Type? subpageAttrType,
         Type? sliderAttrType, Type? bindingAttrType, Type? bindingSourceType)
     {
         try
         {
+            if (s_dynamicRitsuProviderTypes != null)
+                return s_dynamicRitsuProviderTypes;
+
             var pageCtor = pageAttrType.GetConstructor([typeof(string), typeof(string)]);
-            if (pageCtor == null) return null;
+            if (pageCtor == null) return [];
 
             var sectionCtor = sectionAttrType.GetConstructor([typeof(string)]);
 
             var toggleCtor = toggleAttrType.GetConstructor([typeof(string), typeof(string)]);
-            if (toggleCtor == null) return null;
+            if (toggleCtor == null) return [];
+
+            var subpageCtor = subpageAttrType?.GetConstructor([typeof(string), typeof(string), typeof(string)]);
+            var subpageLabelProp = subpageAttrType?.GetProperty("Label");
+            var subpageDescProp = subpageAttrType?.GetProperty("Description");
+            var subpageOrderProp = subpageAttrType?.GetProperty("Order");
+            var subpageButtonTextProp = subpageAttrType?.GetProperty("ButtonText");
 
             var labelProp = toggleAttrType.GetProperty("Label");
             var descProp = toggleAttrType.GetProperty("Description");
             var orderProp = toggleAttrType.GetProperty("Order");
-            var titleProp = pageAttrType.GetProperty("Title");
-            var modDisplayProp = pageAttrType.GetProperty("ModDisplayName");
 
             var asmName = new AssemblyName("YuWanCard.DynamicRitsuConfig");
             var asmBuilder = AssemblyBuilder.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
             var modBuilder = asmBuilder.DefineDynamicModule("RitsuModule");
-            var typeBuilder = modBuilder.DefineType(
-                "YuWanCard.Config.YuWanCardRitsuConfigProvider",
-                TypeAttributes.Public | TypeAttributes.Class);
+            var sliderCtor = sliderAttrType?.GetConstructor(
+                [typeof(string), typeof(string), typeof(double), typeof(double), typeof(double)]);
+            var sliderLabelProp = sliderAttrType?.GetProperty("Label");
+            var sliderDescProp = sliderAttrType?.GetProperty("Description");
+            var sliderOrderProp = sliderAttrType?.GetProperty("Order");
 
-            if (titleProp != null && modDisplayProp != null)
-                typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
-                    pageCtor, [ModId, "yuwan_card"],
-                    [titleProp, modDisplayProp],
-                    ["YuWanCard 设置", "YuWanCard"]));
-            else
-                typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(pageCtor, [ModId, "yuwan_card"]));
-
-            var sectionTitleProp = sectionAttrType.GetProperty("Title");
-            if (sectionCtor != null)
+            var providerTypes = new List<Type>(RitsuPages.Length);
+            foreach (var page in RitsuPages)
             {
-                if (sectionTitleProp != null)
-                    typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
-                        sectionCtor, ["display"],
-                        [sectionTitleProp], ["显示"]));
-                else
-                    typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(sectionCtor, ["display"]));
-            }
+                var typeBuilder = modBuilder.DefineType(
+                    $"YuWanCard.Config.{page.TypeName}",
+                    TypeAttributes.Public | TypeAttributes.Class);
 
-            foreach (var t in ToggleProps)
-                EmitRitsuBoolProperty(typeBuilder, toggleCtor, labelProp, descProp, orderProp,
-                    bindingAttrType, bindingSourceType, t.PropertyName, t.RitsuId, t.DataKey, t.Label, t.Description, t.Order);
+                ApplyRitsuPageAttribute(typeBuilder, pageAttrType, pageCtor, page);
+                ApplyRitsuSectionAttributes(typeBuilder, sectionAttrType, sectionCtor, page.PageId);
 
-            if (sliderAttrType != null)
-            {
-                var sliderCtor = sliderAttrType.GetConstructor(
-                    [typeof(string), typeof(string), typeof(double), typeof(double), typeof(double)]);
-                var sliderLabelProp = sliderAttrType.GetProperty("Label");
-                var sliderDescProp = sliderAttrType.GetProperty("Description");
-                var sliderOrderProp = sliderAttrType.GetProperty("Order");
+                foreach (var t in ToggleProps.Where(p => string.Equals(p.RitsuPageId, page.PageId, StringComparison.Ordinal)))
+                    EmitRitsuBoolProperty(typeBuilder, toggleCtor, labelProp, descProp, orderProp,
+                        bindingAttrType, bindingSourceType, t);
 
                 if (sliderCtor != null)
-                    foreach (var s in SliderProps)
+                    foreach (var s in SliderProps.Where(p => string.Equals(p.RitsuPageId, page.PageId, StringComparison.Ordinal)))
                         EmitRitsuDoubleProperty(typeBuilder, sliderCtor, sliderLabelProp, sliderDescProp, sliderOrderProp,
-                            bindingAttrType, bindingSourceType, s.PropertyName, s.RitsuId, s.DataKey,
-                            s.Label, s.Description, s.Min, s.Max, s.Step, s.Order);
+                            bindingAttrType, bindingSourceType, s);
+
+                if (subpageCtor != null)
+                    foreach (var s in SubpageProps.Where(p => string.Equals(p.RitsuPageId, page.PageId, StringComparison.Ordinal)))
+                        EmitRitsuSubpageMethod(typeBuilder, subpageCtor, subpageLabelProp, subpageDescProp,
+                            subpageOrderProp, subpageButtonTextProp, s);
+
+                if (typeBuilder.CreateType() is { } createdType)
+                    providerTypes.Add(createdType);
             }
 
-            return typeBuilder.CreateType();
+            s_dynamicRitsuProviderTypes = [.. providerTypes];
+            return s_dynamicRitsuProviderTypes;
         }
         catch (Exception ex)
         {
             MainFile.Logger.Warn($"Failed to create dynamic Ritsu config type: {ex.Message}");
-            return null;
+            return [];
+        }
+    }
+
+    private static void ApplyRitsuPageAttribute(
+        TypeBuilder typeBuilder,
+        Type pageAttrType,
+        ConstructorInfo pageCtor,
+        ConfigPageDefinition page)
+    {
+        var props = new List<PropertyInfo>();
+        var values = new List<object>();
+
+        AddNamedAttrValue(pageAttrType, props, values, "Title", page.Title);
+        AddNamedAttrValue(pageAttrType, props, values, "Description", page.Description);
+        AddNamedAttrValue(pageAttrType, props, values, "ModDisplayName", page.ModDisplayName);
+        AddNamedAttrValue(pageAttrType, props, values, "ParentPageId", page.ParentPageId);
+        AddNamedAttrValue(pageAttrType, props, values, "SortOrder", page.SortOrder);
+
+        typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
+            pageCtor,
+            [ModId, page.PageId],
+            props.ToArray(),
+            values.ToArray()));
+    }
+
+    private static void ApplyRitsuSectionAttributes(
+        TypeBuilder typeBuilder,
+        Type sectionAttrType,
+        ConstructorInfo? sectionCtor,
+        string pageId)
+    {
+        if (sectionCtor == null)
+            return;
+
+        foreach (var section in RitsuSections
+                     .Where(s => string.Equals(s.PageId, pageId, StringComparison.Ordinal))
+                     .OrderBy(s => s.SortOrder))
+        {
+            var props = new List<PropertyInfo>();
+            var values = new List<object>();
+
+            AddNamedAttrValue(sectionAttrType, props, values, "Title", section.Title);
+            AddNamedAttrValue(sectionAttrType, props, values, "Description", section.Description);
+            AddNamedAttrValue(sectionAttrType, props, values, "SortOrder", section.SortOrder);
+
+            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
+                sectionCtor,
+                [section.SectionId],
+                props.ToArray(),
+                values.ToArray()));
         }
     }
 
@@ -421,22 +558,22 @@ internal static class ConfigRegistrar
         TypeBuilder typeBuilder, ConstructorInfo toggleCtor,
         PropertyInfo? labelProp, PropertyInfo? descProp, PropertyInfo? orderProp,
         Type? bindingAttrType, Type? bindingSourceType,
-        string propName, string toggleId, string dataKey, string label, string? description, int order)
+        ToggleSettingDefinition setting)
     {
-        var prop = typeBuilder.DefineProperty(propName, PropertyAttributes.None, typeof(bool), null);
+        var prop = typeBuilder.DefineProperty(setting.PropertyName, PropertyAttributes.None, typeof(bool), null);
 
         prop.SetCustomAttribute(BuildEntryAttribute(
-            toggleCtor, [toggleId, "display"], labelProp, descProp, orderProp, label, description, order));
+            toggleCtor, [setting.RitsuId, setting.RitsuSectionId], labelProp, descProp, orderProp, setting.Label, setting.Description, setting.Order));
 
-        if (TryCreateRitsuBindingAttribute(bindingAttrType, bindingSourceType, dataKey) is { } bindingAttrBuilder)
+        if (TryCreateRitsuBindingAttribute(bindingAttrType, bindingSourceType, setting.DataKey) is { } bindingAttrBuilder)
             prop.SetCustomAttribute(bindingAttrBuilder);
 
         var getter = typeBuilder.DefineMethod(
-            $"get_{propName}",
+            $"get_{setting.PropertyName}",
             MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
             typeof(bool), Type.EmptyTypes);
         var getIL = getter.GetILGenerator();
-        getIL.Emit(OpCodes.Ldstr, propName);
+        getIL.Emit(OpCodes.Ldstr, setting.PropertyName);
         getIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
             nameof(RitsuConfigRuntimeBridge.ReadRuntimeBool),
             BindingFlags.Public | BindingFlags.Static)!);
@@ -444,11 +581,11 @@ internal static class ConfigRegistrar
         prop.SetGetMethod(getter);
 
         var setter = typeBuilder.DefineMethod(
-            $"set_{propName}",
+            $"set_{setting.PropertyName}",
             MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
             null, [typeof(bool)]);
         var setIL = setter.GetILGenerator();
-        setIL.Emit(OpCodes.Ldstr, propName);
+        setIL.Emit(OpCodes.Ldstr, setting.PropertyName);
         setIL.Emit(OpCodes.Ldarg_1);
         setIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
             nameof(RitsuConfigRuntimeBridge.ApplyRuntimeBool),
@@ -461,23 +598,22 @@ internal static class ConfigRegistrar
         TypeBuilder typeBuilder, ConstructorInfo sliderCtor,
         PropertyInfo? labelProp, PropertyInfo? descProp, PropertyInfo? orderProp,
         Type? bindingAttrType, Type? bindingSourceType,
-        string propName, string entryId, string dataKey, string label, string? description,
-        double min, double max, double step, int order)
+        SliderSettingDefinition setting)
     {
-        var prop = typeBuilder.DefineProperty(propName, PropertyAttributes.None, typeof(double), null);
+        var prop = typeBuilder.DefineProperty(setting.PropertyName, PropertyAttributes.None, typeof(double), null);
 
         prop.SetCustomAttribute(BuildEntryAttribute(
-            sliderCtor, [entryId, "display", min, max, step], labelProp, descProp, orderProp, label, description, order));
+            sliderCtor, [setting.RitsuId, setting.RitsuSectionId, setting.Min, setting.Max, setting.Step], labelProp, descProp, orderProp, setting.Label, setting.Description, setting.Order));
 
-        if (TryCreateRitsuBindingAttribute(bindingAttrType, bindingSourceType, dataKey) is { } bindingAttrBuilder)
+        if (TryCreateRitsuBindingAttribute(bindingAttrType, bindingSourceType, setting.DataKey) is { } bindingAttrBuilder)
             prop.SetCustomAttribute(bindingAttrBuilder);
 
         var getter = typeBuilder.DefineMethod(
-            $"get_{propName}",
+            $"get_{setting.PropertyName}",
             MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
             typeof(double), Type.EmptyTypes);
         var getIL = getter.GetILGenerator();
-        getIL.Emit(OpCodes.Ldstr, propName);
+        getIL.Emit(OpCodes.Ldstr, setting.PropertyName);
         getIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
             nameof(RitsuConfigRuntimeBridge.ReadRuntimeDouble),
             BindingFlags.Public | BindingFlags.Static)!);
@@ -485,17 +621,68 @@ internal static class ConfigRegistrar
         prop.SetGetMethod(getter);
 
         var setter = typeBuilder.DefineMethod(
-            $"set_{propName}",
+            $"set_{setting.PropertyName}",
             MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
             null, [typeof(double)]);
         var setIL = setter.GetILGenerator();
-        setIL.Emit(OpCodes.Ldstr, propName);
+        setIL.Emit(OpCodes.Ldstr, setting.PropertyName);
         setIL.Emit(OpCodes.Ldarg_1);
         setIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
             nameof(RitsuConfigRuntimeBridge.ApplyRuntimeDouble),
             BindingFlags.Public | BindingFlags.Static)!);
         setIL.Emit(OpCodes.Ret);
         prop.SetSetMethod(setter);
+    }
+
+    private static void EmitRitsuSubpageMethod(
+        TypeBuilder typeBuilder,
+        ConstructorInfo subpageCtor,
+        PropertyInfo? labelProp,
+        PropertyInfo? descProp,
+        PropertyInfo? orderProp,
+        PropertyInfo? buttonTextProp,
+        SubpageSettingDefinition setting)
+    {
+        var method = typeBuilder.DefineMethod(
+            setting.MethodName,
+            MethodAttributes.Public | MethodAttributes.Static,
+            typeof(void),
+            Type.EmptyTypes);
+        var il = method.GetILGenerator();
+        il.Emit(OpCodes.Ret);
+
+        var props = new List<PropertyInfo>();
+        var values = new List<object>();
+
+        if (labelProp != null)
+        {
+            props.Add(labelProp);
+            values.Add(setting.Label);
+        }
+
+        if (descProp != null && setting.Description != null)
+        {
+            props.Add(descProp);
+            values.Add(setting.Description);
+        }
+
+        if (buttonTextProp != null && setting.ButtonText != null)
+        {
+            props.Add(buttonTextProp);
+            values.Add(setting.ButtonText);
+        }
+
+        if (orderProp != null)
+        {
+            props.Add(orderProp);
+            values.Add(setting.Order);
+        }
+
+        method.SetCustomAttribute(new CustomAttributeBuilder(
+            subpageCtor,
+            [setting.EntryId, setting.RitsuSectionId, setting.TargetPageId],
+            props.ToArray(),
+            values.ToArray()));
     }
 
     // ── sync ─────────────────────────────────────────────
@@ -581,6 +768,23 @@ internal static class ConfigRegistrar
         if (orderProp != null) { props.Add(orderProp); values.Add(order); }
 
         return new CustomAttributeBuilder(ctor, ctorArgs, props.ToArray(), values.ToArray());
+    }
+
+    private static void AddNamedAttrValue(
+        Type attributeType,
+        List<PropertyInfo> props,
+        List<object> values,
+        string propertyName,
+        object? value)
+    {
+        if (value == null)
+            return;
+
+        if (attributeType.GetProperty(propertyName) is { } prop)
+        {
+            props.Add(prop);
+            values.Add(value);
+        }
     }
 
     private static CustomAttributeBuilder? TryCreateRitsuBindingAttribute(

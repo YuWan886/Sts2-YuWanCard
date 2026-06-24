@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Cards;
+using YuWanCard.Config;
 
 namespace YuWanCard.Events;
 
@@ -15,7 +16,8 @@ public sealed class HorizonEvent : YuWanEventModel
 
     public override bool IsAllowed(IRunState runState)
     {
-        return runState.CurrentActIndex >= 2;
+        return YuWanContentAvailability.IsEventTypeEnabled<HorizonEvent>() &&
+               runState.CurrentActIndex >= 2;
     }
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
