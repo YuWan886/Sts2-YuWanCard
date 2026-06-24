@@ -47,10 +47,7 @@ public class AngelPigPower : YuWanPowerModel
             return;
         }
 
-        CreatureVisualUtils.SwitchCreatureSkin(Owner, "normal");
-        await CreatureCmd.TriggerAnim(Owner, "Tf2", 3.8f);
-        await Task.Delay(TimeSpan.FromSeconds(4.0f));
-        CreatureVisualUtils.SwitchCreatureSkin(Owner, "tianshi");
+        CreatureVisualUtils.PlayPigTransformationSequence(Owner, "Tf2", 4.2f, "tianshi");
     }
 
     public override async Task AfterRemoved(Creature oldOwner)
@@ -60,7 +57,7 @@ public class AngelPigPower : YuWanPowerModel
             return;
         }
 
-        CreatureVisualUtils.SwitchCreatureSkin(oldOwner, "normal");
+        CreatureVisualUtils.ResetPigTransformationVisuals(oldOwner);
         await Task.CompletedTask;
     }
 }

@@ -11,7 +11,7 @@ namespace YuWanCard.Cards;
 public class AngelForm : YuWanCardModel
 {
     public AngelForm() : base(
-        baseCost: 2,
+        baseCost: 3,
         type: CardType.Power,
         rarity: CardRarity.Rare,
         target: TargetType.Self)

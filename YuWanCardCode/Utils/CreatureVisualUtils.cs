@@ -1,11 +1,23 @@
+using System.Runtime.CompilerServices;
+using Godot;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using YuWanCard.Characters;
 
 namespace YuWanCard.Utils;
 
 public static class CreatureVisualUtils
 {
+    private const string NormalSkin = "normal";
+    private const string IdleAnimation = "Idle";
+    private static readonly ConditionalWeakTable<Creature, TransformationSequenceState> TransformationSequences = [];
+
+    private sealed class TransformationSequenceState
+    {
+        public int SequenceId;
+    }
+
     public static void SwitchCreatureSkin(Creature creature, string skinName)
     {
         var megaSprite = GetMegaSprite(creature);
@@ -32,6 +44,102 @@ public static class CreatureVisualUtils
     {
         var megaSprite = GetMegaSprite(creature);
         megaSprite?.GetAnimationState()?.SetAnimation(animationName, loop);
+    }
+
+    public static void PlayPigTransformationSequence(
+        Creature creature,
+        string transformAnimation,
+        double transformDurationSeconds,
+        string transformedSkin,
+        params Creature?[] linkedCreatures)
+    {
+        if (creature.Player?.Character is not Pig)
+        {
+            return;
+        }
+
+        var linkedTargets = linkedCreatures
+            .Where(static creature => creature != null)
+            .Cast<Creature>()
+            .ToArray();
+
+        int sequenceId = NextSequenceId(creature);
+        SwitchCreatureSkin(creature, NormalSkin);
+        foreach (var linkedCreature in linkedTargets)
+        {
+            SwitchCreatureSkin(linkedCreature, NormalSkin);
+        }
+
+        PlayAnimation(creature, transformAnimation);
+
+        ScheduleAfter(transformDurationSeconds, () =>
+        {
+            if (!IsCurrentSequence(creature, sequenceId))
+            {
+                return;
+            }
+
+            SwitchCreatureSkin(creature, transformedSkin);
+            PlayAnimation(creature, IdleAnimation);
+
+            foreach (var linkedCreature in linkedTargets)
+            {
+                if (!linkedCreature.IsAlive)
+                {
+                    continue;
+                }
+
+                SwitchCreatureSkin(linkedCreature, transformedSkin);
+                PlayAnimation(linkedCreature, IdleAnimation);
+            }
+        });
+    }
+
+    public static void ResetPigTransformationVisuals(Creature creature, params Creature?[] linkedCreatures)
+    {
+        CancelTransformationSequence(creature);
+        SwitchCreatureSkin(creature, NormalSkin);
+
+        foreach (var linkedCreature in linkedCreatures)
+        {
+            if (linkedCreature == null)
+            {
+                continue;
+            }
+
+            CancelTransformationSequence(linkedCreature);
+            SwitchCreatureSkin(linkedCreature, NormalSkin);
+        }
+    }
+
+    private static int NextSequenceId(Creature creature)
+    {
+        var state = TransformationSequences.GetOrCreateValue(creature);
+        return ++state.SequenceId;
+    }
+
+    private static void CancelTransformationSequence(Creature creature)
+    {
+        var state = TransformationSequences.GetOrCreateValue(creature);
+        state.SequenceId++;
+    }
+
+    private static bool IsCurrentSequence(Creature creature, int sequenceId)
+    {
+        return TransformationSequences.GetOrCreateValue(creature).SequenceId == sequenceId;
+    }
+
+    private static void ScheduleAfter(double seconds, Action callback)
+    {
+        var tree = NCombatRoom.Instance?.GetTree();
+        if (tree == null)
+        {
+            Callable.From(callback).CallDeferred();
+            return;
+        }
+
+        var timer = tree.CreateTimer(seconds);
+        timer.Timeout += callback;
     }
 
     private static MegaSprite? GetMegaSprite(Creature creature)

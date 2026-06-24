@@ -34,13 +34,8 @@ public class PigDemonFormPower : YuWanPowerModel
 
     public override async Task AfterRemoved(Creature oldOwner)
     {
-        CreatureVisualUtils.SwitchCreatureSkin(oldOwner, "normal");
-
         var pigMinion = PetManager.FindPetByType<PigMinion>(oldOwner);
-        if (pigMinion != null && pigMinion.IsAlive)
-        {
-            CreatureVisualUtils.SwitchCreatureSkin(pigMinion, "normal");
-        }
+        CreatureVisualUtils.ResetPigTransformationVisuals(oldOwner, pigMinion);
 
         await Task.CompletedTask;
     }
