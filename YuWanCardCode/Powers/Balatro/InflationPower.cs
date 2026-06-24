@@ -14,10 +14,22 @@ public sealed class InflationPower : YuWanPowerModel
 
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
-        () => Owner.Player,
-        amount => Math.Floor(amount * (Amount / 100m)),
-        async _ => { Flash(); await Task.CompletedTask; });
+    private GoldModificationGuard GoldGuard
+    {
+        get
+        {
+            if (_goldGuard == null || !_goldGuard.IsBoundTo(this))
+            {
+                _goldGuard = new GoldModificationGuard(
+                    this,
+                    () => Owner.Player,
+                    amount => Math.Floor(amount * (Amount / 100m)),
+                    async _ => { Flash(); await Task.CompletedTask; });
+            }
+
+            return _goldGuard;
+        }
+    }
 
     public override decimal ModifyGoldGained(Player player, decimal amount)
     {

@@ -30,25 +30,37 @@ public sealed class SinOfGreedRune : HextechSharedRuneBase
         HoverTipFactory.FromPower<StrengthPower>()
     ];
 
-    private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
-        () => Owner,
-        _ => 0m,
-        async _ =>
+    private GoldModificationGuard GoldGuard
+    {
+        get
         {
-            if (Owner?.Creature?.CombatState == null)
+            if (_goldGuard == null || !_goldGuard.IsBoundTo(this))
             {
-                return;
+                _goldGuard = new GoldModificationGuard(
+                    this,
+                    () => Owner,
+                    _ => 0m,
+                    async _ =>
+                    {
+                        if (Owner?.Creature?.CombatState == null)
+                        {
+                            return;
+                        }
+
+                        Creature? target = CombatTargetingUtils.GetDeterministicRandomTarget(Owner, Owner.Creature.CombatState.HittableEnemies);
+                        if (target == null)
+                        {
+                            return;
+                        }
+
+                        Flash();
+                        await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), target, DynamicVars.Damage.BaseValue, ValueProp.Unpowered, Owner.Creature);
+                    });
             }
 
-            Creature? target = CombatTargetingUtils.GetDeterministicRandomTarget(Owner, Owner.Creature.CombatState.HittableEnemies);
-            if (target == null)
-            {
-                return;
-            }
-
-            Flash();
-            await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), target, DynamicVars.Damage.BaseValue, ValueProp.Unpowered, Owner.Creature);
-        });
+            return _goldGuard;
+        }
+    }
 
     public override Task BeforeCombatStart()
     {

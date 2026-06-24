@@ -35,15 +35,27 @@ public class GreedyPig : YuWanRelicModel
         HoverTipFactory.FromCard<Greed>()
     ];
 
-    private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
-        () => Owner,
-        amount => Math.Floor(amount * 1m),
-        async amount =>
+    private GoldModificationGuard GoldGuard
+    {
+        get
         {
-            Flash();
-            await PlayerCmd.GainGold(amount, Owner!);
+            if (_goldGuard == null || !_goldGuard.IsBoundTo(this))
+            {
+                _goldGuard = new GoldModificationGuard(
+                    this,
+                    () => Owner,
+                    amount => Math.Floor(amount * 1m),
+                    async amount =>
+                    {
+                        Flash();
+                        await PlayerCmd.GainGold(amount, Owner!);
+                    }
+                );
+            }
+
+            return _goldGuard;
         }
-    );
+    }
 
     public GreedyPig() : base(true)
     {

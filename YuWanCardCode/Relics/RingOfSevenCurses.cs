@@ -37,11 +37,23 @@ public class RingOfSevenCurses : YuWanRelicModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new EnergyVar(1)];
 
-    private GoldModificationGuard GoldGuard => _goldGuard ??= new GoldModificationGuard(
-        () => Owner,
-        amount => Math.Floor(amount * 0.5m),
-        async amount => await PlayerCmd.LoseGold(amount, Owner!)
-    );
+    private GoldModificationGuard GoldGuard
+    {
+        get
+        {
+            if (_goldGuard == null || !_goldGuard.IsBoundTo(this))
+            {
+                _goldGuard = new GoldModificationGuard(
+                    this,
+                    () => Owner,
+                    amount => Math.Floor(amount * 0.5m),
+                    async amount => await PlayerCmd.LoseGold(amount, Owner!)
+                );
+            }
+
+            return _goldGuard;
+        }
+    }
 
     public RingOfSevenCurses() : base(true)
     {
