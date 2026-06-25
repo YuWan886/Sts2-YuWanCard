@@ -47,7 +47,7 @@ public class RingOfSevenCurses : YuWanRelicModel
                     this,
                     () => Owner,
                     amount => Math.Floor(amount * 0.5m),
-                    async amount => await PlayerCmd.LoseGold(amount, Owner!)
+                    async (owner, modifiedAmount) => await PlayerCmd.LoseGold(modifiedAmount, owner)
                 );
             }
 
@@ -63,15 +63,11 @@ public class RingOfSevenCurses : YuWanRelicModel
 
     public override decimal ModifyGoldGained(Player player, decimal amount)
     {
-        if (IsCanonical)
-            return amount;
         return GoldGuard.ModifyGoldGained(player, amount);
     }
 
     public override async Task AfterModifyingGoldGained(Player player, decimal amount)
     {
-        if (IsCanonical)
-            return;
         await GoldGuard.AfterModifyingGoldGained(player, amount);
     }
 

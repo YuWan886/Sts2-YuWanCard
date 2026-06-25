@@ -22,9 +22,9 @@ public sealed class InflationPower : YuWanPowerModel
             {
                 _goldGuard = new GoldModificationGuard(
                     this,
-                    () => Owner.Player,
+                    () => Owner?.Player,
                     amount => Math.Floor(amount * (Amount / 100m)),
-                    async _ => { Flash(); await Task.CompletedTask; });
+                    async (_, _) => { Flash(); await Task.CompletedTask; });
             }
 
             return _goldGuard;

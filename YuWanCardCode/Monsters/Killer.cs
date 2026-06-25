@@ -85,7 +85,7 @@ public sealed class Killer : YuWanMonsterModel
         {
             return;
         }
-        LocString line = L10NMonsterLookup("KILLER.onPlayerDeath.speakLine");
+        LocString line = L10NMonsterLookup("YUWANCARD-KILLER.onPlayerDeath.speakLine");
         PlayTalkLine(line, Creature);
     }
 
@@ -95,7 +95,7 @@ public sealed class Killer : YuWanMonsterModel
         {
             return Task.CompletedTask;
         }
-        LocString line = L10NMonsterLookup("KILLER.onDeath.speakLine");
+        LocString line = L10NMonsterLookup("YUWANCARD-KILLER.onDeath.speakLine");
         PlayTalkLine(line, Creature);
         return Task.CompletedTask;
     }
@@ -142,7 +142,7 @@ public sealed class Killer : YuWanMonsterModel
 
     private async Task SleepMove(IReadOnlyList<Creature> targets)
     {
-        LocString line = L10NMonsterLookup("KILLER.moves.SLEEP.speakLine");
+        LocString line = L10NMonsterLookup("YUWANCARD-KILLER.moves.SLEEP.speakLine");
         ThinkCmd.Play(line, Creature);
         await Cmd.Wait(0.5f);
     }
@@ -156,7 +156,7 @@ public sealed class Killer : YuWanMonsterModel
         await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Creature, 8m, Creature, null);
         await PowerCmd.Apply<PersonalHivePower>(new ThrowingPlayerChoiceContext(), Creature, PersonalHiveAmount, Creature, null);
         await PowerCmd.Apply<SkittishPower>(new ThrowingPlayerChoiceContext(), Creature, SkittishAmount, Creature, null);
-        LocString line = L10NMonsterLookup("KILLER.moves.WAKE.speakLine");
+        LocString line = L10NMonsterLookup("YUWANCARD-KILLER.moves.WAKE.speakLine");
         PlayTalkLine(line, Creature);
         await Cmd.Wait(0.5f);
     }

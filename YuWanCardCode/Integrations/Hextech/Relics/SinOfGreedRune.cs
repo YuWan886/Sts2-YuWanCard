@@ -40,21 +40,21 @@ public sealed class SinOfGreedRune : HextechSharedRuneBase
                     this,
                     () => Owner,
                     _ => 0m,
-                    async _ =>
+                    async (owner, _) =>
                     {
-                        if (Owner?.Creature?.CombatState == null)
+                        if (owner.Creature?.CombatState == null)
                         {
                             return;
                         }
 
-                        Creature? target = CombatTargetingUtils.GetDeterministicRandomTarget(Owner, Owner.Creature.CombatState.HittableEnemies);
+                        Creature? target = CombatTargetingUtils.GetDeterministicRandomTarget(owner, owner.Creature.CombatState.HittableEnemies);
                         if (target == null)
                         {
                             return;
                         }
 
                         Flash();
-                        await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), target, DynamicVars.Damage.BaseValue, ValueProp.Unpowered, Owner.Creature);
+                        await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), target, DynamicVars.Damage.BaseValue, ValueProp.Unpowered, owner.Creature);
                     });
             }
 

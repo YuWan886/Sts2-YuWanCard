@@ -12,13 +12,13 @@ public class GoldModificationGuard
     private readonly object _bindingToken;
     private readonly Func<Player?> _getOwner;
     private readonly Func<decimal, decimal> _calculateDelta;
-    private readonly Func<decimal, Task>? _onModified;
+    private readonly Func<Player, decimal, Task>? _onModified;
 
     public GoldModificationGuard(
         object bindingToken,
         Func<Player?> getOwner,
         Func<decimal, decimal> calculateDelta,
-        Func<decimal, Task>? onModified = null)
+        Func<Player, decimal, Task>? onModified = null)
     {
         _bindingToken = bindingToken ?? throw new ArgumentNullException(nameof(bindingToken));
         _getOwner = getOwner ?? throw new ArgumentNullException(nameof(getOwner));
@@ -48,10 +48,11 @@ public class GoldModificationGuard
         if (owner == null || player != owner || _isApplyingModification)
             return;
 
+        decimal delta = _calculateDelta(amount);
         _isApplyingModification = true;
         try
         {
-            await _onModified(_calculateDelta(amount));
+            await _onModified(owner, delta);
         }
         finally
         {
