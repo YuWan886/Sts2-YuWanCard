@@ -13,14 +13,14 @@ namespace YuWanCard.Core.Patches;
 internal static class ColorlessCardPoolAvailabilityPatch
 {
     [HarmonyPostfix]
-    private static IEnumerable<CardModel> Postfix(CardPoolModel __instance, IEnumerable<CardModel> __result)
+    private static void Postfix(CardPoolModel __instance, ref IEnumerable<CardModel> __result)
     {
         if (!__instance.IsColorless)
         {
-            return __result;
+            return;
         }
 
-        return YuWanContentAvailability.FilterAvailableCards(__result);
+        __result = YuWanContentAvailability.FilterAvailableCards(__result);
     }
 }
 
@@ -38,9 +38,9 @@ internal static class ColorlessTransformCandidateAvailabilityPatch
 internal static class ColorlessRewardSourceAvailabilityPatch
 {
     [HarmonyPostfix]
-    private static IEnumerable<CardModel> Postfix(IEnumerable<CardModel> __result)
+    private static void Postfix(ref IEnumerable<CardModel> __result)
     {
-        return YuWanContentAvailability.FilterAvailableCards(__result);
+        __result = YuWanContentAvailability.FilterAvailableCards(__result);
     }
 }
 
@@ -49,9 +49,9 @@ internal static class ColorlessCombatGenerationAvailabilityPatch
 {
     [HarmonyPostfix]
     [HarmonyPatch(nameof(CardFactory.FilterForCombat))]
-    private static IEnumerable<CardModel> FilterForCombatPostfix(IEnumerable<CardModel> __result)
+    private static void FilterForCombatPostfix(ref IEnumerable<CardModel> __result)
     {
-        return YuWanContentAvailability.FilterAvailableCards(__result);
+        __result = YuWanContentAvailability.FilterAvailableCards(__result);
     }
 
     [HarmonyPrefix]
