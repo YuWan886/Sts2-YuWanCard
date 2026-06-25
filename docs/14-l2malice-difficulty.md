@@ -58,7 +58,7 @@ Malice 共 10 个等级，效果累积：
 | 词条 | 效果 |
 |------|------|
 | Poison（中毒） | 攻击命中时施加 1 层 中毒 |
-| Reflect（反射） | 受到伤害后反射 2 点伤害 |
+| Resist（抗性） | 每回合可免疫 1 次负面效果 |
 | Protection（保护） | 获得 覆甲（每层 +2） |
 | Blindness（致盲） | 攻击命中时向玩家抽牌堆塞入 晕眩 |
 | Shulker（潜影） | 己方回合开始时获得 1 层 滑溜。上限 3 层 |
@@ -245,7 +245,8 @@ public sealed class ExampleTrait : MaliceTraitPowerBase
 | `AfterApplied` | 施加时一次性效果 | Tank（+MaxHP）、Speedy（+敏捷） |
 | `AfterSideTurnStart` | 每回合持续效果 | Regen（回血）、Growth（+力量）、Gravity（减力量） |
 | `AfterAttack` | 攻击命中后 | Weakness、Drain、Blindness |
-| `AfterDamageReceived` | 受到伤害后 | Fiery（荆棘）、Reflect（反射）、CounterStrike（反击） |
+| `AfterDamageReceived` | 受到伤害后 | Fiery（荆棘）、CounterStrike（反击） |
+| `TryModifyPowerAmountReceived` | 接收能力时拦截/改写 | Resist（抗性） |
 | `AfterDamageGiven` | 造成伤害后 | Dementor（补上格挡伤害） |
 | `ModifyDamageMultiplicative` | 伤害倍率修改 | Adaptive（适应减伤） |
 | `ShouldDie` / `AfterPreventingDeath` | 死亡干预 | Undying（复活） |

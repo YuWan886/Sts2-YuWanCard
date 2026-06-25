@@ -32,7 +32,7 @@ public static class MaliceTraitDistributor
         (typeof(BulwarkTrait), TraitRarity.Common),
 
         (typeof(PoisonTrait), TraitRarity.Uncommon),
-        (typeof(ReflectTrait), TraitRarity.Uncommon),
+        (typeof(ResistTrait), TraitRarity.Uncommon),
         (typeof(ProtectionTrait), TraitRarity.Uncommon),
         (typeof(BlindnessTrait), TraitRarity.Uncommon),
         (typeof(ShulkerTrait), TraitRarity.Uncommon),

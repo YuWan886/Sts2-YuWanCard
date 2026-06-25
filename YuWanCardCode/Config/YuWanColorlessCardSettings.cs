@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using MegaCrit.Sts2.Core.Models;
 
 namespace YuWanCard.Config;
 
