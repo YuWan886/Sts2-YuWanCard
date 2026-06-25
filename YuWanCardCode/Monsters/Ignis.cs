@@ -2,6 +2,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Actions;
 using MegaCrit.Sts2.Core.Entities.Ascension;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -17,6 +18,8 @@ using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
+using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Powers;
@@ -54,6 +57,9 @@ public sealed class Ignis : YuWanMonsterModel
     private int _phase = 1;
     private bool _pendingSoulflameOpener;
     private bool _phaseTurnInterruptionQueued;
+    private bool _pendingForcedTurnEnd;
+    private bool _waitingForSafeForcedTurnEnd;
+    private string? _pendingForcedTurnEndPhaseLabel;
     private MoveState? _phaseTwoTransitionMove;
     private MoveState? _phaseThreeTransitionMove;
 
@@ -265,6 +271,7 @@ public sealed class Ignis : YuWanMonsterModel
     public override async Task AfterAddedToRoom()
     {
         await base.AfterAddedToRoom();
+        ClearPendingForcedTurnEnd();
         _phaseTurnInterruptionQueued = false;
         await PowerCmd.Apply<IgnisShieldPower>(new ThrowingPlayerChoiceContext(), Creature, ShieldDamageCap, Creature, null);
         UpdatePhaseVisual(1);
@@ -283,7 +290,7 @@ public sealed class Ignis : YuWanMonsterModel
         }
 
         MoveState? transitionMove = null;
-        string? phaseLabel = null;
+        string phaseLabel = string.Empty;
         if (_phase == 1 && Creature.CurrentHp <= Creature.MaxHp * PhaseTwoHpRatio)
         {
             transitionMove = _phaseTwoTransitionMove;
@@ -302,14 +309,15 @@ public sealed class Ignis : YuWanMonsterModel
 
         _phaseTurnInterruptionQueued = true;
         SetMoveImmediate(transitionMove, forceTransition: true);
-        MainFile.Logger.Info($"Ignis: HP threshold reached, forcing player turn end and entering {phaseLabel}.");
-
-        foreach (Player player in CombatState.Players)
-        {
-            PlayerCmd.EndTurn(player, canBackOut: false);
-        }
+        QueueForcedTurnEnd(phaseLabel);
 
         return Task.CompletedTask;
+    }
+
+    public override Task AfterCombatEnd(CombatRoom room)
+    {
+        ClearPendingForcedTurnEnd();
+        return base.AfterCombatEnd(room);
     }
 
     private async Task FlameSlashMove(IReadOnlyList<Creature> targets)
@@ -403,6 +411,7 @@ public sealed class Ignis : YuWanMonsterModel
 
     private async Task BlueFlameAwakeningMove(IReadOnlyList<Creature> targets)
     {
+        ClearPendingForcedTurnEnd();
         _phaseTurnInterruptionQueued = false;
         _phase = 3;
         SfxCmd.Play(CastSfxPath);
@@ -434,6 +443,7 @@ public sealed class Ignis : YuWanMonsterModel
 
     private async Task ShieldBreakMove(IReadOnlyList<Creature> targets)
     {
+        ClearPendingForcedTurnEnd();
         _phaseTurnInterruptionQueued = false;
         _phase = 2;
         _pendingSoulflameOpener = true;
@@ -713,5 +723,86 @@ public sealed class Ignis : YuWanMonsterModel
 
         NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Short, NextShakeAngle());
         await Cmd.Wait(shatteredShield ? 0.26f : 0.2f);
+    }
+
+    private void QueueForcedTurnEnd(string phaseLabel)
+    {
+        _pendingForcedTurnEnd = true;
+        _pendingForcedTurnEndPhaseLabel = phaseLabel;
+
+        if (TryForceTurnEndAtSafePoint())
+        {
+            return;
+        }
+
+        if (_waitingForSafeForcedTurnEnd)
+        {
+            return;
+        }
+
+        RunManager.Instance.ActionQueueSet.ActionQueueChanged += OnActionQueueChangedWhileWaitingForForcedTurnEnd;
+        _waitingForSafeForcedTurnEnd = true;
+        MainFile.Logger.Info(
+            $"Ignis: HP threshold reached during a shared hook/player choice sequence; deferring forced turn end until action queues settle before entering {phaseLabel}.");
+    }
+
+    private void OnActionQueueChangedWhileWaitingForForcedTurnEnd()
+    {
+        TryForceTurnEndAtSafePoint();
+    }
+
+    private bool TryForceTurnEndAtSafePoint()
+    {
+        if (!_pendingForcedTurnEnd)
+        {
+            return false;
+        }
+
+        if (CombatState == null || Creature == null || !Creature.IsAlive || CombatState.CurrentSide != CombatSide.Player)
+        {
+            ClearPendingForcedTurnEnd();
+            return false;
+        }
+
+        var runningAction = RunManager.Instance.ActionExecutor.CurrentlyRunningAction;
+        if (runningAction != null
+            && runningAction.State != GameActionState.Finished
+            && !ActionQueueSet.IsGameActionPlayerDriven(runningAction))
+        {
+            return false;
+        }
+
+        foreach (Player player in CombatState.Players)
+        {
+            if (CombatManager.Instance.IsExecutingCardOrPotionEffect(player))
+            {
+                return false;
+            }
+        }
+
+        string phaseLabel = _pendingForcedTurnEndPhaseLabel ?? "next phase";
+        ClearPendingForcedTurnEnd();
+        MainFile.Logger.Info($"Ignis: HP threshold reached, forcing player turn end and entering {phaseLabel}.");
+
+        foreach (Player player in CombatState.Players)
+        {
+            PlayerCmd.EndTurn(player, canBackOut: false);
+        }
+
+        return true;
+    }
+
+    private void ClearPendingForcedTurnEnd()
+    {
+        _pendingForcedTurnEnd = false;
+        _pendingForcedTurnEndPhaseLabel = null;
+
+        if (!_waitingForSafeForcedTurnEnd)
+        {
+            return;
+        }
+
+        RunManager.Instance.ActionQueueSet.ActionQueueChanged -= OnActionQueueChangedWhileWaitingForForcedTurnEnd;
+        _waitingForSafeForcedTurnEnd = false;
     }
 }
