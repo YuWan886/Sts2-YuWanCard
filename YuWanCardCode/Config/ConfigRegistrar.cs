@@ -112,9 +112,8 @@ internal static class ConfigRegistrar
     private static readonly ConfigSectionDefinition[] RitsuSections =
     [
         new(RootPageId, "display", "显示设置", null, 0),
-        new(RootPageId, "multiplayer", "多人游戏设置", null, 100),
-        new(RootPageId, "updates", "更新设置", null, 200),
-        new(RootPageId, "gameplay", "游戏设置", null, 300),
+        new(RootPageId, "updates", "更新设置", null, 100),
+        new(RootPageId, "gameplay", "游戏设置", null, 200),
         new(ContentPageId, "cards", "卡牌", null, 0, "YUWANCARD-RITSU_GAME_CONTENT_CARDS.title"),
         new(ContentPageId, "enemy_encounters", "敌人遭遇", null, 100),
         new(ContentPageId, "events", "事件", null, 200),
@@ -127,7 +126,6 @@ internal static class ConfigRegistrar
     [
         new("EnableDeathEffect", "显示设置", RootPageId, "display", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效", 0),
         new("EnableCustomCursor", "显示设置", RootPageId, "display", "enable_custom_cursor", "config_enable_custom_cursor", "自定义鼠标指针", "用猪猪主题指针替换游戏默认鼠标指针", 1),
-        new("BypassModelDbHashCheck", "多人游戏设置", RootPageId, "multiplayer", "bypass_modeldb_check", "config_bypass_modeldb_hash_check", "跳过哈希检查", "多人模式下跳过ModelDb哈希校验", 0),
         new("EnableAutoUpdateCheck", "更新设置", RootPageId, "updates", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新", 0),
         new("EnableSevenCursesRing", "游戏设置", RootPageId, "gameplay", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒", 0),
         new("EnableMaliceSelection", "游戏设置", RootPageId, "gameplay", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 1),

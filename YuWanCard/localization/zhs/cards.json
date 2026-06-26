@@ -49,7 +49,7 @@
   "YUWANCARD-PIG_FINGER_HEART.title": "猪比心",
   "YUWANCARD-PIG_FINGER_HEART.description": "使一名队友增加{MaxHpGain:diff()}点最大生命值。使用3次后从牌组中移除。",
   "YUWANCARD-PIG_GO_TO_WORK.title": "猪上班",
-  "YUWANCARD-PIG_GO_TO_WORK.description": "获得15金币。将1张[gold]猪摸鱼[/gold]加入手牌，1张[gold]猪下班[/gold]加入弃牌堆，1张[gold]猪加班[/gold]加入抽牌堆。",
+  "YUWANCARD-PIG_GO_TO_WORK.description": "获得15金币。将1张[gold]猪摸鱼[/gold]加入手牌，1张[gold]猪加班[/gold]加入抽牌堆。",
   "YUWANCARD-PIG_OVERTIME.title": "猪加班",
   "YUWANCARD-PIG_OVERTIME.description": "受到6点伤害，获得5金币。当这张牌在手牌中时，其他牌必须先让它打出。",
   "YUWANCARD-CLEAN_PIG.title": "干净猪",

@@ -17,10 +17,6 @@ public class YuWanCardConfig : FallbackSimpleModConfig
     [ConfigSlider(0.1, 10.0, 0.1, "{0}x")]
     public static double CursorScale { get; set; } = 2.0;
 
-    [ConfigSection("多人游戏设置")]
-    [ConfigHoverTip]
-    public static bool BypassModelDbHashCheck { get; set; } = false;
-
     [ConfigSection("更新设置")]
     [ConfigHoverTip]
     public static bool EnableAutoUpdateCheck { get; set; } = true;

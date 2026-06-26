@@ -17,10 +17,6 @@ public class YuWanCardConfig : FallbackSimpleModConfig
     [ConfigHoverTip]
     public static bool EnableDeathEffect { get; set; } = true;
 
-    [ConfigSection("多人游戏设置")]
-    [ConfigHoverTip]
-    public static bool BypassModelDbHashCheck { get; set; } = false;
-
     public YuWanCardConfig() : base() { }
 }
 ```
@@ -140,10 +136,6 @@ public class YuWanCardConfig : FallbackSimpleModConfig
     [ConfigSlider(0, 100, 10, "{0}%")]
     public static int EffectIntensity { get; set; } = 50;
 
-    [ConfigSection("多人游戏设置")]
-    [ConfigHoverTip]
-    public static bool BypassModelDbHashCheck { get; set; } = false;
-
     [ConfigSection("更新设置")]
     [ConfigHoverTip]
     public static bool EnableAutoUpdateCheck { get; set; } = true;
@@ -207,8 +199,7 @@ public class MyRelic : YuWanRelicModel
 例如：
 ```json
 {
-  "EnableDeathEffect.description": "启用死亡特效",
-  "BypassModelDbHashCheck.description": "绕过模型数据库哈希检查"
+  "EnableDeathEffect.description": "启用死亡特效"
 }
 ```
 

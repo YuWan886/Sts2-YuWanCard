@@ -19,7 +19,6 @@ public class PigGoToWork : YuWanCardModel
         WithKeywords(CardKeyword.Exhaust);
         WithKeyword(CardKeyword.Innate, UpgradeType.Add);
         WithTip(typeof(PigTouchFish));
-        WithTip(typeof(PigOffWork));
         WithTip(typeof(PigOvertime));
     }
 
@@ -28,11 +27,9 @@ public class PigGoToWork : YuWanCardModel
         await PlayerCmd.GainGold(15, Owner);
 
         var touchFish = CombatState!.CreateCard(ModelDb.Card<PigTouchFish>(), Owner);
-        var offWork = CombatState.CreateCard(ModelDb.Card<PigOffWork>(), Owner);
         var overtime = CombatState.CreateCard(ModelDb.Card<PigOvertime>(), Owner);
 
         await CardPileCmd.AddGeneratedCardToCombat(touchFish, PileType.Hand, Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(offWork, PileType.Discard, Owner);
         await CardPileCmd.AddGeneratedCardToCombat(overtime, PileType.Draw, Owner);
     }
 }
