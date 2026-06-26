@@ -2,7 +2,6 @@ using System.Reflection;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using YuWanCard.Core.Extensions;
-using YuWanCard.Core.Registration;
 
 namespace YuWanCard.Config;
 

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using YuWanCard.Utils;
 
@@ -34,15 +35,20 @@ public static class NMerchantSlot_ShoppingCartPatch
     [HarmonyPatch("Initialize")]
     public static void AddShoppingCartButton(NMerchantSlot __instance)
     {
-        if (!ShoppingCartManager.HasShoppingCart()) return;
-        if (_addToCartButtons.ContainsKey(__instance)) return;
-        if (__instance is NMerchantCardRemoval) return;
+        var button = EnsureAddToCartButton(__instance);
+        if (button != null)
+        {
+            ApplyButtonState(__instance, button);
+        }
+    }
 
-        var button = CreateAddToCartButton(__instance);
-        if (button == null) return;
-
-        _addToCartButtons[__instance] = button;
-        __instance.AddChild(button);
+    [HarmonyPrefix]
+    [HarmonyPatch("OnFocus")]
+    public static void ClearStaleHoverTipBeforeFocus(NMerchantSlot __instance)
+    {
+        // Refreshing merchant navigation while the cursor is still over a slot can re-enter focus
+        // without an intervening unfocus. Clear any stale tip first so CreateAndShow stays idempotent.
+        NHoverTipSet.Remove(__instance);
     }
 
     [HarmonyPostfix]
@@ -59,24 +65,86 @@ public static class NMerchantSlot_ShoppingCartPatch
             __instance.MouseFilter = isReserved ? Control.MouseFilterEnum.Ignore : Control.MouseFilterEnum.Stop;
         }
 
-        if (!_addToCartButtons.TryGetValue(__instance, out var button)) return;
+        var button = EnsureAddToCartButton(__instance);
+        if (button == null)
+        {
+            return;
+        }
 
-        button.Visible = entry != null && entry.IsStocked && !isReserved && canAddToCart;
-        button.Disabled = !ShoppingCartManager.HasShoppingCart() || 
-                          ShoppingCartManager.GetCartData()?.IsFull == true ||
-                          !canAddToCart ||
-                          isReserved;
+        ApplyButtonState(__instance, button);
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("_ExitTree")]
     public static void CleanupButton(NMerchantSlot __instance)
     {
-        if (_addToCartButtons.TryGetValue(__instance, out var button))
+        if (TryGetLiveButton(__instance, out var button) && button != null)
         {
             _addToCartButtons.Remove(__instance);
             button.QueueFreeSafely();
         }
+    }
+
+    private static Button? EnsureAddToCartButton(NMerchantSlot slot)
+    {
+        if (slot is NMerchantCardRemoval)
+        {
+            return null;
+        }
+
+        if (TryGetLiveButton(slot, out var existingButton) && existingButton != null)
+        {
+            if (existingButton.GetParent() == null)
+            {
+                slot.AddChild(existingButton);
+            }
+
+            return existingButton;
+        }
+
+        if (!ShoppingCartManager.HasShoppingCart())
+        {
+            return null;
+        }
+
+        var button = CreateAddToCartButton(slot);
+        if (button == null)
+        {
+            return null;
+        }
+
+        _addToCartButtons[slot] = button;
+        slot.AddChild(button);
+        return button;
+    }
+
+    private static bool TryGetLiveButton(NMerchantSlot slot, out Button? button)
+    {
+        if (_addToCartButtons.TryGetValue(slot, out button) && GodotObject.IsInstanceValid(button))
+        {
+            return true;
+        }
+
+        _addToCartButtons.Remove(slot);
+        button = null;
+        return false;
+    }
+
+    private static void ApplyButtonState(NMerchantSlot slot, Button button)
+    {
+        var entry = slot.Entry;
+        bool isReserved = ShoppingCartManager.IsEntryReserved(entry);
+        bool canAddToCart = ShoppingCartManager.CanAddToCart(entry);
+
+        button.Visible = ShoppingCartManager.HasShoppingCart() &&
+                         entry != null &&
+                         entry.IsStocked &&
+                         !isReserved &&
+                         canAddToCart;
+        button.Disabled = !ShoppingCartManager.HasShoppingCart() ||
+                          ShoppingCartManager.GetCartData()?.IsFull == true ||
+                          !canAddToCart ||
+                          isReserved;
     }
 
     private static Button? CreateAddToCartButton(NMerchantSlot slot)

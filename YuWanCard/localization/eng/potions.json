@@ -1,5 +1,14 @@
 {
   "YUWANCARD-HEALING_POTION.title": "Healing Potion",
   "YUWANCARD-HEALING_POTION.description": "The target heals [blue]5[/blue] HP at the start of each turn for the next [green]3[/green] turns.",
-  "YUWANCARD-HEALING_POTION.selectionScreenPrompt": "Choose a character to receive lingering healing"
+  "YUWANCARD-HEALING_POTION.selectionScreenPrompt": "Choose a character to receive lingering healing",
+  "YUWANCARD-CARROT_FEAST_POTION.title": "Carrot Feast",
+  "YUWANCARD-CARROT_FEAST_POTION.description": "Heal [green]{Heal}[/green] HP.",
+  "YUWANCARD-CARROT_FEAST_POTION.selectionScreenPrompt": "Choose a character to enjoy the carrot feast",
+  "YUWANCARD-SWEET_DREAM_POTION.title": "Sweet Dream Potion",
+  "YUWANCARD-SWEET_DREAM_POTION.description": "Gain [blue]{Block}[/blue] [gold]Block[/gold] and [blue]{PlatingPower}[/blue] [gold]Plating[/gold].",
+  "YUWANCARD-SWEET_DREAM_POTION.selectionScreenPrompt": "Choose a character to drift into a sweet dream",
+  "YUWANCARD-OINK_CHARGE_POTION.title": "Oink Charge Potion",
+  "YUWANCARD-OINK_CHARGE_POTION.description": "Gain [blue]{StrengthPower}[/blue] [gold]Strength[/gold] and [blue]{DexterityPower}[/blue] [gold]Dexterity[/gold].",
+  "YUWANCARD-OINK_CHARGE_POTION.selectionScreenPrompt": "Choose a character to start an oinking charge"
 }
