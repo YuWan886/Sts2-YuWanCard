@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Multiplayer;
 
@@ -17,6 +18,16 @@ internal static class YuWanContentAvailability
         return !YuWanColorlessCardCatalog.TryGetDefinition(cardType, out _)
                || IsColorlessCardTypeEnabled(cardType);
     }
+
+    public static CardModel? TryCreateAvailableCard(Player player, CardModel canonicalCard)
+    {
+        return IsCardEnabled(canonicalCard)
+            ? player.RunState.CreateCard(canonicalCard, player)
+            : null;
+    }
+
+    public static CardModel? TryCreateAvailableCard<TCard>(Player player) where TCard : CardModel
+        => TryCreateAvailableCard(player, ModelDb.Card<TCard>());
 
     public static IEnumerable<CardModel> FilterAvailableCards(IEnumerable<CardModel> cards)
         => cards.Where(IsCardEnabled);

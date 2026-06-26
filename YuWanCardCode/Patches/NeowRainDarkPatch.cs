@@ -38,8 +38,15 @@ class NeowRainDarkPatch
             {
                 if (neow.Owner != null)
                 {
-                    var card = neow.Owner.RunState.CreateCard(ModelDb.Card<RainDark>(), neow.Owner);
-                    CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck));
+                    var card = YuWanContentAvailability.TryCreateAvailableCard<RainDark>(neow.Owner);
+                    if (card == null)
+                    {
+                        MainFile.Logger.Info("[NeowRainDarkPatch] Blocked disabled RainDark grant from Neow option.");
+                    }
+                    else
+                    {
+                        CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck));
+                    }
 
                     YuWanReflectionHelper.CallPrivateMethod(neow, "SetEventFinished", new LocString("events", "NEOW.pages.DONE.POSITIVE.description"));
                 }
