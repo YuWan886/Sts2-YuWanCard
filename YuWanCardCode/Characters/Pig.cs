@@ -18,6 +18,7 @@ public class Pig : CharacterModel, IYuWanCharacter
     private const string PigMerchantPath = "res://YuWanCard/scenes/characters/pig_merchant.tscn";
     private const string PigEnergyCounterPath = "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
     private const string PigRestSitePath = "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
+    private const string PigTransitionMaterialPath = "res://YuWanCard/materials/transitions/pig_transition_mat.tres";
     private const string PigYummyCookiePath = "res://YuWanCard/images/relics/pig_yummy_cookie.png";
     internal const string PigCharacterSelectSfxPath = "res://YuWanCard/sounds/characters/pig_select.mp3";
 
@@ -72,6 +73,8 @@ public class Pig : CharacterModel, IYuWanCharacter
         => "res://YuWanCard/images/characters/character_icon_pig.png";
     string? IYuWanCharacter.CustomCharacterSelectBg
         => "res://YuWanCard/scenes/characters/char_select_bg_pig.tscn";
+    string? IYuWanCharacter.CustomCharacterSelectTransitionPath
+        => PigTransitionMaterialPath;
     string? IYuWanCharacter.CustomMerchantAnimPath
         => "res://YuWanCard/scenes/characters/pig_merchant.tscn";
     string? IYuWanCharacter.CustomRestSiteAnimPath
