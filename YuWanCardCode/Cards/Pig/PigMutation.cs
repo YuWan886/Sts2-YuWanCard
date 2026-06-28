@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using YuWanCard.Characters;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Utils;
@@ -36,7 +37,13 @@ public class PigMutation : YuWanCardModel
             return;
         }
 
-        CardModel? replacement = CardUtils.CreateRandomTransformCard(selected, Owner);
+        CardModel? replacement = CardUtils.CreateRandomTransformCard(
+            selected,
+            Owner,
+            [
+                ModelDb.CardPool<PigCardPool>(),
+                ModelDb.CardPool<ColorlessCardPool>()
+            ]);
         if (replacement == null)
         {
             return;

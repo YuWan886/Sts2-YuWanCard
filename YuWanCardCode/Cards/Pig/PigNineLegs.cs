@@ -22,7 +22,8 @@ public class PigNineLegs : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(10);
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars.Damage.UpgradeValueBy(8);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

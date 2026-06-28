@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using YuWanCard.Powers;
 
 namespace YuWanCard.Utils;
@@ -125,9 +126,61 @@ public static class CardUtils
             .ToList();
     }
 
+    public static List<CardModel> GetTransformableUnlockedCardsByType(
+        Player player,
+        CardType type,
+        IEnumerable<CardPoolModel> pools,
+        string? excludeCardEntry = null)
+    {
+        var candidates = new List<CardModel>();
+
+        foreach (var pool in pools.Distinct())
+        {
+            foreach (var card in pool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint))
+            {
+                if (!card.IsTransformable || card.Type != type || card.Id?.Entry == excludeCardEntry)
+                {
+                    continue;
+                }
+
+                candidates.Add(card);
+            }
+        }
+
+        return candidates
+            .DistinctBy(card => card.Id)
+            .ToList();
+    }
+
     public static CardModel? CreateRandomTransformCard(CardModel selected, Player player, bool upgradeResult = false)
     {
         var candidates = GetTransformableUnlockedCardsByType(player, selected.Type, selected.Id?.Entry);
+        if (candidates.Count == 0)
+        {
+            return null;
+        }
+
+        CardModel replacement = CardFactory.CreateRandomCardForTransform(
+            selected,
+            candidates,
+            isInCombat: true,
+            player.RunState.Rng.CombatCardGeneration);
+
+        if (upgradeResult && replacement.IsUpgradable)
+        {
+            CardCmd.Upgrade(replacement);
+        }
+
+        return replacement;
+    }
+
+    public static CardModel? CreateRandomTransformCard(
+        CardModel selected,
+        Player player,
+        IEnumerable<CardPoolModel> pools,
+        bool upgradeResult = false)
+    {
+        var candidates = GetTransformableUnlockedCardsByType(player, selected.Type, pools, selected.Id?.Entry);
         if (candidates.Count == 0)
         {
             return null;
