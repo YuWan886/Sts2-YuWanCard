@@ -3,17 +3,36 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Monsters;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class SplitTrait : MaliceTraitPowerBase
 {
+    private static readonly Dictionary<Creature, Rect2> CachedDeathAnchorRects = [];
+
     public override bool ShouldStopCombatFromEnding() => true;
+
+    public static bool CanSplit(Creature? creature)
+        => creature?.Monster is not Queen;
+
+    public override Task BeforeDeath(Creature creature)
+    {
+        if (creature == Owner && EnemySpawnPositionUtils.TryGetCreatureHitboxRect(creature, out Rect2 rect))
+        {
+            CachedDeathAnchorRects[creature] = rect;
+        }
+
+        return Task.CompletedTask;
+    }
 
     public override async Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
     {
-        if (wasRemovalPrevented || creature != Owner || Owner.Monster == null || CombatState == null)
+        CachedDeathAnchorRects.TryGetValue(creature, out Rect2 cachedAnchorRect);
+        CachedDeathAnchorRects.Remove(creature);
+
+        if (wasRemovalPrevented || creature != Owner || Owner.Monster == null || CombatState == null || !CanSplit(Owner))
         {
             return;
         }
@@ -25,7 +44,6 @@ public sealed class SplitTrait : MaliceTraitPowerBase
 
         MonsterModel canonical = ModelDb.GetById<MonsterModel>(Owner.Monster.Id);
         int splitHp = Math.Max(1, Owner.MaxHp / 4);
-        Vector2 splitCenter = EnemySpawnPositionUtils.GetCreatureCenterPosition(Owner);
         List<Creature> slotlessClones = [];
 
         for (int i = 0; i < 2; i++)
@@ -42,11 +60,17 @@ public sealed class SplitTrait : MaliceTraitPowerBase
 
         if (slotlessClones.Count >= 2)
         {
-            EnemySpawnPositionUtils.SpreadSummonsAroundPosition(slotlessClones, splitCenter);
+            await EnemySpawnPositionUtils.PositionSummonsWithoutSlotsAboveAnchor(
+                slotlessClones,
+                Owner,
+                cachedAnchorRect != default ? cachedAnchorRect : null);
         }
         else if (slotlessClones.Count == 1)
         {
-            EnemySpawnPositionUtils.PositionSummonWithoutSlot(slotlessClones[0], Owner);
+            await EnemySpawnPositionUtils.PositionSummonWithoutSlot(
+                slotlessClones[0],
+                Owner,
+                cachedAnchorRect != default ? cachedAnchorRect : null);
         }
     }
 }

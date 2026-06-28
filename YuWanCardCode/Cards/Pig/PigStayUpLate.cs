@@ -53,6 +53,6 @@ public class PigStayUpLate : YuWanCardModel
     {
         var now = DateTime.UtcNow;
         int hour = now.Hour;
-        return hour >= 23 || hour < 2;
+        return hour >= 23 || hour <= 2;
     }
 }

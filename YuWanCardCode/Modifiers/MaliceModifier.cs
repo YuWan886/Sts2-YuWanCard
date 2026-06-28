@@ -140,7 +140,7 @@ public sealed class MaliceModifier : YuWanModifierModel
             return;
         }
 
-        if (OwnerHasSlothDisabled())
+        if (OwnerHasSlothHpScalingDisabled())
         {
             return;
         }
@@ -161,11 +161,6 @@ public sealed class MaliceModifier : YuWanModifierModel
     private async Task ApplyTraitsIfNeeded(Creature creature)
     {
         if (EffectiveMaliceLevel <= 0 || creature.Side != CombatSide.Enemy)
-        {
-            return;
-        }
-
-        if (OwnerHasSlothDisabled())
         {
             return;
         }
@@ -199,7 +194,7 @@ public sealed class MaliceModifier : YuWanModifierModel
         return Task.CompletedTask;
     }
 
-    private bool OwnerHasSlothDisabled()
+    private bool OwnerHasSlothHpScalingDisabled()
     {
         return RunState.Players.Any(p => p.GetRelic<SlothMalice>() != null);
     }

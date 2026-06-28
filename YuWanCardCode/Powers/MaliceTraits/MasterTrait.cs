@@ -51,7 +51,7 @@ public sealed class MasterTrait : MaliceTraitPowerBase
         Creature summoned = await CreatureCmd.Add(monster, combatState, Owner.Side, slotName);
         if (slotName == null)
         {
-            EnemySpawnPositionUtils.PositionSummonWithoutSlot(summoned, Owner);
+            await EnemySpawnPositionUtils.PositionSummonWithoutSlot(summoned, Owner);
         }
 
         // Mark as minion (爪牙)

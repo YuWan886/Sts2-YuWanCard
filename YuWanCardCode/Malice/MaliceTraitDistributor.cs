@@ -88,6 +88,7 @@ public static class MaliceTraitDistributor
 
         var available = GetAvailableTraits(maliceLevel, isMinion)
             .Where(t => creature.GetPower(ModelDb.GetId(t.PowerType)) == null)
+            .Where(t => CanApplyTraitToCreature(creature, t.PowerType))
             .ToList();
         if (available.Count == 0)
         {
@@ -303,6 +304,16 @@ public static class MaliceTraitDistributor
 
     private static int GetActNumber(Creature creature) =>
         (creature.CombatState?.RunState?.CurrentActIndex ?? 0) + 1;
+
+    private static bool CanApplyTraitToCreature(Creature creature, Type powerType)
+    {
+        if (powerType == typeof(SplitTrait))
+        {
+            return SplitTrait.CanSplit(creature);
+        }
+
+        return true;
+    }
 
     private static async Task ApplyTrait(Creature creature, Type powerType, int amount)
     {

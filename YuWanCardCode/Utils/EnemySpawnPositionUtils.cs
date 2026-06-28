@@ -2,6 +2,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 
 namespace YuWanCard.Utils;
@@ -10,8 +11,11 @@ public static class EnemySpawnPositionUtils
 {
     private const float MinimumHorizontalSpacing = 120f;
     private const float ExtraHorizontalPadding = 20f;
+    private const float MinimumVerticalGap = 32f;
+    private const float ExtraVerticalPadding = 12f;
     private const float VerticalStaggerFactor = 0.08f;
-    private const int MaxPlacementAttempts = 8;
+    private const int MaxPlacementRows = 5;
+    private const int MaxHorizontalOffsetsPerRow = 4;
 
     public static string? GetNextEnemySlot(ICombatState combatState)
     {
@@ -27,10 +31,22 @@ public static class EnemySpawnPositionUtils
             return Vector2.Zero;
         }
 
-        return node.Position;
+        return GetHitboxCenter(node);
     }
 
-    public static void PositionSummonWithoutSlot(Creature summon, Creature? anchorCreature = null)
+    public static bool TryGetCreatureHitboxRect(Creature creature, out Rect2 rect)
+    {
+        var node = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (node == null || !TryGetHitboxRect(node, out rect))
+        {
+            rect = default;
+            return false;
+        }
+
+        return true;
+    }
+
+    public static async Task PositionSummonWithoutSlot(Creature summon, Creature? anchorCreature = null, Rect2? anchorRectOverride = null)
     {
         var room = NCombatRoom.Instance;
         var summonNode = room?.GetCreatureNode(summon);
@@ -39,15 +55,25 @@ public static class EnemySpawnPositionUtils
             return;
         }
 
-        Vector2 anchorCenter = GetCreatureCenterPosition(anchorCreature ?? summon);
-        if (anchorCreature != null && room?.GetCreatureNode(anchorCreature) is { } anchorNode)
+        if (!await EnsureHitboxReadyAsync(summonNode))
         {
-            anchorCenter = anchorNode.Position;
+            return;
         }
 
-        float summonWidth = summonNode.Hitbox.Size.X;
-        float summonHeight = summonNode.Hitbox.Size.Y;
-        float spacing = Math.Max(MinimumHorizontalSpacing, summonWidth + ExtraHorizontalPadding);
+        Rect2? anchorRect = anchorRectOverride;
+        if (anchorRect == null && anchorCreature != null)
+        {
+            var anchorNode = room?.GetCreatureNode(anchorCreature);
+            if (anchorNode != null && await EnsureHitboxReadyAsync(anchorNode) && TryGetHitboxRect(anchorNode, out Rect2 liveAnchorRect))
+            {
+                anchorRect = liveAnchorRect;
+            }
+        }
+
+        if (anchorRect == null)
+        {
+            return;
+        }
 
         var occupiedNodes = summon.CombatState?.Enemies
             .Where(enemy => enemy != summon && enemy.IsAlive)
@@ -56,34 +82,54 @@ public static class EnemySpawnPositionUtils
             .Select(node => node!)
             .ToList();
 
-        if (occupiedNodes == null || occupiedNodes.Count == 0)
+        if (occupiedNodes == null)
         {
-            SetNodeCenterPosition(summonNode, anchorCenter);
-            return;
+            occupiedNodes = [];
         }
 
-        for (int attempt = 0; attempt < MaxPlacementAttempts; attempt++)
+        Vector2 summonSize = summonNode.Hitbox.Size;
+        Vector2 anchorTopCenter = GetTopCenter(anchorRect.Value);
+        float horizontalSpacing = Math.Max(
+            MinimumHorizontalSpacing,
+            Math.Max(summonSize.X, occupiedNodes.Count > 0 ? occupiedNodes.Max(node => node.Hitbox.Size.X) : summonSize.X) + ExtraHorizontalPadding);
+        float verticalStep = summonSize.Y + MinimumVerticalGap;
+        Vector2 preferredCenter = new(
+            anchorTopCenter.X,
+            anchorTopCenter.Y - MinimumVerticalGap - summonSize.Y * 0.5f);
+
+        List<Rect2> occupiedRects = occupiedNodes
+            .Select(TryGetStableHitboxRect)
+            .Where(rect => rect.HasValue)
+            .Select(rect => rect!.Value)
+            .ToList();
+
+        for (int row = 0; row <= MaxPlacementRows; row++)
         {
-            float offsetIndex = attempt == 0 ? 0f : (attempt % 2 == 1 ? (attempt + 1) / 2f : -(attempt / 2f));
-            Vector2 candidateCenter = anchorCenter + new Vector2(
-                spacing * offsetIndex,
-                Math.Abs(offsetIndex) * summonHeight * VerticalStaggerFactor);
-
-            bool overlaps = occupiedNodes.Any(node =>
+            float centerY = preferredCenter.Y - row * verticalStep;
+            foreach (float offsetIndex in EnumerateHorizontalOffsets())
             {
-                float requiredSpacing = Math.Max(spacing, (summonNode.Hitbox.Size.X + node.Hitbox.Size.X) * 0.5f + ExtraHorizontalPadding);
-                Vector2 nodeCenter = node.Position;
-                return Math.Abs(candidateCenter.X - nodeCenter.X) < requiredSpacing;
-            });
+                Vector2 candidateCenter = new(anchorTopCenter.X + offsetIndex * horizontalSpacing, centerY);
+                Rect2 candidateRect = CreateRectFromCenter(candidateCenter, summonSize);
 
-            if (!overlaps)
-            {
-                SetNodeCenterPosition(summonNode, candidateCenter);
+                if (OverlapsAny(candidateRect, occupiedRects))
+                {
+                    continue;
+                }
+
+                SetNodeHitboxCenterPosition(summonNode, candidateCenter);
                 return;
             }
         }
 
-        SetNodeCenterPosition(summonNode, anchorCenter + new Vector2(spacing, summonHeight * VerticalStaggerFactor));
+        SetNodeHitboxCenterPosition(summonNode, preferredCenter - new Vector2(0f, verticalStep));
+    }
+
+    public static async Task PositionSummonsWithoutSlotsAboveAnchor(IReadOnlyList<Creature> summons, Creature anchorCreature, Rect2? anchorRectOverride = null)
+    {
+        foreach (Creature summon in summons)
+        {
+            await PositionSummonWithoutSlot(summon, anchorCreature, anchorRectOverride);
+        }
     }
 
     public static void SpreadSummonsAroundPosition(IReadOnlyList<Creature> summons, Vector2 centerPosition)
@@ -115,12 +161,82 @@ public static class EnemySpawnPositionUtils
             var node = summonNodes[i];
             float xOffset = startOffset + i * spacing;
             float yOffset = Math.Abs(i - centerIndex) * node.Hitbox.Size.Y * VerticalStaggerFactor;
-            SetNodeCenterPosition(node, centerPosition + new Vector2(xOffset, yOffset));
+            SetNodeHitboxCenterPosition(node, centerPosition + new Vector2(xOffset, yOffset));
         }
     }
 
-    private static void SetNodeCenterPosition(NCreature node, Vector2 centerPosition)
+    private static IEnumerable<float> EnumerateHorizontalOffsets()
     {
-        node.Position = centerPosition;
+        yield return 0f;
+
+        for (int offset = 1; offset <= MaxHorizontalOffsetsPerRow; offset++)
+        {
+            yield return offset;
+            yield return -offset;
+        }
+    }
+
+    private static Rect2 GetHitboxRect(NCreature node)
+        => new(node.Hitbox.GlobalPosition, node.Hitbox.Size);
+
+    private static Vector2 GetTopCenter(Rect2 rect)
+        => rect.Position + new Vector2(rect.Size.X * 0.5f, 0f);
+
+    private static Vector2 GetHitboxCenter(NCreature node)
+        => node.Hitbox.GlobalPosition + node.Hitbox.Size * 0.5f;
+
+    private static Rect2? TryGetStableHitboxRect(NCreature node)
+        => TryGetHitboxRect(node, out Rect2 rect) ? rect : null;
+
+    private static bool TryGetHitboxRect(NCreature node, out Rect2 rect)
+    {
+        if (node.Hitbox == null || node.Hitbox.Size == Vector2.Zero)
+        {
+            rect = default;
+            return false;
+        }
+
+        rect = GetHitboxRect(node);
+        return true;
+    }
+
+    private static Rect2 CreateRectFromCenter(Vector2 centerPosition, Vector2 size)
+        => new(centerPosition - size * 0.5f, size);
+
+    private static bool OverlapsAny(Rect2 candidateRect, IReadOnlyList<Rect2> occupiedRects)
+    {
+        Rect2 expandedCandidate = ExpandRect(candidateRect, ExtraHorizontalPadding * 0.5f, ExtraVerticalPadding);
+        return occupiedRects.Any(rect => expandedCandidate.Intersects(ExpandRect(rect, ExtraHorizontalPadding * 0.5f, ExtraVerticalPadding)));
+    }
+
+    private static Rect2 ExpandRect(Rect2 rect, float horizontalPadding, float verticalPadding)
+        => new(
+            rect.Position - new Vector2(horizontalPadding, verticalPadding),
+            rect.Size + new Vector2(horizontalPadding * 2f, verticalPadding * 2f));
+
+    private static void SetNodeHitboxCenterPosition(NCreature node, Vector2 centerPosition)
+    {
+        Vector2 hitboxOffset = node.Hitbox.GlobalPosition - node.GlobalPosition;
+        node.GlobalPosition = centerPosition - hitboxOffset - node.Hitbox.Size * 0.5f;
+    }
+
+    private static async Task<bool> EnsureHitboxReadyAsync(NCreature node)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (TryGetHitboxRect(node, out _))
+            {
+                return true;
+            }
+
+            if (!node.IsValid() || !node.IsInsideTree())
+            {
+                return false;
+            }
+
+            await node.AwaitProcessFrame();
+        }
+
+        return TryGetHitboxRect(node, out _);
     }
 }
