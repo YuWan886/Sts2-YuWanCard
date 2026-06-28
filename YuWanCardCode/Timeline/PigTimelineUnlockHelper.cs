@@ -32,8 +32,7 @@ internal static class PigTimelineUnlockHelper
     {
         PigTimelineRegistry.EnsureRegistered();
 
-        string neowId = EpochModel.GetId<NeowEpoch>();
-        if (progress.Epochs.All(epoch => epoch.Id != neowId))
+        if (!ShouldPigRootHaveVisibleSlot(progress))
         {
             return false;
         }
@@ -48,6 +47,38 @@ internal static class PigTimelineUnlockHelper
         return true;
     }
 
+    public static bool NormalizePigRootEpochState(ProgressState progress)
+    {
+        PigTimelineRegistry.EnsureRegistered();
+
+        SerializableEpoch? pigEpoch = progress.Epochs.FirstOrDefault(epoch => epoch.Id == Pig1Epoch.EpochId);
+        if (pigEpoch == null)
+        {
+            return false;
+        }
+
+        if (pigEpoch.State is not (EpochState.Obtained or EpochState.Revealed))
+        {
+            return false;
+        }
+
+        if (ShouldPigRootHaveVisibleSlot(progress))
+        {
+            return false;
+        }
+
+        pigEpoch.State = EpochState.ObtainedNoSlot;
+        return true;
+    }
+
+    public static bool ShouldPigRootHaveVisibleSlot(ProgressState progress)
+    {
+        PigTimelineRegistry.EnsureRegistered();
+
+        SerializableEpoch? neowEpoch = progress.Epochs.FirstOrDefault(epoch => epoch.Id == EpochModel.GetId<NeowEpoch>());
+        return neowEpoch?.State >= EpochState.Revealed;
+    }
+
     public static bool TryObtainMidRun(EpochModel epoch, Player localPlayer)
     {
         PigTimelineRegistry.EnsureRegistered();
@@ -55,11 +86,6 @@ internal static class PigTimelineUnlockHelper
         if (localPlayer.RunState.GameMode.AreAchievementsAndEpochsLocked())
         {
             return false;
-        }
-
-        if (epoch.Id == Pig1Epoch.EpochId)
-        {
-            EnsurePigRootSlotAvailable(SaveManager.Instance.Progress);
         }
 
         if (SaveManager.Instance.Progress.IsEpochObtained(epoch.Id))
@@ -80,11 +106,6 @@ internal static class PigTimelineUnlockHelper
         if (serializableRun.GameMode.AreAchievementsAndEpochsLocked())
         {
             return false;
-        }
-
-        if (epoch.Id == Pig1Epoch.EpochId)
-        {
-            EnsurePigRootSlotAvailable(SaveManager.Instance.Progress);
         }
 
         if (SaveManager.Instance.Progress.IsEpochObtained(epoch.Id))

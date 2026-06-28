@@ -127,6 +127,9 @@ internal static class PigTimelineRegistry
     internal static string BuildEpochPortraitPath(string epochId)
         => $"{EpochPortraitDirectory}/{epochId.ToLowerInvariant()}.png";
 
+    internal static bool IsPigEpochId(string epochId)
+        => PigEpochIds.Contains(epochId, StringComparer.Ordinal);
+
     internal static string GetResolvedEpochPortraitPath(string epochId)
     {
         string portraitPath = BuildEpochPortraitPath(epochId);

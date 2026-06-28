@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.Screens.Timeline;
+using MegaCrit.Sts2.Core.Nodes.Screens.Timeline.UnlockScreens;
 using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Saves.Managers;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -13,6 +15,9 @@ namespace YuWanCard.Core.Patches;
 [HarmonyPatch]
 public static class PigTimelinePatches
 {
+    [ThreadStatic]
+    private static bool _timelineOpenProgressChanged;
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(NeowEpoch), nameof(NeowEpoch.GetTimelineExpansion))]
     private static void Postfix_NeowEpochGetTimelineExpansion(ref EpochModel[] __result)
@@ -39,7 +44,51 @@ public static class PigTimelinePatches
     private static void Prefix_OnTimelineOpened()
     {
         PigTimelineRegistry.EnsureRegistered();
-        PigTimelineUnlockHelper.EnsurePigRootSlotAvailable(SaveManager.Instance.Progress);
+        _timelineOpenProgressChanged = false;
+
+        _timelineOpenProgressChanged |= PigTimelineUnlockHelper.NormalizePigRootEpochState(SaveManager.Instance.Progress);
+        _timelineOpenProgressChanged |= PigTimelineUnlockHelper.EnsurePigRootSlotAvailable(SaveManager.Instance.Progress);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(NTimelineScreen), nameof(NTimelineScreen.OnSubmenuOpened))]
+    private static void Postfix_OnTimelineOpened()
+    {
+        if (!_timelineOpenProgressChanged)
+        {
+            return;
+        }
+
+        SaveManager.Instance.SaveProgressFile();
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(EpochModel), "QueueTimelineExpansion")]
+    private static void Prefix_QueueTimelineExpansion(EpochModel[] epochs)
+    {
+        if (!epochs.Any(epoch => PigTimelineRegistry.IsPigEpochId(epoch.Id)))
+        {
+            return;
+        }
+
+        PigTimelineRegistry.SyncAllEpochIds();
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(NUnlockTimelineScreen), nameof(NUnlockTimelineScreen.SetUnlocks))]
+    private static void Postfix_SetUnlocksForTimelineExpansion(NUnlockTimelineScreen __instance, List<EpochSlotData> eras)
+    {
+        if (!eras.Any(slot => PigTimelineRegistry.IsPigEpochId(slot.Model.Id)))
+        {
+            return;
+        }
+
+        var ordered = eras
+            .OrderBy(slot => slot.Era)
+            .ThenBy(slot => slot.EraPosition)
+            .ToList();
+
+        AccessTools.Field(typeof(NUnlockTimelineScreen), "_erasToUnlock")?.SetValue(__instance, ordered);
     }
 
     [HarmonyPrefix]
@@ -165,6 +214,31 @@ public static class PigTimelinePatches
         if (changed)
         {
             SaveManager.Instance.SaveProgressFile();
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(ProgressSaveManager), nameof(ProgressSaveManager.GetRevealableEpochs))]
+    private static IEnumerable<SerializableEpoch> Postfix_GetRevealableEpochs(IEnumerable<SerializableEpoch> __result)
+    {
+        PigTimelineRegistry.EnsureRegistered();
+
+        foreach (SerializableEpoch epoch in __result)
+        {
+            if (PigTimelineRegistry.IsPigEpochId(epoch.Id)
+                && epoch.Id == Pig1Epoch.EpochId
+                && !PigTimelineUnlockHelper.ShouldPigRootHaveVisibleSlot(SaveManager.Instance.Progress)
+                && epoch.State is EpochState.ObtainedNoSlot or EpochState.Obtained)
+            {
+                continue;
+            }
+
+            if (epoch.State == EpochState.ObtainedNoSlot && PigTimelineRegistry.IsPigEpochId(epoch.Id))
+            {
+                continue;
+            }
+
+            yield return epoch;
         }
     }
 }
