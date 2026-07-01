@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Characters;
+using YuWanCard.Config;
 
 namespace YuWanCard.Patches;
 
@@ -28,8 +29,13 @@ file static class PigScaleShared
             InitialMaxHpMap[creature.CombatId.Value] = initialMaxHp;
         }
 
-        float hpPercent = (float)creature.CurrentHp / initialMaxHp;
-        float targetScale = Mathf.Max(0.3f, hpPercent);
+        float baseScale = GetConfiguredBaseScale();
+        float targetScale = baseScale;
+        if (YuWanCardConfig.EnablePigScaleWithHp)
+        {
+            float hpPercent = initialMaxHp > 0 ? (float)creature.CurrentHp / initialMaxHp : 1f;
+            targetScale = baseScale * Mathf.Max(0.3f, hpPercent);
+        }
 
         var creatureNode = NCombatRoom.Instance.GetCreatureNode(creature);
         if (creatureNode != null)
@@ -40,6 +46,17 @@ file static class PigScaleShared
         {
             GD.PrintErr($"[PigScale] WARNING: creatureNode is null!");
         }
+    }
+
+    private static float GetConfiguredBaseScale()
+    {
+        double configured = YuWanCardConfig.PigBaseScale;
+        if (double.IsNaN(configured) || configured <= 0d)
+        {
+            return 1f;
+        }
+
+        return (float)Math.Clamp(configured, 0.1d, 3.0d);
     }
 }
 

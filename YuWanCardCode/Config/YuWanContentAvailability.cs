@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using YuWanCard.Ancients;
 using YuWanCard.Multiplayer;
 
 namespace YuWanCard.Config;
@@ -60,6 +61,14 @@ internal static class YuWanContentAvailability
     public static bool IsEventTypeEnabled(Type eventType)
     {
         return GetEffectiveSnapshot("event", eventType).IsEventTypeEnabled(eventType);
+    }
+
+    public static bool IsAncientTypeEnabled<TAncient>() where TAncient : AncientEventModel
+        => IsAncientTypeEnabled(typeof(TAncient));
+
+    public static bool IsAncientTypeEnabled(Type ancientType)
+    {
+        return GetEffectiveSnapshot("ancient", ancientType).IsAncientTypeEnabled(ancientType);
     }
 
     private static YuWanContentSettingsSnapshot GetEffectiveSnapshot(string contentKind, Type contentType)

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Runs;
+using YuWanCard.Config;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Ancients;
@@ -39,7 +40,8 @@ public class PigPig : YuWanAncientModel
     }
 
     public override bool IsValidForAct(ActModel act) =>
-        act.Id == ModelDb.Act<Hive>().Id;
+        act.Id == ModelDb.Act<Hive>().Id
+        && YuWanContentAvailability.IsAncientTypeEnabled<PigPig>();
 
     public override bool ShouldForceSpawn(ActModel act, AncientEventModel? rngChosenAncient) => false;
 

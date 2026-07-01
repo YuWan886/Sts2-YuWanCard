@@ -238,6 +238,7 @@ public static class YuWanContentSettingsSync
             EnableIgnisBossEncounter = snapshot.EnableIgnisBossEncounter,
             EnableKillerEliteEncounter = snapshot.EnableKillerEliteEncounter,
             EnableYuWanEvents = snapshot.EnableYuWanEvents,
+            EnablePigPigAncient = snapshot.EnablePigPigAncient,
             EnableBlacksmithEvent = snapshot.EnableBlacksmithEvent,
             EnableHelloHumanEvent = snapshot.EnableHelloHumanEvent,
             EnableHorizonEvent = snapshot.EnableHorizonEvent,
@@ -278,6 +279,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
     public required bool EnableIgnisBossEncounter { get; set; }
     public required bool EnableKillerEliteEncounter { get; set; }
     public required bool EnableYuWanEvents { get; set; }
+    public required bool EnablePigPigAncient { get; set; }
     public required bool EnableBlacksmithEvent { get; set; }
     public required bool EnableHelloHumanEvent { get; set; }
     public required bool EnableHorizonEvent { get; set; }
@@ -298,6 +300,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
         writer.WriteBool(EnableIgnisBossEncounter);
         writer.WriteBool(EnableKillerEliteEncounter);
         writer.WriteBool(EnableYuWanEvents);
+        writer.WriteBool(EnablePigPigAncient);
         writer.WriteBool(EnableBlacksmithEvent);
         writer.WriteBool(EnableHelloHumanEvent);
         writer.WriteBool(EnableHorizonEvent);
@@ -319,6 +322,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
         EnableIgnisBossEncounter = reader.ReadBool();
         EnableKillerEliteEncounter = reader.ReadBool();
         EnableYuWanEvents = reader.ReadBool();
+        EnablePigPigAncient = reader.ReadBool();
         EnableBlacksmithEvent = reader.ReadBool();
         EnableHelloHumanEvent = reader.ReadBool();
         EnableHorizonEvent = reader.ReadBool();
@@ -344,6 +348,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
             EnableIgnisBossEncounter,
             EnableKillerEliteEncounter,
             EnableYuWanEvents,
+            EnablePigPigAncient,
             EnableBlacksmithEvent,
             EnableHelloHumanEvent,
             EnableHorizonEvent,

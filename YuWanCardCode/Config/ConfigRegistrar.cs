@@ -58,7 +58,9 @@ internal static class ConfigRegistrar
         string DataKey,
         string Label,
         string? Description,
-        int Order);
+        int Order,
+        string? LabelLocKey = null,
+        string? DescriptionLocKey = null);
 
     private sealed record SliderSettingDefinition(
         string PropertyName,
@@ -73,7 +75,9 @@ internal static class ConfigRegistrar
         double Max,
         double Step,
         string Format,
-        int Order);
+        int Order,
+        string? LabelLocKey = null,
+        string? DescriptionLocKey = null);
 
     private sealed record SubpageSettingDefinition(
         string RitsuPageId,
@@ -111,12 +115,13 @@ internal static class ConfigRegistrar
 
     private static readonly ConfigSectionDefinition[] RitsuSections =
     [
-        new(RootPageId, "display", "显示设置", null, 0),
-        new(RootPageId, "updates", "更新设置", null, 100),
-        new(RootPageId, "gameplay", "游戏设置", null, 200),
+        new(RootPageId, "display", "显示设置", null, 0, "YUWANCARD-RITSU_DISPLAY_SECTION.title"),
+        new(RootPageId, "updates", "更新设置", null, 100, "YUWANCARD-RITSU_UPDATES_SECTION.title"),
+        new(RootPageId, "gameplay", "游戏设置", null, 200, "YUWANCARD-RITSU_GAMEPLAY_SECTION.title"),
         new(ContentPageId, "cards", "卡牌", null, 0, "YUWANCARD-RITSU_GAME_CONTENT_CARDS.title"),
-        new(ContentPageId, "enemy_encounters", "敌人遭遇", null, 100),
-        new(ContentPageId, "events", "事件", null, 200),
+        new(ContentPageId, "enemy_encounters", "敌人遭遇", null, 100, "YUWANCARD-RITSU_GAME_CONTENT_ENCOUNTERS.title"),
+        new(ContentPageId, "events", "事件", null, 200, "YUWANCARD-RITSU_GAME_CONTENT_EVENTS.title"),
+        new(ContentPageId, "ancients", "先古", null, 300, "YUWANCARD-RITSU_GAME_CONTENT_ANCIENTS.title"),
         new(ColorlessCardsPageId, YuWanColorlessCardCatalog.SectionId, "无色卡牌画廊", "按按钮开启或关闭对应卡牌。", 0,
             "YUWANCARD-RITSU_COLORLESS_SECTION.title", "YUWANCARD-RITSU_COLORLESS_SECTION.desc"),
     ];
@@ -124,27 +129,50 @@ internal static class ConfigRegistrar
     // Boolean toggle settings. BaseLib and RitsuLib use independent grouping metadata.
     private static readonly ToggleSettingDefinition[] ToggleProps =
     [
-        new("EnableDeathEffect", "显示设置", RootPageId, "display", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效", 0),
-        new("EnableCustomCursor", "显示设置", RootPageId, "display", "enable_custom_cursor", "config_enable_custom_cursor", "自定义鼠标指针", "用猪猪主题指针替换游戏默认鼠标指针", 1),
-        new("EnableAutoUpdateCheck", "更新设置", RootPageId, "updates", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新", 0),
-        new("EnableSevenCursesRing", "游戏设置", RootPageId, "gameplay", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒", 0),
-        new("EnableMaliceSelection", "游戏设置", RootPageId, "gameplay", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 1),
-        new("EnableYuWanEnemyEncounters", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_yuwan_enemy_encounters", "config_enable_yuwan_enemy_encounters", "启用本模组敌人", "控制 YuWanCard 的敌人遭遇是否会出现在对局中", 0),
-        new("EnableIgnisBossEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_ignis_boss_encounter", "config_enable_ignis_boss_encounter", "焰魔", "允许焰魔Boss遭遇出现在对局中", 1),
-        new("EnableKillerEliteEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_killer_elite_encounter", "config_enable_killer_elite_encounter", "杀手", "允许杀手精英遭遇出现在对局中", 2),
-        new("EnableYuWanEvents", "游戏内容设置", ContentPageId, "events", "enable_yuwan_events", "config_enable_yuwan_events", "启用本模组事件", "控制 YuWanCard 的事件是否会出现在对局中", 0),
-        new("EnableBlacksmithEvent", "游戏内容设置", ContentPageId, "events", "enable_blacksmith_event", "config_enable_blacksmith_event", "铁匠铺", "允许铁匠铺事件出现在对局中", 1),
-        new("EnableHelloHumanEvent", "游戏内容设置", ContentPageId, "events", "enable_hello_human_event", "config_enable_hello_human_event", "人，你好。", "允许“人，你好。”事件出现在对局中", 2),
-        new("EnableHorizonEvent", "游戏内容设置", ContentPageId, "events", "enable_horizon_event", "config_enable_horizon_event", "天涯海角", "允许天涯海角事件出现在对局中", 3),
-        new("EnableSkullGoldRushEvent", "游戏内容设置", ContentPageId, "events", "enable_skull_gold_rush_event", "config_enable_skull_gold_rush_event", "骷髅打金服", "允许骷髅打金服事件出现在对局中", 4),
-        new("EnableSunkenStatueQuestEvent", "游戏内容设置", ContentPageId, "events", "enable_sunken_statue_quest_event", "config_enable_sunken_statue_quest_event", "沉没的石像", "允许沉没的石像事件出现在对局中", 5),
-        new("EnableZhiZhanZhiShangEvent", "游戏内容设置", ContentPageId, "events", "enable_zhi_zhan_zhi_shang_event", "config_enable_zhi_zhan_zhi_shang_event", "止战之殇", "允许止战之殇事件出现在对局中", 6),
+        new("EnableDeathEffect", "显示设置", RootPageId, "display", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效", 0,
+            "YUWANCARD-ENABLE_DEATH_EFFECT.title", "YUWANCARD-ENABLE_DEATH_EFFECT.hover.desc"),
+        new("EnableCustomCursor", "显示设置", RootPageId, "display", "enable_custom_cursor", "config_enable_custom_cursor", "自定义鼠标指针", "用猪猪主题指针替换游戏默认鼠标指针", 1,
+            "YUWANCARD-ENABLE_CUSTOM_CURSOR.title", "YUWANCARD-ENABLE_CUSTOM_CURSOR.hover.desc"),
+        new("EnablePigScaleWithHp", "显示设置", RootPageId, "display", "enable_pig_scale_with_hp", "config_enable_pig_scale_with_hp", "猪体型随血量变化", "关闭后猪角色在战斗中保持固定体型", 3,
+            "YUWANCARD-ENABLE_PIG_SCALE_WITH_HP.title", "YUWANCARD-ENABLE_PIG_SCALE_WITH_HP.hover.desc"),
+        new("EnableAutoUpdateCheck", "更新设置", RootPageId, "updates", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新", 0,
+            "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.title", "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.hover.desc"),
+        new("EnableSevenCursesRing", "游戏设置", RootPageId, "gameplay", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒", 0,
+            "YUWANCARD-ENABLE_SEVEN_CURSES_RING.title", "YUWANCARD-ENABLE_SEVEN_CURSES_RING.hover.desc"),
+        new("EnableMaliceSelection", "游戏设置", RootPageId, "gameplay", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 1,
+            "YUWANCARD-ENABLE_MALICE_SELECTION.title", "YUWANCARD-ENABLE_MALICE_SELECTION.hover.desc"),
+        new("EnableYuWanEnemyEncounters", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_yuwan_enemy_encounters", "config_enable_yuwan_enemy_encounters", "启用本模组敌人", "控制 YuWanCard 的敌人遭遇是否会出现在对局中", 0,
+            "YUWANCARD-ENABLE_YUWAN_ENEMY_ENCOUNTERS.title", "YUWANCARD-ENABLE_YUWAN_ENEMY_ENCOUNTERS.hover.desc"),
+        new("EnableIgnisBossEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_ignis_boss_encounter", "config_enable_ignis_boss_encounter", "焰魔", "允许焰魔Boss遭遇出现在对局中", 1,
+            "YUWANCARD-ENABLE_IGNIS_BOSS_ENCOUNTER.title", "YUWANCARD-ENABLE_IGNIS_BOSS_ENCOUNTER.hover.desc"),
+        new("EnableKillerEliteEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_killer_elite_encounter", "config_enable_killer_elite_encounter", "杀手", "允许杀手精英遭遇出现在对局中", 2,
+            "YUWANCARD-ENABLE_KILLER_ELITE_ENCOUNTER.title", "YUWANCARD-ENABLE_KILLER_ELITE_ENCOUNTER.hover.desc"),
+        new("EnableYuWanEvents", "游戏内容设置", ContentPageId, "events", "enable_yuwan_events", "config_enable_yuwan_events", "启用本模组事件", "控制 YuWanCard 的事件是否会出现在对局中", 0,
+            "YUWANCARD-ENABLE_YUWAN_EVENTS.title", "YUWANCARD-ENABLE_YUWAN_EVENTS.hover.desc"),
+        new("EnablePigPigAncient", "游戏内容设置", ContentPageId, "ancients", "enable_pig_pig_ancient", "config_enable_pig_pig_ancient", "猪猪先古", "允许猪猪先古在巢穴开局中出现", 0,
+            "YUWANCARD-ENABLE_PIG_PIG_ANCIENT.title", "YUWANCARD-ENABLE_PIG_PIG_ANCIENT.hover.desc"),
+        new("EnableBlacksmithEvent", "游戏内容设置", ContentPageId, "events", "enable_blacksmith_event", "config_enable_blacksmith_event", "铁匠铺", "允许铁匠铺事件出现在对局中", 1,
+            "YUWANCARD-ENABLE_BLACKSMITH_EVENT.title", "YUWANCARD-ENABLE_BLACKSMITH_EVENT.hover.desc"),
+        new("EnableHelloHumanEvent", "游戏内容设置", ContentPageId, "events", "enable_hello_human_event", "config_enable_hello_human_event", "人，你好。", "允许“人，你好。”事件出现在对局中", 2,
+            "YUWANCARD-ENABLE_HELLO_HUMAN_EVENT.title", "YUWANCARD-ENABLE_HELLO_HUMAN_EVENT.hover.desc"),
+        new("EnableHorizonEvent", "游戏内容设置", ContentPageId, "events", "enable_horizon_event", "config_enable_horizon_event", "天涯海角", "允许天涯海角事件出现在对局中", 3,
+            "YUWANCARD-ENABLE_HORIZON_EVENT.title", "YUWANCARD-ENABLE_HORIZON_EVENT.hover.desc"),
+        new("EnableSkullGoldRushEvent", "游戏内容设置", ContentPageId, "events", "enable_skull_gold_rush_event", "config_enable_skull_gold_rush_event", "骷髅打金服", "允许骷髅打金服事件出现在对局中", 4,
+            "YUWANCARD-ENABLE_SKULL_GOLD_RUSH_EVENT.title", "YUWANCARD-ENABLE_SKULL_GOLD_RUSH_EVENT.hover.desc"),
+        new("EnableSunkenStatueQuestEvent", "游戏内容设置", ContentPageId, "events", "enable_sunken_statue_quest_event", "config_enable_sunken_statue_quest_event", "沉没的石像", "允许沉没的石像事件出现在对局中", 5,
+            "YUWANCARD-ENABLE_SUNKEN_STATUE_QUEST_EVENT.title", "YUWANCARD-ENABLE_SUNKEN_STATUE_QUEST_EVENT.hover.desc"),
+        new("EnableZhiZhanZhiShangEvent", "游戏内容设置", ContentPageId, "events", "enable_zhi_zhan_zhi_shang_event", "config_enable_zhi_zhan_zhi_shang_event", "止战之殇", "允许止战之殇事件出现在对局中", 6,
+            "YUWANCARD-ENABLE_ZHI_ZHAN_ZHI_SHANG_EVENT.title", "YUWANCARD-ENABLE_ZHI_ZHAN_ZHI_SHANG_EVENT.hover.desc"),
     ];
 
     private static readonly SliderSettingDefinition[] SliderProps =
     [
         new("CursorScale", "显示设置", RootPageId, "display", "cursor_scale", "config_cursor_scale", "鼠标指针缩放",
-            "自定义鼠标指针的大小，1.0x 约为原版的 64px", 0.1, 10.0, 0.1, "{0}x", 2),
+            "自定义鼠标指针的大小，1.0x 约为原版的 64px", 0.1, 10.0, 0.1, "{0}x", 2,
+            "YUWANCARD-CURSOR_SCALE.title", "YUWANCARD-CURSOR_SCALE.hover.desc"),
+        new("PigBaseScale", "显示设置", RootPageId, "display", "pig_base_scale", "config_pig_base_scale", "猪角色体型大小",
+            "猪角色在战斗中的基础体型倍率；开启血量缩放时会以这个倍率为基准变化", 0.1, 3.0, 0.1, "{0}x", 4,
+            "YUWANCARD-PIG_BASE_SCALE.title", "YUWANCARD-PIG_BASE_SCALE.hover.desc"),
     ];
 
     private static readonly SubpageSettingDefinition[] SubpageProps =
@@ -622,7 +650,8 @@ internal static class ConfigRegistrar
         var prop = typeBuilder.DefineProperty(setting.PropertyName, PropertyAttributes.None, typeof(bool), null);
 
         prop.SetCustomAttribute(BuildEntryAttribute(
-            toggleCtor, [setting.RitsuId, setting.RitsuSectionId], labelProp, descProp, orderProp, setting.Label, setting.Description, setting.Order));
+            toggleCtor, [setting.RitsuId, setting.RitsuSectionId], labelProp, descProp, orderProp,
+            setting.Label, setting.Description, setting.Order, setting.LabelLocKey, setting.DescriptionLocKey));
 
         if (TryCreateRitsuBindingAttribute(bindingAttrType, bindingSourceType, setting.DataKey) is { } bindingAttrBuilder)
             prop.SetCustomAttribute(bindingAttrBuilder);
@@ -662,7 +691,8 @@ internal static class ConfigRegistrar
         var prop = typeBuilder.DefineProperty(setting.PropertyName, PropertyAttributes.None, typeof(double), null);
 
         prop.SetCustomAttribute(BuildEntryAttribute(
-            sliderCtor, [setting.RitsuId, setting.RitsuSectionId, setting.Min, setting.Max, setting.Step], labelProp, descProp, orderProp, setting.Label, setting.Description, setting.Order));
+            sliderCtor, [setting.RitsuId, setting.RitsuSectionId, setting.Min, setting.Max, setting.Step], labelProp, descProp, orderProp,
+            setting.Label, setting.Description, setting.Order, setting.LabelLocKey, setting.DescriptionLocKey));
 
         if (TryCreateRitsuBindingAttribute(bindingAttrType, bindingSourceType, setting.DataKey) is { } bindingAttrBuilder)
             prop.SetCustomAttribute(bindingAttrBuilder);

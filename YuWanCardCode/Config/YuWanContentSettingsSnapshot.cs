@@ -1,5 +1,6 @@
 using YuWanCard.Encounters;
 using YuWanCard.Events;
+using YuWanCard.Ancients;
 
 namespace YuWanCard.Config;
 
@@ -8,6 +9,7 @@ public readonly record struct YuWanContentSettingsSnapshot(
     bool EnableIgnisBossEncounter,
     bool EnableKillerEliteEncounter,
     bool EnableYuWanEvents,
+    bool EnablePigPigAncient,
     bool EnableBlacksmithEvent,
     bool EnableHelloHumanEvent,
     bool EnableHorizonEvent,
@@ -17,6 +19,7 @@ public readonly record struct YuWanContentSettingsSnapshot(
     IReadOnlyDictionary<string, bool> EnabledColorlessCards)
 {
     public static YuWanContentSettingsSnapshot AllDisabled { get; } = new(
+        false,
         false,
         false,
         false,
@@ -37,6 +40,7 @@ public readonly record struct YuWanContentSettingsSnapshot(
             YuWanCardConfig.EnableIgnisBossEncounter,
             YuWanCardConfig.EnableKillerEliteEncounter,
             YuWanCardConfig.EnableYuWanEvents,
+            YuWanCardConfig.EnablePigPigAncient,
             YuWanCardConfig.EnableBlacksmithEvent,
             YuWanCardConfig.EnableHelloHumanEvent,
             YuWanCardConfig.EnableHorizonEvent,
@@ -52,6 +56,7 @@ public readonly record struct YuWanContentSettingsSnapshot(
                && EnableIgnisBossEncounter == other.EnableIgnisBossEncounter
                && EnableKillerEliteEncounter == other.EnableKillerEliteEncounter
                && EnableYuWanEvents == other.EnableYuWanEvents
+               && EnablePigPigAncient == other.EnablePigPigAncient
                && EnableBlacksmithEvent == other.EnableBlacksmithEvent
                && EnableHelloHumanEvent == other.EnableHelloHumanEvent
                && EnableHorizonEvent == other.EnableHorizonEvent
@@ -116,6 +121,16 @@ public readonly record struct YuWanContentSettingsSnapshot(
         if (eventType == typeof(ZhiZhanZhiShang))
         {
             return EnableZhiZhanZhiShangEvent;
+        }
+
+        return true;
+    }
+
+    public bool IsAncientTypeEnabled(Type ancientType)
+    {
+        if (ancientType == typeof(PigPig))
+        {
+            return EnablePigPigAncient;
         }
 
         return true;
