@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=3 uid="uid://65ty3whc6rq7"]
+
+[ext_resource type="SpineSkeletonDataResource" path="res://YuWanCard/animations/piggy_girl/piggy_girl_skeleton_data_resource.tres" id="1_tuk66"]
+[ext_resource type="AudioStream" uid="uid://dxcc74cxo2rs5" path="res://YuWanCard/sounds/characters/pig_hurt.mp3" id="2_yakxa"]
+[ext_resource type="AudioStream" uid="uid://7m0okygv2w17" path="res://YuWanCard/sounds/characters/pig_die.mp3" id="3_mpbc1"]
+[ext_resource type="Script" uid="uid://bodwh5p76ay5c" path="res://YuWanCard/scripts/characters/spine_skin_setter.gd" id="4_skin"]
+
+[node name="PiggyGirl" type="Node2D"]
+
+[node name="Visuals" type="SpineSprite" parent="."]
+skeleton_data_res = ExtResource("1_tuk66")
+preview_skin = "default"
+preview_animation = "die"
+preview_frame = false
+preview_time = 0.0
+unique_name_in_owner = true
+position = Vector2(-10, -42)
+scale = Vector2(0.4, 0.4)
+script = ExtResource("4_skin")
+
+[node name="Bounds" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -137.0
+offset_top = -225.0
+offset_right = 124.0
+offset_bottom = -1.0
+mouse_filter = 2
+
+[node name="IntentPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(1, -255)
+
+[node name="CenterPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -138)
+
+[node name="OrbPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -236)
+
+[node name="TalkPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(144, -191)
+
+[node name="HurtSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_yakxa")
+
+[node name="DieSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_mpbc1")

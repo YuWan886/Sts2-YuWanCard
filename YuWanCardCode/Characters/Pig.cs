@@ -12,15 +12,33 @@ using YuWanCard.Relics;
 
 namespace YuWanCard.Characters;
 
-public class Pig : CharacterModel, IYuWanCharacter
+public class Pig : CharacterModel, IYuWanCharacter, IYuWanCharacterSkinProvider
 {
     private const string PigVisualsPath = "res://YuWanCard/scenes/characters/pig.tscn";
+    private const string PiggyGirlVisualsPath = "res://YuWanCard/scenes/characters/piggy_girl.tscn";
     private const string PigMerchantPath = "res://YuWanCard/scenes/characters/pig_merchant.tscn";
+    private const string PiggyGirlMerchantPath = "res://YuWanCard/scenes/characters/piggy_girl_merchant.tscn";
     private const string PigEnergyCounterPath = "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
     private const string PigRestSitePath = "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
     private const string PigTransitionMaterialPath = "res://YuWanCard/materials/transitions/pig_transition_mat.tres";
     private const string PigYummyCookiePath = "res://YuWanCard/images/relics/pig_yummy_cookie.png";
+    private const string PigCharacterSelectBgPath = "res://YuWanCard/scenes/characters/char_select_bg_pig.tscn";
+    private const string PigCharacterIconPath = "res://YuWanCard/images/characters/character_icon_pig.png";
+    private const string PiggyGirlCharacterIconPath = "res://YuWanCard/images/characters/character_icon_piggy_girl.png";
     internal const string PigCharacterSelectSfxPath = "res://YuWanCard/sounds/characters/pig_select.mp3";
+    private static readonly IReadOnlyList<YuWanCharacterSkinDefinition> PigSkins =
+    [
+        new(
+            Id: "classic",
+            DisplayNameLocKey: "YUWANCARD-CHARACTER_SKIN.PIG_CLASSIC"),
+        new(
+            Id: "piggy_girl",
+            DisplayNameLocKey: "YUWANCARD-CHARACTER_SKIN.PIGGY_GIRL",
+            VisualPath: PiggyGirlVisualsPath,
+            MerchantAnimPath: PiggyGirlMerchantPath,
+            IconTexturePath: PiggyGirlCharacterIconPath,
+            IconOutlineTexturePath: PiggyGirlCharacterIconPath)
+    ];
 
     /// <summary>
     /// Registers Pig-specific scene type conversions with NodeFactory
@@ -29,19 +47,25 @@ public class Pig : CharacterModel, IYuWanCharacter
     public static void RegisterScenes()
     {
         NodeFactory.RegisterSceneType<NCreatureVisuals>(PigVisualsPath);
+        NodeFactory.RegisterSceneType<NCreatureVisuals>(PiggyGirlVisualsPath);
         NodeFactory.RegisterSceneType<NMerchantCharacter>(PigMerchantPath);
+        NodeFactory.RegisterSceneType<NMerchantCharacter>(PiggyGirlMerchantPath);
         NodeFactory.RegisterSceneType<NEnergyCounter>(PigEnergyCounterPath);
         NodeFactory.RegisterSceneType<NRestSiteCharacter>(PigRestSitePath);
     }
 
+    IReadOnlyList<YuWanCharacterSkinDefinition> IYuWanCharacterSkinProvider.CharacterSkins => PigSkins;
+
     IReadOnlyList<RelicModel> IYuWanCharacter.MultiplayerStartingRelics => [ModelDb.Relic<PigRoastPork>()];
 
-    string? IYuWanCharacter.CustomVisualPath => PigVisualsPath;
+    string? IYuWanCharacter.CustomVisualPath
+        => CharacterSkinSelectionManager.ResolveVisualPath(this, PigVisualsPath);
     string? IYuWanCharacter.CustomEnergyCounterPath => "res://YuWanCard/scenes/characters/pig_energy_counter.tscn";
 
     NCreatureVisuals? IYuWanCharacter.CreateCustomVisuals()
     {
-        return NodeFactory.CreateFromScene<NCreatureVisuals>(PigVisualsPath);
+        string resolvedPath = CharacterSkinSelectionManager.ResolveVisualPath(this, PigVisualsPath);
+        return NodeFactory.CreateFromScene<NCreatureVisuals>(resolvedPath);
     }
 
     public override Color NameColor => new("FA8072");
@@ -67,16 +91,18 @@ public class Pig : CharacterModel, IYuWanCharacter
         => "res://YuWanCard/images/characters/char_select_pig.png";
     string? IYuWanCharacter.CustomIconPath
         => "res://YuWanCard/scenes/ui/character_icons/pig_icon.tscn";
+    Control? IYuWanCharacter.CustomIcon
+        => CreateCustomIcon();
     string? IYuWanCharacter.CustomIconTexturePath
-        => "res://YuWanCard/images/characters/character_icon_pig.png";
+        => CharacterSkinSelectionManager.ResolveIconTexturePath(this, PigCharacterIconPath);
     string? IYuWanCharacter.CustomIconOutlineTexturePath
-        => "res://YuWanCard/images/characters/character_icon_pig.png";
+        => CharacterSkinSelectionManager.ResolveIconOutlineTexturePath(this, PigCharacterIconPath);
     string? IYuWanCharacter.CustomCharacterSelectBg
-        => "res://YuWanCard/scenes/characters/char_select_bg_pig.tscn";
+        => PigCharacterSelectBgPath;
     string? IYuWanCharacter.CustomCharacterSelectTransitionPath
         => PigTransitionMaterialPath;
     string? IYuWanCharacter.CustomMerchantAnimPath
-        => "res://YuWanCard/scenes/characters/pig_merchant.tscn";
+        => CharacterSkinSelectionManager.ResolveMerchantAnimPath(this, PigMerchantPath);
     string? IYuWanCharacter.CustomRestSiteAnimPath
         => "res://YuWanCard/scenes/rest_site/characters/pig_rest_site.tscn";
     string? IYuWanCharacter.CustomArmPointingTexturePath
@@ -151,5 +177,20 @@ public class Pig : CharacterModel, IYuWanCharacter
     CreatureAnimator? IYuWanCharacter.SetupCustomAnimationStates(MegaSprite controller)
     {
         return CreateCreatureAnimator(controller);
+    }
+
+    private Control? CreateCustomIcon()
+    {
+        PackedScene? iconScene = ResourceLoader.Load<PackedScene>(
+            "res://YuWanCard/scenes/ui/character_icons/pig_icon.tscn",
+            cacheMode: ResourceLoader.CacheMode.Reuse);
+        if (iconScene?.Instantiate<Control>(PackedScene.GenEditState.Disabled) is not TextureRect icon)
+        {
+            return null;
+        }
+
+        string iconPath = CharacterSkinSelectionManager.ResolveIconTexturePath(this, PigCharacterIconPath);
+        icon.Texture = ResourceLoader.Load<Texture2D>(iconPath, cacheMode: ResourceLoader.CacheMode.Reuse);
+        return icon;
     }
 }

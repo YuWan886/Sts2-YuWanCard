@@ -1,11 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using YuWanCard.Core;
 
 namespace YuWanCard.Config;
 
 internal static class YuWanColorlessCardSettings
 {
-    private const string SaveRelativePath = "saves/mods/YuWanCard/colorless_card_settings.json";
+    private const string SaveFileName = "colorless_card_settings.json";
     private static readonly Lock Gate = new();
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -174,10 +175,7 @@ internal static class YuWanColorlessCardSettings
     }
 
     private static string ResolveSavePath()
-    {
-        string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        return Path.Combine(appData, "SlayTheSpire2", SaveRelativePath);
-    }
+        => YuWanModDataPathHelper.ResolveAccountFilePath(SaveFileName, "colorless card settings");
 
     private sealed class SavePayload
     {

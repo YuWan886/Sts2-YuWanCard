@@ -53,5 +53,9 @@
   "YUWANCARD-BALATRO_JOKER_BAG.locked": "Locked",
   "YUWANCARD-BALATRO_JOKER_BAG.empty_slot": "Empty Slot",
   "YUWANCARD-BALATRO_JOKER_BAG.selected_slot": "Selected slot: {0}",
+  "YUWANCARD-CHARACTER_SKIN.title": "Skin",
+  "YUWANCARD-CHARACTER_SKIN.preview_title": "Character Preview",
+  "YUWANCARD-CHARACTER_SKIN.PIG_CLASSIC": "[gold]Classic Pig[/gold]",
+  "YUWANCARD-CHARACTER_SKIN.PIGGY_GIRL": "[gold]Piggy Girl[/gold]",
   "balatro": "Balatro"
 }

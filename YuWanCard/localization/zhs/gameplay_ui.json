@@ -53,5 +53,9 @@
   "YUWANCARD-BALATRO_JOKER_BAG.locked": "未解锁",
   "YUWANCARD-BALATRO_JOKER_BAG.empty_slot": "空槽位",
   "YUWANCARD-BALATRO_JOKER_BAG.selected_slot": "当前目标槽位: {0}",
+  "YUWANCARD-CHARACTER_SKIN.title": "皮肤",
+  "YUWANCARD-CHARACTER_SKIN.preview_title": "角色预览",
+  "YUWANCARD-CHARACTER_SKIN.PIG_CLASSIC": "[gold]经典猪猪[/gold]",
+  "YUWANCARD-CHARACTER_SKIN.PIGGY_GIRL": "[gold]猪猪女孩[/gold]",
   "balatro": "Balatro"
 }

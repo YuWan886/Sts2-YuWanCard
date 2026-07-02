@@ -10,6 +10,7 @@ namespace YuWanCard.Utils;
 public static class CreatureVisualUtils
 {
     private const string NormalSkin = "normal";
+    private const string DefaultSkin = "default";
     private const string IdleAnimation = "Idle";
     private static readonly ConditionalWeakTable<Creature, TransformationSequenceState> TransformationSequences = [];
 
@@ -18,13 +19,13 @@ public static class CreatureVisualUtils
         public int SequenceId;
     }
 
-    public static void SwitchCreatureSkin(Creature creature, string skinName)
+    public static bool SwitchCreatureSkin(Creature creature, string skinName)
     {
         var megaSprite = GetMegaSprite(creature);
-        if (megaSprite == null) return;
+        if (megaSprite == null) return false;
 
         var skeleton = megaSprite.GetSkeleton();
-        if (skeleton == null) return;
+        if (skeleton == null) return false;
 
         var data = skeleton.GetData();
         var skin = data.FindSkin(skinName);
@@ -32,7 +33,10 @@ public static class CreatureVisualUtils
         {
             skeleton.SetSkin(skin);
             skeleton.SetSlotsToSetupPose();
+            return true;
         }
+
+        return false;
     }
 
     public static void PlayAnimation(Creature creature, string animationName)
@@ -63,11 +67,16 @@ public static class CreatureVisualUtils
             .Cast<Creature>()
             .ToArray();
 
+        if (!CanPlayPigTransformationSequence(creature, transformAnimation, transformedSkin))
+        {
+            return;
+        }
+
         int sequenceId = NextSequenceId(creature);
-        SwitchCreatureSkin(creature, NormalSkin);
+        SwitchCreatureToBaseSkin(creature);
         foreach (var linkedCreature in linkedTargets)
         {
-            SwitchCreatureSkin(linkedCreature, NormalSkin);
+            SwitchCreatureToBaseSkin(linkedCreature);
         }
 
         PlayAnimation(creature, transformAnimation);
@@ -98,7 +107,7 @@ public static class CreatureVisualUtils
     public static void ResetPigTransformationVisuals(Creature creature, params Creature?[] linkedCreatures)
     {
         CancelTransformationSequence(creature);
-        SwitchCreatureSkin(creature, NormalSkin);
+        SwitchCreatureToBaseSkin(creature);
 
         foreach (var linkedCreature in linkedCreatures)
         {
@@ -108,8 +117,46 @@ public static class CreatureVisualUtils
             }
 
             CancelTransformationSequence(linkedCreature);
-            SwitchCreatureSkin(linkedCreature, NormalSkin);
+            SwitchCreatureToBaseSkin(linkedCreature);
         }
+    }
+
+    private static void SwitchCreatureToBaseSkin(Creature creature)
+    {
+        if (SwitchCreatureSkin(creature, NormalSkin))
+        {
+            return;
+        }
+
+        SwitchCreatureSkin(creature, DefaultSkin);
+    }
+
+    private static bool CanPlayPigTransformationSequence(Creature creature, string transformAnimation, string transformedSkin)
+    {
+        var megaSprite = GetMegaSprite(creature);
+        if (megaSprite == null)
+        {
+            return false;
+        }
+
+        string? animationName = GetAnimationNameForTrigger(transformAnimation);
+        if (string.IsNullOrWhiteSpace(animationName) || !megaSprite.HasAnimation(animationName))
+        {
+            return false;
+        }
+
+        var skeleton = megaSprite.GetSkeleton();
+        if (skeleton == null)
+        {
+            return false;
+        }
+
+        return skeleton.GetData().FindSkin(transformedSkin) != null;
+    }
+
+    private static string? GetAnimationNameForTrigger(string animationTrigger)
+    {
+        return animationTrigger.ToLowerInvariant();
     }
 
     private static int NextSequenceId(Creature creature)
