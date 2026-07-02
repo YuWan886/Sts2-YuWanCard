@@ -5,6 +5,7 @@ using YuWanCard.Ancients;
 namespace YuWanCard.Config;
 
 public readonly record struct YuWanContentSettingsSnapshot(
+    bool EnablePigRewardAllCardPools,
     bool EnableYuWanEnemyEncounters,
     bool EnableIgnisBossEncounter,
     bool EnableKillerEliteEncounter,
@@ -30,12 +31,14 @@ public readonly record struct YuWanContentSettingsSnapshot(
         false,
         false,
         false,
+        false,
         YuWanColorlessCardCatalog.Cards.ToDictionary(static definition => definition.Key, static _ => false,
             StringComparer.Ordinal));
 
     public static YuWanContentSettingsSnapshot CaptureLocal()
     {
         return new YuWanContentSettingsSnapshot(
+            YuWanCardConfig.EnablePigRewardAllCardPools,
             YuWanCardConfig.EnableYuWanEnemyEncounters,
             YuWanCardConfig.EnableIgnisBossEncounter,
             YuWanCardConfig.EnableKillerEliteEncounter,
@@ -52,7 +55,8 @@ public readonly record struct YuWanContentSettingsSnapshot(
 
     public bool ContentEquals(in YuWanContentSettingsSnapshot other)
     {
-        return EnableYuWanEnemyEncounters == other.EnableYuWanEnemyEncounters
+        return EnablePigRewardAllCardPools == other.EnablePigRewardAllCardPools
+               && EnableYuWanEnemyEncounters == other.EnableYuWanEnemyEncounters
                && EnableIgnisBossEncounter == other.EnableIgnisBossEncounter
                && EnableKillerEliteEncounter == other.EnableKillerEliteEncounter
                && EnableYuWanEvents == other.EnableYuWanEvents

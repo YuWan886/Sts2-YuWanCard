@@ -13,7 +13,7 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class LingLingLingShenShenShenShenShen : YuWanCardModel
 {
-    private const int DrawPileCopyCount = 5;
+    private const int DrawPileCopyCount = 3;
     private const int AutoPlayCount = 3;
 
     public override int MaxUpgradeLevel => 0;

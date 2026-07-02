@@ -141,6 +141,8 @@ internal static class ConfigRegistrar
             "YUWANCARD-ENABLE_SEVEN_CURSES_RING.title", "YUWANCARD-ENABLE_SEVEN_CURSES_RING.hover.desc"),
         new("EnableMaliceSelection", "游戏设置", RootPageId, "gameplay", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 1,
             "YUWANCARD-ENABLE_MALICE_SELECTION.title", "YUWANCARD-ENABLE_MALICE_SELECTION.hover.desc"),
+        new("EnablePigRewardAllCardPools", "游戏设置", RootPageId, "gameplay", "enable_pig_reward_all_card_pools", "config_enable_pig_reward_all_card_pools", "猪奖励出现全部卡池", "启用后，猪角色的遭遇卡牌奖励会固定保留 1 张猪卡，其余位置改为随机其他卡池的卡", 2,
+            "YUWANCARD-ENABLE_PIG_REWARD_ALL_CARD_POOLS.title", "YUWANCARD-ENABLE_PIG_REWARD_ALL_CARD_POOLS.hover.desc"),
         new("EnableYuWanEnemyEncounters", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_yuwan_enemy_encounters", "config_enable_yuwan_enemy_encounters", "启用本模组敌人", "控制 YuWanCard 的敌人遭遇是否会出现在对局中", 0,
             "YUWANCARD-ENABLE_YUWAN_ENEMY_ENCOUNTERS.title", "YUWANCARD-ENABLE_YUWAN_ENEMY_ENCOUNTERS.hover.desc"),
         new("EnableIgnisBossEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_ignis_boss_encounter", "config_enable_ignis_boss_encounter", "焰魔", "允许焰魔Boss遭遇出现在对局中", 1,

@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using YuWanCard.Characters;
 using YuWanCard.Multiplayer;
 
 namespace YuWanCard.Config;
@@ -44,6 +45,11 @@ internal static class YuWanContentAvailability
     public static bool IsColorlessCardTypeEnabled(Type cardType)
     {
         return GetEffectiveSnapshot("colorless_card", cardType).IsColorlessCardTypeEnabled(cardType);
+    }
+
+    public static bool ShouldUsePigRewardAllCardPools()
+    {
+        return GetEffectiveSnapshot("pig_reward_card_pool", typeof(Pig)).EnablePigRewardAllCardPools;
     }
 
     public static bool IsEncounterTypeEnabled<TEncounter>() where TEncounter : EncounterModel

@@ -74,6 +74,7 @@ public partial class MainFile : Node
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
         SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
         TranscendenceRegistry.RegisterDefaults();
+        PigRewardAllCardPoolsBridge.RegisterHooks();
         PigApotheosisObtainBridge.RegisterHooks();
         CustomBadgeRegistry.Register((run, playerId, won) => new PigTycoonBadge(run, playerId, won));
         CustomBadgeRegistry.Register((run, playerId, won) => new WerewolfBadge(run, playerId, won));

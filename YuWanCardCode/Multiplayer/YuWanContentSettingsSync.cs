@@ -234,6 +234,7 @@ public static class YuWanContentSettingsSync
         return new YuWanContentSettingsSnapshotMessage
         {
             Version = version,
+            EnablePigRewardAllCardPools = snapshot.EnablePigRewardAllCardPools,
             EnableYuWanEnemyEncounters = snapshot.EnableYuWanEnemyEncounters,
             EnableIgnisBossEncounter = snapshot.EnableIgnisBossEncounter,
             EnableKillerEliteEncounter = snapshot.EnableKillerEliteEncounter,
@@ -275,6 +276,7 @@ public struct YuWanContentSettingsRequestMessage : INetMessage, IPacketSerializa
 public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializable
 {
     public required int Version { get; set; }
+    public required bool EnablePigRewardAllCardPools { get; set; }
     public required bool EnableYuWanEnemyEncounters { get; set; }
     public required bool EnableIgnisBossEncounter { get; set; }
     public required bool EnableKillerEliteEncounter { get; set; }
@@ -296,6 +298,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
     public void Serialize(PacketWriter writer)
     {
         writer.WriteInt(Version);
+        writer.WriteBool(EnablePigRewardAllCardPools);
         writer.WriteBool(EnableYuWanEnemyEncounters);
         writer.WriteBool(EnableIgnisBossEncounter);
         writer.WriteBool(EnableKillerEliteEncounter);
@@ -318,6 +321,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
     public void Deserialize(PacketReader reader)
     {
         Version = reader.ReadInt();
+        EnablePigRewardAllCardPools = reader.ReadBool();
         EnableYuWanEnemyEncounters = reader.ReadBool();
         EnableIgnisBossEncounter = reader.ReadBool();
         EnableKillerEliteEncounter = reader.ReadBool();
@@ -344,6 +348,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
     public YuWanContentSettingsSnapshot ToSnapshot()
     {
         return new YuWanContentSettingsSnapshot(
+            EnablePigRewardAllCardPools,
             EnableYuWanEnemyEncounters,
             EnableIgnisBossEncounter,
             EnableKillerEliteEncounter,

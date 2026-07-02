@@ -38,6 +38,10 @@ public class YuWanCardConfig : FallbackSimpleModConfig
     [ConfigHoverTip]
     public static bool EnableMaliceSelection { get; set; } = true;
 
+    [ConfigSection("游戏设置")]
+    [ConfigHoverTip]
+    public static bool EnablePigRewardAllCardPools { get; set; } = false;
+
     [ConfigSection("游戏内容设置")]
     [ConfigHoverTip]
     public static bool EnableYuWanEnemyEncounters { get; set; } = true;
