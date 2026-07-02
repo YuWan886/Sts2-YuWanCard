@@ -23,6 +23,6 @@ public sealed class WrathMalice : MaliceRelicModel
             return 1m;
         }
 
-        return 1.75m;
+        return 1.6m;
     }
 }
