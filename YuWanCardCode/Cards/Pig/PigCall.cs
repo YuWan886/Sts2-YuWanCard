@@ -35,7 +35,7 @@ public class PigCall : YuWanCardModel
         bool pigAlive = HasLivingPig();
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, null)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
@@ -43,7 +43,7 @@ public class PigCall : YuWanCardModel
         if (pigAlive && cardPlay.Target.IsAlive)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, null)
                 .Targeting(cardPlay.Target)
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);

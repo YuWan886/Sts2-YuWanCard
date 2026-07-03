@@ -72,7 +72,7 @@ public sealed class CrystalPig : YuWanRelicModel
         }
 
         Flash();
-        await CreatureCmd.Damage(choiceContext, target, DynamicVars["Damage"].BaseValue, ValueProp.Unpowered, Owner.Creature, null);
+        await CreatureCmd.Damage(choiceContext, target, DynamicVars["Damage"].BaseValue, ValueProp.Unpowered, Owner.Creature, null, null);
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars["Block"].BaseValue, ValueProp.Unpowered, null);
     }
 }

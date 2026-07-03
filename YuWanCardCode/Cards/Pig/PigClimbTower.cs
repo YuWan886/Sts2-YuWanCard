@@ -35,7 +35,7 @@ public class PigClimbTower : YuWanCardModel
         if (cardPlay.Target != null)
         {
             await DamageCmd.Attack(floor)
-                .FromCard(this)
+                .FromCard(this, null)
                 .Targeting(cardPlay.Target)
                 .Execute(choiceContext);
         }

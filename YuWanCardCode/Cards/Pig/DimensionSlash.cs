@@ -46,7 +46,7 @@ public class DimensionSlash : YuWanCardModel
         var combatState = Owner.Creature.CombatState;
         
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, null)
             .Targeting(target)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);

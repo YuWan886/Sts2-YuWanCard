@@ -60,7 +60,8 @@ public class PigPawn : YuWanCardModel
             hpToLose,
             ValueProp.Unblockable | ValueProp.Unpowered,
             Owner.Creature,
-            this);
+            this,
+            null);
 
         int gainedGold = hpBefore - target.CurrentHp;
         if (gainedGold > 0)

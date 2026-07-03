@@ -29,6 +29,6 @@ public sealed class Bankruptcy : YuWanCardModel
 
         decimal ratio = IsUpgraded ? 0.75m : 0.5m;
         decimal damage = Math.Max(1m, Math.Floor(gold * ratio));
-        await CreatureCmd.Damage(choiceContext, cardPlay.Target, damage, ValueProp.Move, Owner.Creature, this);
+        await CreatureCmd.Damage(choiceContext, cardPlay.Target, damage, ValueProp.Move, Owner.Creature, this, null);
     }
 }

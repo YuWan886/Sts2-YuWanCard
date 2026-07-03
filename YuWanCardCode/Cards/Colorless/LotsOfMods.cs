@@ -34,7 +34,7 @@ public class LotsOfMods : YuWanCardModel
         if (cardPlay.Target == null) return;
 
         await DamageCmd.Attack(DynamicVars.CalculatedDamage)
-            .FromCard(this)
+            .FromCard(this, null)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);

@@ -37,7 +37,7 @@ public sealed class CataclysmTrait : MaliceTraitPowerBase
                 flashed = true;
             }
 
-            await CreatureCmd.Damage(context, player.Creature, damage, ValueProp.Unpowered, Owner, null);
+            await CreatureCmd.Damage(context, player.Creature, damage, ValueProp.Unpowered, Owner, null, null);
         }
     }
 }

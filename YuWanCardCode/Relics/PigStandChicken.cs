@@ -50,7 +50,7 @@ public sealed class PigStandChicken : YuWanRelicModel
 
         int damage = _attackCardsPlayedLastTurn >= AttackThreshold ? EmpoweredDamage : BaseDamage;
         Flash();
-        await CreatureCmd.Damage(choiceContext, target, damage, ValueProp.Move, Owner.Creature, null);
+        await CreatureCmd.Damage(choiceContext, target, damage, ValueProp.Move, Owner.Creature, null, null);
     }
 
     public override Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)

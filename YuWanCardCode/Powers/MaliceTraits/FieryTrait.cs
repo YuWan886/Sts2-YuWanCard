@@ -20,6 +20,6 @@ public sealed class FieryTrait : MaliceTraitPowerBase
         }
 
         Flash();
-        await CreatureCmd.Damage(choiceContext, dealer, 1 * Amount, ValueProp.Unpowered, Owner, null);
+        await CreatureCmd.Damage(choiceContext, dealer, 1 * Amount, ValueProp.Unpowered, Owner, null, null);
     }
 }

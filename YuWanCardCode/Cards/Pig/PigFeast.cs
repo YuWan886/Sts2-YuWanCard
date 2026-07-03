@@ -44,7 +44,7 @@ public class PigFeast : YuWanCardModel
             foreach (var enemy in enemies)
             {
                 await DamageCmd.Attack(DynamicVars.Damage.IntValue)
-                    .FromCard(this)
+                    .FromCard(this, null)
                     .Targeting(enemy)
                     .WithHitFx("vfx/vfx_bite")
                     .Execute(choiceContext);

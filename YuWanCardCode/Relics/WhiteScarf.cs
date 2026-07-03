@@ -33,9 +33,9 @@ public class WhiteScarf : YuWanRelicModel
         if (room.RoomType == RoomType.Monster || room.RoomType == RoomType.Boss || room.RoomType == RoomType.Elite)
         {
             var colorlessPool = ModelDb.CardPool<ColorlessCardPool>();
-            var colorlessCards = colorlessPool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint);
+            var colorlessCardIds = new HashSet<ModelId>(colorlessPool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint).Select(c => c.Id));
             var options = CardCreationOptions.ForRoom(player, room.RoomType)
-                .WithCustomPool(colorlessCards)
+                .WithFilter(card => colorlessCardIds.Contains(card.Id))
                 .WithFlags(CardCreationFlags.NoCardPoolModifications);
             rewards.Add(new CardReward(options, 3, player));
         }

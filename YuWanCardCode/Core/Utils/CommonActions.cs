@@ -12,7 +12,7 @@ public static class CommonActions
     public static AttackCommand CardAttack(CardModel card, CardPlay play, int hitCount = 1)
     {
         decimal damage = card.DynamicVars.Damage.BaseValue;
-        var cmd = DamageCmd.Attack(damage).WithHitCount(hitCount).FromCard(card);
+        var cmd = DamageCmd.Attack(damage).WithHitCount(hitCount).FromCard(card, null);
 
         switch (card.TargetType)
         {

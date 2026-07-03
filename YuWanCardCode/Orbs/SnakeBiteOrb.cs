@@ -53,7 +53,7 @@ public class SnakeBiteOrb : YuWanOrbModel
 
     public override async Task Passive(PlayerChoiceContext choiceContext, Creature? target)
     {
-        Trigger();
+        ActivatePassive();
         var enemy = Owner.RunState.Rng.CombatTargets.NextItem(CombatState.HittableEnemies);
         if (enemy != null)
         {

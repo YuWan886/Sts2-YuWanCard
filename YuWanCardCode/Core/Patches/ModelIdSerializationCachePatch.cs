@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.IO.Hashing;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using HarmonyLib;
@@ -149,13 +150,13 @@ static class ModelIdSerializationCachePatch
 
         foreach (Mod mod in ModManager.Mods)
         {
-            if (mod.state != ModLoadState.Loaded || mod.assembly == null)
+            if (mod.state != ModLoadState.Loaded || mod.assemblies.Count == 0)
             {
                 continue;
             }
 
             string? modId = mod.manifest?.id;
-            foreach (Type type in ReflectionHelper.GetSubtypesFromAssembly(mod.assembly, typeof(AbstractModel)))
+            foreach (Type type in mod.assemblies.SelectMany(asm => ReflectionHelper.GetSubtypesFromAssembly(asm, typeof(AbstractModel))))
             {
                 AddOrUpdate(entriesByIdentity, type, modId);
             }
@@ -221,12 +222,12 @@ static class ModelIdSerializationCachePatch
         int count = AbstractModelSubtypes.All.Count;
         foreach (Mod mod in ModManager.Mods)
         {
-            if (mod.state != ModLoadState.Loaded || mod.assembly == null)
+            if (mod.state != ModLoadState.Loaded || mod.assemblies.Count == 0)
             {
                 continue;
             }
 
-            count += ReflectionHelper.GetSubtypesFromAssembly(mod.assembly, typeof(AbstractModel)).Count();
+            count += mod.assemblies.SelectMany(asm => ReflectionHelper.GetSubtypesFromAssembly(asm, typeof(AbstractModel))).Count();
         }
 
         return count;

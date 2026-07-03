@@ -1,6 +1,7 @@
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -27,7 +28,7 @@ public class LoliconPower : YuWanPowerModel
         return new Data();
     }
 
-    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
     {
         if (dealer != Owner) return 1m;
         if (target == null) return 1m;
@@ -61,7 +62,7 @@ public class LoliconPower : YuWanPowerModel
         foreach (var (_, damage) in reflectTargets)
         {
             await DamageCmd.Attack(damage)
-                .FromCard(cardModel)
+                .FromCard(cardModel, null)
                 .Targeting(Owner)
                 .WithHitFx("vfx/vfx_attack_lightning", null, "lightning_orb_evoke.mp3")
                 .Execute(new ThrowingPlayerChoiceContext());

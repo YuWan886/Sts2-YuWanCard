@@ -58,7 +58,7 @@ public sealed class GamblerJoker : BalatroJokerRelicModel
             }
 
             int damage = Owner.RunState.Rng.CombatCardSelection.NextInt(MinDamage, MaxDamage);
-            await CreatureCmd.Damage(context, target, damage, ValueProp.Move, Owner.Creature, null);
+            await CreatureCmd.Damage(context, target, damage, ValueProp.Move, Owner.Creature, null, null);
         }
     }
 

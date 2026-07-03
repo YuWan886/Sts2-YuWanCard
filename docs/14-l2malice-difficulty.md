@@ -263,4 +263,4 @@ public sealed class ExampleTrait : MaliceTraitPowerBase
 
 ## 版权
 
-词条系统设计参考 [莱特兰恶意 (L2Hostility)](https://www.mcmod.cn/class/12008.html)，LGPL 2.1 许可。词条图标移植自 L2Hostility，详见 `L2HOSTILITY_LICENSE.txt`。
+词条系统设计参考 [莱特兰恶意 (L2Hostility)](https://www.mcmod.cn/class/12008.html)，LGPL 2.1 许可。词条图标移植自 L2Hostility，详见 `licenses/third-party/L2HOSTILITY_LICENSE.txt`。

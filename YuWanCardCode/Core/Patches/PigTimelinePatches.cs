@@ -116,19 +116,6 @@ public static class PigTimelinePatches
         return false;
     }
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(EpochModel), nameof(EpochModel.IsArtPlaceholder), MethodType.Getter)]
-    private static bool Prefix_EpochIsArtPlaceholder(EpochModel __instance, ref bool __result)
-    {
-        if (__instance is not PigEpochBase pigEpoch)
-        {
-            return true;
-        }
-
-        __result = pigEpoch.UsesPlaceholderPortrait;
-        return false;
-    }
-
     [HarmonyPostfix]
     [HarmonyPatch(typeof(ProgressSaveManager), nameof(ProgressSaveManager.UpdateAfterCombatWon))]
     private static void Postfix_UpdateAfterCombatWon(MegaCrit.Sts2.Core.Entities.Players.Player localPlayer, MegaCrit.Sts2.Core.Rooms.CombatRoom room)

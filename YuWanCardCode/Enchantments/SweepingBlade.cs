@@ -63,8 +63,9 @@ public sealed class SweepingBlade : YuWanEnchantmentModel
                 enemy,
                 splashDamage,
                 ValueProp.Unpowered,
-                Card
-            );
+                dealer,
+                Card,
+                null);
         }
     }
 }

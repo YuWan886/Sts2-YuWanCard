@@ -45,7 +45,7 @@ public class BugPig : YuWanCardModel
         MainFile.Logger.Info($"BugPig: dealing {DynamicVars.CalculatedDamage} damage");
 
         await DamageCmd.Attack(DynamicVars.CalculatedDamage)
-            .FromCard(this)
+            .FromCard(this, null)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);

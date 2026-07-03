@@ -103,10 +103,12 @@ public class PigRewardAllCardPoolsBridge : YuWanSingletonModel
         int count,
         CardCreationOptions sourceOptions)
     {
+        var candidateIds = new HashSet<ModelId>(candidates.Select(c => c.Id));
         CardCreationOptions replacementOptions = new CardCreationOptions(
-                candidates,
+                new[] { player.Character.CardPool },
                 sourceOptions.Source,
-                GetRarityOddsForCandidatePool(sourceOptions, candidates))
+                GetRarityOddsForCandidatePool(sourceOptions, candidates),
+                card => candidateIds.Contains(card.Id))
             .WithFlags(sourceOptions.Flags | CardCreationFlags.NoModifyHooks);
         if (sourceOptions.RngOverride != null)
         {

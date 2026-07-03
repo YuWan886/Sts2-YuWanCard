@@ -58,7 +58,7 @@ public sealed class TankPig : YuWanRelicModel
         }
 
         Flash();
-        await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), target, DynamicVars["Damage"].BaseValue, ValueProp.Unpowered, Owner.Creature, cardSource);
+        await CreatureCmd.Damage(new ThrowingPlayerChoiceContext(), target, DynamicVars["Damage"].BaseValue, ValueProp.Unpowered, Owner.Creature, cardSource, null);
     }
 
     private Creature? GetRandomLivingEnemy()

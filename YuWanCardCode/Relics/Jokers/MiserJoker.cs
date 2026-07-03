@@ -13,7 +13,7 @@ public sealed class MiserJoker : BalatroJokerRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Uncommon;
 
-    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
     {
         if (Owner == null || dealer != Owner.Creature || cardSource?.Type != CardType.Attack)
         {

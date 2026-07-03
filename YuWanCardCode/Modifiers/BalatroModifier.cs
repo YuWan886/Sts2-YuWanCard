@@ -243,12 +243,12 @@ public sealed class BalatroModifier : YuWanModifierModel
         return playCount + extra;
     }
 
-    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
     {
         return 0m;
     }
 
-    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
     {
         Player? player = dealer?.Player;
         if (player == null || dealer != player.Creature || cardSource?.Type != CardType.Attack)
@@ -302,8 +302,14 @@ public sealed class BalatroModifier : YuWanModifierModel
             return options;
         }
 
+        var poolIds = new HashSet<ModelId>(pool.Select(card => card.Id));
         bool singleRarity = pool.Select(card => card.Rarity).Distinct().Count() == 1;
-        return options.WithCustomPool(pool, singleRarity ? CardRarityOddsType.Uniform : null);
+        CardCreationOptions result = options.WithFilter(card => poolIds.Contains(card.Id));
+        if (singleRarity)
+        {
+            result = result.WithRarityOdds(CardRarityOddsType.Uniform);
+        }
+        return result;
     }
 
     public override bool TryModifyRewards(Player player, List<Reward> rewards, AbstractRoom? room)
