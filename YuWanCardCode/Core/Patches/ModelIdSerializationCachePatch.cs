@@ -53,6 +53,9 @@ static class ModelIdSerializationCachePatch
     private static readonly PropertyInfo? HashProperty =
         AccessTools.Property(typeof(ModelIdSerializationCache), nameof(ModelIdSerializationCache.Hash));
 
+    private static readonly FieldInfo? InitializedField =
+        AccessTools.Field(typeof(ModelIdSerializationCache), "_initialized");
+
     [HarmonyPrefix]
     static bool InitPrefix()
     {
@@ -61,6 +64,7 @@ static class ModelIdSerializationCachePatch
         byte[] scratch = new byte[512];
         var hash = new XxHash32();
 
+        SetInitialized(false);
         ResetCaches();
 
         var uniqueEntries = CollectUniqueModelTypes();
@@ -111,6 +115,7 @@ static class ModelIdSerializationCachePatch
 
         uint currentHash = hash.GetCurrentHashAsUInt32();
         HashProperty?.SetValue(null, currentHash);
+        SetInitialized(true);
 
         int dedupedCount = CountOriginalEntries() - uniqueEntries.Count;
         if (dedupedCount > 0)
@@ -251,6 +256,11 @@ static class ModelIdSerializationCachePatch
     {
         int bitSize = count <= 1 ? 0 : (int)Math.Ceiling(Math.Log2(count));
         property?.SetValue(null, bitSize);
+    }
+
+    private static void SetInitialized(bool initialized)
+    {
+        InitializedField?.SetValue(null, initialized);
     }
 
     private readonly record struct CacheTypeEntry(Type Type, string? ModId, string IdentityKey);
