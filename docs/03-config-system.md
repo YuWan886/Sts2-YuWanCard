@@ -1,225 +1,60 @@
 # 配置系统
 
-## 配置系统
+## 概览
 
-项目使用配置系统管理模组设置，支持自动生成配置 UI 和持久化存储。
+YuWanCard 的配置现在只保留 **STS2-RitsuLib** 集成。
 
-## FallbackSimpleModConfig 基类
+- `YuWanCardCode/Config/YuWanCardConfig.cs` 只负责保存静态配置值和默认值
+- `YuWanCardCode/Config/ConfigRegistrar.cs` 负责在运行时反射生成 RitsuLib settings provider
+- 配置 UI 的页面、分组、排序、本地化键和数据键都集中写在 `ConfigRegistrar.cs`
 
-所有配置类应继承 `FallbackSimpleModConfig` 基类：
-
-```csharp
-namespace YuWanCard.Config;
-
-public class YuWanCardConfig : FallbackSimpleModConfig
-{
-    [ConfigSection("显示设置")]
-    [ConfigHoverTip]
-    public static bool EnableDeathEffect { get; set; } = true;
-
-    public YuWanCardConfig() : base() { }
-}
-```
-
-## 配置特性
-
-### ConfigSection
-
-标记配置分区，自动生成分区标题：
-
-```csharp
-[ConfigSection("显示设置")]
-public static bool EnableDeathEffect { get; set; } = true;
-```
-
-### ConfigHoverTip
-
-为设置项添加悬停提示，自动从本地化文件读取描述：
-
-```csharp
-[ConfigHoverTip]
-public static bool EnableDeathEffect { get; set; } = true;
-```
-
-### ConfigSlider
-
-设置滑块范围、步长和标签格式：
-
-```csharp
-[ConfigSlider(0, 100, 5, "{0}%")]
-public static int Volume { get; set; } = 50;
-```
-
-### ConfigHideInUI
-
-保存和加载但不生成 UI：
-
-```csharp
-[ConfigHideInUI]
-public static string InternalValue { get; set; } = "";
-```
-
-### ConfigIgnore
-
-完全忽略此属性：
-
-```csharp
-[ConfigIgnore]
-public static string DebugValue { get; set; } = "";
-```
-
-### ConfigTextInput
-
-为文本输入设置字符验证：
-
-```csharp
-[ConfigTextInput(TextInputPreset.Url)]
-public static string ServerUrl { get; set; } = "http://localhost";
-```
-
-### ConfigVisibleIf
-
-条件显示配置项：
-
-```csharp
-[ConfigVisibleIf(nameof(EnableAutoSlay), "true")]
-public static int AutoSlayDelay { get; set; } = 1000;
-```
-
-### ConfigHoverTipsByDefault
-
-为类中所有设置项默认添加悬停提示：
-
-```csharp
-[ConfigHoverTipsByDefault]
-public class MyModConfig : FallbackSimpleModConfig
-{
-    public static bool Option1 { get; set; } = true;  // 自动有悬停提示
-}
-```
-
-## 配置属性要求
-
-**重要规则**：
-1. 配置属性必须是 **静态属性**（`static`）
-2. 配置属性必须有 `get` 和 `set` 访问器
-3. 配置属性应有默认值
-
-```csharp
-// 正确示例
-[ConfigSection("游戏设置")]
-[ConfigHoverTip]
-public static int MaxCards { get; set; } = 10;
-
-// 错误示例 - 非静态
-[ConfigSection("游戏设置")]
-public int MaxCards { get; set; } = 10;  // 编译错误
-
-// 错误示例 - 缺少 set 访问器
-[ConfigSection("游戏设置")]
-public static int MaxCards { get; }  // 无法保存
-```
-
-## 完整配置示例
+## 当前模式
 
 ```csharp
 namespace YuWanCard.Config;
 
-public class YuWanCardConfig : FallbackSimpleModConfig
+public class YuWanCardConfig
 {
-    [ConfigSection("显示设置")]
-    [ConfigHoverTip]
     public static bool EnableDeathEffect { get; set; } = true;
-
-    [ConfigSection("显示设置")]
-    [ConfigHoverTip]
-    [ConfigSlider(0, 100, 10, "{0}%")]
-    public static int EffectIntensity { get; set; } = 50;
-
-    [ConfigSection("更新设置")]
-    [ConfigHoverTip]
-    public static bool EnableAutoUpdateCheck { get; set; } = true;
-
-    [ConfigSection("自动爬塔设置")]
-    [ConfigHoverTip]
-    public static bool EnableAutoSlay { get; set; } = false;
-
-    [ConfigSection("自动爬塔设置")]
-    [ConfigHoverTip]
-    [ConfigVisibleIf(nameof(EnableAutoSlay), "true")]
-    [ConfigSlider(100, 5000, 100, "{0}ms")]
-    public static int AutoSlayDelay { get; set; } = 1000;
-
-    public YuWanCardConfig() : base() { }
+    public static double CursorScale { get; set; } = 2.0;
 }
 ```
 
-## SavedProperty 属性
+规则：
 
-用于持久化保存属性（与配置不同，这些会保存到存档中）：
+1. 配置项必须是 `public static` 且同时有 `get` / `set`
+2. 配置项必须提供默认值
+3. 新增配置时，要同时更新 `YuWanCardConfig` 和 `ConfigRegistrar`
 
-```csharp
-using MegaCrit.Sts2.Core.Saves.Runs;
+## RitsuLib 注册
 
-public class MyRelic : YuWanRelicModel
-{
-    [SavedProperty]
-    public int YuWanCard_EndlessLoopCount { get; set; } = 0;
+`ConfigRegistrar.TryDeferredRegister()` 会在运行时检测 `STS2RitsuLib`，然后：
 
-    [SavedProperty]
-    public bool YuWanCard_HasStarted { get; set; } = false;
-}
-```
+1. 读取 `RitsuPages` / `RitsuSections`
+2. 为 toggle、slider、subpage、custom entry 动态发射 provider 类型
+3. 调用 `RitsuLibFramework.RegisterModSettingsReflectionProviderAndTryRegister`
+4. 通过 `RitsuConfigRuntimeBridge` 将 UI 值回写到 `YuWanCardConfig`
 
-**重要**：
-- 属性命名建议使用模组前缀（如 `YuWanCard_`），否则会产生警告
-- `SavedProperty` 用于存档数据，`FallbackSimpleModConfig` 用于模组设置
+`RitsuConfigRuntimeBridge` 还负责少量即时副作用，例如刷新自定义鼠标。
 
-## 配置 UI 生成
+## 新增配置项时要改哪里
 
-配置系统会自动为配置类生成 UI：
+布尔配置：
 
-1. `[ConfigSection]` 创建分区标题
-2. 根据属性类型自动选择控件：
-   - `bool` → 复选框
-   - `int`/`decimal` → 滑块（使用 `[ConfigSlider]`）
-   - `string` → 文本框（使用 `[ConfigTextInput]`）
-3. `[ConfigHoverTip]` 添加悬停提示
-4. 使用 `GenerateOptionsForAllProperties` 自动生成所有选项
-5. 使用 `AddRestoreDefaultsButton` 添加恢复默认值按钮
+1. 在 `YuWanCardConfig` 增加静态属性
+2. 在 `ConfigRegistrar.ToggleProps` 增加一项
+3. 如需分组或分页，确认 `RitsuSections` / `RitsuPages` 已覆盖
+4. 在 `YuWanCard/localization/*/settings_ui.json` 补齐标题/描述文案
 
-## 本地化
+数值滑块：
 
-配置的悬停提示从本地化文件读取，键格式为：
+1. 在 `YuWanCardConfig` 增加 `double` 静态属性
+2. 在 `ConfigRegistrar.SliderProps` 增加一项
+3. 填好 `Min`、`Max`、`Step`、`Format`
 
-```
-{config_key}.description
-```
+## SavedProperty 与配置的区别
 
-例如：
-```json
-{
-  "EnableDeathEffect.description": "启用死亡特效"
-}
-```
+- `SavedProperty`：跟随存档，属于 run 内状态
+- `YuWanCardConfig`：全局模组设置，属于玩家本地配置
 
-## 访问配置值
-
-```csharp
-// 直接访问静态属性
-if (YuWanCardConfig.EnableDeathEffect)
-{
-    // 执行死亡特效
-}
-
-// 获取配置值
-var volume = YuWanCardConfig.Volume;
-```
-
-## 配置文件存储位置
-
-配置文件存储在游戏存档目录：
-
-```
-%SlayTheSpire2%\saves\mods\{ModId}\config.json
-```
+不要把局内状态塞进 `YuWanCardConfig`，也不要把用户偏好写成 `SavedProperty`。

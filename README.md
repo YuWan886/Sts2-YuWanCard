@@ -20,7 +20,7 @@
 1. 下载最新版本 [**创意工坊订阅**](https://steamcommunity.com/sharedfiles/filedetails/?id=3747566068) | [Release](https://github.com/YuWan886/Sts2-YuWanCard/releases/latest) | [NexusMods](https://www.nexusmods.com/slaythespire2/mods/149) | [备用下载](https://pan.quark.cn/s/734161e964f3)
 2. 解压到游戏目录下的 `mods` 文件夹中
 3. 游戏日志在 `%AppData%\SlayTheSpire2\logs\` 文件夹中
-4. 安装 [RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib) 或者 [BaseLib](https://github.com/Alchyr/BaseLib-StS2)，就能看到猪猪的配置界面，这是**可选**的。
+4. 安装 [RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib)，就能看到猪猪的配置界面，这是**可选**的。
 5. [模组wiki](https://yuwan886.github.io/Sts2-YuWanCard/)
 6. [**点我看常见问题解答**](https://docs.qq.com/doc/DUXhoZXhKVURZR1ph)
 7. [数据收集面板](https://us.posthog.com/shared/86iICJdcka6ZXAayfdaUqTv7ahovcA)

@@ -1146,14 +1146,15 @@ using YuWanCard.Core.Interop;
 
 namespace YuWanCard.Config.Interop;
 
-[ModInterop("BaseLib")]  // 目标模组 ID
-public static class BaseLibConfigInterop
+[ModInterop("STS2-RitsuLib")]  // 目标模组 ID
+public static class RitsuInteropExample
 {
-    // 替换为 BaseLib.Config.ModConfigRegistry.Register 的调用
-    [InteropTarget("BaseLib.Config.ModConfigRegistry", "Register")]
-    public static void Register(string modId, object config)
+    // 替换为 STS2RitsuLib.RitsuLibFramework.GetDataStore 的调用
+    [InteropTarget("STS2RitsuLib.RitsuLibFramework", "GetDataStore")]
+    public static object? GetDataStore(string modId)
     {
         // Fallback：目标模组未加载时不执行任何操作
+        return null;
     }
 }
 ```
@@ -1182,12 +1183,11 @@ public override void Initialize()
 
 ### 配置系统兼容层
 
-项目已内置对以下模组的配置兼容：
+项目当前只保留 `STS2RitsuLib` 配置集成，且该集成由 `ConfigRegistrar` 通过运行时反射 provider 完成，而不是通过 `[ModInterop]`：
 
 | 模组 | 存根类 | 功能 |
 |------|--------|------|
-| BaseLib | `BaseLibConfigInterop` | 将本模组配置注册到 BaseLib 的设置界面 |
-| STS2RitsuLib | `RitsuLibConfigInterop` | 将本模组配置注册到 RitsuLib 的设置界面，并同步数据存储 |
+| STS2RitsuLib | N/A | `ConfigRegistrar` 动态注册设置页并同步数据存储 |
 
 ### 包装器类
 
