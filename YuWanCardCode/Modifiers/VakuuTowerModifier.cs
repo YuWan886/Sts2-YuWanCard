@@ -1023,8 +1023,7 @@ public class VakuuTowerModifier : YuWanModifierModel
         var dynamicVars = card.DynamicVars;
         if (dynamicVars == null) return 0;
 
-        var selfTargetTypes = new[] { TargetType.Self, TargetType.AllAllies, TargetType.AnyAlly, TargetType.AnyPlayer, CustomTargetType.AnyFriendly, CustomTargetType.AnyPigMinion };
-        bool canTargetSelf = selfTargetTypes.Contains(card.TargetType);
+        bool canTargetSelf = card.GetSelectableTargets().Contains(player.Creature);
 
         if (!canTargetSelf) return 0;
 

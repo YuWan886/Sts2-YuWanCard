@@ -73,7 +73,7 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
                && CombatManager.Instance.IsInProgress
                && !CombatManager.Instance.IsEnding
                && !CombatManager.Instance.PlayerActionsDisabled
-               && YUWANCARD_RemainingTransforms > 0;
+               && (!LocalContext.IsMe(Owner) || YUWANCARD_RemainingTransforms > 0);
     }
 
     public async Task OnRightClick(YuWanRightClickExecutionContext context)
@@ -88,7 +88,13 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 
     private async Task ExecuteTransform(PlayerChoiceContext choiceContext)
     {
-        if (Owner == null || YUWANCARD_RemainingTransforms <= 0)
+        if (Owner == null)
+        {
+            return;
+        }
+
+        EnsureReplayCounterInitialized();
+        if (LocalContext.IsMe(Owner) && YUWANCARD_RemainingTransforms <= 0)
         {
             return;
         }
@@ -129,6 +135,19 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
         await PlayerCmd.GainEnergy(convertedEnergy, Owner);
         await CardPileCmd.RemoveFromCombat(resolvedCard);
         SetRemainingTransforms(YUWANCARD_RemainingTransforms - 1);
+    }
+
+    private void EnsureReplayCounterInitialized()
+    {
+        // The local owner gates dispatch with the authoritative counter. Remote replays
+        // only need a stable combat-scoped starting value so they do not silently skip.
+        if (Owner != null
+            && !LocalContext.IsMe(Owner)
+            && CombatManager.Instance.IsInProgress
+            && YUWANCARD_RemainingTransforms <= 0)
+        {
+            SetRemainingTransforms(MaxTransformsPerCombat);
+        }
     }
 
     private List<CardModel> GetConvertibleHandCards()

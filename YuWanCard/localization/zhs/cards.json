@@ -25,7 +25,7 @@
   "YUWANCARD-MELANCHOLY_RABBIT.title": "忧郁是一种感觉",
   "YUWANCARD-MELANCHOLY_RABBIT.description": "获得等同于当前生命值的[gold]格挡[/gold]。",
   "YUWANCARD-VICTORY_BREEDS_ARROGANCE.title": "胜兵必骄",
-  "YUWANCARD-VICTORY_BREEDS_ARROGANCE.description": "如果目标的攻击伤害高于你当前的生命值，则将目标的意图改为防御{Block:diff()}3回合。",
+  "YUWANCARD-VICTORY_BREEDS_ARROGANCE.description": "如果目标的攻击伤害高于你当前的生命值，则将目标的意图改为防御{Block:diff()}，并持续3回合。",
   "YUWANCARD-PRIDE_COMES_BEFORE_FALL.title": "骄兵必败",
   "YUWANCARD-PRIDE_COMES_BEFORE_FALL.description": "如果你在本回合内获得胜利，则额外掉落一件随机遗物。",
   "YUWANCARD-DEFEAT_BRINGS_SORROW.title": "败兵必哀",
