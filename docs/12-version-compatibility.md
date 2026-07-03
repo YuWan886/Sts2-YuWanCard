@@ -75,16 +75,13 @@ Android 平台存在本地化前缀丢失的问题，项目通过 `LocalizationP
 
 | 依赖 | 说明 |
 |------|------|
-| BaseLib | 配置系统兼容 |
 | RitsuLib | 配置系统兼容 |
 
-项目通过 `ModInteropProcessor` 实现与可选依赖的互操作，无需编译时引用：
+配置页面通过运行时反射注册到 `STS2RitsuLib`，无需编译时引用：
 
 ```csharp
-[ModInterop("BaseLib")]
-public static class BaseLibConfigInterop
+internal static class ConfigRegistrar
 {
-    [InteropTarget("BaseLib.Config.ModConfigRegistry", "Register")]
-    public static void Register(string modId, object config) { }
+    public static void TryDeferredRegister() { }
 }
 ```

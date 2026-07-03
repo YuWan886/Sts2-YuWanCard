@@ -10,10 +10,8 @@ using YuWanCard.Config;
 namespace YuWanCard;
 
 /// <summary>
-/// Registers YuWanCard settings with either BaseLib or STS2-RitsuLib via runtime
-/// reflection-emitted adapter/provider types, avoiding compile-time dependencies on
-/// either library. BaseLib is tried first, then RitsuLib. Supports boolean toggles
-/// and double sliders.
+/// Registers YuWanCard settings with STS2-RitsuLib via runtime reflection-emitted
+/// provider types. Supports boolean toggles and double sliders.
 /// </summary>
 internal static class ConfigRegistrar
 {
@@ -22,11 +20,7 @@ internal static class ConfigRegistrar
     private const string ContentPageId = "game_content";
     private const string ColorlessCardsPageId = "content_colorless_cards";
 
-    private static bool s_registered;
     private static bool s_ritsuRegistered;
-
-    private static Type? s_dynamicAdapterType;
-    private static object? s_dynamicAdapterInstance;
     private static Type[]? s_dynamicRitsuProviderTypes;
 
     private sealed record ConfigPageDefinition(
@@ -51,7 +45,6 @@ internal static class ConfigRegistrar
 
     private sealed record ToggleSettingDefinition(
         string PropertyName,
-        string BaseLibSection,
         string RitsuPageId,
         string RitsuSectionId,
         string RitsuId,
@@ -64,7 +57,6 @@ internal static class ConfigRegistrar
 
     private sealed record SliderSettingDefinition(
         string PropertyName,
-        string BaseLibSection,
         string RitsuPageId,
         string RitsuSectionId,
         string RitsuId,
@@ -126,55 +118,58 @@ internal static class ConfigRegistrar
             "YUWANCARD-RITSU_COLORLESS_SECTION.title", "YUWANCARD-RITSU_COLORLESS_SECTION.desc"),
     ];
 
-    // Boolean toggle settings. BaseLib and RitsuLib use independent grouping metadata.
+    // Boolean toggle settings registered into RitsuLib pages and sections.
     private static readonly ToggleSettingDefinition[] ToggleProps =
     [
-        new("EnableDeathEffect", "显示设置", RootPageId, "display", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效", 0,
+        new("EnableDeathEffect", RootPageId, "display", "enable_death_effect", "config_enable_death_effect", "死亡特效", "击败敌人时显示死亡特效", 0,
             "YUWANCARD-ENABLE_DEATH_EFFECT.title", "YUWANCARD-ENABLE_DEATH_EFFECT.hover.desc"),
-        new("EnableCustomCursor", "显示设置", RootPageId, "display", "enable_custom_cursor", "config_enable_custom_cursor", "自定义鼠标指针", "用猪猪主题指针替换游戏默认鼠标指针", 1,
+        new("EnableCustomCursor", RootPageId, "display", "enable_custom_cursor", "config_enable_custom_cursor", "自定义鼠标指针", "用猪猪主题指针替换游戏默认鼠标指针", 1,
             "YUWANCARD-ENABLE_CUSTOM_CURSOR.title", "YUWANCARD-ENABLE_CUSTOM_CURSOR.hover.desc"),
-        new("EnablePigScaleWithHp", "显示设置", RootPageId, "display", "enable_pig_scale_with_hp", "config_enable_pig_scale_with_hp", "猪体型随血量变化", "关闭后猪角色在战斗中保持固定体型", 3,
+        new("EnablePigScaleWithHp", RootPageId, "display", "enable_pig_scale_with_hp", "config_enable_pig_scale_with_hp", "猪体型随血量变化", "关闭后猪角色在战斗中保持固定体型", 3,
             "YUWANCARD-ENABLE_PIG_SCALE_WITH_HP.title", "YUWANCARD-ENABLE_PIG_SCALE_WITH_HP.hover.desc"),
-        new("EnableAutoUpdateCheck", "更新设置", RootPageId, "updates", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新", 0,
+        new("EnableAutoUpdateCheck", RootPageId, "updates", "enable_auto_update", "config_enable_auto_update_check", "自动检查更新", "启动时自动检查模组更新", 0,
             "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.title", "YUWANCARD-ENABLE_AUTO_UPDATE_CHECK.hover.desc"),
-        new("EnableSevenCursesRing", "游戏设置", RootPageId, "gameplay", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒", 0,
+        new("EnableSevenCursesRing", RootPageId, "gameplay", "enable_seven_curses_ring", "config_enable_seven_curses_ring", "七咒之戒", "在Neow处可选择七咒之戒", 0,
             "YUWANCARD-ENABLE_SEVEN_CURSES_RING.title", "YUWANCARD-ENABLE_SEVEN_CURSES_RING.hover.desc"),
-        new("EnableMaliceSelection", "游戏设置", RootPageId, "gameplay", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 1,
+        new("EnableMaliceSelection", RootPageId, "gameplay", "enable_malice_selection", "config_enable_malice_selection", "恶意难度选择", "在角色选择界面显示恶意难度选择面板", 1,
             "YUWANCARD-ENABLE_MALICE_SELECTION.title", "YUWANCARD-ENABLE_MALICE_SELECTION.hover.desc"),
-        new("EnablePigRewardAllCardPools", "游戏设置", RootPageId, "gameplay", "enable_pig_reward_all_card_pools", "config_enable_pig_reward_all_card_pools", "猪奖励出现全部卡池", "启用后，猪角色的遭遇卡牌奖励会固定保留 1 张猪卡，其余位置改为随机其他卡池的卡", 2,
+        new("EnablePigRewardAllCardPools", RootPageId, "gameplay", "enable_pig_reward_all_card_pools", "config_enable_pig_reward_all_card_pools", "猪奖励出现全部卡池", "启用后，猪角色的遭遇卡牌奖励会固定保留 1 张猪卡，其余位置改为随机其他卡池的卡", 2,
             "YUWANCARD-ENABLE_PIG_REWARD_ALL_CARD_POOLS.title", "YUWANCARD-ENABLE_PIG_REWARD_ALL_CARD_POOLS.hover.desc"),
-        new("EnableYuWanEnemyEncounters", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_yuwan_enemy_encounters", "config_enable_yuwan_enemy_encounters", "启用本模组敌人", "控制 YuWanCard 的敌人遭遇是否会出现在对局中", 0,
+        new("EnableYuWanEnemyEncounters", ContentPageId, "enemy_encounters", "enable_yuwan_enemy_encounters", "config_enable_yuwan_enemy_encounters", "启用本模组敌人", "控制 YuWanCard 的敌人遭遇是否会出现在对局中", 0,
             "YUWANCARD-ENABLE_YUWAN_ENEMY_ENCOUNTERS.title", "YUWANCARD-ENABLE_YUWAN_ENEMY_ENCOUNTERS.hover.desc"),
-        new("EnableIgnisBossEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_ignis_boss_encounter", "config_enable_ignis_boss_encounter", "焰魔", "允许焰魔Boss遭遇出现在对局中", 1,
+        new("EnableIgnisBossEncounter", ContentPageId, "enemy_encounters", "enable_ignis_boss_encounter", "config_enable_ignis_boss_encounter", "焰魔", "允许焰魔Boss遭遇出现在对局中", 1,
             "YUWANCARD-ENABLE_IGNIS_BOSS_ENCOUNTER.title", "YUWANCARD-ENABLE_IGNIS_BOSS_ENCOUNTER.hover.desc"),
-        new("EnableKillerEliteEncounter", "游戏内容设置", ContentPageId, "enemy_encounters", "enable_killer_elite_encounter", "config_enable_killer_elite_encounter", "杀手", "允许杀手精英遭遇出现在对局中", 2,
+        new("EnableKillerEliteEncounter", ContentPageId, "enemy_encounters", "enable_killer_elite_encounter", "config_enable_killer_elite_encounter", "杀手", "允许杀手精英遭遇出现在对局中", 2,
             "YUWANCARD-ENABLE_KILLER_ELITE_ENCOUNTER.title", "YUWANCARD-ENABLE_KILLER_ELITE_ENCOUNTER.hover.desc"),
-        new("EnableYuWanEvents", "游戏内容设置", ContentPageId, "events", "enable_yuwan_events", "config_enable_yuwan_events", "启用本模组事件", "控制 YuWanCard 的事件是否会出现在对局中", 0,
+        new("EnableYuWanEvents", ContentPageId, "events", "enable_yuwan_events", "config_enable_yuwan_events", "启用本模组事件", "控制 YuWanCard 的事件是否会出现在对局中", 0,
             "YUWANCARD-ENABLE_YUWAN_EVENTS.title", "YUWANCARD-ENABLE_YUWAN_EVENTS.hover.desc"),
-        new("EnablePigPigAncient", "游戏内容设置", ContentPageId, "ancients", "enable_pig_pig_ancient", "config_enable_pig_pig_ancient", "猪猪先古", "允许猪猪先古在巢穴开局中出现", 0,
+        new("EnablePigPigAncient", ContentPageId, "ancients", "enable_pig_pig_ancient", "config_enable_pig_pig_ancient", "猪猪先古", "允许猪猪先古在巢穴开局中出现", 0,
             "YUWANCARD-ENABLE_PIG_PIG_ANCIENT.title", "YUWANCARD-ENABLE_PIG_PIG_ANCIENT.hover.desc"),
-        new("EnableBlacksmithEvent", "游戏内容设置", ContentPageId, "events", "enable_blacksmith_event", "config_enable_blacksmith_event", "铁匠铺", "允许铁匠铺事件出现在对局中", 1,
+        new("EnableBlacksmithEvent", ContentPageId, "events", "enable_blacksmith_event", "config_enable_blacksmith_event", "铁匠铺", "允许铁匠铺事件出现在对局中", 1,
             "YUWANCARD-ENABLE_BLACKSMITH_EVENT.title", "YUWANCARD-ENABLE_BLACKSMITH_EVENT.hover.desc"),
-        new("EnableHelloHumanEvent", "游戏内容设置", ContentPageId, "events", "enable_hello_human_event", "config_enable_hello_human_event", "人，你好。", "允许“人，你好。”事件出现在对局中", 2,
+        new("EnableHelloHumanEvent", ContentPageId, "events", "enable_hello_human_event", "config_enable_hello_human_event", "人，你好。", "允许“人，你好。”事件出现在对局中", 2,
             "YUWANCARD-ENABLE_HELLO_HUMAN_EVENT.title", "YUWANCARD-ENABLE_HELLO_HUMAN_EVENT.hover.desc"),
-        new("EnableHorizonEvent", "游戏内容设置", ContentPageId, "events", "enable_horizon_event", "config_enable_horizon_event", "天涯海角", "允许天涯海角事件出现在对局中", 3,
+        new("EnableHorizonEvent", ContentPageId, "events", "enable_horizon_event", "config_enable_horizon_event", "天涯海角", "允许天涯海角事件出现在对局中", 3,
             "YUWANCARD-ENABLE_HORIZON_EVENT.title", "YUWANCARD-ENABLE_HORIZON_EVENT.hover.desc"),
-        new("EnableSkullGoldRushEvent", "游戏内容设置", ContentPageId, "events", "enable_skull_gold_rush_event", "config_enable_skull_gold_rush_event", "骷髅打金服", "允许骷髅打金服事件出现在对局中", 4,
+        new("EnableSkullGoldRushEvent", ContentPageId, "events", "enable_skull_gold_rush_event", "config_enable_skull_gold_rush_event", "骷髅打金服", "允许骷髅打金服事件出现在对局中", 4,
             "YUWANCARD-ENABLE_SKULL_GOLD_RUSH_EVENT.title", "YUWANCARD-ENABLE_SKULL_GOLD_RUSH_EVENT.hover.desc"),
-        new("EnableSunkenStatueQuestEvent", "游戏内容设置", ContentPageId, "events", "enable_sunken_statue_quest_event", "config_enable_sunken_statue_quest_event", "沉没的石像", "允许沉没的石像事件出现在对局中", 5,
+        new("EnableSunkenStatueQuestEvent", ContentPageId, "events", "enable_sunken_statue_quest_event", "config_enable_sunken_statue_quest_event", "沉没的石像", "允许沉没的石像事件出现在对局中", 5,
             "YUWANCARD-ENABLE_SUNKEN_STATUE_QUEST_EVENT.title", "YUWANCARD-ENABLE_SUNKEN_STATUE_QUEST_EVENT.hover.desc"),
-        new("EnableZhiZhanZhiShangEvent", "游戏内容设置", ContentPageId, "events", "enable_zhi_zhan_zhi_shang_event", "config_enable_zhi_zhan_zhi_shang_event", "止战之殇", "允许止战之殇事件出现在对局中", 6,
+        new("EnableZhiZhanZhiShangEvent", ContentPageId, "events", "enable_zhi_zhan_zhi_shang_event", "config_enable_zhi_zhan_zhi_shang_event", "止战之殇", "允许止战之殇事件出现在对局中", 6,
             "YUWANCARD-ENABLE_ZHI_ZHAN_ZHI_SHANG_EVENT.title", "YUWANCARD-ENABLE_ZHI_ZHAN_ZHI_SHANG_EVENT.hover.desc"),
     ];
 
     private static readonly SliderSettingDefinition[] SliderProps =
     [
-        new("CursorScale", "显示设置", RootPageId, "display", "cursor_scale", "config_cursor_scale", "鼠标指针缩放",
+        new("CursorScale", RootPageId, "display", "cursor_scale", "config_cursor_scale", "鼠标指针缩放",
             "自定义鼠标指针的大小，1.0x 约为原版的 64px", 0.1, 10.0, 0.1, "{0}x", 2,
             "YUWANCARD-CURSOR_SCALE.title", "YUWANCARD-CURSOR_SCALE.hover.desc"),
-        new("PigBaseScale", "显示设置", RootPageId, "display", "pig_base_scale", "config_pig_base_scale", "猪角色体型大小",
+        new("PigBaseScale", RootPageId, "display", "pig_base_scale", "config_pig_base_scale", "猪角色体型大小",
             "猪角色在战斗中的基础体型倍率；开启血量缩放时会以这个倍率为基准变化", 0.1, 3.0, 0.1, "{0}x", 4,
             "YUWANCARD-PIG_BASE_SCALE.title", "YUWANCARD-PIG_BASE_SCALE.hover.desc"),
+        new("BugPigDamageCap", RootPageId, "gameplay", "bug_pig_damage_cap", "config_bug_pig_damage_cap", "Bug猪伤害上限",
+            "限制 Bug猪 根据日志 ERROR 数量计算后的最终伤害上限", 7.0, 999.0, 1.0, "{0}", 3,
+            "YUWANCARD-BUG_PIG_DAMAGE_CAP.title", "YUWANCARD-BUG_PIG_DAMAGE_CAP.hover.desc"),
     ];
 
     private static readonly SubpageSettingDefinition[] SubpageProps =
@@ -196,250 +191,15 @@ internal static class ConfigRegistrar
 
     public static void TryDeferredRegister()
     {
-        if (s_registered || MainFile.Config == null) return;
-
-        if (IsBaseLibAvailable() && TryRegisterBaseLibDirect())
-            return;
+        if (s_ritsuRegistered || MainFile.Config == null) return;
 
         if (IsRitsuLibAvailable())
             TryRegisterRitsuLib();
     }
 
-    private static bool IsBaseLibAvailable()
-    {
-        return ResolveTypeAcrossAssemblies("BaseLib.Config.SimpleModConfig") != null;
-    }
-
     private static bool IsRitsuLibAvailable()
     {
         return ResolveTypeAcrossAssemblies("STS2RitsuLib.Settings.ModSettingsPageAttribute") != null;
-    }
-
-    // ── BaseLib registration ──────────────────────────────
-
-    private static bool TryRegisterBaseLibDirect()
-    {
-        try
-        {
-            var adapter = CreateDynamicAdapter();
-            if (adapter == null) return false;
-
-            var registryType = ResolveTypeAcrossAssemblies("BaseLib.Config.ModConfigRegistry");
-            var modConfigType = ResolveTypeAcrossAssemblies("BaseLib.Config.ModConfig");
-            if (registryType == null || modConfigType == null)
-            {
-                MainFile.Logger.Warn("BaseLib ModConfigRegistry or ModConfig type not found");
-                return false;
-            }
-
-            var registerMethod = registryType.GetMethod("Register", [typeof(string), modConfigType]);
-            if (registerMethod == null)
-            {
-                MainFile.Logger.Warn("BaseLib ModConfigRegistry.Register method not found");
-                return false;
-            }
-
-            registerMethod.Invoke(null, [ModId, adapter]);
-
-            var eventInfo = adapter.GetType().GetEvent("ConfigChanged");
-            if (eventInfo != null)
-                eventInfo.AddEventHandler(adapter, new EventHandler(OnBaseLibConfigChanged));
-
-            s_registered = true;
-            MainFile.Logger.Info("Registered config via BaseLib (direct reflection)");
-            return true;
-        }
-        catch (Exception ex)
-        {
-            MainFile.Logger.Warn($"Failed to register config with BaseLib: {ex.Message}");
-            return false;
-        }
-    }
-
-    private static object? CreateDynamicAdapter()
-    {
-        try
-        {
-            if (s_dynamicAdapterType != null && s_dynamicAdapterInstance != null)
-                return s_dynamicAdapterInstance;
-
-            var simpleModConfigType = ResolveTypeAcrossAssemblies("BaseLib.Config.SimpleModConfig");
-            var sectionAttrType = ResolveTypeAcrossAssemblies("BaseLib.Config.ConfigSectionAttribute");
-            var hoverTipAttrType = ResolveTypeAcrossAssemblies("BaseLib.Config.ConfigHoverTipAttribute");
-            var sliderAttrType = ResolveTypeAcrossAssemblies("BaseLib.Config.ConfigSliderAttribute");
-
-            if (simpleModConfigType == null || sectionAttrType == null)
-                return null;
-
-            var sectionCtor = sectionAttrType.GetConstructor([typeof(string)]);
-            var hoverTipCtor = hoverTipAttrType?.GetConstructor(Type.EmptyTypes)
-                ?? hoverTipAttrType?.GetConstructor([typeof(bool)]);
-
-            var asmName = new AssemblyName("YuWanCard.DynamicConfig");
-            var asmBuilder = AssemblyBuilder.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
-            var modBuilder = asmBuilder.DefineDynamicModule("MainModule");
-            var typeBuilder = modBuilder.DefineType(
-                "YuWanCard.Config.YuWanCardConfigAdapter",
-                TypeAttributes.Public | TypeAttributes.Class,
-                simpleModConfigType);
-
-            var sliderCtor = sliderAttrType?.GetConstructor([typeof(double), typeof(double), typeof(double)]);
-            var formatProp = sliderAttrType?.GetProperty("Format");
-
-            // Emit in a unified Order sequence so BaseLib (which groups by section in emit order)
-            // keeps same-section settings contiguous instead of creating duplicate section headers.
-            var toggleByOrder = ToggleProps.Select(t => (t.Order, Emit: (Action)(() =>
-                EmitBaseLibBoolProperty(typeBuilder, sectionCtor, hoverTipCtor, t.PropertyName, t.BaseLibSection))));
-            var sliderByOrder = SliderProps.Select(s => (s.Order, Emit: (Action)(() =>
-            {
-                if (sliderCtor != null)
-                    EmitBaseLibDoubleProperty(typeBuilder, sectionCtor, hoverTipCtor, sliderCtor, formatProp, s);
-            })));
-
-            foreach (var (_, emit) in toggleByOrder.Concat(sliderByOrder).OrderBy(x => x.Order))
-                emit();
-
-            s_dynamicAdapterType = typeBuilder.CreateType();
-            if (s_dynamicAdapterType == null) return null;
-
-            foreach (var t in ToggleProps)
-                SetAdapterBool(t.PropertyName, GetConfigBool(t.PropertyName));
-            foreach (var s in SliderProps)
-                SetAdapterDouble(s.PropertyName, GetConfigDouble(s.PropertyName));
-
-            s_dynamicAdapterInstance = Activator.CreateInstance(s_dynamicAdapterType);
-            if (s_dynamicAdapterInstance == null) return null;
-
-            foreach (var t in ToggleProps)
-                SetConfigBool(t.PropertyName, GetAdapterBool(t.PropertyName));
-            foreach (var s in SliderProps)
-                SetConfigDouble(s.PropertyName, GetAdapterDouble(s.PropertyName));
-
-            return s_dynamicAdapterInstance;
-        }
-        catch (Exception ex)
-        {
-            MainFile.Logger.Warn($"Failed to create dynamic config adapter: {ex.Message}");
-            return null;
-        }
-    }
-
-    private static void EmitBaseLibBoolProperty(
-        TypeBuilder typeBuilder, ConstructorInfo? sectionCtor, ConstructorInfo? hoverTipCtor,
-        string name, string section)
-    {
-        var field = typeBuilder.DefineField(
-            $"<{name}>k__BackingField", typeof(bool),
-            FieldAttributes.Private | FieldAttributes.Static);
-
-        var prop = typeBuilder.DefineProperty(name, PropertyAttributes.None, typeof(bool), null);
-
-        if (sectionCtor != null)
-            prop.SetCustomAttribute(new CustomAttributeBuilder(sectionCtor, [section]));
-        ApplyHoverTip(prop, hoverTipCtor);
-
-        EmitStaticAutoProperty(typeBuilder, prop, field, typeof(bool),
-            nameof(RitsuConfigRuntimeBridge.ApplyRuntimeBool), name);
-    }
-
-    private static void EmitBaseLibDoubleProperty(
-        TypeBuilder typeBuilder, ConstructorInfo? sectionCtor, ConstructorInfo? hoverTipCtor,
-        ConstructorInfo? sliderCtor, PropertyInfo? formatProp,
-        SliderSettingDefinition s)
-    {
-        var field = typeBuilder.DefineField(
-            $"<{s.PropertyName}>k__BackingField", typeof(double),
-            FieldAttributes.Private | FieldAttributes.Static);
-
-        var prop = typeBuilder.DefineProperty(s.PropertyName, PropertyAttributes.None, typeof(double), null);
-
-        if (sectionCtor != null)
-            prop.SetCustomAttribute(new CustomAttributeBuilder(sectionCtor, [s.BaseLibSection]));
-        ApplyHoverTip(prop, hoverTipCtor);
-
-        if (sliderCtor != null)
-        {
-            if (formatProp != null)
-                prop.SetCustomAttribute(new CustomAttributeBuilder(
-                    sliderCtor, [s.Min, s.Max, s.Step], [formatProp], [s.Format]));
-            else
-                prop.SetCustomAttribute(new CustomAttributeBuilder(sliderCtor, [s.Min, s.Max, s.Step]));
-        }
-
-        EmitStaticAutoProperty(typeBuilder, prop, field, typeof(double),
-            nameof(RitsuConfigRuntimeBridge.ApplyRuntimeDouble), s.PropertyName);
-    }
-
-    private static void ApplyHoverTip(PropertyBuilder prop, ConstructorInfo? hoverTipCtor)
-    {
-        if (hoverTipCtor == null) return;
-        var args = hoverTipCtor.GetParameters().Length == 0 ? Array.Empty<object>() : [true];
-        prop.SetCustomAttribute(new CustomAttributeBuilder(hoverTipCtor, args));
-    }
-
-    /// <summary>Emits a static get/set property backed by <paramref name="field"/>; the setter also
-    /// calls the named RitsuConfigRuntimeBridge apply method to mirror the value into YuWanCardConfig.</summary>
-    private static void EmitStaticAutoProperty(
-        TypeBuilder typeBuilder, PropertyBuilder prop, FieldBuilder field, Type valueType,
-        string bridgeMethodName, string propName)
-    {
-        var getter = typeBuilder.DefineMethod(
-            $"get_{propName}",
-            MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
-            valueType, Type.EmptyTypes);
-        var getIL = getter.GetILGenerator();
-        getIL.Emit(OpCodes.Ldsfld, field);
-        getIL.Emit(OpCodes.Ret);
-        prop.SetGetMethod(getter);
-
-        var setter = typeBuilder.DefineMethod(
-            $"set_{propName}",
-            MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.SpecialName,
-            null, [valueType]);
-        var setIL = setter.GetILGenerator();
-        setIL.Emit(OpCodes.Ldarg_0);
-        setIL.Emit(OpCodes.Stsfld, field);
-        setIL.Emit(OpCodes.Ldstr, propName);
-        setIL.Emit(OpCodes.Ldarg_0);
-        setIL.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
-            bridgeMethodName, BindingFlags.Public | BindingFlags.Static)!);
-        setIL.Emit(OpCodes.Ret);
-        prop.SetSetMethod(setter);
-    }
-
-    private static void OnBaseLibConfigChanged(object? sender, EventArgs e)
-    {
-        if (s_dynamicAdapterType == null) return;
-        foreach (var t in ToggleProps)
-            SetConfigBool(t.PropertyName, GetAdapterBool(t.PropertyName));
-        foreach (var s in SliderProps)
-            SetConfigDouble(s.PropertyName, GetAdapterDouble(s.PropertyName));
-
-        Patches.CursorReplacePatch.RefreshCursor();
-    }
-
-    private static void SetAdapterBool(string name, bool value)
-    {
-        try { s_dynamicAdapterType?.GetProperty(name)?.SetValue(null, value); }
-        catch { }
-    }
-
-    private static bool GetAdapterBool(string name)
-    {
-        try { return (bool)s_dynamicAdapterType!.GetProperty(name)!.GetValue(null)!; }
-        catch { return false; }
-    }
-
-    private static void SetAdapterDouble(string name, double value)
-    {
-        try { s_dynamicAdapterType?.GetProperty(name)?.SetValue(null, value); }
-        catch { }
-    }
-
-    private static double GetAdapterDouble(string name)
-    {
-        try { return (double)s_dynamicAdapterType!.GetProperty(name)!.GetValue(null)!; }
-        catch { return 0d; }
     }
 
     // ── RitsuLib registration ─────────────────────────────

@@ -251,13 +251,14 @@ WithTags(YuWanTags.FoodPig, myTag);
 ```csharp
 using YuWanCard.Core.Interop;
 
-[ModInterop("BaseLib")]
-public static class BaseLibConfigInterop
+[ModInterop("STS2-RitsuLib")]
+public static class RitsuInteropExample
 {
-    [InteropTarget("BaseLib.Config.ModConfigRegistry", "Register")]
-    public static void Register(string modId, object config)
+    [InteropTarget("STS2RitsuLib.RitsuLibFramework", "GetDataStore")]
+    public static object? GetDataStore(string modId)
     {
         // Fallback：目标模组未加载时不执行任何操作
+        return null;
     }
 }
 ```
