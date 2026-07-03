@@ -351,6 +351,8 @@
   "YUWANCARD-OLD_PIG_CALENDAR.description": "Steal all [gold]Buffs[/gold] from a teammate. You and that teammate deal double damage this turn. Other teammates cannot deal damage this turn.",
   "YUWANCARD-KOU_KOU_SPACE.title": "QQ Space",
   "YUWANCARD-KOU_KOU_SPACE.description": "Apply 1 [gold]Weak[/gold] to {IfUpgraded:show:all living teammates|a teammate}. Gain {IfUpgraded:show:random potions equal to the number of living teammates|1 random potion}.",
+  "YUWANCARD-REVOLVER_PIG.title": "Revolver Pig",
+  "YUWANCARD-REVOLVER_PIG.description": "Use on yourself or a teammate. It has a 1 in 6 chance to fire; if it does, that player dies and this card is removed from your deck. Otherwise, the target gains {Gold:diff()} Gold and this card returns to your hand.",
   "========== Balatro ==========": "========== Balatro ==========",
   "YUWANCARD-MAGICIAN.title": "Magician",
   "YUWANCARD-MAGICIAN.description": "Choose a [gold]transformable[/gold] card in your hand and transform it into a random card with the same cost.",

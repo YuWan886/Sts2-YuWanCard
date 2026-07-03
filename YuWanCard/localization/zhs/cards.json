@@ -351,6 +351,8 @@
   "YUWANCARD-OLD_PIG_CALENDAR.description": "窃取一名队友所有[gold]增益[/gold]效果。你与其本回合造成的伤害翻倍。本回合除你们外的队友无法造成伤害。",
   "YUWANCARD-KOU_KOU_SPACE.title": "扣扣空间",
   "YUWANCARD-KOU_KOU_SPACE.description": "使{IfUpgraded:show:所有存活|一名}队友获得1层[gold]虚弱[/gold]。获得{IfUpgraded:show:等同于存活队友数量的|1瓶}随机药水。",
+  "YUWANCARD-REVOLVER_PIG.title": "左轮猪",
+  "YUWANCARD-REVOLVER_PIG.description": "对自己或队友使用。有1/6的概率命中；若命中，该玩家直接死亡，并将此牌从你的牌组中移除。否则，目标获得{Gold:diff()}金币，且此牌返回你的手牌。",
   "========== Balatro ==========": "========== Balatro ==========",
   "YUWANCARD-MAGICIAN.title": "魔术师",
   "YUWANCARD-MAGICIAN.description": "选择手牌中的1张可[gold]变化[/gold]卡牌，将其变化为1张随机的同费用牌。",
