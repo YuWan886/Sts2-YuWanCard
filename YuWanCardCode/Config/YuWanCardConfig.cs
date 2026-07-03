@@ -20,6 +20,8 @@ public class YuWanCardConfig
 
     public static bool EnablePigRewardAllCardPools { get; set; } = false;
 
+    public static double BugPigDamageCap { get; set; } = 99.0;
+
     public static bool EnableYuWanEnemyEncounters { get; set; } = true;
 
     public static bool EnableIgnisBossEncounter { get; set; } = true;

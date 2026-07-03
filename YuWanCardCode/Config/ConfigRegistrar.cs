@@ -167,6 +167,9 @@ internal static class ConfigRegistrar
         new("PigBaseScale", RootPageId, "display", "pig_base_scale", "config_pig_base_scale", "猪角色体型大小",
             "猪角色在战斗中的基础体型倍率；开启血量缩放时会以这个倍率为基准变化", 0.1, 3.0, 0.1, "{0}x", 4,
             "YUWANCARD-PIG_BASE_SCALE.title", "YUWANCARD-PIG_BASE_SCALE.hover.desc"),
+        new("BugPigDamageCap", RootPageId, "gameplay", "bug_pig_damage_cap", "config_bug_pig_damage_cap", "Bug猪伤害上限",
+            "限制 Bug猪 根据日志 ERROR 数量计算后的最终伤害上限", 7.0, 999.0, 1.0, "{0}", 3,
+            "YUWANCARD-BUG_PIG_DAMAGE_CAP.title", "YUWANCARD-BUG_PIG_DAMAGE_CAP.hover.desc"),
     ];
 
     private static readonly SubpageSettingDefinition[] SubpageProps =

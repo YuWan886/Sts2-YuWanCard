@@ -3,9 +3,11 @@ using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.TestSupport;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Characters;
+using YuWanCard.Config;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
@@ -28,7 +30,7 @@ public class BugPig : YuWanCardModel
         // 最终伤害 = BaseDamage + 每个 ERROR 的加成 × 日志中的 ERROR 数量。
         WithCalculatedDamage(
             ValueProp.Move,
-            multiplierCalc: static (_, _) => CountTotalErrorsInLog(),
+            multiplierCalc: static (card, _) => GetCappedErrorMultiplier(card),
             baseVal: BaseDamage,
             extraVal: ErrorDamageBonus,
             extraUpgrade: ErrorDamageBonusUpgraded - ErrorDamageBonus);
@@ -94,5 +96,27 @@ public class BugPig : YuWanCardModel
             MainFile.Logger.Error($"BugPig: Error reading log file: {ex.Message}");
             return 0;
         }
+    }
+
+    private static decimal GetCappedErrorMultiplier(CardModel card)
+    {
+        decimal errorCount = CountTotalErrorsInLog();
+        decimal calculationBase = card.DynamicVars["CalculationBase"]?.BaseValue ?? BaseDamage;
+        decimal extraDamage = card.DynamicVars["ExtraDamage"]?.BaseValue ?? ErrorDamageBonus;
+        decimal damageCap = GetConfiguredDamageCap();
+
+        if (extraDamage <= 0m)
+        {
+            return 0m;
+        }
+
+        decimal maxErrorMultiplier = Math.Max(0m, (damageCap - calculationBase) / extraDamage);
+        return Math.Min(errorCount, maxErrorMultiplier);
+    }
+
+    private static decimal GetConfiguredDamageCap()
+    {
+        double configuredCap = YuWanCardConfig.BugPigDamageCap;
+        return Math.Clamp((decimal)configuredCap, BaseDamage, 999m);
     }
 }
