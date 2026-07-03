@@ -23,7 +23,7 @@ public class PigDemonForm : YuWanRelicModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<StrengthPower>(2m)];
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => HoverTipFactory.FromPowerWithPowerHoverTips<StrengthPower>();
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>()];
 
     public PigDemonForm() : base(true)
     {

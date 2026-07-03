@@ -17,7 +17,11 @@ public class PigGoldenCarrot : YuWanRelicModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<PlatingPower>(10m)];
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => HoverTipFactory.FromPowerWithPowerHoverTips<PlatingPower>();
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        HoverTipFactory.FromPower<PlatingPower>(),
+        HoverTipFactory.Static(StaticHoverTip.Block)
+    ];
 
     public PigGoldenCarrot() : base(true)
     {
