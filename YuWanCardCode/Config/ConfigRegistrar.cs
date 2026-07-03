@@ -1,11 +1,13 @@
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text.Json;
 using Godot;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using YuWanCard.Config;
+using YuWanCard.Core;
 
 namespace YuWanCard;
 
@@ -20,6 +22,7 @@ internal static class ConfigRegistrar
     private const string ContentPageId = "game_content";
     private const string ColorlessCardsPageId = "content_colorless_cards";
 
+    private static bool s_persistedConfigPreloaded;
     private static bool s_ritsuRegistered;
     private static Type[]? s_dynamicRitsuProviderTypes;
 
@@ -189,12 +192,34 @@ internal static class ConfigRegistrar
             "YUWANCARD-RITSU_COLORLESS_GALLERY.title", "YUWANCARD-RITSU_COLORLESS_GALLERY.desc"),
     ];
 
+    public static void PreloadPersistedConfig()
+    {
+        if (s_persistedConfigPreloaded || MainFile.Config == null)
+            return;
+
+        s_persistedConfigPreloaded = true;
+
+        foreach (var t in ToggleProps)
+            TryLoadPersistedValue<bool>(t.DataKey, t.PropertyName, TryReadBoolValue, SetConfigBool);
+
+        foreach (var s in SliderProps)
+            TryLoadPersistedValue<double>(s.DataKey, s.PropertyName, TryReadDoubleValue, SetConfigDouble);
+    }
+
     public static void TryDeferredRegister()
     {
-        if (s_ritsuRegistered || MainFile.Config == null) return;
+        if (MainFile.Config == null)
+            return;
 
-        if (IsRitsuLibAvailable())
+        if (!IsRitsuLibAvailable())
+            return;
+
+        if (!s_ritsuRegistered)
             TryRegisterRitsuLib();
+
+        // RitsuLib's persisted values can become available after the initial registration pass.
+        // Re-sync on later startup hooks so static config consumers observe the saved values.
+        SyncRitsuLibToConfig();
     }
 
     private static bool IsRitsuLibAvailable()
@@ -639,6 +664,63 @@ internal static class ConfigRegistrar
             {
                 // Key may not exist yet (first run) or use a legacy format.
             }
+        }
+    }
+
+    private delegate bool TryReadPersistedValue<T>(JsonElement valueElement, out T value);
+
+    private static void TryLoadPersistedValue<T>(
+        string dataKey,
+        string propertyName,
+        TryReadPersistedValue<T> tryReadValue,
+        Action<string, T> apply)
+    {
+        string path = YuWanModDataPathHelper.ResolveAccountFilePath(dataKey, propertyName);
+        if (!File.Exists(path))
+            return;
+
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllText(path));
+            if (!document.RootElement.TryGetProperty("Value", out JsonElement valueElement))
+                return;
+
+            if (tryReadValue(valueElement, out T value))
+                apply(propertyName, value);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"Failed to preload persisted config '{propertyName}' from '{path}': {ex.Message}");
+        }
+    }
+
+    private static bool TryReadBoolValue(JsonElement valueElement, out bool value)
+    {
+        switch (valueElement.ValueKind)
+        {
+            case JsonValueKind.True:
+            case JsonValueKind.False:
+                value = valueElement.GetBoolean();
+                return true;
+            case JsonValueKind.String:
+                return bool.TryParse(valueElement.GetString(), out value);
+            default:
+                value = default;
+                return false;
+        }
+    }
+
+    private static bool TryReadDoubleValue(JsonElement valueElement, out double value)
+    {
+        switch (valueElement.ValueKind)
+        {
+            case JsonValueKind.Number:
+                return valueElement.TryGetDouble(out value);
+            case JsonValueKind.String:
+                return double.TryParse(valueElement.GetString(), out value);
+            default:
+                value = default;
+                return false;
         }
     }
 
