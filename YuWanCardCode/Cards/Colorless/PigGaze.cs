@@ -11,11 +11,13 @@ namespace YuWanCard.Cards;
 [Pool(typeof(ColorlessCardPool))]
 public class PigGaze : YuWanCardModel
 {
+    public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
+
     public PigGaze() : base(
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.Self)
+        target: TargetType.AnyAlly)
     {
         WithVars(new EnergyVar(2));
         WithPower<NoDrawPower>(1);
@@ -24,15 +26,21 @@ public class PigGaze : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Energy.UpgradeValueBy(1);
+        EnergyCost.UpgradeBy(-1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
+        var targetPlayer = cardPlay.Target?.Player;
+        if (targetPlayer == null || targetPlayer == Owner)
+        {
+            return;
+        }
+
+        await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, targetPlayer);
         await PowerCmd.Apply<NoDrawPower>(
             new ThrowingPlayerChoiceContext(),
-            Owner.Creature,
+            targetPlayer.Creature,
             DynamicVars["NoDrawPower"].BaseValue,
             Owner.Creature,
             this);
