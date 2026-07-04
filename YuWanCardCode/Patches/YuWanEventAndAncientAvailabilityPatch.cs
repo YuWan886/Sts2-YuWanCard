@@ -25,6 +25,11 @@ internal static class YuWanAncientAvailabilityHelpers
     public static void SanitizeActAncient(ActModel act, UnlockState? unlockState = null)
     {
         RoomSet rooms = RoomsField(act);
+        if (!rooms.HasAncient)
+        {
+            return;
+        }
+        
         AncientEventModel currentAncient = rooms.Ancient;
         if (IsAncientEnabled(currentAncient, act))
         {
