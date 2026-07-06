@@ -2,13 +2,13 @@ using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YuWanCard.Characters;
 using YuWanCard.Relics;
 
 namespace YuWanCard.Cards;
 
-[Pool(typeof(PigCardPool))]
+[Pool(typeof(ColorlessCardPool))]
 public class PigStayUpLate : YuWanCardModel
 {
     public PigStayUpLate() : base(
@@ -22,7 +22,7 @@ public class PigStayUpLate : YuWanCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3);
+        DynamicVars.Damage.UpgradeValueBy(4);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

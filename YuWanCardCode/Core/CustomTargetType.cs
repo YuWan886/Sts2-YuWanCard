@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Monsters;
 using YuWanCard.Powers;
 
@@ -9,9 +10,13 @@ public static class CustomTargetType
 {
     private static readonly DynamicEnumValueMinter<TargetType> TargetTypeMinter = new();
 
+    public static TargetType AllPlayers { get; } = Mint("all_players");
+
     public static TargetType Everyone { get; } = Mint("everyone");
 
     public static TargetType Anyone { get; } = Mint("anyone");
+
+    public static TargetType AnyOtherPlayer { get; } = Mint("any_other_player");
 
     public static TargetType AnyFriendly { get; } = Mint("any_friendly");
 
@@ -23,8 +28,10 @@ public static class CustomTargetType
 
     public static bool IsYuWanCustom(TargetType type)
     {
-        return type == Everyone
+        return type == AllPlayers
+               || type == Everyone
                || type == Anyone
+               || type == AnyOtherPlayer
                || type == AnyFriendly
                || type == AnyPigMinion
                || type == AnyYouArePigTarget
@@ -35,6 +42,7 @@ public static class CustomTargetType
     public static bool IsCustomSingleTargetType(TargetType type)
     {
         return type == Anyone
+               || type == AnyOtherPlayer
                || type == AnyFriendly
                || type == AnyPigMinion
                || type == AnyYouArePigTarget
@@ -44,7 +52,8 @@ public static class CustomTargetType
 
     public static bool IsCustomMultiTargetType(TargetType type)
     {
-        return type == Everyone
+        return type == AllPlayers
+               || type == Everyone
                || CustomTargetTypeRegistry.IsCustomMultiTargetType(type);
     }
 
@@ -61,6 +70,13 @@ public static class CustomTargetType
         }
 
         return target.IsPlayer && !target.IsPet;
+    }
+
+    public static bool IsAnyOtherPlayerTarget(CardModel? card, Creature? target)
+    {
+        return card?.Owner != null
+               && target is { IsAlive: true, IsPlayer: true, IsPet: false, Player: not null }
+               && target.Player != card.Owner;
     }
 
     public static bool IsAnyPigMinionTarget(Creature? target)

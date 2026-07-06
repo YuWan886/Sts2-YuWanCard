@@ -1,4 +1,6 @@
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -17,7 +19,7 @@ public class PigThink : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AllAllies)
+        target: CustomTargetType.AllPlayers)
     {
         WithVars(new EnergyVar(2));
         WithEnergyTip();
@@ -30,11 +32,9 @@ public class PigThink : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var teammates = CombatState!.GetTeammatesOf(Owner.Creature)
-            .Where(c => c != null && c.IsAlive && c.IsPlayer);
-        foreach (var teammate in teammates)
+        foreach (var player in CombatState!.GetLivingPlayers())
         {
-            await PlayerCmd.GainEnergy(DynamicVars["Energy"].IntValue, teammate.Player!);
+            await PlayerCmd.GainEnergy(DynamicVars["Energy"].IntValue, player);
         }
 
         VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);

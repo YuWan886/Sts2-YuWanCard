@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Random;
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Extensions;
 using YuWanCard.Monsters;
@@ -367,6 +368,9 @@ public class CallCompanionsPower : YuWanPowerModel
             TargetType.AllEnemies => combatState.HittableEnemies.FirstOrDefault(),
             // Self targets the companion creature, not the summoner
             TargetType.Self => _companionCreature ?? player.Creature,
+            var targetType when targetType == CustomTargetType.AnyOtherPlayer => combatState.Allies
+                .Where(c => c != null && c.IsAlive && c.IsPlayer && c != player.Creature)
+                .MinBy(c => (int)c.CurrentHp),
             TargetType.AnyAlly => combatState.Allies
                 .Where(c => c != null && c.IsAlive && c.IsPlayer)
                 .MinBy(c => (int)c.CurrentHp),

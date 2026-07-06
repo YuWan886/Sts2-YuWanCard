@@ -1,4 +1,6 @@
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -11,11 +13,13 @@ namespace YuWanCard.Cards;
 [Pool(typeof(PigCardPool))]
 public class PigComfort : YuWanCardModel
 {
+    public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
+
     public PigComfort() : base(
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.Self)
+        target: CustomTargetType.AllPlayers)
     {
         WithCards(1);
         WithKeywords(CardKeyword.Exhaust);
@@ -33,14 +37,10 @@ public class PigComfort : YuWanCardModel
             return;
         }
 
-        var allies = CombatState.Creatures
-            .Where(c => c.IsAlive && c.Side == Owner.Creature.Side)
-            .ToList();
-
-        foreach (var ally in allies)
+        foreach (var creature in CombatState.GetLivingPlayerCreatures())
         {
             var debuff = DeterministicRandomUtils.PickStableRandom(
-                ally.Powers.Where(p => p.Type == PowerType.Debuff),
+                creature.Powers.Where(p => p.Type == PowerType.Debuff),
                 Owner.RunState.Rng.CombatCardGeneration);
             if (debuff != null)
             {

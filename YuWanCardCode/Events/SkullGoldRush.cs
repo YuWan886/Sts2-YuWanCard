@@ -69,7 +69,14 @@ public sealed class SkullGoldRush : YuWanEventModel
 
         int prizeGold = RollPrizeGold();
         DynamicVars["PrizeGold"].BaseValue = prizeGold;
-        await PlayerCmd.GainGold(prizeGold, owner);
+        if (prizeGold > 0)
+        {
+            await PlayerCmd.GainGold(prizeGold, owner);
+        }
+        else if (prizeGold < 0)
+        {
+            await PlayerCmd.LoseGold(-prizeGold, owner, GoldLossType.Lost);
+        }
 
         bool canContinue = owner.Gold >= DrawCost;
         SetEventState(

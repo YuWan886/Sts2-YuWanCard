@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using YuWanCard.Core;
 
 namespace YuWanCard.Cards;
 
@@ -16,7 +17,7 @@ public class StealCard : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AnyAlly)
+        target: CustomTargetType.AnyOtherPlayer)
     {
         WithKeywords(CardKeyword.Exhaust);
     }

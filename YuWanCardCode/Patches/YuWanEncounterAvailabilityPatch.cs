@@ -9,6 +9,8 @@ internal static class YuWanEncounterAvailabilityHelpers
 {
     private static readonly AccessTools.FieldRef<ActModel, RoomSet> RoomsField =
         AccessTools.FieldRefAccess<ActModel, RoomSet>("_rooms");
+    private static readonly AccessTools.FieldRef<RoomSet, EncounterModel?> BossField =
+        AccessTools.FieldRefAccess<RoomSet, EncounterModel?>("_boss");
 
     public static IEnumerable<EncounterModel> FilterEnabledEncounters(IEnumerable<EncounterModel>? encounters)
     {
@@ -64,7 +66,7 @@ internal static class YuWanEncounterAvailabilityHelpers
 
     private static void SanitizeBosses(ActModel act, RoomSet rooms)
     {
-        List<EncounterModel> enabledBosses = FilterEnabledEncounters(act.AllBossEncounters)
+        List<EncounterModel> enabledBosses = GetEnabledBossPool(act)
             .GroupBy(static encounter => encounter.Id)
             .Select(static group => group.First())
             .ToList();
@@ -73,7 +75,7 @@ internal static class YuWanEncounterAvailabilityHelpers
             return;
         }
 
-        EncounterModel? currentBoss = rooms.Boss;
+        EncounterModel? currentBoss = BossField(rooms);
         EncounterModel? currentSecondBoss = rooms.SecondBoss;
         bool hadSecondBoss = currentSecondBoss != null;
 
@@ -89,6 +91,18 @@ internal static class YuWanEncounterAvailabilityHelpers
         rooms.SecondBoss = hadSecondBoss
             ? orderedBosses.Skip(1).FirstOrDefault(static _ => true)
             : null;
+    }
+
+    private static IEnumerable<EncounterModel> GetEnabledBossPool(ActModel act)
+    {
+        List<EncounterModel> filteredBosses = FilterEnabledEncounters(act.AllBossEncounters).ToList();
+        if (filteredBosses.Count > 0)
+        {
+            return filteredBosses;
+        }
+
+        // If a filtered cache was emptied earlier, rebuild from the raw encounter generator so the act still has a boss.
+        return FilterEnabledEncounters(act.GenerateAllEncounters()).Where(static encounter => encounter.RoomType == RoomType.Boss);
     }
 
     private static void AddIfEnabledDistinct(List<EncounterModel> orderedBosses, EncounterModel? encounter)

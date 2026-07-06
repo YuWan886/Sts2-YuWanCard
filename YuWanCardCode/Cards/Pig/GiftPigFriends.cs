@@ -1,4 +1,6 @@
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -17,7 +19,7 @@ public class GiftPigFriends : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.None)
+        target: CustomTargetType.AllPlayers)
     {
         WithPower<PigFriendsPower>(1);
         WithKeywords(CardKeyword.Exhaust);
@@ -32,10 +34,9 @@ public class GiftPigFriends : YuWanCardModel
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
 
-        foreach (var player in CombatState!.Players)
+        foreach (var creature in CombatState!.GetLivingPlayerCreatures())
         {
-            if (player?.Creature == null || player.Creature.IsDead) continue;
-            await PowerCmd.Apply<PigFriendsPower>(new ThrowingPlayerChoiceContext(), player.Creature, DynamicVars["PigFriendsPower"].IntValue, Owner.Creature, this);
+            await PowerCmd.Apply<PigFriendsPower>(new ThrowingPlayerChoiceContext(), creature, DynamicVars["PigFriendsPower"].IntValue, Owner.Creature, this);
         }
 
         VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);

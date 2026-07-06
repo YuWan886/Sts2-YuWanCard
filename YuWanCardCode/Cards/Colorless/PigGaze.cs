@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
+using YuWanCard.Core;
 
 namespace YuWanCard.Cards;
 
@@ -17,7 +18,7 @@ public class PigGaze : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AnyAlly)
+        target: CustomTargetType.AnyOtherPlayer)
     {
         WithVars(new EnergyVar(2));
         WithPower<NoDrawPower>(1);

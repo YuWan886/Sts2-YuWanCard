@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Powers;
 
@@ -17,7 +18,7 @@ public class PawnServant : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AnyAlly)
+        target: CustomTargetType.AnyOtherPlayer)
     {
         WithKeywords(CardKeyword.Exhaust);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<VakuuTakeoverPower>()));
