@@ -51,9 +51,9 @@ public sealed class RevolverPig : YuWanCardModel
         await PlayerCmd.GainGold(DynamicVars["Gold"].IntValue, targetPlayer);
     }
 
-    protected override PileType GetResultPileTypeForCardPlay()
+    protected override (PileType, CardPilePosition) GetResultPileTypeAndPositionForCardPlay()
     {
-        return PileType.Hand;
+        return (PileType.Hand, CardPilePosition.Bottom);
     }
 
     protected override void AfterCloned()
