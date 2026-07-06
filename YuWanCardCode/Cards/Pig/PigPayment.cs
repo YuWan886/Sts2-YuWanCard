@@ -1,10 +1,10 @@
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using YuWanCard.Characters;
+using YuWanCard.Utils;
 
 namespace YuWanCard.Cards;
 
@@ -30,13 +30,10 @@ public class PigPayment : YuWanCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         int goldCost = DynamicVars.Gold.IntValue;
-        if (Owner.Gold < goldCost)
+        if (!await GoldSpendHelper.TrySpend(Owner, goldCost, nameof(PigPayment)))
         {
-            MainFile.Logger.Warn($"PigPayment: Not enough gold ({Owner.Gold} < {goldCost})");
             return;
         }
-
-        await PlayerCmd.LoseGold(goldCost, Owner, GoldLossType.Spent);
         await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
     }
 }
