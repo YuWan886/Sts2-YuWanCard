@@ -32,15 +32,4 @@ public class YuWanCardConfig
 
     public static bool EnablePigPigAncient { get; set; } = true;
 
-    public static bool EnableBlacksmithEvent { get; set; } = true;
-
-    public static bool EnableHelloHumanEvent { get; set; } = true;
-
-    public static bool EnableHorizonEvent { get; set; } = true;
-
-    public static bool EnableSkullGoldRushEvent { get; set; } = true;
-
-    public static bool EnableSunkenStatueQuestEvent { get; set; } = true;
-
-    public static bool EnableZhiZhanZhiShangEvent { get; set; } = true;
 }

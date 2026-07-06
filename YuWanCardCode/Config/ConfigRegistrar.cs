@@ -7,7 +7,6 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using YuWanCard.Config;
-using YuWanCard.Core;
 
 namespace YuWanCard;
 
@@ -20,6 +19,7 @@ internal static class ConfigRegistrar
     private const string ModId = MainFile.ModId;
     private const string RootPageId = "yuwan_card";
     private const string ContentPageId = "game_content";
+    private const string EventsPageId = "content_events";
     private const string ColorlessCardsPageId = "content_colorless_cards";
 
     private static bool s_persistedConfigPreloaded;
@@ -104,6 +104,8 @@ internal static class ConfigRegistrar
         new("YuWanCardRitsuConfigProvider", RootPageId, "YuWanCard 设置", null, 0, null, "YuWanCard", "YUWANCARD-RITSU_ROOT_PAGE.title"),
         new("YuWanCardRitsuContentConfigProvider", ContentPageId, "游戏内容设置", "控制本模组敌人、事件和新增无色卡牌是否会出现在对局中", 100, RootPageId, "YuWanCard",
             "YUWANCARD-RITSU_GAME_CONTENT_PAGE.title", "YUWANCARD-RITSU_GAME_CONTENT_PAGE.desc"),
+        new("YuWanCardRitsuEventConfigProvider", EventsPageId, "事件设置", "控制本模组事件是否会出现在对局中。悬停按钮可查看事件初始描述。", 150, ContentPageId, "YuWanCard",
+            "YUWANCARD-RITSU_EVENT_PAGE.title", "YUWANCARD-RITSU_EVENT_PAGE.desc"),
         new("YuWanCardRitsuColorlessCardConfigProvider", ColorlessCardsPageId, "无色卡牌设置", "控制本模组新增无色卡牌是否会出现在对局中。悬停按钮可查看卡牌提示。", 200, ContentPageId, "YuWanCard",
             "YUWANCARD-RITSU_COLORLESS_PAGE.title", "YUWANCARD-RITSU_COLORLESS_PAGE.desc"),
     ];
@@ -117,6 +119,8 @@ internal static class ConfigRegistrar
         new(ContentPageId, "enemy_encounters", "敌人遭遇", null, 100, "YUWANCARD-RITSU_GAME_CONTENT_ENCOUNTERS.title"),
         new(ContentPageId, "events", "事件", null, 200, "YUWANCARD-RITSU_GAME_CONTENT_EVENTS.title"),
         new(ContentPageId, "ancients", "先古", null, 300, "YUWANCARD-RITSU_GAME_CONTENT_ANCIENTS.title"),
+        new(EventsPageId, "events_gallery", "事件画廊", "按按钮开启或关闭对应事件。", 0,
+            "YUWANCARD-RITSU_EVENT_SECTION.title", "YUWANCARD-RITSU_EVENT_SECTION.desc"),
         new(ColorlessCardsPageId, YuWanColorlessCardCatalog.SectionId, "无色卡牌画廊", "按按钮开启或关闭对应卡牌。", 0,
             "YUWANCARD-RITSU_COLORLESS_SECTION.title", "YUWANCARD-RITSU_COLORLESS_SECTION.desc"),
     ];
@@ -148,18 +152,6 @@ internal static class ConfigRegistrar
             "YUWANCARD-ENABLE_YUWAN_EVENTS.title", "YUWANCARD-ENABLE_YUWAN_EVENTS.hover.desc"),
         new("EnablePigPigAncient", ContentPageId, "ancients", "enable_pig_pig_ancient", "config_enable_pig_pig_ancient", "猪猪先古", "允许猪猪先古在巢穴开局中出现", 0,
             "YUWANCARD-ENABLE_PIG_PIG_ANCIENT.title", "YUWANCARD-ENABLE_PIG_PIG_ANCIENT.hover.desc"),
-        new("EnableBlacksmithEvent", ContentPageId, "events", "enable_blacksmith_event", "config_enable_blacksmith_event", "铁匠铺", "允许铁匠铺事件出现在对局中", 1,
-            "YUWANCARD-ENABLE_BLACKSMITH_EVENT.title", "YUWANCARD-ENABLE_BLACKSMITH_EVENT.hover.desc"),
-        new("EnableHelloHumanEvent", ContentPageId, "events", "enable_hello_human_event", "config_enable_hello_human_event", "人，你好。", "允许“人，你好。”事件出现在对局中", 2,
-            "YUWANCARD-ENABLE_HELLO_HUMAN_EVENT.title", "YUWANCARD-ENABLE_HELLO_HUMAN_EVENT.hover.desc"),
-        new("EnableHorizonEvent", ContentPageId, "events", "enable_horizon_event", "config_enable_horizon_event", "天涯海角", "允许天涯海角事件出现在对局中", 3,
-            "YUWANCARD-ENABLE_HORIZON_EVENT.title", "YUWANCARD-ENABLE_HORIZON_EVENT.hover.desc"),
-        new("EnableSkullGoldRushEvent", ContentPageId, "events", "enable_skull_gold_rush_event", "config_enable_skull_gold_rush_event", "骷髅打金服", "允许骷髅打金服事件出现在对局中", 4,
-            "YUWANCARD-ENABLE_SKULL_GOLD_RUSH_EVENT.title", "YUWANCARD-ENABLE_SKULL_GOLD_RUSH_EVENT.hover.desc"),
-        new("EnableSunkenStatueQuestEvent", ContentPageId, "events", "enable_sunken_statue_quest_event", "config_enable_sunken_statue_quest_event", "沉没的石像", "允许沉没的石像事件出现在对局中", 5,
-            "YUWANCARD-ENABLE_SUNKEN_STATUE_QUEST_EVENT.title", "YUWANCARD-ENABLE_SUNKEN_STATUE_QUEST_EVENT.hover.desc"),
-        new("EnableZhiZhanZhiShangEvent", ContentPageId, "events", "enable_zhi_zhan_zhi_shang_event", "config_enable_zhi_zhan_zhi_shang_event", "止战之殇", "允许止战之殇事件出现在对局中", 6,
-            "YUWANCARD-ENABLE_ZHI_ZHAN_ZHI_SHANG_EVENT.title", "YUWANCARD-ENABLE_ZHI_ZHAN_ZHI_SHANG_EVENT.hover.desc"),
     ];
 
     private static readonly SliderSettingDefinition[] SliderProps =
@@ -180,6 +172,9 @@ internal static class ConfigRegistrar
         new(RootPageId, "gameplay", "open_game_content_settings", ContentPageId, "OpenGameContentSettingsPage",
             "游戏内容设置", "打开游戏内容设置页面。", "打开", 100,
             "YUWANCARD-RITSU_OPEN_GAME_CONTENT.title", "YUWANCARD-RITSU_OPEN_GAME_CONTENT.desc", "YUWANCARD-RITSU_OPEN.button"),
+        new(ContentPageId, "events", "open_event_settings", EventsPageId, "OpenEventSettingsPage",
+            "事件设置", "使用画廊视图控制本模组事件是否会出现在对局中。", "打开", 1,
+            "YUWANCARD-RITSU_OPEN_EVENT.title", "YUWANCARD-RITSU_OPEN_EVENT.desc", "YUWANCARD-RITSU_OPEN.button"),
         new(ContentPageId, "cards", "open_colorless_card_settings", ColorlessCardsPageId, "OpenColorlessCardSettingsPage",
             "无色卡牌设置", "使用画廊视图控制本模组新增无色卡牌是否会出现在对局中。", "打开", 0,
             "YUWANCARD-RITSU_OPEN_COLORLESS.title", "YUWANCARD-RITSU_OPEN_COLORLESS.desc", "YUWANCARD-RITSU_OPEN.button"),
@@ -187,7 +182,10 @@ internal static class ConfigRegistrar
 
     private static readonly CustomEntrySettingDefinition[] CustomEntryProps =
     [
-        new(ColorlessCardsPageId, YuWanColorlessCardCatalog.SectionId, "colorless_card_gallery", "BuildColorlessCardGallery",
+        new(EventsPageId, "events_gallery", "event_settings", "CreateEventSettingsControl",
+            "事件开关", "自动读取并控制本模组事件是否会出现在对局中。", 1,
+            "YUWANCARD-RITSU_EVENT_GALLERY.title", "YUWANCARD-RITSU_EVENT_GALLERY.desc"),
+        new(ColorlessCardsPageId, YuWanColorlessCardCatalog.SectionId, "colorless_card_gallery", "CreateColorlessCardSettingsControl",
             "卡牌开关", "每行 5 个按钮；按钮文字为卡牌名，悬停可查看提示框。", 0,
             "YUWANCARD-RITSU_COLORLESS_GALLERY.title", "YUWANCARD-RITSU_COLORLESS_GALLERY.desc"),
     ];
@@ -584,7 +582,7 @@ internal static class ConfigRegistrar
             Type.EmptyTypes);
         var il = method.GetILGenerator();
         il.Emit(OpCodes.Call, typeof(RitsuConfigRuntimeBridge).GetMethod(
-            nameof(RitsuConfigRuntimeBridge.CreateColorlessCardSettingsControl),
+            setting.MethodName,
             BindingFlags.Public | BindingFlags.Static)!);
         il.Emit(OpCodes.Ret);
 
@@ -1105,12 +1103,218 @@ public static class RitsuConfigRuntimeBridge
         return root;
     }
 
+    public static Control CreateEventSettingsControl()
+    {
+        var root = new VBoxContainer
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            SizeFlagsVertical = Control.SizeFlags.ExpandFill,
+            ThemeTypeVariation = "PanelContainer"
+        };
+
+        var description = new Godot.Label
+        {
+            Text = GetSettingsLocText("YUWANCARD-RITSU_EVENT_CONTROL.desc"),
+            AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        description.AddThemeColorOverride("font_color", SummaryTextColor);
+        root.AddChild(description);
+
+        var toolbar = new HBoxContainer
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        root.AddChild(toolbar);
+
+        var summaryLabel = new Godot.Label
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        summaryLabel.AddThemeColorOverride("font_color", SummaryTextColor);
+
+        var grid = new GridContainer
+        {
+            Columns = YuWanEventCatalog.ButtonsPerRow,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            SizeFlagsVertical = Control.SizeFlags.ExpandFill
+        };
+
+        var buttonsByKey = new Dictionary<string, Button>(StringComparer.Ordinal);
+
+        Button CreateActionButton(string text, Action onPressed)
+        {
+            var button = new Button
+            {
+                Text = text,
+                CustomMinimumSize = new Vector2(120f, 42f),
+                FocusMode = Control.FocusModeEnum.None
+            };
+            button.Pressed += onPressed;
+            return button;
+        }
+
+        void RefreshSummary()
+        {
+            int enabledCount = buttonsByKey.Values.Count(static button => button.ButtonPressed);
+            summaryLabel.Text = string.Format(GetSettingsLocText("YUWANCARD-RITSU_EVENT_SUMMARY.text"), enabledCount, YuWanEventCatalog.Events.Count);
+        }
+
+        void RefreshButtonVisual(Button button)
+        {
+            button.Modulate = button.ButtonPressed ? Colors.White : new Color(0.78f, 0.78f, 0.78f, 0.95f);
+
+            var normalStyle = new StyleBoxFlat
+            {
+                BgColor = button.ButtonPressed ? EnabledButtonColor : DisabledButtonColor,
+                BorderWidthBottom = 2,
+                BorderWidthLeft = 2,
+                BorderWidthRight = 2,
+                BorderWidthTop = 2,
+                BorderColor = new Color(0f, 0f, 0f, 0.35f),
+                CornerRadiusBottomLeft = 8,
+                CornerRadiusBottomRight = 8,
+                CornerRadiusTopLeft = 8,
+                CornerRadiusTopRight = 8
+            };
+
+            var hoverStyle = (StyleBoxFlat)normalStyle.Duplicate();
+            hoverStyle.BgColor = button.ButtonPressed
+                ? EnabledButtonColor.Lightened(0.12f)
+                : DisabledButtonColor.Lightened(0.12f);
+
+            var pressedStyle = (StyleBoxFlat)normalStyle.Duplicate();
+            pressedStyle.BgColor = button.ButtonPressed
+                ? EnabledButtonColor.Darkened(0.08f)
+                : DisabledButtonColor.Darkened(0.08f);
+
+            button.AddThemeStyleboxOverride("normal", normalStyle);
+            button.AddThemeStyleboxOverride("hover", hoverStyle);
+            button.AddThemeStyleboxOverride("pressed", pressedStyle);
+            button.AddThemeStyleboxOverride("focus", hoverStyle);
+        }
+
+        void RefreshAllButtons()
+        {
+            foreach (var button in buttonsByKey.Values)
+            {
+                RefreshButtonVisual(button);
+            }
+
+            RefreshSummary();
+        }
+
+        toolbar.AddChild(CreateActionButton(GetSettingsLocText("YUWANCARD-RITSU_EVENT_ENABLE_ALL.button"), () =>
+        {
+            if (!YuWanEventSettings.SetAll(true))
+            {
+                return;
+            }
+
+            foreach (var button in buttonsByKey.Values)
+            {
+                button.SetPressedNoSignal(true);
+            }
+
+            RefreshAllButtons();
+        }));
+
+        toolbar.AddChild(CreateActionButton(GetSettingsLocText("YUWANCARD-RITSU_EVENT_DISABLE_ALL.button"), () =>
+        {
+            if (!YuWanEventSettings.SetAll(false))
+            {
+                return;
+            }
+
+            foreach (var button in buttonsByKey.Values)
+            {
+                button.SetPressedNoSignal(false);
+            }
+
+            RefreshAllButtons();
+        }));
+
+        toolbar.AddChild(CreateActionButton(GetSettingsLocText("YUWANCARD-RITSU_EVENT_INVERT.button"), () =>
+        {
+            bool changed = false;
+            foreach (var (key, button) in buttonsByKey)
+            {
+                bool nextValue = !button.ButtonPressed;
+                changed |= YuWanEventSettings.SetEnabled(key, nextValue);
+                button.SetPressedNoSignal(nextValue);
+            }
+
+            if (changed)
+            {
+                RefreshAllButtons();
+            }
+        }));
+
+        toolbar.AddChild(summaryLabel);
+
+        foreach (var definition in YuWanEventCatalog.Events)
+        {
+            bool enabled = YuWanEventSettings.IsEnabled(definition.EventType);
+            var button = new Button
+            {
+                Text = YuWanEventCatalog.GetDisplayTitle(definition),
+                ToggleMode = true,
+                ButtonPressed = enabled,
+                FocusMode = Control.FocusModeEnum.None,
+                CustomMinimumSize = new Vector2(0f, 52f),
+                ClipText = true,
+                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+            };
+
+            button.Toggled += isPressed =>
+            {
+                YuWanEventSettings.SetEnabled(definition.Key, isPressed);
+                RefreshButtonVisual(button);
+                RefreshSummary();
+            };
+
+            button.MouseEntered += () =>
+            {
+                var hoverTips = BuildEventHoverTips(definition);
+                if (!hoverTips.Any())
+                {
+                    return;
+                }
+
+                NHoverTipSet.Remove(button);
+                var alignment = HoverTip.GetHoverTipAlignment(button);
+                NHoverTipSet.CreateAndShow(button, hoverTips, alignment);
+            };
+
+            button.MouseExited += () => NHoverTipSet.Remove(button);
+            button.TreeExiting += () => NHoverTipSet.Remove(button);
+
+            buttonsByKey[definition.Key] = button;
+            RefreshButtonVisual(button);
+            grid.AddChild(button);
+        }
+
+        RefreshSummary();
+        root.AddChild(grid);
+        return root;
+    }
+
     private static IReadOnlyList<IHoverTip> BuildColorlessCardHoverTips(CardModel canonicalCard)
     {
         return
         [
             HoverTipFactory.FromCard(canonicalCard, canonicalCard.IsUpgraded),
             .. canonicalCard.HoverTips
+        ];
+    }
+
+    private static IReadOnlyList<IHoverTip> BuildEventHoverTips(YuWanEventDefinition definition)
+    {
+        return
+        [
+            new HoverTip(
+                new LocString("events", $"{definition.IdEntry}.title"),
+                new LocString("events", $"{definition.IdEntry}.pages.INITIAL.description"))
         ];
     }
 

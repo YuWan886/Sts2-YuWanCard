@@ -403,5 +403,8 @@
   "YUWANCARD-INFLATION.title": "通货膨胀",
   "YUWANCARD-INFLATION.description": "获得[gold]通货膨胀[/gold]。你之后获得金币时额外获得{IfUpgraded:show:75%|50%}，且你的非X费卡牌耗能+1。",
   "YUWANCARD-PIGGY_BLESSING.title": "小猪的祝福",
-  "YUWANCARD-PIGGY_BLESSING.description": "获得{Block:diff()}点[gold]格挡[/gold]。\n抽{Cards}张牌。"
+  "YUWANCARD-PIGGY_BLESSING.description": "获得{Block:diff()}点[gold]格挡[/gold]。\n抽{Cards}张牌。",
+  "YUWANCARD-LEI_ZHU_TI.title": "类猪体",
+  "YUWANCARD-LEI_ZHU_TI.description": "从3张{IfUpgraded:show:升级过的|}随机猪猪无色牌中选择1张加入你的手牌。这张牌在本回合免费打出。",
+  "YUWANCARD-LEI_ZHU_TI.selectionScreenPrompt": "选择1张牌加入手牌"
 }

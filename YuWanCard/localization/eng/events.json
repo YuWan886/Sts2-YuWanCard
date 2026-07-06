@@ -97,5 +97,14 @@
   "YUWANCARD-HELLO_HUMAN.pages.TOOK_ROSE.description": "You take the red rose, but what your fingertips feel is a warm, fuzzy gentleness. The piglets hum a happy little tune, and the tension you've carried for so long quietly melts away.\n\n[green]\"Hehe, thanks for paying attention to us~\"[/green]",
   "YUWANCARD-HELLO_HUMAN.pages.CHATTED.description": "You sit down by the laptop and listen to the piglets chatter about what they ate today and what they dreamed about. Time flies by. Before you leave, they secretly slip you a handful of gold from inside the screen as a \"meeting gift.\"\n\n[gold]\"Come play again next time~\"[/gold]",
   "YUWANCARD-HELLO_HUMAN.pages.LEFT.description": "You can't bear to disturb their little world, so you gently close the door. Just before it shuts, you hear the piglets bid you farewell in unison.\n\nThat tenderness seems to have come along with you.",
-  "YUWANCARD-HELLO_HUMAN.pages.POKED.description": "You can't help it. You reach out and poke the round cheek of the frontmost piglet. The screen ripples with a soft \"boop,\" and the piglet's eyes go wide in surprise before it leaps out with a \"plop,\" landing in your arms as a soft little doll.\n\n[red](Poking through the screen seems to have cost you a bit of vitality...)[/red]"
+  "YUWANCARD-HELLO_HUMAN.pages.POKED.description": "You can't help it. You reach out and poke the round cheek of the frontmost piglet. The screen ripples with a soft \"boop,\" and the piglet's eyes go wide in surprise before it leaps out with a \"plop,\" landing in your arms as a soft little doll.\n\n[red](Poking through the screen seems to have cost you a bit of vitality...)[/red]",
+  "YUWANCARD-DOCTOR_PIG_EVENT.title": "Doctor Pig",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.description": "[gold]You sense an aura of scholarship. Looking up, you see a pig wearing a doctoral cap...\n\"There is no end to learning..... Will you accept my inheritance of knowledge....\"[/gold]",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.options.ACCEPT_KNOWLEDGE_INHERITANCE.title": "Accept the inheritance",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.options.ACCEPT_KNOWLEDGE_INHERITANCE.description": "Choose [blue]1[/blue] of [blue]5[/blue] random pig colorless cards to add to your [gold]deck[/gold].",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.options.SNATCH_DOCTOR_HAT.title": "Snatch the doctor's cap",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.options.SNATCH_DOCTOR_HAT.description": "Gain 1 [gold]Piglike Form[/gold].",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.ACCEPTED.selectionScreenPrompt": "Choose a card to add to your deck",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.ACCEPTED.description": "[gold]The pig grants you supreme knowledge...[/gold]",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.HAT_SNATCHED.description": "[gold]The doctor pig turns into an ordinary pig....[/gold]"
 }

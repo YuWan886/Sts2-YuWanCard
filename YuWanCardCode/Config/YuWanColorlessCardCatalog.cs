@@ -1,4 +1,5 @@
 using System.Reflection;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using YuWanCard.Core.Extensions;
@@ -30,6 +31,19 @@ internal static class YuWanColorlessCardCatalog
 
     public static CardModel CreateCanonicalCard(YuWanColorlessCardDefinition definition)
         => ModelDb.GetById<CardModel>(ModelDb.GetId(definition.CardType));
+
+    public static IReadOnlyList<CardModel> GetUnlockedCanonicalCards(Player player)
+    {
+        var unlockedIds = ModelDb.CardPool<ColorlessCardPool>()
+            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
+            .Select(static card => card.Id)
+            .ToHashSet();
+
+        return Cards
+            .Select(CreateCanonicalCard)
+            .Where(card => unlockedIds.Contains(card.Id))
+            .ToArray();
+    }
 
     private static IReadOnlyList<YuWanColorlessCardDefinition> BuildCards()
     {

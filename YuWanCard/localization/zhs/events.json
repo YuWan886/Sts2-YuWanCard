@@ -97,5 +97,14 @@
   "YUWANCARD-HELLO_HUMAN.pages.TOOK_ROSE.description": "你接过那朵红玫瑰，指尖触到的却是一阵暖洋洋的、毛茸茸的暖意。小猪们开心地哼起了歌，紧绷了许久的神经，在这一刻悄悄松了下来。\n\n[green]“嘿嘿，谢谢你愿意理我们~”[/green]",
   "YUWANCARD-HELLO_HUMAN.pages.CHATTED.description": "你在电脑前坐下，听小猪们叽叽喳喳地讲着今天吃了什么、做了什么梦。不知不觉，时间过得飞快。临走前，它们偷偷从屏幕里塞给你一把金币当“见面礼”。\n\n[gold]“下次还要来玩哦~”[/gold]",
   "YUWANCARD-HELLO_HUMAN.pages.LEFT.description": "你不忍心打扰它们的小世界，于是轻轻地关上了门。门缝合拢的前一刻，你听见小猪们齐声朝你道别。\n\n那份温柔，似乎被你一并带在了身上。",
-  "YUWANCARD-HELLO_HUMAN.pages.POKED.description": "你没忍住，伸手戳了戳最前面那只小猪圆乎乎的脸。屏幕“啵”地泛起一圈涟漪，小猪惊讶地瞪大了眼睛，随后“扑通”一声跳出屏幕，变成了一只软乎乎的玩偶落进你怀里。\n\n[red]（戳穿屏幕似乎也让你折损了一点元气……）[/red]"
+  "YUWANCARD-HELLO_HUMAN.pages.POKED.description": "你没忍住，伸手戳了戳最前面那只小猪圆乎乎的脸。屏幕“啵”地泛起一圈涟漪，小猪惊讶地瞪大了眼睛，随后“扑通”一声跳出屏幕，变成了一只软乎乎的玩偶落进你怀里。\n\n[red]（戳穿屏幕似乎也让你折损了一点元气……）[/red]",
+  "YUWANCARD-DOCTOR_PIG_EVENT.title": "博士猪猪",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.description": "[gold]你感受到了一股博学的气息，你抬头望去，那是一只戴着博士帽的猪猪......\n“学无止境.....你愿意接受我的知识传承吗....”[/gold]",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.options.ACCEPT_KNOWLEDGE_INHERITANCE.title": "接受知识传承",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.options.ACCEPT_KNOWLEDGE_INHERITANCE.description": "从[blue]5[/blue]张随机猪猪无色牌中选择[blue]1[/blue]张加入你的[gold]牌组[/gold]。",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.options.SNATCH_DOCTOR_HAT.title": "把猪猪的博士帽薅下来",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.INITIAL.options.SNATCH_DOCTOR_HAT.description": "获得1张[gold]类猪体[/gold]。",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.ACCEPTED.selectionScreenPrompt": "选择1张牌加入牌组",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.ACCEPTED.description": "[gold]猪猪赋予了你无上的知识...[/gold]",
+  "YUWANCARD-DOCTOR_PIG_EVENT.pages.HAT_SNATCHED.description": "[gold]博士猪猪变成了一只平凡的猪猪....[/gold]"
 }

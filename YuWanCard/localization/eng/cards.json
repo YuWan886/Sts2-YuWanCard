@@ -403,5 +403,8 @@
   "YUWANCARD-INFLATION.title": "Inflation",
   "YUWANCARD-INFLATION.description": "Gain [gold]Inflation[/gold]. Whenever you gain Gold, gain {IfUpgraded:show:75%|50%} more, and your non-X-cost cards cost 1 more.",
   "YUWANCARD-PIGGY_BLESSING.title": "Piggy's Blessing",
-  "YUWANCARD-PIGGY_BLESSING.description": "Gain {Block:diff()} [gold]Block[/gold].\nDraw {Cards} card."
+  "YUWANCARD-PIGGY_BLESSING.description": "Gain {Block:diff()} [gold]Block[/gold].\nDraw {Cards} card.",
+  "YUWANCARD-LEI_ZHU_TI.title": "Piglike Form",
+  "YUWANCARD-LEI_ZHU_TI.description": "{IfUpgraded:show:Choose 1 of 3 upgraded random pig colorless cards and add it to your hand.|Choose 1 of 3 random pig colorless cards and add it to your hand.} That card costs 0 this turn.",
+  "YUWANCARD-LEI_ZHU_TI.selectionScreenPrompt": "Choose a card to add to your hand"
 }

@@ -1,7 +1,5 @@
 using YuWanCard.Encounters;
-using YuWanCard.Events;
 using YuWanCard.Ancients;
-using YuWanCard.Core;
 
 namespace YuWanCard.Config;
 
@@ -12,29 +10,12 @@ public readonly record struct YuWanContentSettingsSnapshot(
     bool EnableKillerEliteEncounter,
     bool EnableYuWanEvents,
     bool EnablePigPigAncient,
-    bool EnableBlacksmithEvent,
-    bool EnableHelloHumanEvent,
-    bool EnableHorizonEvent,
-    bool EnableSkullGoldRushEvent,
-    bool EnableSunkenStatueQuestEvent,
-    bool EnableZhiZhanZhiShangEvent,
+    IReadOnlyDictionary<string, bool> EnabledEvents,
     IReadOnlyDictionary<string, bool> EnabledColorlessCards)
 {
-    public static YuWanContentSettingsSnapshot AllDisabled { get; } = new(
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        YuWanColorlessCardCatalog.Cards.ToDictionary(static definition => definition.Key, static _ => false,
-            StringComparer.Ordinal));
+    private static readonly Lazy<YuWanContentSettingsSnapshot> AllDisabledSnapshot = new(CreateAllDisabled);
+
+    public static YuWanContentSettingsSnapshot AllDisabled => AllDisabledSnapshot.Value;
 
     public static YuWanContentSettingsSnapshot CaptureLocal()
     {
@@ -45,12 +26,7 @@ public readonly record struct YuWanContentSettingsSnapshot(
             YuWanCardConfig.EnableKillerEliteEncounter,
             YuWanCardConfig.EnableYuWanEvents,
             YuWanCardConfig.EnablePigPigAncient,
-            YuWanCardConfig.EnableBlacksmithEvent,
-            YuWanCardConfig.EnableHelloHumanEvent,
-            YuWanCardConfig.EnableHorizonEvent,
-            YuWanCardConfig.EnableSkullGoldRushEvent,
-            YuWanCardConfig.EnableSunkenStatueQuestEvent,
-            YuWanCardConfig.EnableZhiZhanZhiShangEvent,
+            YuWanEventSettings.SnapshotStates(),
             YuWanColorlessCardSettings.SnapshotStates());
     }
 
@@ -62,13 +38,8 @@ public readonly record struct YuWanContentSettingsSnapshot(
                && EnableKillerEliteEncounter == other.EnableKillerEliteEncounter
                && EnableYuWanEvents == other.EnableYuWanEvents
                && EnablePigPigAncient == other.EnablePigPigAncient
-               && EnableBlacksmithEvent == other.EnableBlacksmithEvent
-               && EnableHelloHumanEvent == other.EnableHelloHumanEvent
-               && EnableHorizonEvent == other.EnableHorizonEvent
-               && EnableSkullGoldRushEvent == other.EnableSkullGoldRushEvent
-               && EnableSunkenStatueQuestEvent == other.EnableSunkenStatueQuestEvent
-               && EnableZhiZhanZhiShangEvent == other.EnableZhiZhanZhiShangEvent
-               && ColorlessCardStatesEqual(EnabledColorlessCards, other.EnabledColorlessCards);
+               && DictionaryStatesEqual(EnabledEvents, other.EnabledEvents)
+               && DictionaryStatesEqual(EnabledColorlessCards, other.EnabledColorlessCards);
     }
 
     public bool IsEncounterTypeEnabled(Type encounterType)
@@ -108,37 +79,12 @@ public readonly record struct YuWanContentSettingsSnapshot(
             return false;
         }
 
-        if (eventType == typeof(Blacksmith))
+        if (!YuWanEventCatalog.TryGetDefinition(eventType, out var definition))
         {
-            return EnableBlacksmithEvent;
+            return true;
         }
 
-        if (eventType == typeof(HelloHuman))
-        {
-            return EnableHelloHumanEvent;
-        }
-
-        if (eventType == typeof(HorizonEvent))
-        {
-            return EnableHorizonEvent;
-        }
-
-        if (eventType == typeof(SkullGoldRush))
-        {
-            return EnableSkullGoldRushEvent;
-        }
-
-        if (eventType == typeof(SunkenStatueQuest))
-        {
-            return EnableSunkenStatueQuestEvent;
-        }
-
-        if (eventType == typeof(ZhiZhanZhiShang))
-        {
-            return EnableZhiZhanZhiShangEvent;
-        }
-
-        return true;
+        return EnabledEvents.GetValueOrDefault(definition.Key, true);
     }
 
     public bool IsAncientTypeEnabled(Type ancientType)
@@ -166,7 +112,22 @@ public readonly record struct YuWanContentSettingsSnapshot(
         return EnabledColorlessCards.GetValueOrDefault(definition.Key, true);
     }
 
-    private static bool ColorlessCardStatesEqual(
+    private static YuWanContentSettingsSnapshot CreateAllDisabled()
+    {
+        return new YuWanContentSettingsSnapshot(
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            YuWanEventCatalog.Events.ToDictionary(static definition => definition.Key, static _ => false,
+                StringComparer.Ordinal),
+            YuWanColorlessCardCatalog.Cards.ToDictionary(static definition => definition.Key, static _ => false,
+                StringComparer.Ordinal));
+    }
+
+    private static bool DictionaryStatesEqual(
         IReadOnlyDictionary<string, bool> left,
         IReadOnlyDictionary<string, bool> right)
     {
