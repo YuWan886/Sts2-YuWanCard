@@ -82,6 +82,7 @@ public partial class MainFile : Node
 
         // Phase 4: Config, scene conversions, multiplayer, assets
         Config = new YuWanCardConfig();
+        ConfigRegistrar.PreloadPersistedConfig();
         ConfigRegistrar.TryDeferredRegister();
 
         NodeFactory.Init();

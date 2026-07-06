@@ -2,21 +2,21 @@ using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YuWanCard.Characters;
 
 namespace YuWanCard.Cards;
 
-[Pool(typeof(PigCardPool))]
+[Pool(typeof(ColorlessCardPool))]
 public class PigRoar : YuWanCardModel
 {
     public PigRoar() : base(
         baseCost: 1,
         type: CardType.Skill,
-        rarity: CardRarity.Common,
+        rarity: CardRarity.Uncommon,
         target: TargetType.AllEnemies)
     {
-        WithPower<StranglePower>(2);
+        WithPower<StranglePower>(3);
     }
 
     protected override void OnUpgrade()

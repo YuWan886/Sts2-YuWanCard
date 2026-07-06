@@ -1,6 +1,7 @@
 using YuWanCard.Encounters;
 using YuWanCard.Events;
 using YuWanCard.Ancients;
+using YuWanCard.Core;
 
 namespace YuWanCard.Config;
 
@@ -72,6 +73,11 @@ public readonly record struct YuWanContentSettingsSnapshot(
 
     public bool IsEncounterTypeEnabled(Type encounterType)
     {
+        if (!typeof(IYuWanContent).IsAssignableFrom(encounterType))
+        {
+            return true;
+        }
+
         if (!EnableYuWanEnemyEncounters)
         {
             return false;
@@ -92,6 +98,11 @@ public readonly record struct YuWanContentSettingsSnapshot(
 
     public bool IsEventTypeEnabled(Type eventType)
     {
+        if (!typeof(IYuWanContent).IsAssignableFrom(eventType))
+        {
+            return true;
+        }
+
         if (!EnableYuWanEvents)
         {
             return false;
@@ -132,6 +143,11 @@ public readonly record struct YuWanContentSettingsSnapshot(
 
     public bool IsAncientTypeEnabled(Type ancientType)
     {
+        if (!typeof(IYuWanContent).IsAssignableFrom(ancientType))
+        {
+            return true;
+        }
+
         if (ancientType == typeof(PigPig))
         {
             return EnablePigPigAncient;

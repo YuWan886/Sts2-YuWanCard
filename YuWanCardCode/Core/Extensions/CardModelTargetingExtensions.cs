@@ -46,7 +46,7 @@ public static class CardModelTargetingExtensions
         {
             return state.Creatures
                 .Where(c =>
-                    CustomTargetTypeRegistry.TryIsAllowedSingleTarget(card.TargetType, c, out var allowed) && allowed)
+                    CustomTargetTypeRegistry.TryIsAllowedSingleTarget(card.TargetType, card, c, out var allowed) && allowed)
                 .ToList();
         }
 

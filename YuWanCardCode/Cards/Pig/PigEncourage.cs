@@ -1,4 +1,6 @@
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -16,7 +18,7 @@ public class PigEncourage : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AllAllies)
+        target: CustomTargetType.AllPlayers)
     {
         WithVars(new EnergyVar(1));
         WithCards(1);
@@ -29,13 +31,9 @@ public class PigEncourage : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var teammates = CombatState!.GetTeammatesOf(Owner.Creature);
-        foreach (var teammate in teammates)
+        foreach (var player in CombatState!.GetLivingPlayers())
         {
-            if (teammate.Player != null)
-            {
-                await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, teammate.Player);
-            }
+            await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, player);
         }
 
         await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner);

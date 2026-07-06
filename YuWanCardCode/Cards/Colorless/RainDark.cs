@@ -1,4 +1,6 @@
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -16,7 +18,7 @@ public class RainDark : YuWanCardModel
         baseCost: 3,
         type: CardType.Power,
         rarity: CardRarity.Ancient,
-        target: TargetType.AllAllies)
+        target: CustomTargetType.AllPlayers)
     {
         WithPower<IntangiblePower>(3);
         WithPower<RainDarkPower>(3);
@@ -32,20 +34,18 @@ public class RainDark : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var teammates = CombatState!.GetTeammatesOf(Owner.Creature)
-            .Where(c => c != null && c.IsAlive && c.IsPlayer)
-            .ToList();
+        var players = CombatState!.GetLivingPlayers();
 
-        foreach (var teammate in teammates)
+        foreach (var player in players)
         {
+            var teammate = player.Creature;
             int targetHp = (int)(teammate.MaxHp * HpPercentage);
             await CreatureCmd.SetCurrentHp(teammate, targetHp);
 
             await CommonActions.Apply<IntangiblePower>(choiceContext, teammate, this, DynamicVars["IntangiblePower"].IntValue);
             await CommonActions.Apply<RainDarkPower>(choiceContext, teammate, this, DynamicVars["RainDarkPower"].IntValue);
 
-            var player = teammate.Player;
-            if (player != null && player.PlayerCombatState != null)
+            if (player.PlayerCombatState != null)
             {
                 int currentEnergy = player.PlayerCombatState.Energy;
                 if (currentEnergy > 0)

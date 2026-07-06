@@ -1,11 +1,12 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Models;
 
 namespace YuWanCard.Core;
 
 internal static class CustomTargetTypeRegistry
 {
-    private static readonly Dictionary<TargetType, Func<Creature, bool>> SingleTargetPredicates = [];
+    private static readonly Dictionary<TargetType, Func<CardModel?, Creature, bool>> SingleTargetPredicates = [];
     private static readonly Dictionary<TargetType, Func<Creature, bool>> MultiTargetPredicates = [];
 
     internal static bool IsYuWanCustom(TargetType type)
@@ -23,7 +24,7 @@ internal static class CustomTargetTypeRegistry
         return MultiTargetPredicates.ContainsKey(type);
     }
 
-    internal static bool TryIsAllowedSingleTarget(TargetType type, Creature creature, out bool allowed)
+    internal static bool TryIsAllowedSingleTarget(TargetType type, CardModel? card, Creature creature, out bool allowed)
     {
         if (!SingleTargetPredicates.TryGetValue(type, out var predicate))
         {
@@ -31,7 +32,7 @@ internal static class CustomTargetTypeRegistry
             return false;
         }
 
-        allowed = predicate(creature);
+        allowed = predicate(card, creature);
         return true;
     }
 
@@ -47,7 +48,7 @@ internal static class CustomTargetTypeRegistry
         return true;
     }
 
-    internal static void RegisterSingleTargetType(TargetType type, Func<Creature, bool> predicate)
+    internal static void RegisterSingleTargetType(TargetType type, Func<CardModel?, Creature, bool> predicate)
     {
         SingleTargetPredicates[type] = predicate;
     }
@@ -62,11 +63,13 @@ internal static class CustomTargetTypeRegistry
         SingleTargetPredicates.Clear();
         MultiTargetPredicates.Clear();
 
-        RegisterSingleTargetType(CustomTargetType.Anyone, target => target is { IsAlive: true, IsPet: false });
-        RegisterSingleTargetType(CustomTargetType.AnyFriendly, CustomTargetType.IsAnyFriendlyTarget);
+        RegisterMultiTargetType(CustomTargetType.AllPlayers, target => target is { IsAlive: true, IsPlayer: true, IsPet: false });
+        RegisterSingleTargetType(CustomTargetType.Anyone, (_, target) => target is { IsAlive: true, IsPet: false });
+        RegisterSingleTargetType(CustomTargetType.AnyOtherPlayer, CustomTargetType.IsAnyOtherPlayerTarget);
+        RegisterSingleTargetType(CustomTargetType.AnyFriendly, (_, target) => CustomTargetType.IsAnyFriendlyTarget(target));
         RegisterMultiTargetType(CustomTargetType.Everyone, target => target is { IsAlive: true, IsPet: false });
-        RegisterSingleTargetType(CustomTargetType.AnyPigMinion, CustomTargetType.IsAnyPigMinionTarget);
-        RegisterSingleTargetType(CustomTargetType.AnyYouArePigTarget, CustomTargetType.IsAnyYouArePigTarget);
-        RegisterSingleTargetType(CustomTargetType.AnyPigPawnTarget, CustomTargetType.IsAnyPigPawnTarget);
+        RegisterSingleTargetType(CustomTargetType.AnyPigMinion, (_, target) => CustomTargetType.IsAnyPigMinionTarget(target));
+        RegisterSingleTargetType(CustomTargetType.AnyYouArePigTarget, (_, target) => CustomTargetType.IsAnyYouArePigTarget(target));
+        RegisterSingleTargetType(CustomTargetType.AnyPigPawnTarget, (_, target) => CustomTargetType.IsAnyPigPawnTarget(target));
     }
 }

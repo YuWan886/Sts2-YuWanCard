@@ -2,18 +2,18 @@ using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Orbs;
-using YuWanCard.Characters;
 
 namespace YuWanCard.Cards;
 
-[Pool(typeof(PigCardPool))]
+[Pool(typeof(ColorlessCardPool))]
 public class PigRecharge : YuWanCardModel
 {
     public PigRecharge() : base(
         baseCost: 1,
         type: CardType.Skill,
-        rarity: CardRarity.Common,
+        rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
     }

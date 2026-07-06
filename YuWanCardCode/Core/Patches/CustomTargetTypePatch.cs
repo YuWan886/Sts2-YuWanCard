@@ -15,6 +15,34 @@ using MegaCrit.Sts2.Core.Nodes.Vfx;
 
 namespace YuWanCard.Core.Patches;
 
+internal static class CustomTargetingContext
+{
+    private static readonly AsyncLocal<CardModel?> CurrentCardSlot = new();
+
+    internal static CardModel? CurrentCard => CurrentCardSlot.Value;
+
+    internal static IDisposable Push(CardModel? card)
+    {
+        return new Scope(card);
+    }
+
+    private sealed class Scope : IDisposable
+    {
+        private readonly CardModel? _previous;
+
+        public Scope(CardModel? card)
+        {
+            _previous = CurrentCardSlot.Value;
+            CurrentCardSlot.Value = card;
+        }
+
+        public void Dispose()
+        {
+            CurrentCardSlot.Value = _previous;
+        }
+    }
+}
+
 internal static class CardPlayDelegates
 {
     internal static readonly Func<NCardPlay, CardModel?> GetCard =
@@ -89,7 +117,7 @@ internal static class NTargetManagerAllowedToTargetCreatureCustomTargetTypePatch
 {
     public static bool Prefix(NTargetManager __instance, Creature creature, ref bool __result)
     {
-        if (!CustomTargetTypeRegistry.TryIsAllowedSingleTarget(__instance._validTargetsType, creature, out var allowed))
+        if (!CustomTargetTypeRegistry.TryIsAllowedSingleTarget(__instance._validTargetsType, CustomTargetingContext.CurrentCard, creature, out var allowed))
             return true;
 
         __result = allowed;
@@ -105,7 +133,7 @@ internal static class CardModelCanPlayTargetingCustomTargetTypePatch
         if (target == null)
             return true;
 
-        if (!CustomTargetTypeRegistry.TryIsAllowedSingleTarget(__instance.TargetType, target, out var allowed))
+        if (!CustomTargetTypeRegistry.TryIsAllowedSingleTarget(__instance.TargetType, __instance, target, out var allowed))
             return true;
 
         __result = allowed;
@@ -121,7 +149,7 @@ internal static class CardModelIsValidTargetCustomTargetTypePatch
         if (target == null)
             return true;
 
-        if (!CustomTargetTypeRegistry.TryIsAllowedSingleTarget(__instance.TargetType, target, out var allowed))
+        if (!CustomTargetTypeRegistry.TryIsAllowedSingleTarget(__instance.TargetType, __instance, target, out var allowed))
             return true;
 
         __result = allowed;
@@ -150,11 +178,13 @@ internal static class NMouseCardPlayTargetSelectionCustomTargetTypePatch
     private static async Task RunTargeting(NMouseCardPlay instance, TargetMode targetMode, TargetType targetType)
     {
         var cardNode = CardPlayDelegates.GetCardNode(instance);
+        var card = CardPlayDelegates.GetCard(instance);
         if (cardNode == null)
             return;
 
         CardPlayDelegates.TryShowEvokingOrbs(instance);
         cardNode.CardHighlight.AnimFlash();
+        using var _ = CustomTargetingContext.Push(card);
         await SingleCreatureTargeting(instance, targetMode, targetType);
     }
 }
@@ -253,7 +283,7 @@ internal static class NControllerCardPlaySingleTargetingCustomTargetTypePatch
 
         var nodes = room.CreatureNodes
             .Where(n =>
-                CustomTargetTypeRegistry.TryIsAllowedSingleTarget(targetType, n.Entity, out var allowed) && allowed)
+                CustomTargetTypeRegistry.TryIsAllowedSingleTarget(targetType, card, n.Entity, out var allowed) && allowed)
             .ToList();
 
         if (nodes.Count == 0)
@@ -268,6 +298,7 @@ internal static class NControllerCardPlaySingleTargetingCustomTargetTypePatch
 
         try
         {
+            using var _ = CustomTargetingContext.Push(card);
             targetManager.Connect(NTargetManager.SignalName.CreatureHovered, hoverCallable);
             targetManager.Connect(NTargetManager.SignalName.CreatureUnhovered, unhoverCallable);
 

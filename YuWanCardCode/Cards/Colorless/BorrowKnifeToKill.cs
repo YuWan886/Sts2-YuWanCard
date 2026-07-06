@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using YuWanCard.Core;
 using YuWanCard.Core.Extensions;
 
 namespace YuWanCard.Cards;
@@ -19,7 +20,7 @@ public class BorrowKnifeToKill : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AnyAlly)
+        target: CustomTargetType.AnyOtherPlayer)
     {
         WithKeywords(CardKeyword.Exhaust);
     }

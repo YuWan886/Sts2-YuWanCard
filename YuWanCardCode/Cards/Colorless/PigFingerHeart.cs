@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Multiplayer;
 
@@ -25,7 +26,7 @@ public class PigFingerHeart : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
-        target: TargetType.AnyAlly)
+        target: CustomTargetType.AnyOtherPlayer)
     {
         WithVar("MaxHpGain", 3);
     }

@@ -1,4 +1,6 @@
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -16,7 +18,7 @@ public class CleanPig : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AnyPlayer)
+        target: CustomTargetType.AllPlayers)
     {
         WithKeywords(CardKeyword.Exhaust);
     }
@@ -33,9 +35,9 @@ public class CleanPig : YuWanCardModel
 
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
 
-        foreach (var player in CombatState.Players)
+        foreach (var creature in CombatState.GetLivingPlayerCreatures())
         {
-            var debuffs = player.Creature.Powers
+            var debuffs = creature.Powers
                 .Where(power => power.Type == PowerType.Debuff)
                 .ToList();
 

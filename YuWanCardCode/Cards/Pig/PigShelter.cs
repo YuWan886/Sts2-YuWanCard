@@ -1,4 +1,6 @@
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -14,7 +16,7 @@ public class PigShelter : YuWanCardModel, ITranscendenceCard
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Basic,
-        target: TargetType.AllAllies)
+        target: CustomTargetType.AllPlayers)
     {
         WithBlock(4);
     }
@@ -26,8 +28,7 @@ public class PigShelter : YuWanCardModel, ITranscendenceCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var teammates = CombatState!.GetTeammatesOf(Owner.Creature);
-        foreach (var teammate in teammates)
+        foreach (var teammate in CombatState!.GetLivingPlayerCreatures())
         {
             await CreatureCmd.GainBlock(teammate, DynamicVars.Block, cardPlay);
         }

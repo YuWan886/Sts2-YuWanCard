@@ -20,7 +20,6 @@ public class ManyPigs : YuWanCardModel
         target: TargetType.Self
     )
     {
-        WithKeywords(CardKeyword.Exhaust);
     }
 
     protected override void OnUpgrade()

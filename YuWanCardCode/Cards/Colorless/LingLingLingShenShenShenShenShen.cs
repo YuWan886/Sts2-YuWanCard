@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using YuWanCard.Core;
 using YuWanCard.Core.Extensions;
 
 namespace YuWanCard.Cards;
@@ -103,6 +104,8 @@ public class LingLingLingShenShenShenShenShen : YuWanCardModel
         return card.TargetType switch
         {
             TargetType.AnyEnemy => combatState.HittableEnemies.FirstOrDefault(),
+            var targetType when targetType == CustomTargetType.AnyOtherPlayer => combatState.Allies
+                .FirstOrDefault(c => c != null && c.IsAlive && c.IsPlayer && c != Owner.Creature),
             TargetType.AnyAlly => combatState.Allies
                 .FirstOrDefault(c => c != null && c.IsAlive && c.IsPlayer && c != Owner.Creature),
             TargetType.AnyPlayer => Owner.Creature,
@@ -112,6 +115,7 @@ public class LingLingLingShenShenShenShenShen : YuWanCardModel
 
     private static bool NeedsExplicitTarget(CardModel card)
     {
-        return card.TargetType is TargetType.AnyEnemy or TargetType.AnyAlly or TargetType.AnyPlayer;
+        return card.TargetType is TargetType.AnyEnemy or TargetType.AnyAlly or TargetType.AnyPlayer
+               || CustomTargetType.IsCustomSingleTargetType(card.TargetType);
     }
 }

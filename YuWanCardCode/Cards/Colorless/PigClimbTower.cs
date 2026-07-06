@@ -5,12 +5,12 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.ValueProps;
-using YuWanCard.Characters;
 
 namespace YuWanCard.Cards;
 
-[Pool(typeof(PigCardPool))]
+[Pool(typeof(ColorlessCardPool))]
 public class PigClimbTower : YuWanCardModel
 {
     public PigClimbTower() : base(

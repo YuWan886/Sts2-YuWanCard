@@ -1,4 +1,6 @@
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -14,7 +16,7 @@ public class PigBlessing : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
-        target: TargetType.AllAllies)
+        target: CustomTargetType.AllPlayers)
     {
         WithPower<StrengthPower>(1);
         WithPower<DexterityPower>(1);
@@ -30,8 +32,7 @@ public class PigBlessing : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var teammates = CombatState!.GetTeammatesOf(Owner.Creature);
-        foreach (var teammate in teammates)
+        foreach (var teammate in CombatState!.GetLivingPlayerCreatures())
         {
             await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
             await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), teammate, DynamicVars["DexterityPower"].IntValue, Owner.Creature, this);

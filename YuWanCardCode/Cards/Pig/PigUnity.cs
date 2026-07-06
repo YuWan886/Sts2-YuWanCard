@@ -1,4 +1,5 @@
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -10,6 +11,8 @@ namespace YuWanCard.Cards;
 [Pool(typeof(PigCardPool))]
 public class PigUnity : YuWanCardModel
 {
+    public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
+
     public PigUnity() : base(
         baseCost: 1,
         type: CardType.Skill,
@@ -37,11 +40,12 @@ public class PigUnity : YuWanCardModel
         }
 
         bool hasLivingPig = CombatState!.Allies.Any(c => c.IsAlive && c.Monster is YuWanCard.Monsters.PigMinion);
-        bool hasOtherLivingPlayer = CombatState.Players.Any(p => p.Creature != Owner.Creature && !p.Creature.IsDead);
+        var livingPlayers = CombatState.GetLivingPlayerCreatures();
+        bool hasOtherLivingPlayer = livingPlayers.Any(c => c != Owner.Creature);
 
         if (hasLivingPig || hasOtherLivingPlayer)
         {
-            foreach (var teammate in CombatState.Players.Select(p => p.Creature).Where(c => c is { IsAlive: true }))
+            foreach (var teammate in livingPlayers)
             {
                 await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(),teammate, DynamicVars.Strength.IntValue, Owner.Creature, this);
             }

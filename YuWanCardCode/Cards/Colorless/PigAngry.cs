@@ -1,4 +1,6 @@
+using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -16,7 +18,7 @@ public class PigAngry : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: TargetType.AllAllies)
+        target: CustomTargetType.AllPlayers)
     {
         WithPower<StrengthPower>(4);
         WithKeywords(CardKeyword.Exhaust);
@@ -29,6 +31,11 @@ public class PigAngry : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), CombatState!.GetTeammatesOf(Owner.Creature), DynamicVars.Strength.BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<StrengthPower>(
+            new ThrowingPlayerChoiceContext(),
+            CombatState!.GetLivingPlayerCreatures(),
+            DynamicVars.Strength.BaseValue,
+            Owner.Creature,
+            this);
     }
 }
