@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Characters;
-using YuWanCard.Core;
 using YuWanCard.Utils;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YuWanCard.Powers;
@@ -33,7 +32,7 @@ public class PigDesire : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
-        target: CustomTargetType.AnyOtherPlayer)
+        target: TargetType.AnyAlly)
     {
         WithKeywords(CardKeyword.Exhaust);
     }

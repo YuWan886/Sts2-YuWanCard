@@ -21,7 +21,11 @@ public static class CardModelTargetingExtensions
         {
             TargetType.AnyEnemy or TargetType.AllEnemies or TargetType.RandomEnemy
                 => state.HittableEnemies.ToList(),
-            TargetType.AnyAlly or TargetType.AllAllies
+            TargetType.AnyAlly
+                => state.Allies
+                    .Where(c => c != null && c.IsAlive && c.IsPlayer && c != card.Owner.Creature)
+                    .ToList(),
+            TargetType.AllAllies
                 => state.Allies.Where(c => c != null && c.IsAlive).ToList(),
             TargetType.AnyPlayer
                 => state.Players.Where(p => p?.Creature is { IsAlive: true }).Select(p => p.Creature).ToList(),

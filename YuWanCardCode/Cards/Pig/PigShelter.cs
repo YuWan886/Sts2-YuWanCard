@@ -16,7 +16,7 @@ public class PigShelter : YuWanCardModel, ITranscendenceCard
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Basic,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithBlock(4);
     }

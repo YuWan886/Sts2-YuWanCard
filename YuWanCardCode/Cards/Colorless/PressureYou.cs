@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
-using YuWanCard.Core;
 
 namespace YuWanCard.Cards;
 
@@ -17,7 +16,7 @@ public class PressureYou : YuWanCardModel
         baseCost: 0,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AnyOtherPlayer)
+        target: TargetType.AnyAlly)
     {
         WithVars(new EnergyVar(1));
         WithKeywords(CardKeyword.Exhaust);

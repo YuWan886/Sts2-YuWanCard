@@ -19,7 +19,7 @@ public class GiftPigFriends : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithPower<PigFriendsPower>(1);
         WithKeywords(CardKeyword.Exhaust);

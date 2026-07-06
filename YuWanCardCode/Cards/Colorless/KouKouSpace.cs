@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Utils;
 
@@ -21,7 +20,7 @@ public class KouKouSpace : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AnyOtherPlayer)
+        target: TargetType.AnyAlly)
     {
         WithPower<WeakPower>(1);
         WithKeywords(CardKeyword.Exhaust);
