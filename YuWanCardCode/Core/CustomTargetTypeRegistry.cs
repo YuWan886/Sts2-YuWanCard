@@ -63,9 +63,7 @@ internal static class CustomTargetTypeRegistry
         SingleTargetPredicates.Clear();
         MultiTargetPredicates.Clear();
 
-        RegisterMultiTargetType(CustomTargetType.AllPlayers, target => target is { IsAlive: true, IsPlayer: true, IsPet: false });
         RegisterSingleTargetType(CustomTargetType.Anyone, (_, target) => target is { IsAlive: true, IsPet: false });
-        RegisterSingleTargetType(CustomTargetType.AnyOtherPlayer, CustomTargetType.IsAnyOtherPlayerTarget);
         RegisterSingleTargetType(CustomTargetType.AnyFriendly, (_, target) => CustomTargetType.IsAnyFriendlyTarget(target));
         RegisterMultiTargetType(CustomTargetType.Everyone, target => target is { IsAlive: true, IsPet: false });
         RegisterSingleTargetType(CustomTargetType.AnyPigMinion, (_, target) => CustomTargetType.IsAnyPigMinionTarget(target));

@@ -16,7 +16,7 @@ public class PigInspire : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Common,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithPower<StrengthPower>(1);
     }

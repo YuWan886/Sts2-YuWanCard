@@ -18,7 +18,7 @@ public class RainDark : YuWanCardModel
         baseCost: 3,
         type: CardType.Power,
         rarity: CardRarity.Ancient,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithPower<IntangiblePower>(3);
         WithPower<RainDarkPower>(3);

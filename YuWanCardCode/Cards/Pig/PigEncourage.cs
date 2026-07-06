@@ -18,7 +18,7 @@ public class PigEncourage : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithVars(new EnergyVar(1));
         WithCards(1);

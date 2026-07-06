@@ -19,7 +19,7 @@ public class PigThink : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithVars(new EnergyVar(2));
         WithEnergyTip();

@@ -18,7 +18,7 @@ public class PigAngry : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithPower<StrengthPower>(4);
         WithKeywords(CardKeyword.Exhaust);

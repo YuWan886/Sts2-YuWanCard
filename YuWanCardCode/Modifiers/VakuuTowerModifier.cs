@@ -1576,7 +1576,6 @@ public class VakuuTowerModifier : YuWanModifierModel
         return card.TargetType switch
         {
             TargetType.AnyEnemy => SelectBestEnemyTargetOptimized(card, enemyCache),
-            var targetType when targetType == CustomTargetType.AnyOtherPlayer => SelectBestAllyTarget(combatState, player.Creature, allowOwnerFallback: false),
             TargetType.AnyAlly => SelectBestAllyTarget(combatState, player.Creature),
             TargetType.AnyPlayer => player.Creature,
             TargetType.Self => player.Creature,

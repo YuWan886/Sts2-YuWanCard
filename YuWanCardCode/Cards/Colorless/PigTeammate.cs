@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YuWanCard.Core;
 
 namespace YuWanCard.Cards;
 
@@ -17,7 +16,7 @@ public class PigTeammate : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AnyOtherPlayer)
+        target: TargetType.AnyAlly)
     {
         WithPower<BufferPower>(1);
         WithKeywords(CardKeyword.Exhaust);

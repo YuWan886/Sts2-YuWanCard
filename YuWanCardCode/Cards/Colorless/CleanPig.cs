@@ -18,7 +18,7 @@ public class CleanPig : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithKeywords(CardKeyword.Exhaust);
     }

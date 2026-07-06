@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
-using YuWanCard.Core;
 using YuWanCard.Powers;
 
 namespace YuWanCard.Cards;
@@ -19,7 +18,7 @@ public class PullNetCable : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AnyOtherPlayer)
+        target: TargetType.AnyAlly)
     {
         WithVars(new IntVar("turns", 1));
         WithKeywords(CardKeyword.Exhaust);

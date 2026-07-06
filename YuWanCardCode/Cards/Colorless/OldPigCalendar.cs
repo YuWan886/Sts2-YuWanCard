@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
-using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Powers;
 
@@ -19,7 +18,7 @@ public class OldPigCalendar : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
-        target: CustomTargetType.AnyOtherPlayer)
+        target: TargetType.AnyAlly)
     {
         WithPower<OldPigCalendarDoubleDamagePower>(1);
         WithPower<OldPigCalendarNoDamagePower>(1);

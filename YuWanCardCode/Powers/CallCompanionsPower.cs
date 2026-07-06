@@ -368,11 +368,8 @@ public class CallCompanionsPower : YuWanPowerModel
             TargetType.AllEnemies => combatState.HittableEnemies.FirstOrDefault(),
             // Self targets the companion creature, not the summoner
             TargetType.Self => _companionCreature ?? player.Creature,
-            var targetType when targetType == CustomTargetType.AnyOtherPlayer => combatState.Allies
-                .Where(c => c != null && c.IsAlive && c.IsPlayer && c != player.Creature)
-                .MinBy(c => (int)c.CurrentHp),
             TargetType.AnyAlly => combatState.Allies
-                .Where(c => c != null && c.IsAlive && c.IsPlayer)
+                .Where(c => c != null && c.IsAlive && c.IsPlayer && c != player.Creature)
                 .MinBy(c => (int)c.CurrentHp),
             _ => card.GetSelectableTargets().FirstOrDefault()
                 ?? combatState.HittableEnemies.FirstOrDefault()

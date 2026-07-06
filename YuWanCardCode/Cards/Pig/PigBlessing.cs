@@ -16,7 +16,7 @@ public class PigBlessing : YuWanCardModel
         baseCost: 2,
         type: CardType.Skill,
         rarity: CardRarity.Rare,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithPower<StrengthPower>(1);
         WithPower<DexterityPower>(1);

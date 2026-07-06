@@ -104,8 +104,6 @@ public class LingLingLingShenShenShenShenShen : YuWanCardModel
         return card.TargetType switch
         {
             TargetType.AnyEnemy => combatState.HittableEnemies.FirstOrDefault(),
-            var targetType when targetType == CustomTargetType.AnyOtherPlayer => combatState.Allies
-                .FirstOrDefault(c => c != null && c.IsAlive && c.IsPlayer && c != Owner.Creature),
             TargetType.AnyAlly => combatState.Allies
                 .FirstOrDefault(c => c != null && c.IsAlive && c.IsPlayer && c != Owner.Creature),
             TargetType.AnyPlayer => Owner.Creature,

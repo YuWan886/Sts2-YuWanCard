@@ -69,7 +69,6 @@ public class VakuuTakeoverPower : YuWanPowerModel
         return card.TargetType switch
         {
             TargetType.AnyEnemy => combatState.HittableEnemies.FirstOrDefault(),
-            var targetType when targetType == CustomTargetType.AnyOtherPlayer => rng.CombatTargets.NextItem(combatState.Allies.Where(c => c != null && c.IsAlive && c.IsPlayer && c != Owner)),
             TargetType.AnyAlly => rng.CombatTargets.NextItem(combatState.Allies.Where(c => c != null && c.IsAlive && c.IsPlayer && c != Owner)),
             TargetType.AnyPlayer => Owner,
             _ => card.PickRandomTarget()

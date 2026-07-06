@@ -19,7 +19,7 @@ public class PigComfort : YuWanCardModel
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
-        target: CustomTargetType.AllPlayers)
+        target: TargetType.AllAllies)
     {
         WithCards(1);
         WithKeywords(CardKeyword.Exhaust);
