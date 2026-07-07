@@ -25,14 +25,22 @@ public static class ArchaicToothPatch
     [HarmonyPatch("GetTranscendenceTransformedCard")]
     public static bool PrefixGetTranscendenceTransformedCard(CardModel starterCard, ref CardModel __result)
     {
-        var transformedCard = TranscendenceRegistry.CreateTransformedCard(starterCard);
-        if (transformedCard == null)
+        try
         {
+            var transformedCard = TranscendenceRegistry.CreateTransformedCard(starterCard);
+            if (transformedCard == null)
+            {
+                return true;
+            }
+
+            __result = transformedCard;
+            return false;
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"[ArchaicTooth] Failed to transform card {starterCard.Id.Entry}: {ex.Message}");
             return true;
         }
-
-        __result = transformedCard;
-        return false;
     }
 
     [HarmonyPostfix]
