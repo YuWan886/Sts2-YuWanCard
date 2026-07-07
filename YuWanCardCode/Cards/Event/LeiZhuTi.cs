@@ -27,7 +27,7 @@ public sealed class LeiZhuTi : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var colorlessCards = YuWanColorlessCardCatalog.GetUnlockedCanonicalCards(Owner)
+        var colorlessCards = YuWanColorlessCardCatalog.GetUnlockedDoctorPigCards(Owner)
             .ToList();
 
         if (colorlessCards.Count == 0)

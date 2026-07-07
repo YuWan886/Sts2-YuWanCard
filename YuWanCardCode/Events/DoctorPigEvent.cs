@@ -29,7 +29,7 @@ public sealed class DoctorPigEvent : YuWanEventModel
     {
         return YuWanContentAvailability.IsEventTypeEnabled<DoctorPigEvent>()
                && runState.CurrentActIndex == 0
-               && runState.Players.Any(player => YuWanColorlessCardCatalog.GetUnlockedCanonicalCards(player).Count > 0);
+               && runState.Players.Any(player => YuWanColorlessCardCatalog.GetUnlockedDoctorPigCards(player).Count > 0);
     }
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
@@ -48,7 +48,7 @@ public sealed class DoctorPigEvent : YuWanEventModel
     private async Task AcceptKnowledgeInheritance()
     {
         var owner = Owner!;
-        var colorlessCards = YuWanColorlessCardCatalog.GetUnlockedCanonicalCards(owner)
+        var colorlessCards = YuWanColorlessCardCatalog.GetUnlockedDoctorPigCards(owner)
             .ToList();
 
         if (colorlessCards.Count > 0)

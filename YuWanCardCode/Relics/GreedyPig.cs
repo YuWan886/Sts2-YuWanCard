@@ -45,10 +45,10 @@ public class GreedyPig : YuWanRelicModel
                     this,
                     () => Owner,
                     amount => Math.Floor(amount * 1m),
-                    async (owner, modifiedAmount) =>
+                    (_, _) =>
                     {
                         Flash();
-                        await PlayerCmd.GainGold(modifiedAmount, owner);
+                        return Task.CompletedTask;
                     }
                 );
             }

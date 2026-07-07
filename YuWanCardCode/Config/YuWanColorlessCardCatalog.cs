@@ -1,4 +1,5 @@
 using System.Reflection;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
@@ -14,6 +15,25 @@ internal static class YuWanColorlessCardCatalog
 {
     public const string SectionId = "colorless_cards";
     public const int ButtonsPerRow = 5;
+
+    private static readonly HashSet<CardType> DoctorPigExcludedTypes =
+    [
+        CardType.None,
+        CardType.Status,
+        CardType.Curse,
+        CardType.Quest
+    ];
+
+    private static readonly HashSet<CardRarity> DoctorPigExcludedRarities =
+    [
+        CardRarity.None,
+        CardRarity.Basic,
+        CardRarity.Ancient,
+        CardRarity.Token,
+        CardRarity.Status,
+        CardRarity.Curse,
+        CardRarity.Quest
+    ];
 
     public static readonly IReadOnlyList<YuWanColorlessCardDefinition> Cards = BuildCards();
 
@@ -43,6 +63,19 @@ internal static class YuWanColorlessCardCatalog
             .Select(CreateCanonicalCard)
             .Where(card => unlockedIds.Contains(card.Id))
             .ToArray();
+    }
+
+    public static IReadOnlyList<CardModel> GetUnlockedDoctorPigCards(Player player)
+    {
+        return GetUnlockedCanonicalCards(player)
+            .Where(IsDoctorPigEligibleCard)
+            .ToArray();
+    }
+
+    public static bool IsDoctorPigEligibleCard(CardModel card)
+    {
+        return !DoctorPigExcludedTypes.Contains(card.Type)
+               && !DoctorPigExcludedRarities.Contains(card.Rarity);
     }
 
     private static IReadOnlyList<YuWanColorlessCardDefinition> BuildCards()
