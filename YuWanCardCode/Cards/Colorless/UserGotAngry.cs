@@ -26,13 +26,16 @@ public class UserGotAngry : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (CombatState == null) return;
+        if (CombatState == null || Owner == null) return;
 
-        var anger = CombatState.CreateCard<Anger>(Owner);
-        if (IsUpgraded) CardCmd.Upgrade(anger);
+        List<CardPileAddResult> addResults = [];
+        foreach (PileType pileType in new[] { PileType.Draw, PileType.Hand, PileType.Discard, PileType.Exhaust })
+        {
+            var anger = CombatState.CreateCard<Anger>(Owner);
+            if (IsUpgraded) CardCmd.Upgrade(anger);
+            addResults.Add(await CardPileCmd.AddGeneratedCardToCombat(anger, pileType, Owner));
+        }
 
-        CardCmd.PreviewCardPileAdd(
-            await CardPileCmd.AddGeneratedCardToCombat(anger, PileType.Hand, Owner),
-            2f);
+        CardCmd.PreviewCardPileAdd(addResults, 2f);
     }
 }
