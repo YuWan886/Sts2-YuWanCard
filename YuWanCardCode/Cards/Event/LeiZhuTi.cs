@@ -27,7 +27,8 @@ public sealed class LeiZhuTi : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var colorlessCards = YuWanColorlessCardCatalog.GetUnlockedDoctorPigCards(Owner)
+        var owner = Owner!;
+        var colorlessCards = YuWanColorlessCardCatalog.GetUnlockedDoctorPigCards(owner.RunState)
             .ToList();
 
         if (colorlessCards.Count == 0)
@@ -38,7 +39,7 @@ public sealed class LeiZhuTi : YuWanCardModel
         var creationOptions = CardCreationOptions.ForNonCombatWithDefaultOdds(colorlessCards)
             .WithCustomPool(colorlessCards, CardRarityOddsType.Uniform)
             .WithFlags(CardCreationFlags.NoCardPoolModifications);
-        var cards = CardFactory.CreateForReward(Owner, Math.Min(CardChoiceCount, colorlessCards.Count), creationOptions)
+        var cards = CardFactory.CreateForReward(owner, Math.Min(CardChoiceCount, colorlessCards.Count), creationOptions)
             .ToList();
 
         if (IsUpgraded)
@@ -53,7 +54,7 @@ public sealed class LeiZhuTi : YuWanCardModel
         }
 
         var prefs = new CardSelectorPrefs(new LocString("cards", $"{Id.Entry}.selectionScreenPrompt"), 1, 1);
-        CardModel? selectedCard = (await CardSelectCmd.FromSimpleGridForRewards(choiceContext, cards, Owner, prefs))
+        CardModel? selectedCard = (await CardSelectCmd.FromSimpleGridForRewards(choiceContext, cards, owner, prefs))
             .FirstOrDefault();
         if (selectedCard == null)
         {
@@ -61,6 +62,6 @@ public sealed class LeiZhuTi : YuWanCardModel
         }
 
         selectedCard.EnergyCost.SetCustomBaseCost(0);
-        await CardPileCmd.AddGeneratedCardToCombat(selectedCard, PileType.Hand, Owner);
+        await CardPileCmd.AddGeneratedCardToCombat(selectedCard, PileType.Hand, owner);
     }
 }
