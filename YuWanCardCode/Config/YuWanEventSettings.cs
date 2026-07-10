@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace YuWanCard.Config;
 
-internal static class YuWanColorlessCardSettings
+internal static class YuWanEventSettings
 {
-    private const string SaveFileName = "colorless_card_settings.json";
+    private const string SaveFileName = "event_settings.json";
     private static readonly Lock Gate = new();
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -23,9 +23,9 @@ internal static class YuWanColorlessCardSettings
         }
     }
 
-    public static bool IsEnabled(Type cardType)
+    public static bool IsEnabled(Type eventType)
     {
-        if (!YuWanColorlessCardCatalog.TryGetDefinition(cardType, out var definition))
+        if (!YuWanEventCatalog.TryGetDefinition(eventType, out var definition))
         {
             return true;
         }
@@ -59,7 +59,7 @@ internal static class YuWanColorlessCardSettings
         {
             EnsureLoaded();
             bool changed = false;
-            foreach (var definition in YuWanColorlessCardCatalog.Cards)
+            foreach (var definition in YuWanEventCatalog.Events)
             {
                 if (_states!.TryGetValue(definition.Key, out bool existing) && existing == enabled)
                 {
@@ -85,7 +85,7 @@ internal static class YuWanColorlessCardSettings
         {
             EnsureLoaded();
             bool changed = false;
-            foreach (var definition in YuWanColorlessCardCatalog.Cards)
+            foreach (var definition in YuWanEventCatalog.Events)
             {
                 bool enabled = states.GetValueOrDefault(definition.Key, true);
                 if (_states!.TryGetValue(definition.Key, out bool existing) && existing == enabled)
@@ -124,14 +124,14 @@ internal static class YuWanColorlessCardSettings
 
             string json = File.ReadAllText(path);
             var payload = JsonSerializer.Deserialize<SavePayload>(json, JsonOptions);
-            if (payload?.EnabledCards == null)
+            if (payload?.EnabledEvents == null)
             {
                 return;
             }
 
-            foreach (var (key, enabled) in payload.EnabledCards)
+            foreach (var (key, enabled) in payload.EnabledEvents)
             {
-                if (YuWanColorlessCardCatalog.TryGetDefinition(key, out _))
+                if (YuWanEventCatalog.TryGetDefinition(key, out _))
                 {
                     _states[key] = enabled;
                 }
@@ -139,7 +139,7 @@ internal static class YuWanColorlessCardSettings
         }
         catch (Exception ex)
         {
-            MainFile.Logger.Warn($"Failed to load colorless card settings: {ex.Message}");
+            MainFile.Logger.Warn($"Failed to load event settings: {ex.Message}");
         }
     }
 
@@ -151,21 +151,21 @@ internal static class YuWanColorlessCardSettings
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             var payload = new SavePayload
             {
-                EnabledCards = new Dictionary<string, bool>(_states!, StringComparer.Ordinal)
+                EnabledEvents = new Dictionary<string, bool>(_states!, StringComparer.Ordinal)
             };
             string json = JsonSerializer.Serialize(payload, JsonOptions);
             File.WriteAllText(path, json);
         }
         catch (Exception ex)
         {
-            MainFile.Logger.Warn($"Failed to save colorless card settings: {ex.Message}");
+            MainFile.Logger.Warn($"Failed to save event settings: {ex.Message}");
         }
     }
 
     private static Dictionary<string, bool> CreateDefaultStateMap()
     {
         var result = new Dictionary<string, bool>(StringComparer.Ordinal);
-        foreach (var definition in YuWanColorlessCardCatalog.Cards)
+        foreach (var definition in YuWanEventCatalog.Events)
         {
             result[definition.Key] = true;
         }
@@ -174,11 +174,11 @@ internal static class YuWanColorlessCardSettings
     }
 
     private static string ResolveSavePath()
-        => YuWanModDataPathHelper.ResolveAccountFilePath(SaveFileName, "colorless card settings");
+        => YuWanModDataPathHelper.ResolveAccountFilePath(SaveFileName, "event settings");
 
     private sealed class SavePayload
     {
-        [JsonPropertyName("enabledCards")]
-        public Dictionary<string, bool>? EnabledCards { get; set; }
+        [JsonPropertyName("enabledEvents")]
+        public Dictionary<string, bool>? EnabledEvents { get; set; }
     }
 }

@@ -13,7 +13,6 @@ using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Random;
-using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Extensions;
 using YuWanCard.Monsters;

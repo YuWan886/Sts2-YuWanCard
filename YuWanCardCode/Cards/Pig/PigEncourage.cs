@@ -1,4 +1,3 @@
-using YuWanCard.Core;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;

@@ -25,5 +25,12 @@
   "YUWANCARD-IGNIS.moves.RAGE_COMBO.title": "Rage Combo",
   "YUWANCARD-IGNIS.moves.FLAME_UPPERCUT.title": "Flame Uppercut",
   "LUSTFUL_PIG_FOR.player": "For {playerName}!",
-  "YUWANCARD-PIG_MINION.name": "Pig Minion"
+  "YUWANCARD-PIG_MINION.name": "Pig Minion",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.name": "Ferrous Wroughtnaut",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.moves.SLEEP.title": "Dormant",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.moves.HORIZONTAL_SLASH.title": "Great Axe Sweep",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.moves.HORIZONTAL_MULTI_SLASH.title": "Great Axe Sweep",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.moves.VERTICAL_SLASH.title": "Great Axe Cleave",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.moves.STAGGER_FIRST.title": "Staggered",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.moves.STAGGER_SECOND.title": "Staggered"
 }

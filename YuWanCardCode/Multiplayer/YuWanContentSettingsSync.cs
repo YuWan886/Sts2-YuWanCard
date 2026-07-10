@@ -238,14 +238,16 @@ public static class YuWanContentSettingsSync
             EnableYuWanEnemyEncounters = snapshot.EnableYuWanEnemyEncounters,
             EnableIgnisBossEncounter = snapshot.EnableIgnisBossEncounter,
             EnableKillerEliteEncounter = snapshot.EnableKillerEliteEncounter,
+            EnableFerrousWroughtnautEliteEncounter = snapshot.EnableFerrousWroughtnautEliteEncounter,
             EnableYuWanEvents = snapshot.EnableYuWanEvents,
             EnablePigPigAncient = snapshot.EnablePigPigAncient,
-            EnableBlacksmithEvent = snapshot.EnableBlacksmithEvent,
-            EnableHelloHumanEvent = snapshot.EnableHelloHumanEvent,
-            EnableHorizonEvent = snapshot.EnableHorizonEvent,
-            EnableSkullGoldRushEvent = snapshot.EnableSkullGoldRushEvent,
-            EnableSunkenStatueQuestEvent = snapshot.EnableSunkenStatueQuestEvent,
-            EnableZhiZhanZhiShangEvent = snapshot.EnableZhiZhanZhiShangEvent,
+            EnabledEvents = YuWanEventCatalog.Events
+                .Select(definition => new YuWanEventState
+                {
+                    Key = definition.Key,
+                    Enabled = snapshot.EnabledEvents.GetValueOrDefault(definition.Key, true)
+                })
+                .ToList(),
             EnabledColorlessCards = YuWanColorlessCardCatalog.Cards
                 .Select(definition => new YuWanColorlessCardState
                 {
@@ -280,14 +282,10 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
     public required bool EnableYuWanEnemyEncounters { get; set; }
     public required bool EnableIgnisBossEncounter { get; set; }
     public required bool EnableKillerEliteEncounter { get; set; }
+    public required bool EnableFerrousWroughtnautEliteEncounter { get; set; }
     public required bool EnableYuWanEvents { get; set; }
     public required bool EnablePigPigAncient { get; set; }
-    public required bool EnableBlacksmithEvent { get; set; }
-    public required bool EnableHelloHumanEvent { get; set; }
-    public required bool EnableHorizonEvent { get; set; }
-    public required bool EnableSkullGoldRushEvent { get; set; }
-    public required bool EnableSunkenStatueQuestEvent { get; set; }
-    public required bool EnableZhiZhanZhiShangEvent { get; set; }
+    public required List<YuWanEventState> EnabledEvents { get; set; }
     public required List<YuWanColorlessCardState> EnabledColorlessCards { get; set; }
 
     public bool ShouldBroadcast => false;
@@ -302,14 +300,15 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
         writer.WriteBool(EnableYuWanEnemyEncounters);
         writer.WriteBool(EnableIgnisBossEncounter);
         writer.WriteBool(EnableKillerEliteEncounter);
+        writer.WriteBool(EnableFerrousWroughtnautEliteEncounter);
         writer.WriteBool(EnableYuWanEvents);
         writer.WriteBool(EnablePigPigAncient);
-        writer.WriteBool(EnableBlacksmithEvent);
-        writer.WriteBool(EnableHelloHumanEvent);
-        writer.WriteBool(EnableHorizonEvent);
-        writer.WriteBool(EnableSkullGoldRushEvent);
-        writer.WriteBool(EnableSunkenStatueQuestEvent);
-        writer.WriteBool(EnableZhiZhanZhiShangEvent);
+        writer.WriteInt(EnabledEvents.Count);
+        foreach (var entry in EnabledEvents)
+        {
+            writer.WriteString(entry.Key);
+            writer.WriteBool(entry.Enabled);
+        }
         writer.WriteInt(EnabledColorlessCards.Count);
         foreach (var entry in EnabledColorlessCards)
         {
@@ -325,17 +324,23 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
         EnableYuWanEnemyEncounters = reader.ReadBool();
         EnableIgnisBossEncounter = reader.ReadBool();
         EnableKillerEliteEncounter = reader.ReadBool();
+        EnableFerrousWroughtnautEliteEncounter = reader.ReadBool();
         EnableYuWanEvents = reader.ReadBool();
         EnablePigPigAncient = reader.ReadBool();
-        EnableBlacksmithEvent = reader.ReadBool();
-        EnableHelloHumanEvent = reader.ReadBool();
-        EnableHorizonEvent = reader.ReadBool();
-        EnableSkullGoldRushEvent = reader.ReadBool();
-        EnableSunkenStatueQuestEvent = reader.ReadBool();
-        EnableZhiZhanZhiShangEvent = reader.ReadBool();
-        int count = reader.ReadInt();
-        EnabledColorlessCards = new List<YuWanColorlessCardState>(count);
-        for (int i = 0; i < count; i++)
+        int eventCount = reader.ReadInt();
+        EnabledEvents = new List<YuWanEventState>(eventCount);
+        for (int i = 0; i < eventCount; i++)
+        {
+            EnabledEvents.Add(new YuWanEventState
+            {
+                Key = reader.ReadString(),
+                Enabled = reader.ReadBool()
+            });
+        }
+
+        int colorlessCount = reader.ReadInt();
+        EnabledColorlessCards = new List<YuWanColorlessCardState>(colorlessCount);
+        for (int i = 0; i < colorlessCount; i++)
         {
             EnabledColorlessCards.Add(new YuWanColorlessCardState
             {
@@ -352,17 +357,20 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
             EnableYuWanEnemyEncounters,
             EnableIgnisBossEncounter,
             EnableKillerEliteEncounter,
+            EnableFerrousWroughtnautEliteEncounter,
             EnableYuWanEvents,
             EnablePigPigAncient,
-            EnableBlacksmithEvent,
-            EnableHelloHumanEvent,
-            EnableHorizonEvent,
-            EnableSkullGoldRushEvent,
-            EnableSunkenStatueQuestEvent,
-            EnableZhiZhanZhiShangEvent,
+            EnabledEvents.ToDictionary(static entry => entry.Key, static entry => entry.Enabled,
+                StringComparer.Ordinal),
             EnabledColorlessCards.ToDictionary(static entry => entry.Key, static entry => entry.Enabled,
                 StringComparer.Ordinal));
     }
+}
+
+public struct YuWanEventState
+{
+    public required string Key { get; set; }
+    public required bool Enabled { get; set; }
 }
 
 public struct YuWanColorlessCardState

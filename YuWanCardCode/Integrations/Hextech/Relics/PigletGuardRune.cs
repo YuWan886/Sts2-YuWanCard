@@ -13,6 +13,8 @@ namespace YuWanCard.Relics;
 
 public sealed class PigletGuardRune : HextechPigRuneBase
 {
+    private readonly HashSet<ulong> _guardedPigCombatIdsThisCombat = [];
+
     public override HextechRuneRarity HextechRarity => HextechRuneRarity.Silver;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -23,6 +25,8 @@ public sealed class PigletGuardRune : HextechPigRuneBase
 
     public override async Task BeforeCombatStart()
     {
+        _guardedPigCombatIdsThisCombat.Clear();
+
         if (Owner == null)
         {
             return;
@@ -34,9 +38,33 @@ public sealed class PigletGuardRune : HextechPigRuneBase
             return;
         }
 
-        Flash();
-        await PowerCmd.Apply<HextechPigletGuardMinionPower>(new ThrowingPlayerChoiceContext(), pig, 1, Owner.Creature, null);
-        await PowerCmd.Apply<PlatingPower>(new ThrowingPlayerChoiceContext(), pig, DynamicVars["PlatingPower"].BaseValue, Owner.Creature, null);
+        await ApplyGuardToPig(pig);
+    }
+
+    public override async Task AfterCreatureAddedToCombat(Creature creature)
+    {
+        if (Owner == null
+            || creature.PetOwner?.Creature != Owner.Creature
+            || creature.Monster is not Monsters.PigMinion)
+        {
+            return;
+        }
+
+        await ApplyGuardToPig(creature);
+    }
+
+    public override Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
+    {
+        if (Owner == null
+            || creature.PetOwner?.Creature != Owner.Creature
+            || creature.Monster is not Monsters.PigMinion
+            || !creature.CombatId.HasValue)
+        {
+            return Task.CompletedTask;
+        }
+
+        _guardedPigCombatIdsThisCombat.Remove(creature.CombatId.Value);
+        return Task.CompletedTask;
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
@@ -54,5 +82,22 @@ public sealed class PigletGuardRune : HextechPigRuneBase
 
         Flash();
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block.BaseValue, ValueProp.Unpowered, null);
+    }
+
+    private async Task ApplyGuardToPig(Creature pig)
+    {
+        if (Owner == null || pig.IsDead)
+        {
+            return;
+        }
+
+        if (pig.CombatId.HasValue && !_guardedPigCombatIdsThisCombat.Add(pig.CombatId.Value))
+        {
+            return;
+        }
+
+        Flash();
+        await PowerCmd.Apply<HextechPigletGuardMinionPower>(new ThrowingPlayerChoiceContext(), pig, 1, Owner.Creature, null);
+        await PowerCmd.Apply<PlatingPower>(new ThrowingPlayerChoiceContext(), pig, DynamicVars["PlatingPower"].BaseValue, Owner.Creature, null);
     }
 }

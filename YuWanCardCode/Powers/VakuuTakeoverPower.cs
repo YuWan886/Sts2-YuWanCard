@@ -10,7 +10,6 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
-using YuWanCard.Core;
 using YuWanCard.Core.Extensions;
 
 namespace YuWanCard.Powers;

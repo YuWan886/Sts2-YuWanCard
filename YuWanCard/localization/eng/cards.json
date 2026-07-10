@@ -2,7 +2,7 @@
   "YUWANCARD-LOTS_OF_MODS.title": "So Many Mods",
   "YUWANCARD-LOTS_OF_MODS.description": "Deal {CalculatedDamage:diff()} damage.\nDeals {ExtraDamage:diff()} additional damage for each loaded mod.",
   "YUWANCARD-USER_GOT_ANGRY.title": "F**k, the User is Angry",
-  "YUWANCARD-USER_GOT_ANGRY.description": "Add an {IfUpgraded:show:[gold]Anger+[/gold]|[gold]Anger[/gold]} to your hand.",
+  "YUWANCARD-USER_GOT_ANGRY.description": "Add an {IfUpgraded:show:[gold]Anger+[/gold]|[gold]Anger[/gold]} to your draw pile, hand, discard pile, and exhaust pile.",
   "YUWANCARD-PIG_HURT.title": "Pig Hurt",
   "YUWANCARD-PIG_HURT.description": "Apply {VulnerablePower:diff()} [gold]Vulnerable[/gold] to all enemies.",
   "YUWANCARD-PIG_THINK.title": "Pig Think",
@@ -337,6 +337,8 @@
   "YUWANCARD-LING_LING_LING_SHEN_SHEN_SHEN_SHEN_SHEN.selectionScreenPrompt": "Choose a card in your hand",
   "YUWANCARD-PIG_ALWAYS_CRY.title": "Pig Always Cry",
   "YUWANCARD-PIG_ALWAYS_CRY.description": "",
+  "YUWANCARD-FERROUS_WROUGHTNAUT_SHIFT.title": "Shift",
+  "YUWANCARD-FERROUS_WROUGHTNAUT_SHIFT.description": "Change your position.",
   "YUWANCARD-PIG_GAZE.title": "Pig Gaze",
   "YUWANCARD-PIG_GAZE.description": "Another player gains {Energy:energyIcons()}.\nThat player cannot draw cards for the rest of this turn.",
   "YUWANCARD-YU_WAN_FORGOT.title": "YuWan Forgot",
@@ -353,6 +355,8 @@
   "YUWANCARD-REVOLVER_PIG.description": "Use on yourself or a teammate. It has a 1 in 6 chance to fire; if it does, that player dies and this card is removed from your deck. Otherwise, the target gains {Gold:diff()} Gold and this card returns to your hand.",
   "YUWANCARD-HOT_POTATO.title": "Hot Potato",
   "YUWANCARD-HOT_POTATO.description": "Deal {Damage:diff()} damage to a random enemy. Double this card's damage for this combat, then put it into a random teammate's [gold]hand[/gold].",
+  "YUWANCARD-I_EAT_A_LITTLE_YOU_EAT_A_LITTLE.title": "I Eat a Little, You Eat a Little",
+  "YUWANCARD-I_EAT_A_LITTLE_YOU_EAT_A_LITTLE.description": "Increase a random [gold]Buff[/gold] by 1. Then put this card into a random teammate's [gold]hand[/gold]. This card can be played {Uses:diff()} times this combat.",
   "YUWANCARD-TUO_XIN_PIG.title": "Tuo Xin Pig",
   "YUWANCARD-TUO_XIN_PIG.description": "Gain {Gold:diff()} Gold at the start of your next turn.",
   "YUWANCARD-PIG_EAT_INTEREST.title": "Pig Eats Interest",
@@ -403,5 +407,8 @@
   "YUWANCARD-INFLATION.title": "Inflation",
   "YUWANCARD-INFLATION.description": "Gain [gold]Inflation[/gold]. Whenever you gain Gold, gain {IfUpgraded:show:75%|50%} more, and your non-X-cost cards cost 1 more.",
   "YUWANCARD-PIGGY_BLESSING.title": "Piggy's Blessing",
-  "YUWANCARD-PIGGY_BLESSING.description": "Gain {Block:diff()} [gold]Block[/gold].\nDraw {Cards} card."
+  "YUWANCARD-PIGGY_BLESSING.description": "Gain {Block:diff()} [gold]Block[/gold].\nDraw {Cards} card.",
+  "YUWANCARD-LEI_ZHU_TI.title": "Piglike Form",
+  "YUWANCARD-LEI_ZHU_TI.description": "{IfUpgraded:show:Choose 1 of 3 upgraded random pig colorless cards and add it to your hand.|Choose 1 of 3 random pig colorless cards and add it to your hand.} That card costs 0 this turn.",
+  "YUWANCARD-LEI_ZHU_TI.selectionScreenPrompt": "Choose a card to add to your hand"
 }

@@ -61,3 +61,4 @@
 - 词条图标 - [莱特兰恶意 (L2Hostility)](https://www.mcmod.cn/class/12008.html)
 - 焰魔 - [灾变 (L_Ender 's Cataclysm)](https://www.mcmod.cn/class/5214.html)
 - Balatro - [Balatri](https://store.steampowered.com/app/2379780)
+- 钢铁守护者 - [Mowzie的生物 (Mowzie's Mobs)](https://www.mcmod.cn/class/984.html)
