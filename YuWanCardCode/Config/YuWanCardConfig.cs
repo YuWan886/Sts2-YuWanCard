@@ -28,6 +28,8 @@ public class YuWanCardConfig
 
     public static bool EnableKillerEliteEncounter { get; set; } = true;
 
+    public static bool EnableFerrousWroughtnautEliteEncounter { get; set; } = true;
+
     public static bool EnableYuWanEvents { get; set; } = true;
 
     public static bool EnablePigPigAncient { get; set; } = true;

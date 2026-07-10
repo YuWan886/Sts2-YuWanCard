@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://cnv7mvqlnfp0"]
+
+[ext_resource type="Texture2D" uid="uid://cbgcckxeokkj6" path="res://YuWanCard/images/monsters/ferrous_wroughtnaut/ferrous_wroughtnaut_1.png" id="1_sleeping"]
+
+[node name="FerrousWroughtnautVisuals" type="Node2D"]
+
+[node name="Visuals" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -286)
+scale = Vector2(0.48, 0.48)
+texture = ExtResource("1_sleeping")
+
+[node name="Bounds" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -630.0
+offset_right = 340.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CenterPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -300)
+
+[node name="IntentPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -595)
+
+[node name="OrbPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -205)
+
+[node name="TalkPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(-230, -510)

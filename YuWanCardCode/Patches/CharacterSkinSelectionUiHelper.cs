@@ -4,6 +4,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
@@ -11,7 +12,6 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.CustomRun;
 using MegaCrit.Sts2.addons.mega_text;
-using YuWanCard.Core.Extensions;
 
 namespace YuWanCard.Patches;
 
@@ -124,9 +124,9 @@ internal static class CharacterSkinSelectionUiHelper
 
         string title = new LocString("gameplay_ui", "YUWANCARD-CHARACTER_SKIN.preview_title").GetFormattedText();
         string skinName = new LocString("gameplay_ui", selectedSkin.DisplayNameLocKey).GetFormattedText();
-        panel.TooltipText = title.StripBbCodeTags();
+        panel.TooltipText = title.StripBbCode();
         panel.GetNode<MegaRichTextLabel>($"{RootName}/{SkinRowName}/{SkinLabelName}")
-            .SetTextAutoSize(skinName.ExpandExtendedBbCode());
+            .SetTextAutoSize(skinName);
         EnsurePreviewMatches(panel, character, selectedSkin);
     }
 

@@ -337,6 +337,8 @@
   "YUWANCARD-LING_LING_LING_SHEN_SHEN_SHEN_SHEN_SHEN.selectionScreenPrompt": "选择一张手牌",
   "YUWANCARD-PIG_ALWAYS_CRY.title": "猪一直哭",
   "YUWANCARD-PIG_ALWAYS_CRY.description": "",
+  "YUWANCARD-FERROUS_WROUGHTNAUT_SHIFT.title": "移位",
+  "YUWANCARD-FERROUS_WROUGHTNAUT_SHIFT.description": "改变站位。",
   "YUWANCARD-PIG_GAZE.title": "猪凝视",
   "YUWANCARD-PIG_GAZE.description": "另一名玩家获得{Energy:energyIcons()}。\n该玩家在本回合内不能再抽牌。",
   "YUWANCARD-YU_WAN_FORGOT.title": "鱼丸忘记了",

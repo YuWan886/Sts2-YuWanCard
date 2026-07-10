@@ -148,6 +148,8 @@ internal static class ConfigRegistrar
             "YUWANCARD-ENABLE_IGNIS_BOSS_ENCOUNTER.title", "YUWANCARD-ENABLE_IGNIS_BOSS_ENCOUNTER.hover.desc"),
         new("EnableKillerEliteEncounter", ContentPageId, "enemy_encounters", "enable_killer_elite_encounter", "config_enable_killer_elite_encounter", "杀手", "允许杀手精英遭遇出现在对局中", 2,
             "YUWANCARD-ENABLE_KILLER_ELITE_ENCOUNTER.title", "YUWANCARD-ENABLE_KILLER_ELITE_ENCOUNTER.hover.desc"),
+        new("EnableFerrousWroughtnautEliteEncounter", ContentPageId, "enemy_encounters", "enable_ferrous_wroughtnaut_elite_encounter", "config_enable_ferrous_wroughtnaut_elite_encounter", "钢铁守护者", "允许钢铁守护者精英遭遇出现在对局中", 3,
+            "YUWANCARD-ENABLE_FERROUS_WROUGHTNAUT_ELITE_ENCOUNTER.title", "YUWANCARD-ENABLE_FERROUS_WROUGHTNAUT_ELITE_ENCOUNTER.hover.desc"),
         new("EnableYuWanEvents", ContentPageId, "events", "enable_yuwan_events", "config_enable_yuwan_events", "启用本模组事件", "控制 YuWanCard 的事件是否会出现在对局中", 0,
             "YUWANCARD-ENABLE_YUWAN_EVENTS.title", "YUWANCARD-ENABLE_YUWAN_EVENTS.hover.desc"),
         new("EnablePigPigAncient", ContentPageId, "ancients", "enable_pig_pig_ancient", "config_enable_pig_pig_ancient", "猪猪先古", "允许猪猪先古在巢穴开局中出现", 0,

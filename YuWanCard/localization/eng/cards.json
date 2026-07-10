@@ -337,6 +337,8 @@
   "YUWANCARD-LING_LING_LING_SHEN_SHEN_SHEN_SHEN_SHEN.selectionScreenPrompt": "Choose a card in your hand",
   "YUWANCARD-PIG_ALWAYS_CRY.title": "Pig Always Cry",
   "YUWANCARD-PIG_ALWAYS_CRY.description": "",
+  "YUWANCARD-FERROUS_WROUGHTNAUT_SHIFT.title": "Shift",
+  "YUWANCARD-FERROUS_WROUGHTNAUT_SHIFT.description": "Change your position.",
   "YUWANCARD-PIG_GAZE.title": "Pig Gaze",
   "YUWANCARD-PIG_GAZE.description": "Another player gains {Energy:energyIcons()}.\nThat player cannot draw cards for the rest of this turn.",
   "YUWANCARD-YU_WAN_FORGOT.title": "YuWan Forgot",

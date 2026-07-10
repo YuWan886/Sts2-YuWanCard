@@ -8,6 +8,7 @@ public readonly record struct YuWanContentSettingsSnapshot(
     bool EnableYuWanEnemyEncounters,
     bool EnableIgnisBossEncounter,
     bool EnableKillerEliteEncounter,
+    bool EnableFerrousWroughtnautEliteEncounter,
     bool EnableYuWanEvents,
     bool EnablePigPigAncient,
     IReadOnlyDictionary<string, bool> EnabledEvents,
@@ -24,6 +25,7 @@ public readonly record struct YuWanContentSettingsSnapshot(
             YuWanCardConfig.EnableYuWanEnemyEncounters,
             YuWanCardConfig.EnableIgnisBossEncounter,
             YuWanCardConfig.EnableKillerEliteEncounter,
+            YuWanCardConfig.EnableFerrousWroughtnautEliteEncounter,
             YuWanCardConfig.EnableYuWanEvents,
             YuWanCardConfig.EnablePigPigAncient,
             YuWanEventSettings.SnapshotStates(),
@@ -36,6 +38,7 @@ public readonly record struct YuWanContentSettingsSnapshot(
                && EnableYuWanEnemyEncounters == other.EnableYuWanEnemyEncounters
                && EnableIgnisBossEncounter == other.EnableIgnisBossEncounter
                && EnableKillerEliteEncounter == other.EnableKillerEliteEncounter
+               && EnableFerrousWroughtnautEliteEncounter == other.EnableFerrousWroughtnautEliteEncounter
                && EnableYuWanEvents == other.EnableYuWanEvents
                && EnablePigPigAncient == other.EnablePigPigAncient
                && DictionaryStatesEqual(EnabledEvents, other.EnabledEvents)
@@ -62,6 +65,11 @@ public readonly record struct YuWanContentSettingsSnapshot(
         if (encounterType == typeof(KillerElite))
         {
             return EnableKillerEliteEncounter;
+        }
+
+        if (encounterType == typeof(FerrousWroughtnautElite))
+        {
+            return EnableFerrousWroughtnautEliteEncounter;
         }
 
         return true;
@@ -115,6 +123,7 @@ public readonly record struct YuWanContentSettingsSnapshot(
     private static YuWanContentSettingsSnapshot CreateAllDisabled()
     {
         return new YuWanContentSettingsSnapshot(
+            false,
             false,
             false,
             false,

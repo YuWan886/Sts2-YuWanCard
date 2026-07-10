@@ -238,6 +238,7 @@ public static class YuWanContentSettingsSync
             EnableYuWanEnemyEncounters = snapshot.EnableYuWanEnemyEncounters,
             EnableIgnisBossEncounter = snapshot.EnableIgnisBossEncounter,
             EnableKillerEliteEncounter = snapshot.EnableKillerEliteEncounter,
+            EnableFerrousWroughtnautEliteEncounter = snapshot.EnableFerrousWroughtnautEliteEncounter,
             EnableYuWanEvents = snapshot.EnableYuWanEvents,
             EnablePigPigAncient = snapshot.EnablePigPigAncient,
             EnabledEvents = YuWanEventCatalog.Events
@@ -281,6 +282,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
     public required bool EnableYuWanEnemyEncounters { get; set; }
     public required bool EnableIgnisBossEncounter { get; set; }
     public required bool EnableKillerEliteEncounter { get; set; }
+    public required bool EnableFerrousWroughtnautEliteEncounter { get; set; }
     public required bool EnableYuWanEvents { get; set; }
     public required bool EnablePigPigAncient { get; set; }
     public required List<YuWanEventState> EnabledEvents { get; set; }
@@ -298,6 +300,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
         writer.WriteBool(EnableYuWanEnemyEncounters);
         writer.WriteBool(EnableIgnisBossEncounter);
         writer.WriteBool(EnableKillerEliteEncounter);
+        writer.WriteBool(EnableFerrousWroughtnautEliteEncounter);
         writer.WriteBool(EnableYuWanEvents);
         writer.WriteBool(EnablePigPigAncient);
         writer.WriteInt(EnabledEvents.Count);
@@ -321,6 +324,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
         EnableYuWanEnemyEncounters = reader.ReadBool();
         EnableIgnisBossEncounter = reader.ReadBool();
         EnableKillerEliteEncounter = reader.ReadBool();
+        EnableFerrousWroughtnautEliteEncounter = reader.ReadBool();
         EnableYuWanEvents = reader.ReadBool();
         EnablePigPigAncient = reader.ReadBool();
         int eventCount = reader.ReadInt();
@@ -353,6 +357,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
             EnableYuWanEnemyEncounters,
             EnableIgnisBossEncounter,
             EnableKillerEliteEncounter,
+            EnableFerrousWroughtnautEliteEncounter,
             EnableYuWanEvents,
             EnablePigPigAncient,
             EnabledEvents.ToDictionary(static entry => entry.Key, static entry => entry.Enabled,
