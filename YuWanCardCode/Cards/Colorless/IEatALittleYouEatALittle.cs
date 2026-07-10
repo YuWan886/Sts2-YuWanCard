@@ -56,9 +56,9 @@ public sealed class IEatALittleYouEatALittle : YuWanCardModel
         }
     }
 
-    protected override PileType GetResultPileTypeForCardPlay()
+    protected override (PileType, CardPilePosition) GetResultPileTypeAndPositionForCardPlay()
     {
-        return PileType.None;
+        return (PileType.None, CardPilePosition.Bottom);
     }
 
     protected override void AfterDeserialized()

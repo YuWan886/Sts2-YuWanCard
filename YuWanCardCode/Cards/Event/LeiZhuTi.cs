@@ -36,8 +36,10 @@ public sealed class LeiZhuTi : YuWanCardModel
             return;
         }
 
-        var creationOptions = CardCreationOptions.ForNonCombatWithDefaultOdds(colorlessCards)
-            .WithCustomPool(colorlessCards, CardRarityOddsType.Uniform)
+        var allowedIds = colorlessCards.Select(card => card.Id).ToHashSet();
+        var creationOptions = CardCreationOptions
+            .ForNonCombatWithUniformOdds([ModelDb.CardPool<ColorlessCardPool>()])
+            .WithFilter(card => allowedIds.Contains(card.Id))
             .WithFlags(CardCreationFlags.NoCardPoolModifications);
         var cards = CardFactory.CreateForReward(owner, Math.Min(CardChoiceCount, colorlessCards.Count), creationOptions)
             .ToList();
