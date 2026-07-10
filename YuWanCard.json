@@ -5,7 +5,7 @@
   "description": "pig card\n猪降临",
   "version": "v0.5.11",
   "min_game_version": "0.108.0",
-  "has_pck": true,  
+  "has_pck": true,
   "has_dll": true,
   "affects_gameplay": true
 }

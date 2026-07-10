@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Config;
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Cards.Event;
 
@@ -64,6 +65,10 @@ public sealed class LeiZhuTi : YuWanCardModel
         }
 
         selectedCard.EnergyCost.SetCustomBaseCost(0);
-        await CardPileCmd.AddGeneratedCardToCombat(selectedCard, PileType.Hand, owner);
+        CardModel? combatCard = CardCopyHelper.CreateCombatCopy(selectedCard, owner);
+        if (combatCard != null)
+        {
+            await CardPileCmd.AddGeneratedCardToCombat(combatCard, PileType.Hand, owner);
+        }
     }
 }
