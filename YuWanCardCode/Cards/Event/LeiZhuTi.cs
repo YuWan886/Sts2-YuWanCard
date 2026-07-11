@@ -9,7 +9,6 @@ using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Config;
 using YuWanCard.Core.Abstracts;
-using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Cards.Event;
 
