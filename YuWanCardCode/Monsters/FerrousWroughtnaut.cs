@@ -16,6 +16,7 @@ using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Cards;
+using YuWanCard.Powers;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Monsters;
@@ -53,6 +54,7 @@ public sealed class FerrousWroughtnaut : YuWanMonsterModel
     public override async Task AfterAddedToRoom()
     {
         await base.AfterAddedToRoom();
+        await PowerCmd.Apply<FerrousWroughtnautPositioningPower>(new ThrowingPlayerChoiceContext(), Creature, 1, Creature, null);
         await PowerCmd.Apply<ArtifactPower>(new ThrowingPlayerChoiceContext(), Creature, ArtifactAmount, Creature, null);
         UpdateVisual(GuardianVisual.Sleeping);
     }
