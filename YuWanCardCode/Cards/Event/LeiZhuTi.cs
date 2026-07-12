@@ -61,10 +61,10 @@ public sealed class LeiZhuTi : YuWanCardModel
             return;
         }
 
-        selectedCard.EnergyCost.SetCustomBaseCost(0);
         CardModel? combatCard = CardCopyHelper.CreateCombatCopy(selectedCard, owner);
         if (combatCard != null)
         {
+            combatCard.SetToFreeThisTurn();
             await CardPileCmd.AddGeneratedCardToCombat(combatCard, PileType.Hand, owner);
         }
     }
