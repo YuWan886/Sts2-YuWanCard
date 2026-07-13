@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Random;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Extensions;
+using YuWanCard.Cards;
 using YuWanCard.Monsters;
 using YuWanCard.Utils;
 
@@ -29,12 +30,16 @@ public class CallCompanionsPower : YuWanPowerModel
     private readonly List<CardModel> _drawPile = [];
     private readonly List<CardModel> _hand = [];
     private readonly List<CardModel> _discard = [];
+    private readonly HashSet<CardModel> _cardsInCombat = [];
     private Creature? _companionCreature;
+    private CardModel? _executingCard;
     private int _energy;
     private int _maxEnergy;
     private string _displayName = "";
     private int _companionIndex;
     private bool _initialized;
+    private bool _companionDefeated;
+    private bool _isRemoving;
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Single;
@@ -42,15 +47,21 @@ public class CallCompanionsPower : YuWanPowerModel
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
         if (_initialized) return;
-        _initialized = true;
 
-        var player = Owner!.Player!;
-        if (player.Creature.CombatState is not CombatState combatState) return;
+        var owner = Owner;
+        var player = owner?.Player;
+        if (player == null || owner?.CombatState is not CombatState combatState)
+        {
+            MainFile.Logger.Warn("CallCompanions: Power was applied outside an active player combat");
+            return;
+        }
 
         var rng = player.RunState.Rng.Shuffle;
 
         var allChars = ModelDb.AllCharacters.ToList();
-        var available = allChars.Where(c => c.Id != player.Character.Id).ToList();
+        var available = allChars
+            .Where(c => c.Id != player.Character.Id && c.StartingDeck.Any())
+            .ToList();
         if (available.Count == 0)
         {
             MainFile.Logger.Warn("CallCompanions: No other characters available");
@@ -61,13 +72,9 @@ public class CallCompanionsPower : YuWanPowerModel
         _maxEnergy = _character.MaxEnergy;
         _energy = _maxEnergy;
 
-        foreach (var blueprint in _character.StartingDeck)
+        foreach (var blueprint in _character.StartingDeck.Where(CanCompanionPlay))
         {
-            var card = blueprint.ToMutable();
-            card.AddKeyword(CardKeyword.Ethereal);
-            card.AddKeyword(CardKeyword.Exhaust);
-            combatState.AddCard(card, player);
-            _drawPile.Add(card);
+            _drawPile.Add(CreateCompanionCard(blueprint));
         }
 
         var pool = _character.CardPool;
@@ -75,7 +82,8 @@ public class CallCompanionsPower : YuWanPowerModel
             .Where(c => c.Rarity != CardRarity.Basic
                         && c.Rarity != CardRarity.Token
                         && c.Rarity != CardRarity.Status
-                        && c.Rarity != CardRarity.Curse)
+                        && c.Rarity != CardRarity.Curse
+                        && CanCompanionPlay(c))
             .ToList();
 
         if (poolCards.Count > 0)
@@ -83,11 +91,7 @@ public class CallCompanionsPower : YuWanPowerModel
             for (int i = 0; i < RandomCardCount; i++)
             {
                 var blueprint = rng.NextItem(poolCards)!;
-                var card = blueprint.ToMutable();
-                card.AddKeyword(CardKeyword.Ethereal);
-                card.AddKeyword(CardKeyword.Exhaust);
-                combatState.AddCard(card, player);
-                _drawPile.Add(card);
+                _drawPile.Add(CreateCompanionCard(blueprint));
             }
         }
 
@@ -98,8 +102,16 @@ public class CallCompanionsPower : YuWanPowerModel
         _companionIndex = rng.NextInt(1, 100);
         _displayName = $"{playerId}_{charId}_{_companionIndex}";
 
-        // Spawn visible companion creature with player-like HP
+        // This is a visible allied creature, not a synthetic Player. A real Player
+        // must be registered before combat so the engine can manage turns and net state.
         await SpawnCompanionCreature(player);
+        if (_companionCreature == null)
+        {
+            ClearVirtualPiles();
+            return;
+        }
+
+        _initialized = true;
 
         MainFile.Logger.Info($"CallCompanions: Summoned {_displayName} " +
             $"(character: {_character.Id}, HP: {_character.StartingHp}, deck: {_drawPile.Count} cards)");
@@ -115,11 +127,9 @@ public class CallCompanionsPower : YuWanPowerModel
         if (visualPath != null)
             NodeFactory.RegisterSceneType<NCreatureVisuals>(visualPath);
 
-        // Set pending values before creating the mutable model
-        CompanionPlaceholderModel.PendingVisualPath = visualPath;
-        CompanionPlaceholderModel.PendingHp = _character.StartingHp;
-        CompanionPlaceholderModel.PendingDisplayName = _displayName;
-        var mutableModel = ModelDb.Monster<CompanionPlaceholderModel>().ToMutable();
+        var mutableModel = (CompanionPlaceholderModel)ModelDb.Monster<CompanionPlaceholderModel>().ToMutable();
+        mutableModel.VisualPathOverride = visualPath;
+        mutableModel.InitialHp = Math.Max(1, _character.StartingHp);
 
         _companionCreature = combatState.CreateCreature(
             mutableModel, CombatSide.Player, slot: null);
@@ -131,7 +141,8 @@ public class CallCompanionsPower : YuWanPowerModel
         await CombatManager.Instance.AfterCreatureAdded(_companionCreature);
 
         // Set companion HP to character's starting HP
-        await CreatureCompat.SetMaxAndCurrentHp(_companionCreature, _character.StartingHp);
+        await CreatureCompat.SetMaxAndCurrentHp(_companionCreature, Math.Max(1, _character.StartingHp));
+        _companionCreature.Died += OnCompanionDied;
 
         // Ensure health bar is visible on the creature node
         var companionNode = NCombatRoom.Instance?.GetCreatureNode(_companionCreature);
@@ -163,9 +174,10 @@ public class CallCompanionsPower : YuWanPowerModel
 
     public override async Task AfterAutoPrePlayPhaseEntered(PlayerChoiceContext choiceContext, Player player)
     {
-        if (!_initialized || player.Creature != Owner) return;
+        if (!_initialized || _isRemoving || _companionDefeated || player.Creature != Owner) return;
 
         if (player.Creature.CombatState is not CombatState combatState) return;
+        if (_companionCreature is not { IsAlive: true }) return;
 
         _energy = _maxEnergy;
         DrawCards(5, player.RunState.Rng.Shuffle);
@@ -183,14 +195,28 @@ public class CallCompanionsPower : YuWanPowerModel
 
     public override async Task AfterRemoved(Creature oldOwner)
     {
-        if (_companionCreature is { IsAlive: true })
-            await CreatureCmd.Kill(_companionCreature);
+        if (_isRemoving) return;
+        _isRemoving = true;
 
-        _drawPile.Clear();
-        _hand.Clear();
-        _discard.Clear();
-        _companionCreature = null;
-        _initialized = false;
+        try
+        {
+            await RemoveCompanionCards(oldOwner.CombatState as CombatState);
+
+            if (_companionCreature != null)
+            {
+                _companionCreature.Died -= OnCompanionDied;
+                if (_companionCreature.IsAlive && _companionCreature.CombatState == oldOwner.CombatState)
+                    await CreatureCmd.Kill(_companionCreature);
+            }
+
+            ClearVirtualPiles();
+            _companionCreature = null;
+            _initialized = false;
+        }
+        finally
+        {
+            _isRemoving = false;
+        }
     }
 
     private void DrawCards(int count, Rng rng)
@@ -215,48 +241,52 @@ public class CallCompanionsPower : YuWanPowerModel
     private async Task ExecuteCompanionTurn(
         PlayerChoiceContext choiceContext, Player player, CombatState combatState)
     {
-        var state = AnalyzeState(player, combatState);
-        var enemyCache = CacheEnemies(combatState);
-
         int cardsPlayed = 0;
 
         while (cardsPlayed < MaxCardsPerTurn)
         {
-            if (CombatManager.Instance.IsOverOrEnding) break;
+            if (CombatManager.Instance.IsOverOrEnding || _companionCreature is not { IsAlive: true }) break;
             if (_hand.Count == 0 || _energy <= 0) break;
 
+            var state = AnalyzeState(_companionCreature, combatState);
+            var enemyCache = CacheEnemies(combatState);
             var (card, target) = SelectBestCard(player, combatState, state, enemyCache);
             if (card == null) break;
 
             _hand.Remove(card);
 
-            int cardCost = card.EnergyCost?.GetResolved() ?? 999;
+            int cardCost = GetCompanionEnergyCost(card);
             if (cardCost > _energy)
             {
                 _discard.Add(card);
                 continue;
             }
 
-            int playerEnergy = player.PlayerCombatState?.Energy ?? 0;
-            if (player.PlayerCombatState != null)
-                player.PlayerCombatState.Energy = _energy;
+            var playerCombatState = player.PlayerCombatState;
+            if (playerCombatState == null) break;
+
+            int playerEnergy = playerCombatState.Energy;
 
             try
             {
-                if (!combatState.ContainsCard(card))
-                    combatState.AddCard(card, player);
-
+                _executingCard = card;
+                combatState.AddCard(card, player);
+                _cardsInCombat.Add(card);
                 await CardPileCmd.Add(card, PileType.Hand, CardPilePosition.Top, clonedBy: this, skipVisuals: true);
+                playerCombatState.Energy = _energy;
                 await card.SpendResources();
-                _energy = player.PlayerCombatState!.Energy;
-                player.PlayerCombatState.Energy = playerEnergy;
                 await CardCmd.AutoPlay(choiceContext, card, target, AutoPlayType.Default, skipXCapture: true);
             }
             catch (Exception ex)
             {
                 MainFile.Logger.Error($"CallCompanions: Error playing {card.Title}: {ex.Message}");
-                if (player.PlayerCombatState != null)
-                    player.PlayerCombatState.Energy = playerEnergy;
+            }
+            finally
+            {
+                _energy = Math.Max(0, playerCombatState.Energy);
+                playerCombatState.Energy = playerEnergy;
+                _executingCard = null;
+                await RemoveCompanionCard(combatState, card);
             }
 
             cardsPlayed++;
@@ -276,8 +306,9 @@ public class CallCompanionsPower : YuWanPowerModel
         for (int i = 0; i < _hand.Count; i++)
         {
             var card = _hand[i];
-            int cost = card.EnergyCost?.GetResolved() ?? 999;
+            int cost = GetCompanionEnergyCost(card);
             if (cost > _energy) continue;
+            if (!CanCompanionPlay(card)) continue;
 
             int score = ScoreCard(card, state, enemyCache);
             if (score <= bestScore) continue;
@@ -368,11 +399,9 @@ public class CallCompanionsPower : YuWanPowerModel
             // Self targets the companion creature, not the summoner
             TargetType.Self => _companionCreature ?? player.Creature,
             TargetType.AnyAlly => combatState.Allies
-                .Where(c => c != null && c.IsAlive && c.IsPlayer && c != player.Creature)
+                .Where(c => c.IsAlive && c != player.Creature)
                 .MinBy(c => (int)c.CurrentHp),
             _ => card.GetSelectableTargets().FirstOrDefault()
-                ?? combatState.HittableEnemies.FirstOrDefault()
-                ?? (Creature?)player.Creature
         };
     }
 
@@ -427,17 +456,17 @@ public class CallCompanionsPower : YuWanPowerModel
         _ => false
     };
 
-    private StateInfo AnalyzeState(Player player, CombatState combatState)
+    private StateInfo AnalyzeState(Creature companion, CombatState combatState)
     {
         var info = new StateInfo
         {
-            PlayerHp = (int)player.Creature.CurrentHp,
-            PlayerMaxHp = (int)player.Creature.MaxHp,
-            PlayerBlock = (int)player.Creature.Block,
+            PlayerHp = (int)companion.CurrentHp,
+            PlayerMaxHp = (int)companion.MaxHp,
+            PlayerBlock = (int)companion.Block,
             IncomingDamage = CalcIncomingDamage(combatState),
             EnemyCount = combatState.HittableEnemies.Count,
-            HpPercent = player.Creature.MaxHp > 0
-                ? (int)(player.Creature.CurrentHp * 100 / player.Creature.MaxHp)
+            HpPercent = companion.MaxHp > 0
+                ? (int)(companion.CurrentHp * 100 / companion.MaxHp)
                 : 100
         };
 
@@ -456,6 +485,66 @@ public class CallCompanionsPower : YuWanPowerModel
         }
 
         return info;
+    }
+
+    private static CardModel CreateCompanionCard(CardModel blueprint)
+    {
+        var card = blueprint.ToMutable();
+        card.AddKeyword(CardKeyword.Ethereal);
+        card.AddKeyword(CardKeyword.Exhaust);
+        return card;
+    }
+
+    private int GetCompanionEnergyCost(CardModel card)
+    {
+        if (card.EnergyCost.CostsX) return _energy;
+        return card.EnergyCost.GetWithModifiers(CostModifiers.All);
+    }
+
+    private static bool CanCompanionPlay(CardModel card)
+    {
+        return !card.Keywords.Contains(CardKeyword.Unplayable)
+               && card is not CallCompanions
+               && !card.EnergyCost.CostsX
+               && !card.HasStarCostX
+               && card.GetStarCostWithModifiers() == 0;
+    }
+
+    private void OnCompanionDied(Creature creature)
+    {
+        if (creature != _companionCreature) return;
+
+        _companionDefeated = true;
+        ClearVirtualPiles();
+        MainFile.Logger.Info($"CallCompanions: {_displayName} was defeated and can no longer act");
+    }
+
+    private async Task RemoveCompanionCards(CombatState? combatState)
+    {
+        if (combatState == null) return;
+
+        foreach (var card in _cardsInCombat.Where(card => card != _executingCard).ToList())
+            await RemoveCompanionCard(combatState, card);
+    }
+
+    private async Task RemoveCompanionCard(CombatState combatState, CardModel card)
+    {
+        if (!_cardsInCombat.Remove(card)) return;
+
+        if (card.Pile?.IsCombatPile == true)
+            await CardPileCmd.RemoveFromCombat(card, skipVisuals: true);
+        else
+            card.RemoveFromState();
+
+        if (combatState.ContainsCard(card))
+            combatState.RemoveCard(card);
+    }
+
+    private void ClearVirtualPiles()
+    {
+        _drawPile.Clear();
+        _hand.Clear();
+        _discard.Clear();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -6,20 +6,19 @@ namespace YuWanCard.Monsters;
 
 /// <summary>
 /// Minimal visible creature used by CallCompanionsPower.
-/// Set static fields immediately before calling <c>ModelDb.Monster&lt;T&gt;().ToMutable()</c>.
+/// Its per-summon data belongs to the mutable model, never to shared static state.
 /// </summary>
 public class CompanionPlaceholderModel : MonsterModel
 {
-    public static string? PendingVisualPath;
-    public static int PendingHp = 1;
-    public static string PendingDisplayName = "";
+    public string? VisualPathOverride { get; set; }
+    public int InitialHp { get; set; } = 1;
 
-    public override int MinInitialHp => PendingHp;
-    public override int MaxInitialHp => PendingHp;
+    public override int MinInitialHp => InitialHp;
+    public override int MaxInitialHp => InitialHp;
 
-    public override LocString Title => new("powers", $"{Id.Entry}.title");
+    public override LocString Title => new("powers", "YUWANCARD-CALL_COMPANIONS_POWER.title");
 
-    protected override string VisualsPath => PendingVisualPath ?? base.VisualsPath;
+    protected override string VisualsPath => VisualPathOverride ?? base.VisualsPath;
 
     protected override MonsterMoveStateMachine GenerateMoveStateMachine()
     {

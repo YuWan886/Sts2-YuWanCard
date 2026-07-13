@@ -298,7 +298,7 @@
   "YUWANCARD-PIG_POLISH.description": "Upgrade {UpgradeCount} card(s) in your hand. Draw {Cards:diff()} card.",
   "YUWANCARD-PIG_POLISH.selectionScreenPrompt": "Choose hand card(s) to polish",
   "YUWANCARD-CALL_COMPANIONS.title": "Call Companions",
-  "YUWANCARD-CALL_COMPANIONS.description": "Summon a \"virtual\" player.\nThe virtual player is AI-controlled.",
+  "YUWANCARD-CALL_COMPANIONS.description": "Summon an AI-controlled combat companion.\nIts energy and temporary card piles are separate from yours.",
   "YUWANCARD-FPS.title": "FPS",
   "YUWANCARD-FPS.description": "Deal damage equal to the current FPS.",
   "YUWANCARD-PIG_BLOCK.title": "Pig Block",

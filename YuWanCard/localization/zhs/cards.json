@@ -298,7 +298,7 @@
   "YUWANCARD-PIG_POLISH.description": "升级{UpgradeCount}张手牌。抽{Cards:diff()}张牌。",
   "YUWANCARD-PIG_POLISH.selectionScreenPrompt": "选择手牌进行升级",
   "YUWANCARD-CALL_COMPANIONS.title": "呼朋引伴",
-  "YUWANCARD-CALL_COMPANIONS.description": "召唤1名\"虚拟\"玩家。\n该虚拟玩家的操作由AI控制。",
+  "YUWANCARD-CALL_COMPANIONS.description": "召唤1名由AI控制的战斗伙伴。\n其能量与临时牌堆独立于你。",
   "YUWANCARD-FPS.title": "FPS",
   "YUWANCARD-FPS.description": "造成等同于当前FPS的伤害。",
   "YUWANCARD-PIG_BLOCK.title": "猪格挡",
