@@ -55,6 +55,11 @@ internal static class PigTimelineRegistry
             typeof(EpochModel),
             "_typeToIdDictionary");
 
+    private static readonly List<Type> AllEpochTypes =
+        AccessTools.StaticFieldRefAccess<List<Type>>(
+            typeof(EpochModel),
+            "_allEpochs");
+
     private static readonly Dictionary<string, Type> StoryTypeDictionary =
         AccessTools.StaticFieldRefAccess<Dictionary<string, Type>>(
             typeof(StoryModel),
@@ -86,19 +91,7 @@ internal static class PigTimelineRegistry
 
     public static void SyncAllEpochIds()
     {
-        var existing = EpochModel.AllEpochIds
-            .Where(id => !PigEpochIds.Contains(id, StringComparer.Ordinal))
-            .ToList();
-
-        foreach (string pigEpochId in PigEpochIds)
-        {
-            if (!existing.Contains(pigEpochId, StringComparer.Ordinal))
-            {
-                existing.Add(pigEpochId);
-            }
-        }
-
-        AllEpochIdsField?.SetValue(null, existing);
+        AllEpochIdsField?.SetValue(null, null);
     }
 
     private static void RegisterEpochs()
@@ -113,6 +106,11 @@ internal static class PigTimelineRegistry
 
             EpochTypeDictionary[epoch.Id] = epochType;
             EpochIdDictionary[epochType] = epoch.Id;
+
+            if (!AllEpochTypes.Contains(epochType))
+            {
+                AllEpochTypes.Add(epochType);
+            }
         }
     }
 
