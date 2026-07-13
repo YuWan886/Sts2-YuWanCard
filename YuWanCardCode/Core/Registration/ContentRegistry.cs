@@ -14,9 +14,10 @@ namespace YuWanCard.Core.Registration;
 /// Registration flow:
 ///   1. RegisterAll scans types, calls ModHelper.AddModelToPool for [Pool],
 ///      and tracks attributed types for later canonical registration.
-///   2. InitDeDuplicationPatch creates canonical instances during ModelDb.Init
-///      and registers them with CustomEventRegistry / CustomAncientRegistry / etc.
-///   3. Freeze() is called — further AddModel calls are no-ops.
+///   2. ModelDb.Init creates canonical instances.
+///   3. ModelDbInitFinalizationPatch registers them with
+///      CustomEventRegistry / CustomAncientRegistry / etc.
+///   4. Freeze() is called — further AddModel calls are no-ops.
 /// </summary>
 public static class ContentRegistry
 {
@@ -24,7 +25,7 @@ public static class ContentRegistry
     private static bool _frozen;
     private static readonly object _lock = new();
 
-    // Types tracked by registration attributes — consumed by InitDeDuplicationPatch
+    // Types tracked by registration attributes — consumed by ModelDbInitFinalizationPatch
     // to register canonical instances created during ModelDb.Init.
     internal static readonly HashSet<Type> AncientTypes = [];
     internal static readonly HashSet<Type> OrbTypes = [];
@@ -43,7 +44,7 @@ public static class ContentRegistry
 
     /// <summary>
     /// Freeze registrations. After this, AddModel logs a warning and skips.
-    /// Called at the end of InitDeDuplicationPatch.SafeInit.
+    /// Called at the end of ModelDbInitFinalizationPatch.FinalizeModelDb.
     /// </summary>
     public static void Freeze()
     {
@@ -104,7 +105,7 @@ public static class ContentRegistry
             }
 
             // Collect types with explicit registration attributes.
-            // Canonical instances are registered later in InitDeDuplicationPatch.
+            // Canonical instances are registered after ModelDb.Init.
             if (type.HasAttribute<RegisterAncientAttribute>())
                 { AncientTypes.Add(type); attrCount++; }
             if (type.HasAttribute<RegisterOrbAttribute>())
