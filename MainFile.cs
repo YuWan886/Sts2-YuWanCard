@@ -9,6 +9,7 @@ using YuWanCard.Characters;
 using YuWanCard.Config;
 using YuWanCard.Core.Badges;
 using YuWanCard.Core.Interop;
+using YuWanCard.Core.Persistence;
 using YuWanCard.Core.Transcendence;
 using YuWanCard.Multiplayer;
 using YuWanCard.Singletons;
@@ -72,6 +73,8 @@ public partial class MainFile : Node
         // Phase 3: Content discovery — scan for [Pool] and registration attributes
         ModLifecycle.Publish(ModLifecyclePhase.ContentRegistering);
         ContentRegistry.RegisterAll(Assembly.GetExecutingAssembly());
+        // Register attached-state property names before RitsuLib finalizes its network ID table.
+        SavedAttachedStateRegistry.RegisterAssembly(Assembly.GetExecutingAssembly());
         SavedPropertyRegistration.RegisterAssembly(Assembly.GetExecutingAssembly());
         TranscendenceRegistry.RegisterDefaults();
         PigRewardAllCardPoolsBridge.RegisterHooks();
