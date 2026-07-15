@@ -195,7 +195,7 @@
   "YUWANCARD-GROWTH_TRAIT.description": "At the start of its turn, gain 2 Strength.",
   "YUWANCARD-GROWTH_TRAIT.smartDescription": "At the start of its turn, gain {GrowthStrength} [gold]Strength[/gold].",
   "YUWANCARD-COUNTER_STRIKE_TRAIT.title": "Counter Strike",
-  "YUWANCARD-COUNTER_STRIKE_TRAIT.description": "After taking unblocked damage, deal 6 damage back to the attacker.",
+  "YUWANCARD-COUNTER_STRIKE_TRAIT.description": "After taking unblocked damage, deal 4 damage back to the attacker.",
   "YUWANCARD-COUNTER_STRIKE_TRAIT.smartDescription": "After taking unblocked damage, deal {CounterDamage} damage back to the attacker.",
   "YUWANCARD-CORROSION_TRAIT.title": "Corrosion",
   "YUWANCARD-CORROSION_TRAIT.description": "When an attack deals unblocked damage to the player, they lose 1 Energy.",

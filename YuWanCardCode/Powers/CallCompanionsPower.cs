@@ -72,7 +72,7 @@ public class CallCompanionsPower : YuWanPowerModel
         _maxEnergy = _character.MaxEnergy;
         _energy = _maxEnergy;
 
-        foreach (var blueprint in _character.StartingDeck.Where(CanCompanionPlay))
+        foreach (var blueprint in _character.StartingDeck.Where(CanUseCompanionBlueprint))
         {
             _drawPile.Add(CreateCompanionCard(blueprint));
         }
@@ -83,7 +83,7 @@ public class CallCompanionsPower : YuWanPowerModel
                         && c.Rarity != CardRarity.Token
                         && c.Rarity != CardRarity.Status
                         && c.Rarity != CardRarity.Curse
-                        && CanCompanionPlay(c))
+                        && CanUseCompanionBlueprint(c))
             .ToList();
 
         if (poolCards.Count > 0)
@@ -501,13 +501,23 @@ public class CallCompanionsPower : YuWanPowerModel
         return card.EnergyCost.GetWithModifiers(CostModifiers.All);
     }
 
-    private static bool CanCompanionPlay(CardModel card)
+    /// <summary>
+    /// Filters canonical card blueprints before a combat owner exists. Runtime
+    /// keywords are deliberately checked later, once the card has joined combat.
+    /// </summary>
+    private static bool CanUseCompanionBlueprint(CardModel card)
     {
-        return !card.Keywords.Contains(CardKeyword.Unplayable)
-               && card is not CallCompanions
+        return card is not CallCompanions
                && !card.EnergyCost.CostsX
                && !card.HasStarCostX
-               && card.GetStarCostWithModifiers() == 0;
+               && card.CanonicalStarCost <= 0;
+    }
+
+    private static bool CanCompanionPlay(CardModel card)
+    {
+        return CanUseCompanionBlueprint(card)
+               && !card.Keywords.Contains(CardKeyword.Unplayable)
+               && card.GetStarCostWithModifiers() <= 0;
     }
 
     private void OnCompanionDied(Creature creature)

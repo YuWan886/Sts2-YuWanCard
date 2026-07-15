@@ -107,7 +107,11 @@ public class PigRewardAllCardPoolsBridge : YuWanSingletonModel
                 candidates,
                 sourceOptions.Source,
                 GetRarityOddsForCandidatePool(sourceOptions, candidates))
-            .WithFlags(sourceOptions.Flags | CardCreationFlags.NoModifyHooks);
+            // These candidates already include every eligible non-Pig pool. Letting reward hooks
+            // rewrite the custom pool can discard it entirely before CardFactory performs its roll.
+            .WithFlags(sourceOptions.Flags
+                       | CardCreationFlags.NoModifyHooks
+                       | CardCreationFlags.NoCardPoolModifications);
         if (sourceOptions.RngOverride != null)
         {
             replacementOptions.WithRngOverride(sourceOptions.RngOverride);

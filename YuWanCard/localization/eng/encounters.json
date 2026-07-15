@@ -2,5 +2,7 @@
   "YUWANCARD-KILLER_ELITE.title": "Killer",
   "YUWANCARD-KILLER_ELITE.loss": "You were defeated by the [gold]{encounter}[/gold]...",
   "YUWANCARD-IGNIS_BOSS.title": "Ignis",
-  "YUWANCARD-IGNIS_BOSS.loss": "You were burned to ashes by [gold]{encounter}[/gold]..."
+  "YUWANCARD-IGNIS_BOSS.loss": "You were burned to ashes by [gold]{encounter}[/gold]...",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.title": "Ferrous Wroughtnaut",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.loss": "You were split in two by [gold]{encounter}[/gold]..."
 }
