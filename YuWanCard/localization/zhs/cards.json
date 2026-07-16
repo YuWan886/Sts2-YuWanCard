@@ -250,6 +250,8 @@
   "YUWANCARD-PIG_RECIPE.description": "将{FoodCount}张随机的[gold]食物猪[/gold]卡牌加入手牌。",
   "YUWANCARD-FOOD_COMA.title": "食物昏迷",
   "YUWANCARD-FOOD_COMA.description": "每回合第一次打出食物牌时，获得{Block:diff()}点[gold]格挡[/gold]。",
+  "YUWANCARD-BAI_CHI_FAN_PIG.title": "你这只白吃饭的猪",
+  "YUWANCARD-BAI_CHI_FAN_PIG.description": "每使用一张[gold]食物猪[/gold]牌，永久获得1点最大生命值。",
   "YUWANCARD-PIG_PUDDING.title": "猪皮奶",
   "YUWANCARD-PIG_PUDDING.description": "移除身上随机的一个[gold]负面效果[/gold]。",
   "YUWANCARD-TIRAMISU_PIG.title": "提拉米猪",

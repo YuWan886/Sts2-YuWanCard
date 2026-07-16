@@ -250,6 +250,8 @@
   "YUWANCARD-PIG_RECIPE.description": "Add {FoodCount} random [gold]Food Pig[/gold] cards to your hand.",
   "YUWANCARD-FOOD_COMA.title": "Food Coma",
   "YUWANCARD-FOOD_COMA.description": "The first time each turn you play a Food card, gain {Block:diff()} [gold]Block[/gold].",
+  "YUWANCARD-BAI_CHI_FAN_PIG.title": "You Freeloader Pig",
+  "YUWANCARD-BAI_CHI_FAN_PIG.description": "Whenever you play a [gold]Food Pig[/gold] card, permanently gain 1 max HP.",
   "YUWANCARD-PIG_PUDDING.title": "Pig Pudding",
   "YUWANCARD-PIG_PUDDING.description": "Remove a random [gold]debuff[/gold] from yourself.",
   "YUWANCARD-TIRAMISU_PIG.title": "Tiramisu Pig",
