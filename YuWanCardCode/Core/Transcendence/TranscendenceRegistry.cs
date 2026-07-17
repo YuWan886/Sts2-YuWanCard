@@ -208,7 +208,10 @@ public static class TranscendenceRegistry
         if (starterCard.Enchantment != null)
         {
             EnchantmentModel enchantmentModel = (EnchantmentModel)starterCard.Enchantment.MutableClone();
-            CardCmd.Enchant(enchantmentModel, transformedCard, enchantmentModel.Amount);
+            if (enchantmentModel.CanEnchant(transformedCard))
+            {
+                CardCmd.Enchant(enchantmentModel, transformedCard, enchantmentModel.Amount);
+            }
         }
 
         return transformedCard;
