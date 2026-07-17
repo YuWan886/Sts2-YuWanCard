@@ -1,7 +1,5 @@
-using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Exceptions;
 using YuWanCard.Core.Abstracts;
 
 namespace YuWanCard.Core.Patches;
@@ -20,57 +18,15 @@ namespace YuWanCard.Core.Patches;
 [HarmonyPriority(Priority.Last)]
 static class InitDeDuplicationPatch
 {
-    private static readonly FieldInfo? ContentByIdField =
-        typeof(ModelDb).GetField("_contentById", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-
-    [HarmonyPrefix]
-    [HarmonyPriority(Priority.First)]
-    static bool SafeInit()
+    [HarmonyPostfix]
+    static void FinalizeModelDb()
     {
-        if (ContentByIdField?.GetValue(null) is not IDictionary<ModelId, AbstractModel> contentById) return true;
-
-        var allTypes = ModelDb.AllAbstractModelSubtypes;
-        int created = 0, skipped = 0;
-
-        foreach (var type in allTypes)
-        {
-            var id = ModelDb.GetId(type);
-            if (contentById.ContainsKey(id))
-            {
-                skipped++;
-                continue;
-            }
-
-            try
-            {
-                var value = (AbstractModel)Activator.CreateInstance(type)!;
-                contentById[id] = value;
-                created++;
-
-                RegisterCanonicalInstance(type, value);
-            }
-            catch (DuplicateModelException)
-            {
-                skipped++;
-            }
-            catch (TargetInvocationException ex)
-                when (ex.InnerException is DuplicateModelException)
-            {
-                skipped++;
-            }
-        }
-
-        MainFile.Logger.Info(
-            $"Init: {allTypes.Length} types, {created} created, {skipped} skipped");
-
         RegisterExistingCanonicalInstances();
-        RunPostInitLogic();
+        AutoRegisterCharacters();
 
         ContentRegistry.Freeze();
         ModLifecycle.Publish(ModLifecyclePhase.ContentFrozen);
         ModLifecycle.Publish(ModLifecyclePhase.ModelDbReady);
-
-        return false;
     }
 
     /// <summary>
@@ -92,41 +48,24 @@ static class InitDeDuplicationPatch
             CustomRelicPoolRegistry.Register(relicPool);
     }
 
-    private static void RunPostInitLogic()
-    {
-        foreach (var modifier in YuWanModifierModel.RegisteredModifiers)
-        {
-            var modifierType = modifier.GetType();
-            if (!ModelDb.Contains(modifierType))
-            {
-                ModelDb.Inject(modifierType);
-            }
-        }
-
-        AutoRegisterCharacters();
-    }
-
     /// <summary>
-    /// When another framework has already populated ModelDb before our prefix runs,
-    /// the creation loop above skips every type. We still need to backfill our own
-    /// registries from the existing canonical instances before freezing.
+    /// Registers tracked types from the canonical instances created by ModelDb.Init.
     /// </summary>
     private static void RegisterExistingCanonicalInstances()
     {
-        RegisterExistingInstances<EventModel>(ContentRegistry.EventTypes);
-        RegisterExistingInstances<AncientEventModel>(ContentRegistry.AncientTypes);
-        RegisterExistingInstances<CharacterModel>(ContentRegistry.CharacterTypes);
-        RegisterExistingInstances<RelicPoolModel>(ContentRegistry.RelicPoolTypes);
-    }
-
-    private static void RegisterExistingInstances<TModel>(IEnumerable<Type> types)
-        where TModel : AbstractModel
-    {
-        foreach (var type in types)
+        foreach (var type in ModelDb.AllAbstractModelSubtypes)
         {
+            if (!ContentRegistry.EventTypes.Contains(type)
+                && !ContentRegistry.AncientTypes.Contains(type)
+                && !ContentRegistry.CharacterTypes.Contains(type)
+                && !ContentRegistry.RelicPoolTypes.Contains(type))
+            {
+                continue;
+            }
+
             try
             {
-                var instance = ModelDb.GetById<TModel>(ModelDb.GetId(type));
+                var instance = ModelDb.GetByIdOrNull<AbstractModel>(ModelDb.GetId(type));
                 if (instance != null)
                     RegisterCanonicalInstance(type, instance);
             }

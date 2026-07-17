@@ -21,6 +21,12 @@ public static class SmithRestSiteOptionPatch
     [HarmonyPrefix]
     public static bool Prefix(SmithRestSiteOption __instance, ref Task<bool> __result)
     {
+        if (__instance.Owner is { } owner
+            && owner.Deck.UpgradableCardCount >= __instance.SmithCount)
+        {
+            return true;
+        }
+
         __result = OnSelectWithFlexibleCount(__instance);
         return false;
     }

@@ -12,11 +12,15 @@ namespace YuWanCard.Core.Patches;
 [HarmonyPatch(typeof(SfxCmd), nameof(SfxCmd.Play), typeof(string), typeof(float))]
 public static class CustomResourceSfxPatch
 {
+    internal static bool IsYuWanResource(string? path)
+    {
+        return path?.StartsWith("res://YuWanCard/", StringComparison.OrdinalIgnoreCase) == true;
+    }
+
     [HarmonyPrefix]
     public static bool Prefix(string sfx, float volume)
     {
-        if (string.IsNullOrWhiteSpace(sfx) ||
-            !sfx.StartsWith("res://", StringComparison.OrdinalIgnoreCase))
+        if (!IsYuWanResource(sfx))
         {
             return true;
         }
@@ -36,8 +40,7 @@ public static class CustomResourceAudioManagerSfxPatch
     [HarmonyPrefix]
     public static bool Prefix(string path, float volume)
     {
-        if (string.IsNullOrWhiteSpace(path) ||
-            !path.StartsWith("res://", StringComparison.OrdinalIgnoreCase))
+        if (!CustomResourceSfxPatch.IsYuWanResource(path))
         {
             return true;
         }
@@ -53,8 +56,7 @@ public static class CustomResourceAudioManagerParameterizedSfxPatch
     [HarmonyPrefix]
     public static bool Prefix(string path, Dictionary<string, float> parameters, float volume)
     {
-        if (string.IsNullOrWhiteSpace(path) ||
-            !path.StartsWith("res://", StringComparison.OrdinalIgnoreCase))
+        if (!CustomResourceSfxPatch.IsYuWanResource(path))
         {
             return true;
         }
