@@ -172,7 +172,15 @@ public static class YuWanContentSettingsSync
             _hostSnapshotVersion++;
         }
 
-        hostNetService.SendMessage(CreateSnapshotMessage(snapshot, _hostSnapshotVersion), senderId);
+        try
+        {
+            hostNetService.SendMessage(CreateSnapshotMessage(snapshot, _hostSnapshotVersion), senderId);
+        }
+        catch (InvalidOperationException)
+        {
+            // The requester can disconnect after its message is queued but before this response is sent.
+            MainFile.Logger.Debug($"YuWanContentSettings: Skipped snapshot response to disconnected peer {senderId}");
+        }
     }
 
     private static void HandleSnapshotMessage(YuWanContentSettingsSnapshotMessage message, ulong senderId)

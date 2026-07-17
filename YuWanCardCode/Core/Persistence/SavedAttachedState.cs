@@ -1,8 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Core.Patches;
+using YuWanCard.Core.Registration;
 
 namespace YuWanCard.Core.Persistence;
 
@@ -152,6 +154,48 @@ internal static class SavedAttachedStateRegistry
         typeof(SerializableCard[]),
         typeof(List<SerializableCard>)
     ];
+
+    /// <summary>
+    /// Runs type initializers that declare attached state so their property names reach
+    /// SavedPropertiesTypeCache before external frameworks finalize its network ID table.
+    /// </summary>
+    internal static void RegisterAssembly(Assembly assembly)
+    {
+        ArgumentNullException.ThrowIfNull(assembly);
+
+        var stateOwnerTypes = AssemblyScanner.GetLoadableTypes(assembly)
+            .Where(DeclaresAttachedState)
+            .OrderBy(static type => type.FullName, StringComparer.Ordinal)
+            .ToArray();
+
+        int initializedCount = 0;
+        foreach (Type type in stateOwnerTypes)
+        {
+            try
+            {
+                RuntimeHelpers.RunClassConstructor(type.TypeHandle);
+                initializedCount++;
+            }
+            catch (Exception ex)
+            {
+                MainFile.Logger.Warn(
+                    $"SavedAttachedState: failed to initialize {type.FullName}: {ex.Message}");
+            }
+        }
+
+        if (initializedCount > 0)
+        {
+            MainFile.Logger.Info(
+                $"SavedAttachedState: registered state keys from {initializedCount} type(s)");
+        }
+    }
+
+    private static bool DeclaresAttachedState(Type type)
+    {
+        return type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+            .Any(field => field.FieldType.IsGenericType
+                          && field.FieldType.GetGenericTypeDefinition() == typeof(SavedAttachedState<,>));
+    }
 
     internal static void Register(ISavedAttachedState state)
     {

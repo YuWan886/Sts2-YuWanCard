@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -210,17 +211,15 @@ public class VakuuTowerModifier : YuWanModifierModel
 
             MainFile.Logger.Info($"Vakuu handles turn for player. Hand count: {hand.Cards.Count}");
 
-            var gameState = AnalyzeGameState(player, combatState);
-            var enemyCache = CacheEnemies(combatState);
+            var initialGameState = AnalyzeGameState(player, combatState);
+            var initialEnemyCache = CacheEnemies(combatState);
 
-            UseOptimalPotion(choiceContext, player, combatState, gameState, enemyCache);
+            UseOptimalPotion(choiceContext, player, combatState, initialGameState, initialEnemyCache);
 
             int cardsPlayed = 0;
             var attemptedCards = new HashSet<CardModel>();
             var cardScores = new Dictionary<CardModel, int>();
             var energyCostCache = new Dictionary<CardModel, int>();
-
-            PreCalculateCardEnergyCosts(hand.Cards, energyCostCache);
 
             while (cardsPlayed < MaxCardsToPlay)
             {
@@ -230,6 +229,13 @@ public class VakuuTowerModifier : YuWanModifierModel
                     break;
                 }
 
+                // Every card can change energy, hand contents, powers, and the living enemy list.
+                var gameState = AnalyzeGameState(player, combatState);
+                var enemyCache = CacheEnemies(combatState);
+                cardScores.Clear();
+                energyCostCache.Clear();
+                PreCalculateCardEnergyCosts(hand.Cards, energyCostCache);
+
                 var card = SelectBestCardOptimized(hand.Cards, player, combatState, gameState, enemyCache, attemptedCards, cardScores, energyCostCache);
                 if (card == null)
                 {
@@ -237,9 +243,22 @@ public class VakuuTowerModifier : YuWanModifierModel
                     break;
                 }
 
-                attemptedCards.Add(card);
-
                 var target = GetBestTarget(card, combatState, player, enemyCache);
+                if (!HasValidAutoPlayTarget(card, target))
+                {
+                    attemptedCards.Add(card);
+                    MainFile.Logger.Debug($"Vakuu: Skipping {card.Title} - no valid living target");
+                    continue;
+                }
+
+                if (!Hook.ShouldPlay(combatState, card, out _, AutoPlayType.Default))
+                {
+                    attemptedCards.Add(card);
+                    MainFile.Logger.Debug($"Vakuu: Skipping {card.Title} - blocked for autoplay");
+                    continue;
+                }
+
+                attemptedCards.Add(card);
                 LogBloodStateStrategy(gameState.CurrentBloodState, gameState.BloodStateSmoothFactor, card);
                 MainFile.Logger.Info($"Vakuu: Playing card {card.Title} (priority: {cardScores[card]}) with target {(target != null ? target.ModelId.ToString() : "null")}");
 
@@ -256,12 +275,18 @@ public class VakuuTowerModifier : YuWanModifierModel
 
             MainFile.Logger.Info($"Vakuu: Turn complete. Total cards played: {cardsPlayed}");
 
-            PlayerCmd.EndTurn(player, canBackOut: false);
+            if (!CombatManager.Instance.IsOverOrEnding && player.Creature.IsAlive)
+            {
+                PlayerCmd.EndTurn(player, canBackOut: false);
+            }
         }
         catch (Exception ex)
         {
             MainFile.Logger.Error($"Vakuu: Critical error in turn handling: {ex.Message}\n{ex.StackTrace}");
-            PlayerCmd.EndTurn(player, canBackOut: false);
+            if (!CombatManager.Instance.IsOverOrEnding && player.Creature.IsAlive)
+            {
+                PlayerCmd.EndTurn(player, canBackOut: false);
+            }
         }
     }
 
@@ -284,31 +309,17 @@ public class VakuuTowerModifier : YuWanModifierModel
             return Array.Empty<EnemyCache>();
         }
 
-        var cache = new EnemyCache[enemies.Count];
+        var cache = new List<EnemyCache>(enemies.Count);
         
         for (int i = 0; i < enemies.Count; i++)
         {
             var enemy = enemies[i];
-            if (enemy == null)
+            if (enemy == null || !enemy.IsAlive)
             {
-                cache[i] = new EnemyCache
-                {
-                    Enemy = null!,
-                    CurrentHp = 0,
-                    MaxHp = 0,
-                    IntendsToAttack = false,
-                    HasVulnerable = false,
-                    HasPoison = false,
-                    HasWeak = false,
-                    HasDebilitate = false,
-                    ThreatScore = 0,
-                    PoisonAmount = 0,
-                    Block = 0
-                };
                 continue;
             }
 
-            cache[i] = new EnemyCache
+            cache.Add(new EnemyCache
             {
                 Enemy = enemy,
                 CurrentHp = (int)enemy.CurrentHp,
@@ -321,10 +332,10 @@ public class VakuuTowerModifier : YuWanModifierModel
                 ThreatScore = CalculateEnemyThreatFast(enemy),
                 PoisonAmount = enemy.GetPower<PoisonPower>()?.Amount ?? 0,
                 Block = enemy.Block
-            };
+            });
         }
         
-        return cache;
+        return cache.ToArray();
     }
 
     private CardModel? SelectBestCardOptimized(
@@ -357,14 +368,12 @@ public class VakuuTowerModifier : YuWanModifierModel
             if (!ShouldUseHealthCostCard(card, player, combatState, gameState, enemyCache))
             {
                 MainFile.Logger.Debug($"Vakuu: Skipping {card.Title} - health cost card not allowed now");
-                attemptedCards.Add(card);
                 continue;
             }
 
             if (!ShouldUseOneCostDrawCard(card, player, combatState, gameState, enemyCache))
             {
                 MainFile.Logger.Debug($"Vakuu: Skipping {card.Title} - 1-cost draw card not optimal now");
-                attemptedCards.Add(card);
                 continue;
             }
 
@@ -424,6 +433,12 @@ public class VakuuTowerModifier : YuWanModifierModel
             return bestNormalCard;
         }
 
+        if (bestZeroCostCard != null)
+        {
+            MainFile.Logger.Debug($"Vakuu: Selected remaining 0-cost card {bestZeroCostCard.Title} (score: {bestZeroCostScore})");
+            return bestZeroCostCard;
+        }
+
         return null;
     }
 
@@ -432,7 +447,7 @@ public class VakuuTowerModifier : YuWanModifierModel
     {
         for (int i = 0; i < enemyCache.Length; i++)
         {
-            if (enemyCache[i].CurrentHp <= hpThreshold)
+            if (enemyCache[i].Enemy.IsAlive && enemyCache[i].CurrentHp <= hpThreshold)
             {
                 return true;
             }
@@ -452,7 +467,7 @@ public class VakuuTowerModifier : YuWanModifierModel
         
         for (int i = 0; i < enemyCache.Length; i++)
         {
-            if (enemyCache[i].CurrentHp <= damage)
+            if (enemyCache[i].Enemy.IsAlive && enemyCache[i].CurrentHp <= damage)
             {
                 return true;
             }
@@ -1559,8 +1574,6 @@ public class VakuuTowerModifier : YuWanModifierModel
 
     private Creature? GetBestTarget(CardModel card, CombatState combatState, Player player, EnemyCache[] enemyCache)
     {
-        if (enemyCache.Length == 0) return null;
-
         var specialType = GetSpecialCardType(card);
         if (specialType != SpecialCardType.None)
         {
@@ -1577,11 +1590,29 @@ public class VakuuTowerModifier : YuWanModifierModel
             TargetType.AnyEnemy => SelectBestEnemyTargetOptimized(card, enemyCache),
             TargetType.AnyAlly => SelectBestAllyTarget(combatState, player.Creature),
             TargetType.AnyPlayer => player.Creature,
-            TargetType.Self => player.Creature,
-            TargetType.AllEnemies => SelectBestEnemyTargetOptimized(card, enemyCache) ?? enemyCache[0].Enemy,
-            TargetType.AllAllies => player.Creature,
-            _ => card.GetSelectableTargets().FirstOrDefault()
+            TargetType.Self or TargetType.AllEnemies or TargetType.AllAllies or TargetType.RandomEnemy => null,
+            _ => card.GetSelectableTargets().FirstOrDefault(target => target != null && target.IsAlive)
         };
+    }
+
+    private static bool HasValidAutoPlayTarget(CardModel card, Creature? target)
+    {
+        if (target != null && !target.IsAlive)
+        {
+            return false;
+        }
+
+        if (card.TargetType is TargetType.AnyEnemy or TargetType.AnyAlly)
+        {
+            return target != null && card.CanPlayTargeting(target);
+        }
+
+        if (CustomTargetType.IsCustomSingleTargetType(card.TargetType))
+        {
+            return target != null && card.CanPlayTargeting(target);
+        }
+
+        return true;
     }
 
     private Creature? SelectBestEnemyTargetOptimized(CardModel card, EnemyCache[] enemyCache)
@@ -1594,6 +1625,7 @@ public class VakuuTowerModifier : YuWanModifierModel
             for (int i = 0; i < enemyCache.Length; i++)
             {
                 var ec = enemyCache[i];
+                if (!ec.Enemy.IsAlive) continue;
                 if (ec.HasVulnerable || ec.HasWeak || ec.HasPoison) continue;
 
                 if (ec.ThreatScore > highestThreat)
@@ -1613,6 +1645,7 @@ public class VakuuTowerModifier : YuWanModifierModel
             for (int i = 0; i < enemyCache.Length; i++)
             {
                 var ec = enemyCache[i];
+                if (!ec.Enemy.IsAlive) continue;
                 if (ec.CurrentHp < lowestHp)
                 {
                     lowestHp = ec.CurrentHp;
@@ -1897,7 +1930,7 @@ public class VakuuTowerModifier : YuWanModifierModel
         for (int i = 0; i < enemyCache.Length; i++)
         {
             var ec = enemyCache[i];
-            if (ec.HasVulnerable)
+            if (ec.Enemy.IsAlive && ec.HasVulnerable)
             {
                 if (ec.CurrentHp < lowestHp)
                 {
@@ -1918,7 +1951,7 @@ public class VakuuTowerModifier : YuWanModifierModel
         for (int i = 0; i < enemyCache.Length; i++)
         {
             var ec = enemyCache[i];
-            if (ec.HasPoison && ec.PoisonAmount > highestPoison)
+            if (ec.Enemy.IsAlive && ec.HasPoison && ec.PoisonAmount > highestPoison)
             {
                 highestPoison = ec.PoisonAmount;
                 bestTarget = ec.Enemy;
@@ -1936,7 +1969,7 @@ public class VakuuTowerModifier : YuWanModifierModel
         for (int i = 0; i < enemyCache.Length; i++)
         {
             var ec = enemyCache[i];
-            if (ec.IntendsToAttack && ec.ThreatScore > highestThreat)
+            if (ec.Enemy.IsAlive && ec.IntendsToAttack && ec.ThreatScore > highestThreat)
             {
                 highestThreat = ec.ThreatScore;
                 bestTarget = ec.Enemy;
@@ -1954,7 +1987,7 @@ public class VakuuTowerModifier : YuWanModifierModel
         for (int i = 0; i < enemyCache.Length; i++)
         {
             var ec = enemyCache[i];
-            if (ec.CurrentHp < lowestHp)
+            if (ec.Enemy.IsAlive && ec.CurrentHp < lowestHp)
             {
                 lowestHp = ec.CurrentHp;
                 bestTarget = ec.Enemy;

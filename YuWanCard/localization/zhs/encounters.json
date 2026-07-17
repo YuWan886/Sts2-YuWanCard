@@ -2,5 +2,7 @@
   "YUWANCARD-KILLER_ELITE.title": "杀手",
   "YUWANCARD-KILLER_ELITE.loss": "你被[gold]{encounter}[/gold]触发战败CG了...",
   "YUWANCARD-IGNIS_BOSS.title": "焰魔",
-  "YUWANCARD-IGNIS_BOSS.loss": "你被[gold]{encounter}[/gold]烧成灰烬了..."
+  "YUWANCARD-IGNIS_BOSS.loss": "你被[gold]{encounter}[/gold]烧成灰烬了...",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.title": "钢铁守护者",
+  "YUWANCARD-FERROUS_WROUGHTNAUT.loss": "你被[gold]{encounter}[/gold]劈成两半了..."
 }

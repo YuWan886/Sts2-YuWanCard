@@ -9,7 +9,7 @@ namespace YuWanCard.Powers.MaliceTraits;
 
 public sealed class CounterStrikeTrait : MaliceTraitPowerBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("CounterDamage", 6m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("CounterDamage", 4m)];
     protected override string[] AutoUpdateVarNames => ["CounterDamage"];
 
     public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)

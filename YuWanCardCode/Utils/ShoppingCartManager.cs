@@ -4,7 +4,9 @@ using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Config;
@@ -366,6 +368,8 @@ public static class ShoppingCartManager
             }
         }
 
+        CloseMapBeforeDeckSelection(relicModel);
+
         var mutableRelic = relicModel.ToMutable();
 
         await PlayerCmd.LoseGold(item.Price, player, MegaCrit.Sts2.Core.Entities.Gold.GoldLossType.Spent);
@@ -376,6 +380,16 @@ public static class ShoppingCartManager
 
         MainFile.Logger.Info($"ShoppingCartManager: Purchased relic {item.ItemId} for {item.Price} gold");
         return true;
+    }
+
+    private static void CloseMapBeforeDeckSelection(RelicModel relicModel)
+    {
+        if (relicModel is not (GnarledHammer or SmallDeck) || NMapScreen.Instance?.IsOpen != true)
+        {
+            return;
+        }
+
+        NMapScreen.Instance.Close(animateOut: false);
     }
 
     internal static async Task<bool> PurchasePotion(ShoppingCartItem item, Player player)

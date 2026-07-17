@@ -273,6 +273,7 @@ public sealed class Ignis : YuWanMonsterModel
         await base.AfterAddedToRoom();
         ClearPendingForcedTurnEnd();
         _phaseTurnInterruptionQueued = false;
+        await PowerCmd.Apply<IgnisPhaseShiftPower>(new ThrowingPlayerChoiceContext(), Creature, 1, Creature, null);
         await PowerCmd.Apply<IgnisShieldPower>(new ThrowingPlayerChoiceContext(), Creature, ShieldDamageCap, Creature, null);
         UpdatePhaseVisual(1);
     }

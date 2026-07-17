@@ -7,11 +7,17 @@ using YuWanCard.Core.Abstracts;
 namespace YuWanCard.Core.Patches;
 
 /// <summary>
-/// Replaces ModelDb.Init with a version that gracefully handles duplicate types.
+/// Completes ModelDb.Init with duplicate-safe canonical construction after external
+/// framework prefixes have prepared their dynamic content and registries.
 /// Also performs canonical instance registration (events, ancients, orbs, characters)
 /// using type sets collected by ContentRegistry.RegisterAll, then freezes registrations.
 /// </summary>
 [HarmonyPatch(typeof(ModelDb), nameof(ModelDb.Init))]
+[HarmonyAfter(
+    "BaseLib",
+    "com.ritsukage.sts2-RitsuLib.framework-core",
+    "com.ritsukage.sts2-RitsuLib.framework-content-registry")]
+[HarmonyPriority(Priority.Last)]
 static class InitDeDuplicationPatch
 {
     private static readonly FieldInfo? ContentByIdField =
