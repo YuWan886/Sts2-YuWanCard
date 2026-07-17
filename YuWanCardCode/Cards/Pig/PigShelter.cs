@@ -17,13 +17,10 @@ public class PigShelter : YuWanCardModel, ITranscendenceCard
         rarity: CardRarity.Basic,
         target: TargetType.AllAllies)
     {
-        WithBlock(4);
+        WithBlock(4, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Block.UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

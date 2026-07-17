@@ -16,15 +16,11 @@ public class PigHug : YuWanCardModel
         rarity: CardRarity.Common,
         target: CustomTargetType.AnyFriendly)
     {
-        WithBlock(7);
-        WithPower<RegenPower>(2);
+        WithBlock(7, 3);
+        WithPower<RegenPower>(2, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Block.UpgradeValueBy(3);
-        DynamicVars["RegenPower"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

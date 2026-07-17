@@ -21,12 +21,10 @@ public class FrostSwordFourteenStates : YuWanCardModel
     {
         WithVar("Forge", 14);
         WithTips(_ => HoverTipFactory.FromForge());
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override void AddExtraArgsToDescription(LocString description)
     {

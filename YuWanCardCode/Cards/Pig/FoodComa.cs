@@ -16,13 +16,10 @@ public class FoodComa : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithPower<FoodComaPower>("Block", 4);
+        WithPower<FoodComaPower>("Block", 4, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Block"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

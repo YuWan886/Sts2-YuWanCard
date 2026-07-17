@@ -18,12 +18,10 @@ public class PigCurse : YuWanCardModel
     {
         WithPower<WeakPower>(2);
         WithPower<VulnerablePower>(2);
+        WithKeyword(CardKeyword.Retain, UpgradeType.Add);
     }
 
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Retain);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

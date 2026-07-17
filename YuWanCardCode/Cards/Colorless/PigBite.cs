@@ -18,7 +18,7 @@ public class PigBite : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
-        WithPower<PoisonPower>(4);
+        WithPower<PoisonPower>(4, 3);
         WithPower<WeakPower>(2);
         WithPower<VulnerablePower>(2);
         WithPower<YouArePigPower>(1);
@@ -26,13 +26,10 @@ public class PigBite : YuWanCardModel
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<WeakPower>()));
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<VulnerablePower>()));
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<YouArePigPower>()));
+        WithKeyword(CardKeyword.Retain, UpgradeType.Add);
     }
 
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Retain);
-        DynamicVars["PoisonPower"].UpgradeValueBy(3);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

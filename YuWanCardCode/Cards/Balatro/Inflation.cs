@@ -12,12 +12,7 @@ public sealed class Inflation : YuWanCardModel
 {
     public Inflation() : base(3, CardType.Power, CardRarity.Rare, TargetType.Self)
     {
-        WithPower<InflationPower>("InflationBonus", 50);
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars["InflationBonus"].BaseValue = 75;
+        WithPower<InflationPower>("InflationBonus", 50, 25);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

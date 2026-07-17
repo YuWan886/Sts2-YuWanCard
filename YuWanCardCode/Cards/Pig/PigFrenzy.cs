@@ -15,13 +15,10 @@ public class PigFrenzy : YuWanCardModel
         target: TargetType.AnyEnemy)
     {
         WithDamage(7);
-        WithVar("Repeat", 3);
+        WithVar("Repeat", 3, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Repeat"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

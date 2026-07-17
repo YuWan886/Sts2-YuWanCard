@@ -12,12 +12,7 @@ public sealed class CompoundInterest : YuWanCardModel
 {
     public CompoundInterest() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
-        WithPower<CompoundInterestPower>("InterestCap", 5);
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars["InterestCap"].BaseValue = 10;
+        WithPower<CompoundInterestPower>("InterestCap", 5, 5);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

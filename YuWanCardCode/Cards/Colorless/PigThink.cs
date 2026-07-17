@@ -22,12 +22,10 @@ public class PigThink : YuWanCardModel
     {
         WithVars(new EnergyVar(2));
         WithEnergyTip();
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

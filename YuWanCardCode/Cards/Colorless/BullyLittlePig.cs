@@ -19,12 +19,10 @@ public class BullyLittlePig : YuWanCardModel
     {
         WithPower<BullyLittlePigSkittishPower>(9);
         WithPower<HardToKillPower>(9);
+        WithKeyword(CardKeyword.Innate, UpgradeType.Add);
     }
 
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Innate);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

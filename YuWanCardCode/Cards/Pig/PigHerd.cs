@@ -17,15 +17,11 @@ public class PigHerd : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(6);
-        WithVar("BonusDamage", 5);
+        WithDamage(6, 2);
+        WithVar("BonusDamage", 5, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(2);
-        DynamicVars["BonusDamage"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

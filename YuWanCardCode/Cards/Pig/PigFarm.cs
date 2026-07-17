@@ -16,13 +16,10 @@ public class PigFarm : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithPower<PigFarmPower>("Heal", 3);
+        WithPower<PigFarmPower>("Heal", 3, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Heal"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

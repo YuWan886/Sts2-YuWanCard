@@ -16,13 +16,10 @@ public class PigVampiric : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithPower<PigVampiricPower>(1);
+        WithPower<PigVampiricPower>(1, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["PigVampiricPower"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

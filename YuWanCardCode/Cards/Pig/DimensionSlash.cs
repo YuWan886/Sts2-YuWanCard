@@ -30,13 +30,10 @@ public class DimensionSlash : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(15);
+        WithDamage(15, 5);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(5);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -44,7 +41,7 @@ public class DimensionSlash : YuWanCardModel
 
         var target = cardPlay.Target;
         var combatState = Owner.Creature.CombatState;
-        
+
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this)
             .Targeting(target)

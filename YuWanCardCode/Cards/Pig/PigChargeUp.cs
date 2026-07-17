@@ -16,23 +16,20 @@ public class PigChargeUp : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithPower<StrengthPower>(2);
+        WithPower<StrengthPower>(2, 1);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Strength.UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<StrengthPower>(
             new ThrowingPlayerChoiceContext(),
-            Owner.Creature, 
-            DynamicVars.Strength.IntValue, 
-            Owner.Creature, 
+            Owner.Creature,
+            DynamicVars.Strength.IntValue,
+            Owner.Creature,
             this);
     }
 }

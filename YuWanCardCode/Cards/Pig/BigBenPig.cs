@@ -22,14 +22,11 @@ public class BigBenPig : YuWanCardModel
     {
         WithTip(card => HoverTipFactory.FromCard<SmallBenPig>(card.IsUpgraded));
         WithTip(typeof(BigBenPigPower));
-        WithPower<StrengthPower>(1);
+        WithPower<StrengthPower>(1, 1);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["StrengthPower"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

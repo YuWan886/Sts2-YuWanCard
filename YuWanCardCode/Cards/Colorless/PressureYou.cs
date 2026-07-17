@@ -18,14 +18,8 @@ public class PressureYou : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyAlly)
     {
-        WithVars(new EnergyVar(1));
+        WithEnergy(1, 1);
         WithKeywords(CardKeyword.Exhaust);
-        WithEnergyTip();
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Energy.UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

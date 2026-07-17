@@ -16,15 +16,11 @@ public class Nyjk : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
-        WithPower<WeakPower>(1);
-        WithKeywords(CardKeyword.Exhaust);
+        WithPower<WeakPower>(1, 1);
+        WithKeyword(CardKeyword.Exhaust, UpgradeType.Remove);
     }
 
-    protected override void OnUpgrade()
-    {
-        RemoveKeyword(CardKeyword.Exhaust);
-        DynamicVars.Weak.UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -13,12 +13,7 @@ public sealed class Venus : YuWanCardModel
     public Venus() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
     {
         WithKeywords(CardKeyword.Exhaust);
-        WithPower<VenusPower>("BonusBlock", 1);
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars["BonusBlock"].BaseValue = 2;
+        WithPower<VenusPower>("BonusBlock", 1, 1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

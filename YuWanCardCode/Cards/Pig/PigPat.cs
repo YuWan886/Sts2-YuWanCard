@@ -17,15 +17,11 @@ public class PigPat : YuWanCardModel
         rarity: CardRarity.Common,
         target: CustomTargetType.AnyFriendly)
     {
-        WithHeal(3);
-        WithCards(1);
+        WithHeal(3, 2);
+        WithCards(1, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Heal.UpgradeValueBy(2);
-        DynamicVars.Cards.UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -15,14 +15,11 @@ public class PigRegeneration : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
-        WithVar("HealPercent", 50);
+        WithVar("HealPercent", 50, 25);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["HealPercent"].UpgradeValueBy(25);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -14,13 +14,10 @@ public class PigTribulation : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.AllEnemies)
     {
-        WithDamage(4);
+        WithDamage(4, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

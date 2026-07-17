@@ -16,16 +16,12 @@ public class TragicMandarinDuck : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
-        WithPower<TragicMandarinDuckPower>("GainStrength", 1);
-        WithPower<TragicMandarinDuckPower>("GainDexterity", 1);
+        WithPower<TragicMandarinDuckPower>("GainStrength", 1, 1);
+        WithPower<TragicMandarinDuckPower>("GainDexterity", 1, 1);
         WithVar("HpLoss", 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["GainStrength"].UpgradeValueBy(1);
-        DynamicVars["GainDexterity"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

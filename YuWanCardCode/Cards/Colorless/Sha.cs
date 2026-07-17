@@ -25,14 +25,11 @@ public class Sha : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(9);
+        WithDamage(9, 3);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(3);
-    }
+
 
     protected override void AfterDeserialized()
     {

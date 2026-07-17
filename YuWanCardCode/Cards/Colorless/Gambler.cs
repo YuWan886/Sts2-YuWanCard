@@ -22,9 +22,7 @@ public class Gambler : YuWanCardModel
         WithKeywords(CardKeyword.Ethereal);
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

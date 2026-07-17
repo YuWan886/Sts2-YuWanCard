@@ -19,16 +19,13 @@ public class PigFeed : YuWanCardModel
         target: TargetType.Self)
     {
         WithVars(new EnergyVar(1));
-        WithCards(1);
+        WithCards(1, 1);
         WithVar("Heal", 1);
         WithKeywords(CardKeyword.Exhaust);
         WithEnergyTip();
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Cards.UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

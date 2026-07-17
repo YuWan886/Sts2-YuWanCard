@@ -23,15 +23,12 @@ public class YouArePig : YuWanCardModel
         WithPower<BufferPower>(1);
         WithPower<RegenPower>(3);
         WithPower<YouArePigPower>(1);
-        WithKeywords(CardKeyword.Ethereal);
+        WithKeyword(CardKeyword.Ethereal, UpgradeType.Remove);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<BufferPower>()));
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<RegenPower>()));
     }
 
-    protected override void OnUpgrade()
-    {
-        RemoveKeyword(CardKeyword.Ethereal);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

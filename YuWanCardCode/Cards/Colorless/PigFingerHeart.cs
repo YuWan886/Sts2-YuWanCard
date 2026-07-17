@@ -27,13 +27,10 @@ public class PigFingerHeart : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AnyAlly)
     {
-        WithVar("MaxHpGain", 3);
+        WithVar("MaxHpGain", 3, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["MaxHpGain"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

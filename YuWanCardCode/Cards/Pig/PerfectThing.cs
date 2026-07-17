@@ -1,7 +1,9 @@
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
 using YuWanCard.Characters;
 using YuWanCard.Powers;
 
@@ -12,29 +14,26 @@ public class PerfectThing : YuWanCardModel
 {
     public PerfectThing() : base(
         baseCost: 3,
-        type: CardType.Power,
+        type: CardType.Skill,
         rarity: CardRarity.Ancient,
-        target: TargetType.Self)
+        target: TargetType.AllAllies)
     {
-        WithPower<PerfectThingPower>(1);
-    }
-
-    protected override void OnUpgrade()
-    {
+        WithBlock(10);
+        WithVar("ExtraTurns", 1, 1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-
-        var power = await PowerCmd.Apply<PerfectThingPower>(new ThrowingPlayerChoiceContext(), Owner.Creature, 1, Owner.Creature, this);
-
-        if (power != null && IsUpgraded)
+        foreach (var playerCreature in CombatState!.GetLivingPlayerCreatures())
         {
-            if (power is PerfectThingPower perfectThingPower)
-            {
-                perfectThingPower.SetCardsPerEnergy(2);
-            }
+            await CreatureCmd.GainBlock(playerCreature, DynamicVars.Block, cardPlay);
         }
+
+        await PowerCmd.Apply<PerfectThingPower>(
+            new ThrowingPlayerChoiceContext(),
+            Owner.Creature,
+            DynamicVars["ExtraTurns"].IntValue,
+            Owner.Creature,
+            this);
     }
 }

@@ -16,10 +16,10 @@ public class YuWanForgot : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithVars(new EnergyVar(2));
-        WithCards(2);
+        WithEnergy(2, 1);
+        WithCards(2, 1);
         WithKeywords(CardKeyword.Exhaust);
-        WithEnergyTip();
+        WithKeyword(CardKeyword.Retain, UpgradeType.Add);
     }
 
     protected override bool IsPlayable
@@ -29,13 +29,6 @@ public class YuWanForgot : YuWanCardModel
             if (!base.IsPlayable || Owner == null) return false;
             return !PileType.Hand.GetPile(Owner).Cards.Any(card => card != this);
         }
-    }
-
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Retain);
-        DynamicVars.Energy.UpgradeValueBy(1);
-        DynamicVars.Cards.UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

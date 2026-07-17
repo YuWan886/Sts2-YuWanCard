@@ -17,12 +17,10 @@ public class AngelForm : YuWanCardModel
         target: TargetType.Self)
     {
         WithPower<AngelPigPower>(1);
+        WithKeyword(CardKeyword.Retain, UpgradeType.Add);
     }
 
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Retain);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

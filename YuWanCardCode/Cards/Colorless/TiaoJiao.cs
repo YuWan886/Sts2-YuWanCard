@@ -23,15 +23,12 @@ public class TiaoJiao : YuWanCardModel
         target: TargetType.AnyAlly)
     {
         WithVar(new DamageVar(4, ValueProp.Move | ValueProp.Unpowered));
-        WithPower<TrainYouWellPower>(3);
+        WithPower<TrainYouWellPower>(3, 2);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<StrengthPower>()));
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["TrainYouWellPower"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -40,7 +37,7 @@ public class TiaoJiao : YuWanCardModel
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .Unpowered()
             .Execute(choiceContext);
-        
+
         await PowerCmd.Apply<TrainYouWellPower>(new ThrowingPlayerChoiceContext(), cardPlay.Target, DynamicVars["TrainYouWellPower"].IntValue, Owner.Creature, this);
     }
 }

@@ -18,12 +18,10 @@ public class LittleRegent : YuWanCardModel
         target: TargetType.Self)
     {
         WithTip(new TooltipSource(_ => HoverTipFactory.FromOrb<LittleRegentOrb>()));
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

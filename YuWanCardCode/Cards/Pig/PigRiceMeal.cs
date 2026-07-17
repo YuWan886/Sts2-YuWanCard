@@ -16,14 +16,11 @@ public class PigRiceMeal : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithBlock(6);
+        WithBlock(6, 1);
         WithTip(card => HoverTipFactory.FromCard<PigFeed>(card.IsUpgraded));
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Block.UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -21,14 +21,11 @@ public class TenThousandSwords : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithKeywords(CardKeyword.Exhaust);
+        WithKeyword(CardKeyword.Exhaust, UpgradeType.Remove);
         WithVar("Forge", 0);
     }
 
-    protected override void OnUpgrade()
-    {
-        RemoveKeyword(CardKeyword.Exhaust);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -72,7 +69,7 @@ public class TenThousandSwords : YuWanCardModel
     {
         var allCards = player.PlayerCombatState?.AllCards;
         if (allCards == null) return [];
-        
+
         return allCards
             .Where(c => !c.IsDupe && c is SovereignBlade)
             .Where(c => includeExhausted || c.Pile?.Type != PileType.Exhaust)

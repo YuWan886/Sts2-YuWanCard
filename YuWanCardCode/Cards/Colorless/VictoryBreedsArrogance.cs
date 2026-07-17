@@ -18,16 +18,13 @@ public class VictoryBreedsArrogance : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy)
     {
-        WithBlock(15);
+        WithBlock(15, -3);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<VictoryBreedsArrogancePower>()));
     }
 
     public override string PortraitPath => "res://YuWanCard/images/card_portraits/sad_army_win.png";
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Block.UpgradeValueBy(-3);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

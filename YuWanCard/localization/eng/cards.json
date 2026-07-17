@@ -135,7 +135,7 @@
   "YUWANCARD-DIMENSION_SLASH.title": "Dimension Slash",
   "YUWANCARD-DIMENSION_SLASH.description": "Deal {Damage:diff()} damage. Double all [gold]debuffs[/gold] on the target enemy, then copy them to the other living enemies.",
   "YUWANCARD-PERFECT_THING.title": "Perfect Thing",
-  "YUWANCARD-PERFECT_THING.description": "Gain 1 energy every {IfUpgraded:show:2|3} cards you play.",
+  "YUWANCARD-PERFECT_THING.description": "All players gain {Block:diff()} Block. Take {ExtraTurns:diff()} extra turn(s).",
   "YUWANCARD-PIG_BLACK_HOLE.title": "Pig Black Hole",
   "YUWANCARD-PIG_BLACK_HOLE.description": "Exhaust any number of cards from your hand. Deal {Magic:diff()} damage to all enemies for each card exhausted.",
   "YUWANCARD-PIG_BLACK_HOLE.selectionScreenPrompt": "Choose cards to exhaust",

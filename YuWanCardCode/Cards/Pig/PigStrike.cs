@@ -15,14 +15,11 @@ public class PigStrike : YuWanCardModel
         rarity: CardRarity.Basic,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(6);
+        WithDamage(6, 3);
         WithTags(CardTag.Strike);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(3);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

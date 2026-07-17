@@ -16,15 +16,11 @@ public class PigRedWarm : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(15);
-        WithPower<StrengthPower>(5);
+        WithDamage(15, 5);
+        WithPower<StrengthPower>(5, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(5);
-        DynamicVars["StrengthPower"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

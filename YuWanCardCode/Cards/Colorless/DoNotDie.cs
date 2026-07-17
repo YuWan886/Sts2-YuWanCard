@@ -18,17 +18,14 @@ public class DoNotDie : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AnyAlly)
     {
-        WithPower<RegenPower>(3);
+        WithPower<RegenPower>(3, 1);
         WithVar("HealPercentage", 10);
         WithKeywords(CardKeyword.Exhaust);
     }
 
     public decimal HealPercentage => DynamicVars["HealPercentage"].IntValue / 100m;
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["RegenPower"].UpgradeValueBy(1);   
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

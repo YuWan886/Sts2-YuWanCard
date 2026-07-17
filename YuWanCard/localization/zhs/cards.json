@@ -135,7 +135,7 @@
   "YUWANCARD-DIMENSION_SLASH.title": "次元斩",
   "YUWANCARD-DIMENSION_SLASH.description": "造成{Damage:diff()}点伤害。将目标敌人的所有[gold]负面效果[/gold]翻倍，然后复制到其他存活敌人身上。",
   "YUWANCARD-PERFECT_THING.title": "完美之物",
-  "YUWANCARD-PERFECT_THING.description": "你每打出{IfUpgraded:show:2|3}张牌，获得1点能量。",
+  "YUWANCARD-PERFECT_THING.description": "所有玩家获得{Block:diff()}点格挡。获得{ExtraTurns:diff()}个额外回合。",
   "YUWANCARD-PIG_BLACK_HOLE.title": "猪黑洞",
   "YUWANCARD-PIG_BLACK_HOLE.description": "消耗任意数量的手牌。每张被消耗的牌对所有敌人造成{Magic:diff()}点伤害。",
   "YUWANCARD-PIG_BLACK_HOLE.selectionScreenPrompt": "选择要消耗的手牌",
