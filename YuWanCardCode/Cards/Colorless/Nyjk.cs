@@ -33,7 +33,7 @@ public class Nyjk : YuWanCardModel
             int blockToRemove = cardPlay.Target.Block / 2;
             if (blockToRemove > 0)
             {
-                await CreatureCmd.LoseBlock(cardPlay.Target, blockToRemove);
+                await CreatureCmd.LoseBlock(choiceContext, cardPlay.Target, blockToRemove, null);
             }
             await PowerCmd.Apply<WeakPower>(new ThrowingPlayerChoiceContext(), cardPlay.Target, 1, Owner.Creature, this);
         }

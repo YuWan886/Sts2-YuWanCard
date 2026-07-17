@@ -29,13 +29,14 @@ public class PigBankruptcyPower : YuWanPowerModel
         return true;
     }
 
-    public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(CardModel card, bool isAutoPlay, ResourceInfo resources, PileType pileType, CardPilePosition position)
+    public override CardLocation ModifyCardPlayResultLocation(CardModel card, bool isAutoPlay, ResourceInfo resources, CardLocation cardLocation)
     {
         if (card.Owner.Creature != Owner)
         {
-            return (pileType, position);
+            return cardLocation;
         }
-        return (PileType.Exhaust, position);
+        cardLocation.pileType = PileType.Exhaust;
+        return cardLocation;
     }
 
     public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)

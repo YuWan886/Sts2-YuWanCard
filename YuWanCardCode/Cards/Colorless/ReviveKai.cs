@@ -102,7 +102,7 @@ public class ReviveKai : YuWanCardModel
     private async Task<Creature?> SelectDeadPlayer(PlayerChoiceContext choiceContext, List<Creature> deadPlayers)
     {
         uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(Owner);
-        await choiceContext.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
+        await choiceContext.SignalPlayerChoiceBegun(Owner, PlayerChoiceOptions.None);
 
         int selectedIndex;
         if (LocalContext.IsMe(Owner))
