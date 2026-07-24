@@ -24,7 +24,7 @@ public class PerfectThing : YuWanCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        foreach (var playerCreature in CombatState!.GetLivingPlayerCreatures())
+        foreach (var playerCreature in CombatState!.Allies.Where(creature => creature.IsAlive))
         {
             await CreatureCmd.GainBlock(playerCreature, DynamicVars.Block, cardPlay);
         }

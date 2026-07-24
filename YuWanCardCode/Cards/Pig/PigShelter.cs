@@ -24,7 +24,7 @@ public class PigShelter : YuWanCardModel, ITranscendenceCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        foreach (var teammate in CombatState!.GetLivingPlayerCreatures())
+        foreach (var teammate in CombatState!.Allies.Where(creature => creature.IsAlive))
         {
             await CreatureCmd.GainBlock(teammate, DynamicVars.Block, cardPlay);
         }
