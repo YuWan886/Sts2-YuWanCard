@@ -236,6 +236,12 @@ public abstract partial class YuWanCardModel : CardModel, IYuWanContent
         return this;
     }
 
+    protected YuWanCardModel WithGold(int baseVal, int upgrade = 0)
+    {
+        _constructedDynamicVars.Add(new GoldVar(baseVal).WithUpgrade(upgrade));
+        return this;
+    }
+
     protected YuWanCardModel WithHeal(int baseVal, int upgrade = 0)
     {
         _constructedDynamicVars.Add(new HealVar(baseVal).WithUpgrade(upgrade));

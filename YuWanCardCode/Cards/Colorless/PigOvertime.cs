@@ -21,7 +21,7 @@ public class PigOvertime : YuWanCardModel
         target: TargetType.None)
     {
         WithVar("SelfDamage", 6);
-        WithVar("Gold", 5);
+        WithGold(5);
     }
 
     public override bool ShouldPlay(CardModel card, AutoPlayType autoPlayType)
@@ -52,6 +52,6 @@ public class PigOvertime : YuWanCardModel
             DynamicVars["SelfDamage"].BaseValue,
             ValueProp.Unpowered,
             Owner.Creature);
-        await PlayerCmd.GainGold(DynamicVars["Gold"].IntValue, Owner);
+        await PlayerCmd.GainGold(DynamicVars.Gold.IntValue, Owner);
     }
 }

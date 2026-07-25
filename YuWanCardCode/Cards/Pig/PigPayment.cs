@@ -17,7 +17,7 @@ public class PigPayment : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.Self)
     {
-        WithVar("Gold", 8, 6);
+        WithGold(8, 6);
         WithEnergy(1, 1);
     }
 
