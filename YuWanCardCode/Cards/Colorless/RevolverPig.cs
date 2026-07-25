@@ -23,7 +23,7 @@ public sealed class RevolverPig : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyPlayer)
     {
-        WithVar("Gold", 20, 5);
+        WithGold(20, 5);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -48,7 +48,7 @@ public sealed class RevolverPig : YuWanCardModel
             return;
         }
 
-        await PlayerCmd.GainGold(DynamicVars["Gold"].IntValue, targetPlayer);
+        await PlayerCmd.GainGold(DynamicVars.Gold.IntValue, targetPlayer);
     }
 
     protected override PileType GetResultPileTypeForCardPlay()

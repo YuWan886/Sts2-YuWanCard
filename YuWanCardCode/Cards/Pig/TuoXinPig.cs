@@ -17,7 +17,7 @@ public sealed class TuoXinPig : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithVar("Gold", 10, 3);
+        WithGold(10, 3);
         WithTip(typeof(TuoXinPigNextTurnGoldPower));
     }
 
