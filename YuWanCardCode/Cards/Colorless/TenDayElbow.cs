@@ -16,13 +16,10 @@ public class TenDayElbow : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(1);
+        WithDamage(1, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

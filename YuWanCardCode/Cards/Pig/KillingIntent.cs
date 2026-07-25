@@ -16,13 +16,10 @@ public class KillingIntent : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithPower<KillingIntentPower>(1);
+        WithPower<KillingIntentPower>(1, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["KillingIntentPower"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

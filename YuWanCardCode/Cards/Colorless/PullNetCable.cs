@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using YuWanCard.Core.Extensions;
 using YuWanCard.Powers;
 
 namespace YuWanCard.Cards;
@@ -20,14 +21,9 @@ public class PullNetCable : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyAlly)
     {
-        WithVars(new IntVar("turns", 1));
+        WithVars(new IntVar("turns", 1).WithUpgrade(1));
         WithKeywords(CardKeyword.Exhaust);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<VakuuTakeoverPower>()));
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars["turns"].UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

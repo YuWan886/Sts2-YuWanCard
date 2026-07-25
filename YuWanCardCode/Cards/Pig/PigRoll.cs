@@ -15,15 +15,11 @@ public class PigRoll : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(8);
-        WithBlock(4);
+        WithDamage(8, 3);
+        WithBlock(4, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(3);
-        DynamicVars.Block.UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

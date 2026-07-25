@@ -21,7 +21,7 @@ public class BorrowKnifeToKill : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyAlly)
     {
-        WithKeywords(CardKeyword.Exhaust);
+        WithKeyword(CardKeyword.Exhaust, UpgradeType.Remove);
     }
 
     protected override bool IsPlayable
@@ -36,10 +36,7 @@ public class BorrowKnifeToKill : YuWanCardModel
         }
     }
 
-    protected override void OnUpgrade()
-    {
-        RemoveKeyword(CardKeyword.Exhaust);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

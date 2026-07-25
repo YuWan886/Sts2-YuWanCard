@@ -16,13 +16,10 @@ public class PigBurger : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
-        WithPower<PigBurgerPower>(3);
+        WithPower<PigBurgerPower>(3, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["PigBurgerPower"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

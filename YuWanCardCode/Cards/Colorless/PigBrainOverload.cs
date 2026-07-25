@@ -25,9 +25,7 @@ public class PigBrainOverload : YuWanCardModel
         WithTip(typeof(Dazed));
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

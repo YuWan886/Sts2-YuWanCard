@@ -24,13 +24,10 @@ public sealed class JiaFangPig : YuWanCardModel
         target: TargetType.Self)
     {
         WithVars(new GoldVar(6));
-        WithBlock(9);
+        WithBlock(9, 4);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Block.UpgradeValueBy(4);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

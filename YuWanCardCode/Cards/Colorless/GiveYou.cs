@@ -18,14 +18,11 @@ public class GiveYou : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyAlly)
     {
-        WithKeywords(CardKeyword.Exhaust);
+        WithKeyword(CardKeyword.Exhaust, UpgradeType.Remove);
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        RemoveKeyword(CardKeyword.Exhaust);
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

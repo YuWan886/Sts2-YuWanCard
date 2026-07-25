@@ -18,14 +18,11 @@ public class PigCall : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(10);
+        WithDamage(10, 4);
         WithVars(new EnergyVar(1));
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(4);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

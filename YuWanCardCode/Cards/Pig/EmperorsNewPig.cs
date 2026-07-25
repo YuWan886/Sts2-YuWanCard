@@ -16,13 +16,10 @@ public class EmperorsNewPig : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
-        WithPower<EmperorsNewPigPower>(1);
+        WithPower<EmperorsNewPigPower>(1, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["EmperorsNewPigPower"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

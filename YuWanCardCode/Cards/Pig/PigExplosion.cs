@@ -1,4 +1,5 @@
 using YuWanCard.Core.Abstracts;
+using YuWanCard.Core.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -20,7 +21,7 @@ public class PigExplosion : YuWanCardModel
         WithTip(typeof(PigExplosionPower));
         WithVars(
             new DynamicVar("Turns", 2m),
-            new DynamicVar("PigExplosionDamage", 20m)
+            new DynamicVar("PigExplosionDamage", 20m).WithUpgrade(8m)
         );
     }
 
@@ -33,8 +34,4 @@ public class PigExplosion : YuWanCardModel
         }
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["PigExplosionDamage"].UpgradeValueBy(8m);
-    }
 }

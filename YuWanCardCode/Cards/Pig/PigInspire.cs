@@ -17,13 +17,10 @@ public class PigInspire : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.AllAllies)
     {
-        WithPower<StrengthPower>(1);
+        WithPower<StrengthPower>(1, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["StrengthPower"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

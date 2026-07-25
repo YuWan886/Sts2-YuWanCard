@@ -17,14 +17,8 @@ public class PigTouch : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: CustomTargetType.AnyPigMinion)
     {
-        WithVars(new HealVar(6));
-        WithPower<PigTouchPower>("Strength", 1);
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Heal.UpgradeValueBy(3);
-        DynamicVars["Strength"].UpgradeValueBy(1);
+        WithHeal(6, 3);
+        WithPower<PigTouchPower>("Strength", 1, 1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

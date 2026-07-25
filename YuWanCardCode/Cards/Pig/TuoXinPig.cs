@@ -17,14 +17,11 @@ public sealed class TuoXinPig : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithVars(new GoldVar(10));
+        WithVar("Gold", 10, 3);
         WithTip(typeof(TuoXinPigNextTurnGoldPower));
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Gold.UpgradeValueBy(3);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

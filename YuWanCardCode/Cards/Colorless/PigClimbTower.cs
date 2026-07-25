@@ -20,12 +20,10 @@ public class PigClimbTower : YuWanCardModel
         target: TargetType.AnyEnemy)
     {
         WithVars(new PigClimbTowerDamageVar(), new PigClimbTowerBlockVar());
+        WithKeyword(CardKeyword.Retain, UpgradeType.Add);
     }
 
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Retain);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

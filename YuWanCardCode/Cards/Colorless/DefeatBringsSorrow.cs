@@ -21,14 +21,12 @@ public class DefeatBringsSorrow : YuWanCardModel
         target: TargetType.Self)
     {
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<DefeatBringsSorrowPower>()));
+        WithCostUpgradeBy(-1);
     }
 
     public override string PortraitPath => "res://YuWanCard/images/card_portraits/sad_army_win.png";
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -76,12 +76,10 @@ public class GroupFriendImpact : YuWanCardModel
             .WithHitVfxNode(NBigSlashImpactVfx.Create);
 
         await attackCommand.Execute(choiceContext);
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override void AfterCloned()
     {

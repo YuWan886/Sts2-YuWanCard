@@ -19,17 +19,10 @@ public class YouAreDumbCry : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyAlly)
     {
-        WithVars(new EnergyVar(1));
-        WithVar("CryCount", 1);
+        WithEnergy(1, 1);
+        WithVar("CryCount", 1, 1);
         WithKeywords(CardKeyword.Exhaust);
-        WithEnergyTip();
         WithTip(typeof(PigAlwaysCry));
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Energy.UpgradeValueBy(1m);
-        DynamicVars["CryCount"].UpgradeValueBy(1m);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

@@ -16,15 +16,11 @@ public class PigFeast : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AllEnemies)
     {
-        WithDamage(8);
-        WithVar("RepeatCap", 3);
+        WithDamage(8, 2);
+        WithVar("RepeatCap", 3, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(2);
-        DynamicVars["RepeatCap"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

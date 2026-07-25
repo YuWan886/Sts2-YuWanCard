@@ -14,16 +14,12 @@ public class PigDragonRide : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(7);
+        WithDamage(7, 2);
         WithVar("HitCount", 3);
-        WithKeywords(CardKeyword.Exhaust);
+        WithKeyword(CardKeyword.Exhaust, UpgradeType.Remove);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(2);
-        RemoveKeyword(CardKeyword.Exhaust);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

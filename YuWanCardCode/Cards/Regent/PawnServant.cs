@@ -21,12 +21,10 @@ public class PawnServant : YuWanCardModel
     {
         WithKeywords(CardKeyword.Exhaust);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<VakuuTakeoverPower>()));
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

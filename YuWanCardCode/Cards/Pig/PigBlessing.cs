@@ -17,17 +17,13 @@ public class PigBlessing : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AllAllies)
     {
-        WithPower<StrengthPower>(1);
-        WithPower<DexterityPower>(1);
+        WithPower<StrengthPower>(1, 1);
+        WithPower<DexterityPower>(1, 1);
         WithPower<RegenPower>(2);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Strength.UpgradeValueBy(1);
-        DynamicVars["DexterityPower"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

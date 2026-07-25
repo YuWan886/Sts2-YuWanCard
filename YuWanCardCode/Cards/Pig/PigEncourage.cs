@@ -19,13 +19,8 @@ public class PigEncourage : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AllAllies)
     {
-        WithVars(new EnergyVar(1));
+        WithEnergy(1, 1);
         WithCards(1);
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Energy.UpgradeValueBy(1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

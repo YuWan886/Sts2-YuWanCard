@@ -16,13 +16,10 @@ public class PigGanglie : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithPower<ThornsPower>(2);
+        WithPower<ThornsPower>(2, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["ThornsPower"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

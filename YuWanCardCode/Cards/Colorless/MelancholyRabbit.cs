@@ -18,12 +18,10 @@ public class MelancholyRabbit : YuWanCardModel
     {
         WithKeywords(CardKeyword.Exhaust);
         WithTip(new TooltipSource(_ => HoverTipFactory.Static(StaticHoverTip.Block)));
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

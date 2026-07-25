@@ -15,13 +15,10 @@ public class PigMultiShot : YuWanCardModel
         target: TargetType.AnyEnemy)
     {
         WithDamage(3);
-        WithVar("Repeat", 3);
+        WithVar("Repeat", 3, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Repeat"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

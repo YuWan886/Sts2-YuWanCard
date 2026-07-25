@@ -16,13 +16,10 @@ public class ZhuGePig : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
-        WithPower<ZhuGePigPower>(3);
+        WithPower<ZhuGePigPower>(3, 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["ZhuGePigPower"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

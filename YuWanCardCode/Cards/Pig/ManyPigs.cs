@@ -22,9 +22,7 @@ public class ManyPigs : YuWanCardModel
     {
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

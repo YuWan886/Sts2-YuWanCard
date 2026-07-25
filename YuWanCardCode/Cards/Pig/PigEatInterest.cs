@@ -16,13 +16,10 @@ public sealed class PigEatInterest : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.Self)
     {
-        WithPower<PigInterestPower>(5);
+        WithPower<PigInterestPower>(5, 3);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["PigInterestPower"].UpgradeValueBy(3);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

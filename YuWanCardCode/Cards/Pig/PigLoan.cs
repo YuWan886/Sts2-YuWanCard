@@ -22,9 +22,7 @@ public sealed class PigLoan : YuWanCardModel
         WithTip(typeof(Debt));
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

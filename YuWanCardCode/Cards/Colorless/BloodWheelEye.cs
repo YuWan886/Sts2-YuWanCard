@@ -23,17 +23,15 @@ public partial class BloodWheelEye : YuWanCardModel
         target: TargetType.Self)
     {
         WithKeywords(CardKeyword.Exhaust);
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         PlayBloodWheelEyeVfx();
-        
+
         var allCards = PileType.Hand.GetPile(Owner).Cards
             .Concat(PileType.Draw.GetPile(Owner).Cards)
             .Concat(PileType.Discard.GetPile(Owner).Cards)
@@ -44,9 +42,9 @@ public partial class BloodWheelEye : YuWanCardModel
         {
             card.BaseReplayCount += 1;
         }
-        
+
         MainFile.Logger.Info($"BloodWheelEye: Added Replay 1 to {allCards.Count} cards");
-        
+
         return Task.CompletedTask;
     }
 
@@ -70,7 +68,7 @@ public partial class BloodWheelEye : YuWanCardModel
 
             var effect = new BloodWheelEyeVfxContainer(frames);
             vfxContainer.AddChildSafely(effect);
-            
+
             MainFile.Logger.Debug("BloodWheelEye: VFX spawned");
         }
         catch (Exception ex)
@@ -89,7 +87,7 @@ public partial class BloodWheelEye : YuWanCardModel
         public BloodWheelEyeVfxContainer(IReadOnlyList<Texture2D> frames)
         {
             _frames = frames;
-            
+
             MouseFilter = MouseFilterEnum.Ignore;
             AnchorsPreset = (int)LayoutPreset.FullRect;
             AnchorRight = 1.0f;

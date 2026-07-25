@@ -17,19 +17,16 @@ public class PigCrash : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AllEnemies)
     {
-        WithDamage(14);
+        WithDamage(14, 4);
         WithVar("SelfDamage", 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(4);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.Damage(choiceContext, Owner.Creature, DynamicVars["SelfDamage"].BaseValue, ValueProp.Unblockable | ValueProp.Unpowered, Owner.Creature);
-        
+
         if (CombatState != null)
         {
             var enemies = CombatState.Enemies.Where(e => e.IsAlive).ToList();
@@ -38,7 +35,7 @@ public class PigCrash : YuWanCardModel
                 VfxUtils.PlayAtCreature("res://YuWanCard/scenes/vfx/vfx_pig_crash.tscn", enemy);
             }
         }
-        
+
         await CommonActions.CardAttack(this, cardPlay).Execute(choiceContext);
     }
 }

@@ -16,14 +16,11 @@ public class PigRecipe : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.Self)
     {
-        WithVar("FoodCount", 1);
+        WithVar("FoodCount", 1, 1);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["FoodCount"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

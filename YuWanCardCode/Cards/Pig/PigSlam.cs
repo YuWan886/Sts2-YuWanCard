@@ -15,14 +15,11 @@ public class PigSlam : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(4);
+        WithDamage(4, 2);
         WithVar("Repeat", 2);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

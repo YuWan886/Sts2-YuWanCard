@@ -18,14 +18,11 @@ public class PigBlackHole : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AllEnemies)
     {
-        WithVar("Magic", 6);
+        WithVar("Magic", 6, 2);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Magic"].UpgradeValueBy(2);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

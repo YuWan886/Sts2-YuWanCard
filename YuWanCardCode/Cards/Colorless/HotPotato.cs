@@ -25,7 +25,7 @@ public sealed class HotPotato : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.RandomEnemy)
     {
-        WithDamage(1);
+        WithDamage(1, 1);
     }
 
     protected override void OnUpgrade()

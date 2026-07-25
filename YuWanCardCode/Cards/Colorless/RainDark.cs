@@ -22,14 +22,12 @@ public class RainDark : YuWanCardModel
         WithPower<IntangiblePower>(3);
         WithPower<RainDarkPower>(3);
         WithVar("HpPercentage", 25);
+        WithKeyword(CardKeyword.Retain, UpgradeType.Add);
     }
 
     public float HpPercentage => DynamicVars["HpPercentage"].IntValue / 100f;
 
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Retain);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

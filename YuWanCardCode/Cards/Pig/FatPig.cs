@@ -17,15 +17,12 @@ public class FatPig : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithBlock(15);
+        WithBlock(15, 3);
         WithPower<PlatingPower>(3);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Block.UpgradeValueBy(3);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -35,7 +32,7 @@ public class FatPig : YuWanCardModel
             DynamicVars["PlatingPower"].IntValue,
             Owner.Creature,
             this);
-        
+
         VfxUtils.PlayStaticVfxAtCreatureTop(Owner.Creature);
     }
 }

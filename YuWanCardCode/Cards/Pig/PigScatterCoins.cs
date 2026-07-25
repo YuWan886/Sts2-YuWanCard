@@ -24,13 +24,10 @@ public sealed class PigScatterCoins : YuWanCardModel
         target: TargetType.AnyEnemy)
     {
         WithVars(new GoldVar(6));
-        WithDamage(10);
+        WithDamage(10, 4);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(4);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

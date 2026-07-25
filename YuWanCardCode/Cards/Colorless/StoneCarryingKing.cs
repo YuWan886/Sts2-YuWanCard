@@ -12,7 +12,7 @@ namespace YuWanCard.Cards;
 public class StoneCarryingKing : YuWanCardModel
 {
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
-    
+
     public StoneCarryingKing() : base(
         baseCost: 1,
         type: CardType.Skill,
@@ -23,9 +23,7 @@ public class StoneCarryingKing : YuWanCardModel
         WithTip(card => HoverTipFactory.FromCard<GiantRock>(card.IsUpgraded));
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

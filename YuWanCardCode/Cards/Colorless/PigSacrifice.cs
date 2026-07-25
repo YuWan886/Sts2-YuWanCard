@@ -19,14 +19,11 @@ public class PigSacrifice : YuWanCardModel
         rarity: CardRarity.Rare,
         target: TargetType.AnyAlly)
     {
-        WithKeywords(CardKeyword.Exhaust);
+        WithKeyword(CardKeyword.Exhaust, UpgradeType.Remove);
+        WithKeyword(CardKeyword.Innate, UpgradeType.Add);
     }
 
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Innate);
-        RemoveKeyword(CardKeyword.Exhaust);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

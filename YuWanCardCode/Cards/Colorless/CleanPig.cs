@@ -20,12 +20,10 @@ public class CleanPig : YuWanCardModel
         target: TargetType.AllAllies)
     {
         WithKeywords(CardKeyword.Exhaust);
+        WithKeyword(CardKeyword.Retain, UpgradeType.Add);
     }
 
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Retain);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

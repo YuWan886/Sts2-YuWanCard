@@ -19,15 +19,12 @@ public class PigChop : YuWanCardModel
         rarity: CardRarity.Token,
         target: TargetType.Self)
     {
-        WithPower<RegenPower>(3);
+        WithPower<RegenPower>(3, 1);
         WithKeywords(CardKeyword.Exhaust);
         WithTags(YuWanTags.FoodPig);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["RegenPower"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

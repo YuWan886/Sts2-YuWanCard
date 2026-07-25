@@ -17,19 +17,16 @@ public class FitnessMouse : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.Self)
     {
-        WithVar("Strength", 3);
+        WithVar("Strength", 3, 1);
         WithTip(new TooltipSource(_ => HoverTipFactory.FromPower<FitnessMouseNextTurnStrengthPower>()));
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Strength"].UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<FitnessMouseNextTurnStrengthPower>(
-            new ThrowingPlayerChoiceContext(), 
+            new ThrowingPlayerChoiceContext(),
             Owner.Creature,
             DynamicVars["Strength"].IntValue,
             Owner.Creature,

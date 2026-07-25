@@ -20,13 +20,11 @@ public class PigTeammate : YuWanCardModel
     {
         WithPower<BufferPower>(1);
         WithKeywords(CardKeyword.Exhaust);
+        WithCostUpgradeBy(-1);
+        WithKeyword(CardKeyword.Retain, UpgradeType.Add);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-        WithKeywords(CardKeyword.Retain);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

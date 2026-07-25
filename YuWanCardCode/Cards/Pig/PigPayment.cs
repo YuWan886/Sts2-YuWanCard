@@ -17,15 +17,10 @@ public class PigPayment : YuWanCardModel
         rarity: CardRarity.Common,
         target: TargetType.Self)
     {
-        WithVars(new GoldVar(8), new EnergyVar(1));
-        WithEnergyTip();
+        WithVar("Gold", 8, 6);
+        WithEnergy(1, 1);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Gold.UpgradeValueBy(6);
-        DynamicVars.Energy.UpgradeValueBy(1);
-    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

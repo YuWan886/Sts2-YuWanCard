@@ -14,8 +14,8 @@ namespace YuWanCard.Core.Registration;
 /// Registration flow:
 ///   1. RegisterAll scans types, calls ModHelper.AddModelToPool for [Pool],
 ///      and tracks attributed types for later canonical registration.
-///   2. InitDeDuplicationPatch.SafeInit creates canonical instances and
-///      registers them with CustomEventRegistry / CustomAncientRegistry / etc.
+///   2. InitDeDuplicationPatch creates canonical instances and registers them
+///      with CustomEventRegistry / CustomAncientRegistry / etc.
 ///   3. Freeze() is called — further AddModel calls are no-ops.
 /// </summary>
 public static class ContentRegistry
@@ -25,7 +25,7 @@ public static class ContentRegistry
     private static readonly object _lock = new();
 
     // Types tracked by registration attributes — consumed by InitDeDuplicationPatch
-    // while registering canonical instances during ModelDb.Init.
+    // to register canonical instances during ModelDb.Init.
     internal static readonly HashSet<Type> AncientTypes = [];
     internal static readonly HashSet<Type> OrbTypes = [];
     internal static readonly HashSet<Type> MonsterTypes = [];

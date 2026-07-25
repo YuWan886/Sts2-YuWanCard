@@ -12,22 +12,19 @@ namespace YuWanCard.Cards;
 public class PigGuard : YuWanCardModel
 {
     public override CardMultiplayerConstraint MultiplayerConstraint => CardMultiplayerConstraint.MultiplayerOnly;
-    
+
     public PigGuard() : base(
         baseCost: 1,
         type: CardType.Skill,
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyAlly)
     {
-        WithBlock(8);
+        WithBlock(8, 4);
         WithPower<PlatingPower>(2);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Block.UpgradeValueBy(4);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

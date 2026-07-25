@@ -20,9 +20,7 @@ public class UserGotAngry : YuWanCardModel
         WithTip(card => HoverTipFactory.FromCard<Anger>(card.IsUpgraded));
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

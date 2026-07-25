@@ -40,20 +40,6 @@ static class ModelDbInitFinalizationPatch
             CustomRelicPoolRegistry.Register(relicPool);
     }
 
-    private static void RunPostInitLogic()
-    {
-        foreach (var modifier in YuWanModifierModel.RegisteredModifiers)
-        {
-            var modifierType = modifier.GetType();
-            if (!ModelDb.Contains(modifierType))
-            {
-                ModelDb.Inject(modifierType);
-            }
-        }
-
-        AutoRegisterCharacters();
-    }
-
     /// <summary>
     /// Registers tracked types from the canonical instances created by ModelDb.Init.
     /// </summary>

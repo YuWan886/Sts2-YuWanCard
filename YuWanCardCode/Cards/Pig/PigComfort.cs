@@ -20,14 +20,11 @@ public class PigComfort : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AllAllies)
     {
-        WithCards(1);
+        WithCards(1, 1);
         WithKeywords(CardKeyword.Exhaust);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Cards.UpgradeValueBy(1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -17,20 +17,17 @@ public class PigStayUpLate : YuWanCardModel
         rarity: CardRarity.Uncommon,
         target: TargetType.AnyEnemy)
     {
-        WithDamage(9);
+        WithDamage(9, 4);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(4);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Target != null)
         {
             decimal damage = DynamicVars.Damage.BaseValue;
-            
+
             bool isLateNight = IsLateNight();
             bool isMultiplayer = TeammatePay.IsMultiplayerGame();
 
@@ -40,7 +37,7 @@ public class PigStayUpLate : YuWanCardModel
                 await PowerCmd.Apply<WeakPower>(new ThrowingPlayerChoiceContext(),Owner.Creature, 1, Owner.Creature, this);
                 MainFile.Logger.Info($"PigStayUpLate: Late night bonus! Damage doubled to {damage}, gained Weak");
             }
-            
+
             await DamageCmd.Attack(damage)
                 .FromCard(this, null)
                 .Targeting(cardPlay.Target)

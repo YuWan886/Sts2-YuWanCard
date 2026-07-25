@@ -23,12 +23,10 @@ public class OldPigCalendar : YuWanCardModel
         WithPower<OldPigCalendarDoubleDamagePower>(1);
         WithPower<OldPigCalendarNoDamagePower>(1);
         WithKeywords(CardKeyword.Exhaust);
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

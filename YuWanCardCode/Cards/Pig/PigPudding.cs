@@ -19,12 +19,10 @@ public class PigPudding : YuWanCardModel
     {
         WithKeywords(CardKeyword.Exhaust);
         WithTags(YuWanTags.FoodPig);
+        WithCostUpgradeBy(-1);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -37,7 +35,7 @@ public class PigPudding : YuWanCardModel
 
         var randomDebuff = Owner.RunState.Rng.CombatCardGeneration.NextItem(debuffs);
         await PowerCmd.Remove(randomDebuff);
-        
+
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
     }
 }

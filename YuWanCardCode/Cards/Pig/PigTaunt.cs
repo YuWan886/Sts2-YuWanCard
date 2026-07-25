@@ -18,13 +18,10 @@ public class PigTaunt : YuWanCardModel
     {
         WithPower<WeakPower>(1);
         WithPower<VulnerablePower>(1);
-        WithBlock(6);
+        WithBlock(6, 3);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Block.UpgradeValueBy(3);
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

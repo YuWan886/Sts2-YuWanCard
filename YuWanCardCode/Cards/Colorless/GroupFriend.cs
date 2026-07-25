@@ -19,9 +19,7 @@ public class GroupFriend : YuWanCardModel
         WithPower<GroupFriendPower>(5, 3);
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
