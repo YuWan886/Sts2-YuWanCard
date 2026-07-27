@@ -1,4 +1,5 @@
 using Godot;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
@@ -26,6 +27,28 @@ public static class ModelDbCharactersPatch
     {
         CustomCharacters.Add(character);
     }
+
+    public static bool IsRegistered(CharacterModel character)
+    {
+        return CustomCharacters.Any(registered => registered.GetType() == character.GetType());
+    }
+}
+
+static class RegisteredCharacterVisuals
+{
+    private sealed class Marker;
+
+    private static readonly ConditionalWeakTable<NCreatureVisuals, Marker> Markers = new();
+
+    public static void Mark(NCreatureVisuals visuals)
+    {
+        Markers.GetValue(visuals, static _ => new Marker());
+    }
+
+    public static bool IsMarked(NCreatureVisuals visuals)
+    {
+        return Markers.TryGetValue(visuals, out _);
+    }
 }
 
 // --- Custom character path overrides ---
@@ -52,6 +75,10 @@ static class CustomCharacterVisuals
         if (__instance is IYuWanCharacter c)
         {
             __result = c.CreateCustomVisuals();
+            if (__result != null && ModelDbCharactersPatch.IsRegistered(__instance))
+            {
+                RegisteredCharacterVisuals.Mark(__result);
+            }
             return __result == null;
         }
         return true;
@@ -78,6 +105,11 @@ static class FakeMerchantMissingRelaxedAnimationPatch
     [HarmonyPrefix]
     static bool Prefix(NCreatureVisuals visuals)
     {
+        if (!RegisteredCharacterVisuals.IsMarked(visuals))
+        {
+            return true;
+        }
+
         MegaSprite? spine = visuals.SpineBody;
         if (spine == null || spine.HasAnimation(CharacterModel.relaxedAnim) || !spine.HasAnimation("idle_loop"))
         {
