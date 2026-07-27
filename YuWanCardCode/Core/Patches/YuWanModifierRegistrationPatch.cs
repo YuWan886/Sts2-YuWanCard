@@ -90,9 +90,17 @@ public class YuWanGoodModifiersPatch
 /// (on Android accessing NDailyRunScreen triggers its static constructor which
 /// has a known NRE bug on Mono AOT, so it's skipped entirely there).
 /// </summary>
-[HarmonyPatch(typeof(NDailyRunScreen), "RollModifiers")]
+[HarmonyPatch]
 public class YuWanDailyRunModifierFilterPatch
 {
+    static MethodBase? TargetMethod()
+    {
+        // 0.109+ folds the modifier roll into SetupLobbyParams; older versions
+        // expose it as RollModifiers.
+        return AccessTools.Method(typeof(NDailyRunScreen), "RollModifiers")
+            ?? AccessTools.Method(typeof(NDailyRunScreen), "SetupLobbyParams");
+    }
+
     [HarmonyPrefix]
     public static void Prefix()
     {
@@ -103,5 +111,12 @@ public class YuWanDailyRunModifierFilterPatch
     public static void Postfix()
     {
         YuWanGoodModifiersPatch.IsDailyRunContext = false;
+    }
+
+    [HarmonyFinalizer]
+    public static Exception? Finalizer(Exception? __exception)
+    {
+        YuWanGoodModifiersPatch.IsDailyRunContext = false;
+        return __exception;
     }
 }

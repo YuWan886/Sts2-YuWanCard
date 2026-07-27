@@ -8,6 +8,16 @@ using YuWanCard.Timeline;
 namespace YuWanCard.Core.Patches;
 
 [HarmonyPatch(typeof(ModelIdSerializationCache), nameof(ModelIdSerializationCache.Init))]
+static class PigTimelineSerializationCachePatch
+{
+    [HarmonyPrefix]
+    static void RegisterTimelineContent()
+    {
+        PigTimelineRegistry.EnsureRegistered();
+    }
+}
+
+[HarmonyPatch(typeof(ModelIdSerializationCache), nameof(ModelIdSerializationCache.Init))]
 static class ModelIdSerializationCachePatch
 {
     private static readonly MethodInfo EntryListSortMethod = AccessTools.Method(
@@ -19,16 +29,9 @@ static class ModelIdSerializationCachePatch
         typeof(ModelIdSerializationCachePatch),
         nameof(DeduplicateAndSort))!;
 
-    [HarmonyPrefix]
-    static void RegisterTimelineContent()
-    {
-        PigTimelineRegistry.EnsureRegistered();
-    }
-
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> DeduplicateModelTypes(IEnumerable<CodeInstruction> instructions)
     {
-        bool replaced = false;
         foreach (CodeInstruction instruction in instructions)
         {
             if (instruction.opcode == OpCodes.Callvirt
@@ -36,17 +39,13 @@ static class ModelIdSerializationCachePatch
             {
                 instruction.opcode = OpCodes.Call;
                 instruction.operand = DeduplicateAndSortMethod;
-                replaced = true;
             }
 
             yield return instruction;
         }
 
-        if (!replaced)
-        {
-            throw new InvalidOperationException(
-                "Could not locate ModelIdSerializationCache model-entry sort call.");
-        }
+        // 0.109+ builds the cache from ModelDb.All through ContentSorter, so the
+        // legacy List.Sort call is absent and no type-list deduplication is needed.
     }
 
     private static void DeduplicateAndSort(

@@ -227,9 +227,6 @@ public static class AutoSlayOptionsPatch
             }
         }
 
-        if (!found)
-        {
-            MainFile.Logger.Warn("[AutoSlay] Could not find Options path in AbandonRunAsync");
-        }
+        // 0.109+ already uses PauseButton, so no replacement is necessary.
     }
 }

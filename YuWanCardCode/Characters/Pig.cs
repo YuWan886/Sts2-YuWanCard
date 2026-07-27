@@ -156,7 +156,7 @@ public class Pig : CharacterModel, IYuWanCharacter, IYuWanCharacterSkinProvider
             attackLoop: false,
             castName: "cast",
             castLoop: false,
-            relaxedName: "relaxed_loop",
+            relaxedName: "idle_loop",
             relaxedLoop: true);
 
         var tfAnim = new AnimState("tf", false)

@@ -11,6 +11,12 @@ internal static class AssemblyScanner
 {
     public static IReadOnlyList<Type> GetLoadableTypes(Assembly assembly)
     {
+        // Steamworks.NET is native interop only and declares runtime-unloadable types.
+        if (string.Equals(assembly.GetName().Name, "Steamworks.NET", StringComparison.Ordinal))
+        {
+            return Array.Empty<Type>();
+        }
+
         try
         {
             return assembly.GetTypes();

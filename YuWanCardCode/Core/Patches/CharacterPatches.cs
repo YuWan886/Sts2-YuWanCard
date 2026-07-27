@@ -4,6 +4,8 @@ using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.Events.Custom;
+using MegaCrit.Sts2.Core.Random;
 
 namespace YuWanCard.Core.Patches;
 
@@ -67,6 +69,37 @@ static class GenerateAnimatorPatch
             return __result == null;
         }
         return true;
+    }
+}
+
+[HarmonyPatch(typeof(NFakeMerchant), "StartCharacterAnimation")]
+static class FakeMerchantMissingRelaxedAnimationPatch
+{
+    [HarmonyPrefix]
+    static bool Prefix(NCreatureVisuals visuals)
+    {
+        MegaSprite? spine = visuals.SpineBody;
+        if (spine == null || spine.HasAnimation(CharacterModel.relaxedAnim) || !spine.HasAnimation("idle_loop"))
+        {
+            return true;
+        }
+
+        visuals.SpineAnimation.SetAnimation("idle_loop");
+        using MegaTrackEntry? trackEntry = visuals.SpineAnimation.GetCurrentTrack();
+        if (trackEntry != null)
+        {
+            trackEntry.SetLoop(loop: true);
+            trackEntry.SetTimeScale(Rng.Chaotic.NextFloat(0.9f, 1.1f));
+
+            float animationEnd = trackEntry.GetAnimationEnd();
+            if (animationEnd > 0f)
+            {
+                trackEntry.SetTrackTime(
+                    (animationEnd + Rng.Chaotic.NextFloat(-0.5f, 0.5f)) % animationEnd);
+            }
+        }
+
+        return false;
     }
 }
 
