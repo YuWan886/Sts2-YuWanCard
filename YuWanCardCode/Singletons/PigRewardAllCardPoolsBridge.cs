@@ -46,7 +46,10 @@ public class PigRewardAllCardPoolsBridge : YuWanSingletonModel
         }
 
         HashSet<ModelId> blockedIds = [pigResult.Card.CanonicalInstance.Id];
-        List<CardModel> otherPoolCandidates = BuildOtherPoolCandidates(player, blockedIds);
+        List<CardModel> otherPoolCandidates = BuildOtherPoolCandidates(
+            player,
+            blockedIds,
+            creationOptions.CardPoolFilter);
         if (otherPoolCandidates.Count < otherCardCount)
         {
             return false;
@@ -83,7 +86,10 @@ public class PigRewardAllCardPoolsBridge : YuWanSingletonModel
     private static bool IsPigPoolResult(CardCreationResult result)
         => result.Card.CanonicalInstance.Pool is PigCardPool;
 
-    private static List<CardModel> BuildOtherPoolCandidates(Player player, IReadOnlySet<ModelId> blockedIds)
+    private static List<CardModel> BuildOtherPoolCandidates(
+        Player player,
+        IReadOnlySet<ModelId> blockedIds,
+        Func<CardModel, bool>? sourceFilter)
     {
         return ModelDb.AllCardPools
             .Where(static pool => pool is not PigCardPool and not MockCardPool)
@@ -91,6 +97,7 @@ public class PigRewardAllCardPoolsBridge : YuWanSingletonModel
             .Where(static card => card.Pool is not PigCardPool)
             .Where(static card => card.Rarity is CardRarity.Common or CardRarity.Uncommon or CardRarity.Rare)
             .Where(YuWanContentAvailability.IsCardEnabled)
+            .Where(card => sourceFilter?.Invoke(card) ?? true)
             .Where(card => !blockedIds.Contains(card.Id))
             .GroupBy(static card => card.Id)
             .Select(static group => group.First())
@@ -103,10 +110,16 @@ public class PigRewardAllCardPoolsBridge : YuWanSingletonModel
         int count,
         CardCreationOptions sourceOptions)
     {
+        HashSet<ModelId> candidateIds = candidates.Select(static card => card.Id).ToHashSet();
+        CardPoolModel[] candidatePools = candidates
+            .Select(static card => card.Pool)
+            .Distinct()
+            .ToArray();
         CardCreationOptions replacementOptions = new CardCreationOptions(
-                new[] { player.Character.CardPool },
+                candidatePools,
                 sourceOptions.Source,
-                GetRarityOddsForCandidatePool(sourceOptions, candidates))
+                GetRarityOddsForCandidatePool(sourceOptions, candidates),
+                card => candidateIds.Contains(card.Id))
             // These candidates already include every eligible non-Pig pool. Letting reward hooks
             // rewrite the custom pool can discard it entirely before CardFactory performs its roll.
             .WithFlags(sourceOptions.Flags
