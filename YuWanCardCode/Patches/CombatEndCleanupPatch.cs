@@ -8,7 +8,7 @@ namespace YuWanCard.Patches;
 public class CombatEndCleanupPatch
 {
     [HarmonyPostfix]
-    [HarmonyPatch(nameof(CombatManager.EndCombatInternal))]
+    [HarmonyPatch(nameof(CombatManager.EndCombatInternal), new Type[] { })]
     public static void EndCombatInternalPostfix()
     {
         RainDarkEffectPatch.CleanupAfterCombat();

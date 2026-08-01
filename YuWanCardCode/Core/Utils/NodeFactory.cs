@@ -218,8 +218,8 @@ public static class NodeFactory
         TransferChildren(source, visuals);
 
         // Mark transferred key nodes as uniquely named so NCreatureVisuals._Ready()
-        // can find them via %Visuals, %Bounds, %CenterPos, %IntentPos.
-        foreach (var name in new[] { "Visuals", "Bounds", "CenterPos", "IntentPos" })
+        // can find them via %Visuals, %Bounds, %CenterPos, %IntentPos, %FormVfx.
+        foreach (var name in new[] { "Visuals", "Bounds", "CenterPos", "IntentPos", "FormVfx" })
         {
             var child = visuals.GetNodeOrNull<Node>(name);
             if (child != null && !child.UniqueNameInOwner)
@@ -244,6 +244,20 @@ public static class NodeFactory
         EnsureMarker(visuals, "CenterPos", bounds.Position + bounds.Size * new Vector2(0.5f, 0.6f));
         EnsureMarker(visuals, "IntentPos", bounds.Position + bounds.Size * new Vector2(0.5f, 0f) + new Vector2(0, -70));
         EnsureMarker(visuals, "OrbPos", bounds.Position + bounds.Size * new Vector2(0.5f, 0f));
+
+        // Beta removes player form VFX during every death animation, including abandon.
+        // Vanilla character scenes provide this holder, but custom scenes often do not.
+        if (visuals.GetNodeOrNull<Control>("%FormVfx") == null)
+        {
+            var formVfx = new Control
+            {
+                Name = "FormVfx",
+                UniqueNameInOwner = true,
+                MouseFilter = Control.MouseFilterEnum.Ignore
+            };
+            visuals.AddChild(formVfx);
+            formVfx.Owner = visuals;
+        }
 
         // Bounds container needs a child "Bounds" Control for UpdateBounds
         if (!bounds.HasNode("Bounds"))

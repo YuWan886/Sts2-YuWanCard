@@ -40,6 +40,10 @@ position = Vector2(0, -138)
 unique_name_in_owner = true
 position = Vector2(0, -236)
 
+[node name="FormVfx" type="Control" parent="."]
+unique_name_in_owner = true
+mouse_filter = 2
+
 [node name="TalkPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
 position = Vector2(144, -191)
