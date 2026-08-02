@@ -15,6 +15,7 @@ public sealed class GravityTrait : MaliceTraitPowerBase
     private class Data
     {
         public int TickCount;
+        public int ReducedAmount;
     }
 
     protected override object InitInternalData() => new Data();
@@ -34,10 +35,21 @@ public sealed class GravityTrait : MaliceTraitPowerBase
         }
 
         data.TickCount = 0;
-        Flash();
-
         int maxReduction = 2 + combatState.RunState!.CurrentActIndex;
-        int reduction = Math.Min((int)Amount, maxReduction);
+        int remainingReduction = maxReduction - data.ReducedAmount;
+        if (remainingReduction <= 0)
+        {
+            return;
+        }
+
+        int reduction = Math.Min((int)Amount, remainingReduction);
+        if (reduction <= 0)
+        {
+            return;
+        }
+
+        data.ReducedAmount += reduction;
+        Flash();
 
         foreach (var player in combatState.Players)
         {
