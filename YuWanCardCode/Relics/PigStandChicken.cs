@@ -56,7 +56,7 @@ public sealed class PigStandChicken : YuWanRelicModel
         Flash();
         foreach (Creature enemy in Owner.Creature.CombatState.Enemies.Where(e => e.IsAlive))
         {
-            await CreatureCmd.Damage(choiceContext, enemy, TriggerDamage, ValueProp.Move, Owner.Creature, null);
+            await CreatureCmd.Damage(choiceContext, enemy, TriggerDamage, ValueProp.Move, Owner.Creature, null, null);
         }
     }
 }

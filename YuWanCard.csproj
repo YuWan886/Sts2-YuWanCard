@@ -2,7 +2,7 @@
     <Import Project=".\Sts2PathDiscovery.props"/>
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
-        <Version>0.5.11</Version>
+        <Version>0.5.12</Version>
         <!-- Content is packaged as a multi-version variant (lib/<game>/YuWanCard.Content.dll)
              behind the small YuWanCard loader assembly. Keep the public namespace as YuWanCard. -->
         <AssemblyName>YuWanCard.Content</AssemblyName>

@@ -13,7 +13,7 @@ mods/YuWanCard/
 ├─ posthog.analytics.local.yaml   ← 本地分析配置
 └─ lib/
    ├─ 0.107.1/compat-target.txt + YuWanCard.Content.dll
-   └─ 0.110.0/compat-target.txt + YuWanCard.Content.dll   ← 内容适配后加入
+   └─ 0.110.1/compat-target.txt + YuWanCard.Content.dll
 ```
 
 ### 为什么需要它
@@ -73,7 +73,7 @@ dotnet build
 ```
 F:\sts2-mod\sts2-versions\
 ├─ 0.107.1\sts2.dll
-└─ 0.110.0\sts2.dll
+└─ 0.110.1\sts2.dll
 ```
 
 ```powershell
@@ -103,11 +103,12 @@ powershell -ExecutionPolicy Bypass -File tools/build-variants.ps1 -ApiRoot F:\st
 
 | 游戏版本 | 模组变体 | 说明 |
 |----------|----------|------|
-| 0.107.1 | 有（当前发布） | 内容使用 0.107.1 的 Hook 签名 |
-| 0.110.x | 待适配 | API 变更：伤害 Hook 增加 `CardPlay` 参数、`BeforeTurnEnd/AfterTurnEnd` → `BeforeSideTurnEnd/AfterSideTurnEnd`、`ModifyCardPlayResultPileTypeAndPosition` → `ModifyCardPlayResultLocation`、移除 `GetResultPileTypeForCardPlay`、`EpochModel.IsArtPlaceholder` 变更 |
+| 0.107.1 | 有（历史兼容变体） | 内容使用 0.107.1 的 Hook 签名，供老版本回退 |
+| 0.110.1 | 有（当前发布） | 已适配 0.110 API：伤害 Hook 增加 `CardPlay` 参数、`BeforeTurnEnd/AfterTurnEnd` → `BeforeSideTurnEnd/AfterSideTurnEnd`、`ModifyCardPlayResultPileTypeAndPosition` → `ModifyCardPlayResultLocation`、移除 `GetResultPileTypeForCardPlay`、`EpochModel.IsArtPlaceholder` 变更 |
 
-> 0.110.x 的适配已排期但尚未完成；当前发布的变体目标为 0.107.1。loader 机制就绪，
-> 内容适配完成后加入对应变体即可。
+> 当前宿主游戏为 0.110.1，`min_game_version=0.110.0`。开发循环（`dotnet build`）读取
+> `release_info.json` 自动生成 `lib/0.110.1` 变体；loader 运行时按「compatTarget ≤ 宿主」
+> 挑选变体，0.107.1 变体供 0.108 及更老版本回退。
 
 ---
 

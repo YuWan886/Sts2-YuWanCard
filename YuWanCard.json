@@ -3,8 +3,8 @@
   "name": "猪猪",
   "author": "一条鱼丸_",
   "description": "pig card\n猪降临",
-  "version": "v0.5.11",
-  "min_game_version": "0.110.0",
+  "version": "v0.5.12",
+  "min_game_version": "0.107.1",
   "has_pck": true,
   "has_dll": true,
   "affects_gameplay": true
