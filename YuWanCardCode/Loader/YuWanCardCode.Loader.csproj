@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk" InitialTargets="CheckDependencyPaths">
+    <!--
+      YuWanCard loader: the assembly the game actually loads as "YuWanCard.dll".
+
+      It only references a tiny, stable slice of the game API (ModInitializerAttribute,
+      Logger, ReleaseInfoManager, ReflectionHelper, ModManager, HarmonyLib) so it keeps
+      compiling and loading across game versions. It detects the host game version,
+      picks the best bundled content variant from lib/<version>/, loads it, bridges its
+      types into ReflectionHelper.ModTypes, and invokes the content [ModInitializer].
+
+      IMPORTANT: Do NOT reference volatile game APIs here. Keep this assembly small.
+    -->
+    <Import Project="..\..\Sts2PathDiscovery.props"/>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>YuWanCard</AssemblyName>
+        <RootNamespace>YuWanCard.Loader</RootNamespace>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <AppOutputBase>$(MSBuildProjectDirectory)\..\..\</AppOutputBase>
+        <PathMap>$(AppOutputBase)=.\</PathMap>
+        <!-- The loader is intentionally AnyCPU while referenced game assemblies may be platform-specific. -->
+        <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+        <NoWarn>$(NoWarn);MSB3270;CS0436;CS9057;NU1608</NoWarn>
+        <DefaultItemExcludes>packages/**</DefaultItemExcludes>
+    </PropertyGroup>
+
+    <ItemGroup Condition="Exists('$(Sts2DataDir)')">
+        <Reference Include="0Harmony">
+            <HintPath>$(Sts2DataDir)/0Harmony.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="sts2">
+            <HintPath>$(Sts2DataDir)/sts2.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
+
+    <Target Name="CheckDependencyPaths">
+        <Error Text="Slay the Spire 2 data not found at path '$(Sts2DataDir)'" Condition="'$(Sts2DataDir)' == '' or !Exists('$(Sts2DataDir)')" />
+    </Target>
+</Project>

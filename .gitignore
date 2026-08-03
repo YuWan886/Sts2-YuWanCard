@@ -32,3 +32,5 @@ posthog.analytics.local.yaml
 *.csproj.lscache
 superpowers/
 bash.exe.stackdump
+YuWanCardCode/Loader/obj/
+.build-variants-tmp

@@ -1,6 +1,7 @@
 using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using YuWanCard.Core.Utils;
 
 namespace YuWanCard.Core.Patches.Content;
 
@@ -57,15 +58,18 @@ public static class CustomKeywordRegistry
                 if (!field.FieldType.IsEnum)
                     continue;
 
-                var assemblyName = assembly.GetName().Name ?? "UNKNOWN";
-                var id = $"{assemblyName}.{field.DeclaringType!.FullName}.{field.Name}";
+                // The assembly name changed to YuWanCard.Content (multi-version variant);
+                // IDs and localization prefixes must stay based on the stable mod id so
+                // minted keyword values and loc keys remain identical across variants/saves.
+                var modId = AssetPathHelper.ModId;
+                var id = $"{modId}.{field.DeclaringType!.FullName}.{field.Name}";
 
                 if (field.FieldType == typeof(CardKeyword))
                 {
                     var keyword = cardKeywordMinter.Mint(id);
                     field.SetValue(null, keyword);
 
-                    var modPrefix = assemblyName.ToUpperInvariant() + "-";
+                    var modPrefix = modId.ToUpperInvariant() + "-";
                     var locKey = modPrefix + PascalToUpperSnake(field.Name);
                     var props = field.GetCustomAttribute<KeywordPropertiesAttribute>();
                     var position = props?.Position ?? AutoKeywordPosition.After;

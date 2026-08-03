@@ -28,6 +28,48 @@ public partial class MainFile : Node
 
     public static YuWanCardConfig? Config { get; private set; }
 
+    // The content DLL now lives under lib/<game-version>/ (multi-version variant bundle),
+    // so locate the mod root (where YuWanCard.json lives) by walking up the directory tree.
+    private static string? _modRootDir;
+    private static bool _modRootResolved;
+
+    public static string? ModRootDir
+    {
+        get
+        {
+            if (_modRootResolved)
+                return _modRootDir;
+
+            _modRootResolved = true;
+            _modRootDir = ResolveModRootDir();
+            return _modRootDir;
+        }
+    }
+
+    private static string? ResolveModRootDir()
+    {
+        try
+        {
+            var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            while (!string.IsNullOrEmpty(dir))
+            {
+                if (File.Exists(Path.Combine(dir, "YuWanCard.json")))
+                    return dir;
+
+                var parent = Path.GetDirectoryName(dir);
+                if (parent == dir)
+                    break;
+                dir = parent;
+            }
+        }
+        catch
+        {
+            // Best-effort; consumers fall back to their own search.
+        }
+
+        return null;
+    }
+
     public static void Initialize()
     {
         ModLifecycle.Publish(ModLifecyclePhase.Initializing);

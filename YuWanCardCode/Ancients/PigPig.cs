@@ -32,7 +32,7 @@ public class PigPig : YuWanAncientModel
         ModelDb.Relic<HongMengPig>(),
         ModelDb.Relic<TankPig>(),
         ModelDb.Relic<TrapPig>(),
-        ModelDb.Relic<CrystalPig>()
+        ModelDb.Relic<CrystalPigRelic>()
     ]);
 
     public PigPig()

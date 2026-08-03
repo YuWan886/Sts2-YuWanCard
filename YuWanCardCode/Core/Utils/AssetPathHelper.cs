@@ -4,49 +4,16 @@ namespace YuWanCard.Core.Utils;
 
 public static class AssetPathHelper
 {
-    private static string? _modId;
-    private static string? _modResPath;
+    // Asset paths must NOT derive from the assembly name: the content assembly is
+    // packaged as "YuWanCard.Content" (a multi-version variant behind the YuWanCard
+    // loader), while the Godot .pck keys and the manifest id are "YuWanCard".
+    public const string ModId = "YuWanCard";
 
-    public static string ModId
-    {
-        get
-        {
-            if (_modId != null)
-                return _modId;
+    public static string ModResPath => $"res://{ModId}";
 
-            var assembly = Assembly.GetExecutingAssembly();
-            _modId = assembly.GetName().Name ?? "YuWanCard";
-            return _modId;
-        }
-    }
+    public static string GetModIdFromType(Type type) => ModId;
 
-    public static string ModResPath
-    {
-        get
-        {
-            if (_modResPath != null)
-                return _modResPath;
-
-            _modResPath = $"res://{ModId}";
-            return _modResPath;
-        }
-    }
-
-    public static string GetModIdFromType(Type type)
-    {
-        var assembly = type.Assembly;
-        var name = assembly.GetName().Name;
-        if (string.IsNullOrEmpty(name))
-            return ModId;
-
-        return name;
-    }
-
-    public static string GetModResPathFromType(Type type)
-    {
-        var modId = GetModIdFromType(type);
-        return $"res://{modId}";
-    }
+    public static string GetModResPathFromType(Type type) => $"res://{ModId}";
 
     public static string GetImagePath(Type contentType, string subPath)
     {

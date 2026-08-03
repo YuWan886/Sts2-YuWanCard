@@ -12,7 +12,7 @@ using YuWanCard.Utils;
 namespace YuWanCard.Relics;
 
 [Pool(typeof(EventRelicPool))]
-public sealed class CrystalPig : YuWanRelicModel
+public sealed class CrystalPigRelic : YuWanRelicModel
 {
     private bool _shouldTriggerOnEnergyGain;
 
@@ -24,7 +24,7 @@ public sealed class CrystalPig : YuWanRelicModel
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
-    public CrystalPig() : base(true)
+    public CrystalPigRelic() : base(true)
     {
     }
 

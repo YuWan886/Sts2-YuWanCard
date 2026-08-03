@@ -8,16 +8,13 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
-using MegaCrit.Sts2.Core.Saves.Runs;
 
 namespace YuWanCard.Powers;
 
 public class PigBrainOverloadPower : YuWanPowerModel
 {
-    [SavedProperty]
     public int YUWANCARD_TurnCounter { get; set; } = 0;
 
-    [SavedProperty]
     public int YUWANCARD_UpgradedCount { get; set; } = 0;
 
     public override PowerType Type => PowerType.Debuff;
