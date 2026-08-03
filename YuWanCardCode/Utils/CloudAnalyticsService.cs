@@ -652,11 +652,15 @@ public static class CloudAnalyticsService
     {
         try
         {
-            string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string? assemblyDir = Path.GetDirectoryName(assemblyLocation);
-            if (!string.IsNullOrWhiteSpace(assemblyDir))
+            // The content DLL lives under lib/<game-version>/; the local analytics config
+            // sits at the mod root next to YuWanCard.json.
+            if (MainFile.ModRootDir is { } modRoot)
             {
-                return Path.Combine(assemblyDir, LocalConfigFileName);
+                string path = Path.Combine(modRoot, LocalConfigFileName);
+                if (File.Exists(path))
+                {
+                    return path;
+                }
             }
         }
         catch

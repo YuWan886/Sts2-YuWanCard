@@ -274,28 +274,14 @@ public static class UpdateChecker
     {
         try
         {
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            string? location = assembly.Location;
-            if (!string.IsNullOrEmpty(location))
+            // The content DLL lives under lib/<game-version>/; walk up to the mod root
+            // where YuWanCard.json sits.
+            if (MainFile.ModRootDir is { } modRoot)
             {
-                string? directory = Path.GetDirectoryName(location);
-                if (!string.IsNullOrEmpty(directory))
+                string manifestPath = Path.Combine(modRoot, $"{ModId}.json");
+                if (File.Exists(manifestPath))
                 {
-                    string manifestPath = Path.Combine(directory, $"{ModId}.json");
-                    if (File.Exists(manifestPath))
-                    {
-                        return manifestPath;
-                    }
-
-                    DirectoryInfo? parentDir = Directory.GetParent(directory);
-                    if (parentDir != null)
-                    {
-                        manifestPath = Path.Combine(parentDir.FullName, $"{ModId}.json");
-                        if (File.Exists(manifestPath))
-                        {
-                            return manifestPath;
-                        }
-                    }
+                    return manifestPath;
                 }
             }
         }

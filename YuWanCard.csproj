@@ -3,6 +3,10 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Version>0.5.11</Version>
+        <!-- Content is packaged as a multi-version variant (lib/<game>/YuWanCard.Content.dll)
+             behind the small YuWanCard loader assembly. Keep the public namespace as YuWanCard. -->
+        <AssemblyName>YuWanCard.Content</AssemblyName>
+        <RootNamespace>YuWanCard</RootNamespace>
         <ImplicitUsings>true</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -43,6 +47,14 @@
         <AdditionalFiles Include="YuWanCard/localization/**/*.json" />
     </ItemGroup>
 
+    <!-- Build the game-facing YuWanCard.dll loader alongside the content. We do not
+         reference its types (ReferenceOutputAssembly=false); the loader drives content
+         via reflection + the ModTypes bridge. -->
+    <ItemGroup>
+        <ProjectReference Include="YuWanCardCode\Loader\YuWanCardCode.Loader.csproj"
+                          ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
     <PropertyGroup>
         <NoWarn>$(NoWarn);NU1608</NoWarn>
     </PropertyGroup>
@@ -50,8 +62,11 @@
     <ItemGroup>
         <Compile Remove="others\**" />
         <Compile Remove="**/*.uid" />
+        <Compile Remove="YuWanCardCode\Loader\**" />
         <EmbeddedResource Remove="others\**" />
+        <EmbeddedResource Remove="YuWanCardCode\Loader\**" />
         <None Remove="others\**" />
+        <None Remove="YuWanCardCode\Loader\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -79,13 +94,13 @@
     </Target>
 
     <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent">
-        <Message Text="Copying .dll and manifest to mods folder." Importance="high" />
-        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
-        <Copy SourceFiles="$(AssemblyName).json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
+        <Message Text="Deploying YuWanCard content variant + loader to mods folder." Importance="high" />
+        <Copy SourceFiles="YuWanCard.json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="README.md" DestinationFolder="$(ModsPath)/" />
         <Copy SourceFiles="posthog.analytics.local.yaml"
               DestinationFolder="$(ModsPath)$(MSBuildProjectName)/"
               Condition="Exists('posthog.analytics.local.yaml')" />
+        <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)/tools/deploy-mod.ps1&quot; -ContentDll &quot;$(TargetPath)&quot; -LoaderDll &quot;$(MSBuildProjectDirectory)/YuWanCardCode/Loader/bin/$(Configuration)/net9.0/YuWanCard.dll&quot; -ModRoot &quot;$(ModsPath)$(MSBuildProjectName)&quot; -Sts2DataDir &quot;$(Sts2DataDir)&quot; -VariantTarget &quot;$(VariantTarget)&quot;" />
     </Target>
 
     <Target Name="CopyQuickPck" AfterTargets="PackPck" Condition="Exists('$(PckPackerOutputPath)') And '$(PckPackerSkipped)' != 'true'">
