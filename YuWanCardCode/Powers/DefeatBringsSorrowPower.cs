@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Cards;
 using YuWanCard.Utils;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -24,7 +23,6 @@ public class DefeatBringsSorrowPower : YuWanPowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("IntentDamageThreshold", 0m)];
 
-    [SavedProperty]
     public int YUWANCARD_IntentDamageThreshold
     {
         get => DynamicVars["IntentDamageThreshold"].IntValue;

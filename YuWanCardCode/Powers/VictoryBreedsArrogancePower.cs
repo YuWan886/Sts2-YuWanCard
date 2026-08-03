@@ -8,7 +8,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
-using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Cards;
 using YuWanCard.Utils;
@@ -29,14 +28,12 @@ public class VictoryBreedsArrogancePower : YuWanPowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("BlockAmount", 15m)];
 
-    [SavedProperty]
     public int YUWANCARD_BlockAmount
     {
         get => DynamicVars["BlockAmount"].IntValue;
         set => DynamicVars["BlockAmount"].BaseValue = value;
     }
 
-    [SavedProperty]
     public int YUWANCARD_LastForcedRound { get; set; } = -1;
 
     public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
