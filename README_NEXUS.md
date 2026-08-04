@@ -50,6 +50,7 @@ YuWan Card 是一个内容丰富的《杀戮尖塔 2》模组，添加了猪角�
 Installing the following mod alongside Pigfall will trigger additional game content:
 [list]
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747501308]Hextech Runes - HextechRunes[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3769077257]DrawAndGuessMod[/url]
 [/list]
 
 [hr]
@@ -116,6 +117,7 @@ Thanks to the following resources and creators for their contributions:
 以下模组与猪降临一同安装时，将触发额外的游戏内容：
 [list]
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747501308]海克斯符文 - HextechRunes[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3769077257]你画瓦猜 - DrawAndGuessMod[/url]
 [/list]
 
 [hr]

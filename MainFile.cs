@@ -15,6 +15,7 @@ using YuWanCard.Multiplayer;
 using YuWanCard.Singletons;
 using YuWanCard.Utils;
 using YuWanCard.Hextech;
+using YuWanCard.DrawAndGuess;
 
 namespace YuWanCard;
 
@@ -99,6 +100,8 @@ public partial class MainFile : Node
             h => ModInteropProcessor.Process(h, Assembly.GetExecutingAssembly()), "ModInterop");
         patcher.ApplySingle(
             HextechRuntimeCompat.TryInstall, "HextechRuntimeCompat");
+        patcher.ApplySingle(
+            DrawAndGuessRuntimeCompat.TryInstall, "DrawAndGuessRuntimeCompat");
 
         // Desktop-only patches — skip on Android to avoid triggering NDailyRunScreen
         // static constructor which has a known NRE bug on Mono AOT
@@ -166,6 +169,7 @@ public static class NMainMenu_ConfigRegisterPatch
     {
         ConfigRegistrar.TryDeferredRegister();
         HextechRuntimeCompat.TryInstallIfAvailable();
+        DrawAndGuessRuntimeCompat.TryInstallIfAvailable();
         Patches.CursorReplacePatch.RefreshCursor();
     }
 }
@@ -177,5 +181,6 @@ public static class NGame_Ready_ConfigPreloadPatch
     {
         ConfigRegistrar.TryDeferredRegister();
         HextechRuntimeCompat.TryInstallIfAvailable();
+        DrawAndGuessRuntimeCompat.TryInstallIfAvailable();
     }
 }

@@ -349,6 +349,39 @@ YuWanCardCode/Integrations/Hextech/
 
 详见 `HextechPigRuneRegistry.cs` 和 `HextechForgeRegistry.cs` 中的类型列表，以及各 `.cs` 文件中的 `CanonicalVars` 和生命周期方法。
 
+## 案例：你画瓦猜模组联动
+
+你画瓦猜（DrawAndGuessMod）是第二个基于此架构实现的联动。与海克斯的「注入整套遗物内容」不同，它属于**轻量 UI 注入**——只往对方的作画工具栏追加一个内容项，不新增任何遗物/卡牌。
+
+### 目录结构
+
+```
+YuWanCardCode/Integrations/DrawAndGuess/
+└── DrawAndGuessRuntimeCompat.cs       # 入口 + 单一 Postfix 注入（无子目录）
+```
+
+### 内容：小猪印花
+
+- 在你画瓦猜的作画工具栏中追加小猪作为**第六个角色印花**（原版有 5 个：铁甲战士～摄政王，序号 0–4）。
+- 印花贴图固定为 `res://YuWanCard/images/characters/character_icon_pig.png`，**不随小猪皮肤切换**。
+- 序号取 5：对方 `DrawingCommand` 将 `StampIndex` 按 3 bit 序列化（0–7），不与原版冲突；未安装 YuWanCard 的多人客户端没有序号 5 的印花，相关笔迹被静默跳过，安全降级。
+
+### 实现要点
+
+1. **复用对方的私有方法**：Postfix `DrawingScreen.AddStampButton`，在最后一个原版印花（`stampIndex == 4`）之后，通过反射调用对方私有的 `AddStampButton(tools, pig, (byte)5)`，按钮、tooltip、工具切换、尺寸控制与原版印花完全一致。
+2. **固定贴图覆盖**：反射读取 `DrawingScreen._canvas` 字段并调用公开的 `DrawingCanvas.RegisterStamp(5, fixedTexture)` 覆盖印花图像，同时把新加按钮的 `Icon` 替换为同一张固定贴图。
+   - 若直接传 Pig 角色给 `AddStampButton`，其 `character.IconTexture` 会经过本项目的 `IconTexturePathPatch` 路由到 `CustomIconTexturePath`（随皮肤），因此必须主动覆盖。
+3. **锚点耦合**：以 `stampIndex == 4` 作为插入锚点，对方若升级原版印花数量会静默降级（小猪印花不出现）而非崩溃。
+
+### 接入点
+
+`MainFile.Initialize` 阶段 2 中 `patcher.ApplySingle(DrawAndGuessRuntimeCompat.TryInstall, ...)`，并在 `NMainMenu._Ready` / `NGame._Ready` 补丁中调用 `TryInstallIfAvailable()` 兜底。
+
+### 更多联动机会（未实现）
+
+- 卡牌识别候选、遗物鉴定事件（`RelicAppraisalFair`）、设置页卡池检测均已因对方遍历全部已加载池而**自动生效**，无需代码。
+- 潜在方向：小猪专属「瓦库画笔」遗物（开局送空白，需 ModCompat 门控）、篝火「给小猪画像」事件（复用对方画布）、更多猪猪贴纸（占用序号 6、7）。
+
 ## 快速检查清单
 
 新联动上线前确认：

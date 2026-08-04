@@ -49,6 +49,7 @@ When you first enter the main menu, a consent dialog will appear. **Data is only
 
 - [海克斯符文-HextechRunes](https://www.bilibili.com/video/BV1AE9xByEuM/)
 - [假如遗物-WhatIfRelics](https://github.com/YuWan886/STS2-WhatIfRelics)
+- [你画瓦猜-DrawAndGuessMod](https://github.com/QingTian-222/Sts2Mod_DrawAndGuessMod)
 
 ## CREDITS
 
