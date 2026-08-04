@@ -92,6 +92,7 @@ public static class LoaderMain
 
         LoadedVariantAssembly = contentAssembly;
         SelectedVariantVersion = picked.Version;
+        AssociateVariantAssemblyWithMod(contentAssembly);
 
         try
         {
@@ -115,6 +116,101 @@ public static class LoaderMain
 
             VariantAssemblies.Add(contentAssembly);
         }
+    }
+
+    /// <summary>
+    ///     Associates the hand-loaded content-variant assembly with the <c>YuWanCard</c> mod so the
+    ///     multiplayer ID sorter (<c>AssemblyInfo</c>/<c>ContentSorter</c>, 0.109+) can attribute its
+    ///     model types. Without this, every content type logs "not associated with any mod" and the
+    ///     ID sort loses determinism across peers. Pre-0.109 hosts scan <c>mod.assembly</c> directly
+    ///     (bridged by <c>ReflectionHelperGetSubtypesFromAssemblyPatch</c>) and expose no association
+    ///     API, so the reflection below simply no-ops there.
+    /// </summary>
+    private static void AssociateVariantAssemblyWithMod(Assembly contentAssembly)
+    {
+        var associateMethod = typeof(ModManager).GetMethod(
+            "AssociateAssemblyWithMod",
+            BindingFlags.Public | BindingFlags.Static,
+            null,
+            [typeof(string), typeof(Assembly)],
+            null);
+        if (associateMethod is null)
+        {
+            Logger.Info(
+                $"[Loader] Host exposes no ModManager.AssociateAssemblyWithMod; skipping association for {contentAssembly.GetName().Name}.");
+            return;
+        }
+
+        try
+        {
+            associateMethod.Invoke(null, [ModId, contentAssembly]);
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn($"[Loader] ModManager.AssociateAssemblyWithMod failed: {ex.Message}");
+        }
+
+        if (IsAssemblyAssociatedWithMod(contentAssembly))
+        {
+            Logger.Info($"[Loader] Associated content assembly {contentAssembly.GetName().Name} with mod {ModId}.");
+            return;
+        }
+
+        if (TryAppendToModAssemblies(contentAssembly))
+        {
+            Logger.Info(
+                $"[Loader] Associated content assembly {contentAssembly.GetName().Name} with mod {ModId} (fallback).");
+            return;
+        }
+
+        Logger.Warn(
+            $"[Loader] Could not associate {contentAssembly.GetName().Name} with mod {ModId}; relying on the reflection bridge for type discovery.");
+    }
+
+    private static bool IsAssemblyAssociatedWithMod(Assembly contentAssembly)
+    {
+        List<Assembly>? assemblies = GetModAssemblies();
+        return assemblies is not null &&
+               assemblies.Any(assembly => ReferenceEquals(assembly, contentAssembly));
+    }
+
+    private static bool TryAppendToModAssemblies(Assembly contentAssembly)
+    {
+        List<Assembly>? assemblies = GetModAssemblies();
+        if (assemblies is null)
+        {
+            return false;
+        }
+
+        if (assemblies.Any(assembly => ReferenceEquals(assembly, contentAssembly)))
+        {
+            return true;
+        }
+
+        assemblies.Add(contentAssembly);
+        return true;
+    }
+
+    /// <summary>
+    ///     The <c>Mod.assemblies</c> field is beta-only (public in 0.109+), so it is resolved via
+    ///     reflection to keep this loader compiling against hosts that predate it.
+    /// </summary>
+    private static List<Assembly>? GetModAssemblies()
+    {
+        foreach (Mod mod in ModManager.Mods)
+        {
+            if (!string.Equals(mod.manifest?.id, ModId, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var field = typeof(Mod).GetField(
+                "assemblies",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            return field?.GetValue(mod) as List<Assembly>;
+        }
+
+        return null;
     }
 
     private static void EnsureBridgePatch()
