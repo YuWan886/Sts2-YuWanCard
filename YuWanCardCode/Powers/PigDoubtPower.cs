@@ -32,14 +32,10 @@ public class PigDoubtPower : YuWanPowerModel
                     break;
                 }
 
-                var randomPower = GetRandomPower();
-                if (randomPower != null)
+                var mutablePower = GetRandomPower();
+                if (mutablePower != null)
                 {
-                    var mutablePower = randomPower.ToMutable();
-                    if (mutablePower != null)
-                    {
-                        await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), mutablePower, Owner, 1, Owner, null);
-                    }
+                    await PowerCmd.Apply(new ThrowingPlayerChoiceContext(), mutablePower, Owner, 1, Owner, null);
                 }
 
                 if (CombatManager.Instance != null && await CombatManager.Instance.CheckWinCondition())
@@ -55,8 +51,12 @@ public class PigDoubtPower : YuWanPowerModel
         var rng = Owner.Player?.RunState.Rng;
         if (rng == null) return null;
 
+        // ModelDb.AllPowers contains canonical (immutable) models. Some optional mods
+        // patch PowerModel.Type and assert mutability, so inspect only mutable clones.
         var filteredPowers = ModelDb.AllPowers
-            .Where(p => p.InstanceType == PowerInstanceType.None && IsSafePower(p) && IsValidPower(p) && p.Type == PowerType.Buff)
+            .Select(TryCreateEligiblePower)
+            .Where(p => p != null)
+            .Select(p => p!)
             .ToList();
 
         if (filteredPowers.Count == 0) return null;
@@ -64,26 +64,29 @@ public class PigDoubtPower : YuWanPowerModel
         return DeterministicRandomUtils.PickDeterministicBuffPower(filteredPowers, rng.CombatCardSelection);
     }
 
-    private bool IsValidPower(PowerModel power)
+    private PowerModel? TryCreateEligiblePower(PowerModel canonicalPower)
     {
-        if (power.Id == null)
+        if (canonicalPower.Id == null)
         {
-            return false;
+            return null;
         }
 
         try
         {
-            var mutable = power.ToMutable();
-            if (mutable == null)
+            var mutablePower = canonicalPower.ToMutable();
+            if (mutablePower.InstanceType != PowerInstanceType.None
+                || !IsSafePower(mutablePower)
+                || mutablePower.Type != PowerType.Buff)
             {
-                return false;
+                return null;
             }
-            return true;
+
+            return mutablePower;
         }
         catch (Exception ex)
         {
-            MainFile.Logger.Warn($"[PigDoubtPower] 能力 {power.Id} ToMutable() 失败：{ex.Message}");
-            return false;
+            MainFile.Logger.Warn($"[PigDoubtPower] 能力 {canonicalPower.Id} 创建可变副本或筛选失败：{ex.Message}");
+            return null;
         }
     }
 
