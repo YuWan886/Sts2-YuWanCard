@@ -29,20 +29,21 @@ public class PigRicochet : YuWanCardModel
         foreach (var enemy in enemies)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(enemy)
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);
         }
     }
 
-    protected override PileType GetResultPileTypeForCardPlay()
+    protected override CardLocation GetResultLocationForCardPlay()
     {
-        PileType resultPileType = base.GetResultPileTypeForCardPlay();
-        if (resultPileType != PileType.Discard)
+        CardLocation resultLocation = base.GetResultLocationForCardPlay();
+        if (resultLocation.pileType != PileType.Discard)
         {
-            return resultPileType;
+            return resultLocation;
         }
-        return PileType.Hand;
+        resultLocation.pileType = PileType.Hand;
+        return resultLocation;
     }
 }
