@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace YuWanCard.Core.Utils;
 
 public static class AssetPathHelper

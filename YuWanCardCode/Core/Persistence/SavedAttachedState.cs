@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using YuWanCard.Core.Patches;
-using YuWanCard.Core.Registration;
 
 namespace YuWanCard.Core.Persistence;
 
