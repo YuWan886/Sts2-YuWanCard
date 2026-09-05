@@ -2,11 +2,9 @@ using Godot;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Actions;
 using MegaCrit.Sts2.Core.Entities.Ascension;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models.Cards;
@@ -19,7 +17,6 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
 using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Powers;
@@ -57,9 +54,6 @@ public sealed class Ignis : YuWanMonsterModel
     private int _phase = 1;
     private bool _pendingSoulflameOpener;
     private bool _phaseTurnInterruptionQueued;
-    private bool _pendingForcedTurnEnd;
-    private bool _waitingForSafeForcedTurnEnd;
-    private string? _pendingForcedTurnEndPhaseLabel;
     private MoveState? _phaseTwoTransitionMove;
     private MoveState? _phaseThreeTransitionMove;
 
@@ -271,7 +265,6 @@ public sealed class Ignis : YuWanMonsterModel
     public override async Task AfterAddedToRoom()
     {
         await base.AfterAddedToRoom();
-        ClearPendingForcedTurnEnd();
         _phaseTurnInterruptionQueued = false;
         await PowerCmd.Apply<IgnisPhaseShiftPower>(new ThrowingPlayerChoiceContext(), Creature, 1, Creature, null);
         await PowerCmd.Apply<IgnisShieldPower>(new ThrowingPlayerChoiceContext(), Creature, ShieldDamageCap, Creature, null);
@@ -317,7 +310,6 @@ public sealed class Ignis : YuWanMonsterModel
 
     public override Task AfterCombatEnd(CombatRoom room)
     {
-        ClearPendingForcedTurnEnd();
         return base.AfterCombatEnd(room);
     }
 
@@ -412,7 +404,6 @@ public sealed class Ignis : YuWanMonsterModel
 
     private async Task BlueFlameAwakeningMove(IReadOnlyList<Creature> targets)
     {
-        ClearPendingForcedTurnEnd();
         _phaseTurnInterruptionQueued = false;
         _phase = 3;
         SfxCmd.Play(CastSfxPath);
@@ -444,7 +435,6 @@ public sealed class Ignis : YuWanMonsterModel
 
     private async Task ShieldBreakMove(IReadOnlyList<Creature> targets)
     {
-        ClearPendingForcedTurnEnd();
         _phaseTurnInterruptionQueued = false;
         _phase = 2;
         _pendingSoulflameOpener = true;
@@ -726,84 +716,29 @@ public sealed class Ignis : YuWanMonsterModel
         await Cmd.Wait(shatteredShield ? 0.26f : 0.2f);
     }
 
+    /// <summary>
+    /// Multiplayer-safe forced turn end. Instead of mutating readiness on every peer at
+    /// a locally-determined instant (which caused state divergence — see checksum #1105:
+    /// the client cancelled the host's CrystalPig play because its local EndTurn fired
+    /// first), we enqueue a managed, network-serialized GameAction through the shared
+    /// ActionQueueSynchronizer. The action reaches every peer in the same deterministic
+    /// queue position (host-confirmed on client peers), so PlayerCmd.EndTurn executes at
+    /// the same point relative to all received / pending / executing / choice-blocked
+    /// player-driven actions on every peer. Cancel behaviour is decided by the host's
+    /// EndTurnPhaseOne transition, never by a peer racing the network.
+    /// </summary>
     private void QueueForcedTurnEnd(string phaseLabel)
     {
-        _pendingForcedTurnEnd = true;
-        _pendingForcedTurnEndPhaseLabel = phaseLabel;
-
-        if (TryForceTurnEndAtSafePoint())
+        if (IgnisForcedTurnEndSync.Request())
         {
-            return;
+            MainFile.Logger.Info($"Ignis: HP threshold reached, queued synchronized forced turn end before entering {phaseLabel}.");
         }
-
-        if (_waitingForSafeForcedTurnEnd)
+        else
         {
-            return;
+            // Singleplayer or no active net service: the shared queue path is a no-op
+            // there (nothing to synchronize), so end the turn directly.
+            MainFile.Logger.Info($"Ignis: HP threshold reached, forcing player turn end and entering {phaseLabel}.");
+            IgnisForcedTurnEndAction.EndTurnForAllPlayers();
         }
-
-        RunManager.Instance.ActionQueueSet.ActionQueueChanged += OnActionQueueChangedWhileWaitingForForcedTurnEnd;
-        _waitingForSafeForcedTurnEnd = true;
-        MainFile.Logger.Info(
-            $"Ignis: HP threshold reached during a shared hook/player choice sequence; deferring forced turn end until action queues settle before entering {phaseLabel}.");
-    }
-
-    private void OnActionQueueChangedWhileWaitingForForcedTurnEnd()
-    {
-        TryForceTurnEndAtSafePoint();
-    }
-
-    private bool TryForceTurnEndAtSafePoint()
-    {
-        if (!_pendingForcedTurnEnd)
-        {
-            return false;
-        }
-
-        if (CombatState == null || Creature == null || !Creature.IsAlive || CombatState.CurrentSide != CombatSide.Player)
-        {
-            ClearPendingForcedTurnEnd();
-            return false;
-        }
-
-        var runningAction = RunManager.Instance.ActionExecutor.CurrentlyRunningAction;
-        if (runningAction != null
-            && runningAction.State != GameActionState.Finished
-            && !ActionQueueSet.IsGameActionPlayerDriven(runningAction))
-        {
-            return false;
-        }
-
-        foreach (Player player in CombatState.Players)
-        {
-            if (CombatManager.Instance.IsExecutingCardOrPotionEffect(player))
-            {
-                return false;
-            }
-        }
-
-        string phaseLabel = _pendingForcedTurnEndPhaseLabel ?? "next phase";
-        ClearPendingForcedTurnEnd();
-        MainFile.Logger.Info($"Ignis: HP threshold reached, forcing player turn end and entering {phaseLabel}.");
-
-        foreach (Player player in CombatState.Players)
-        {
-            PlayerCmd.EndTurn(player, canBackOut: false);
-        }
-
-        return true;
-    }
-
-    private void ClearPendingForcedTurnEnd()
-    {
-        _pendingForcedTurnEnd = false;
-        _pendingForcedTurnEndPhaseLabel = null;
-
-        if (!_waitingForSafeForcedTurnEnd)
-        {
-            return;
-        }
-
-        RunManager.Instance.ActionQueueSet.ActionQueueChanged -= OnActionQueueChangedWhileWaitingForForcedTurnEnd;
-        _waitingForSafeForcedTurnEnd = false;
     }
 }

@@ -15,6 +15,7 @@ using YuWanCard.Multiplayer;
 using YuWanCard.Singletons;
 using YuWanCard.Utils;
 using YuWanCard.Hextech;
+using YuWanCard.Monsters;
 
 namespace YuWanCard;
 
@@ -134,6 +135,7 @@ public partial class MainFile : Node
         Pig.RegisterScenes();
 
         TeammatePayMessageHandler.Register();
+        IgnisForcedTurnEndSync.EnsureRegistered();
         AssetPreloader.Preload();
         CloudAnalyticsService.Initialize();
 
