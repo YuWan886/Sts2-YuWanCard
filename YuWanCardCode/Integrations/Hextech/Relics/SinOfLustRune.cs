@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YuWanCard.Hextech;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
@@ -16,7 +15,6 @@ public sealed class SinOfLustRune : HextechSharedRuneBase
     private bool _spreadUsedThisTurn;
     private int _debuffsAppliedThisTurn;
 
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Gold;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

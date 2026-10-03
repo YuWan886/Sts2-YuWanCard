@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using YuWanCard.Hextech;
 
 namespace YuWanCard.Relics;
 
@@ -11,7 +10,6 @@ public sealed class PigletRechargeRune : HextechPigRuneBase
 {
     private int _attackCardsPlayed;
 
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Silver;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

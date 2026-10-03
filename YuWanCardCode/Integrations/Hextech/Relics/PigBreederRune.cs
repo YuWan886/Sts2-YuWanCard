@@ -1,6 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using YuWanCard.Hextech;
 using YuWanCard.Monsters;
 using YuWanCard.Utils;
 
@@ -10,7 +9,6 @@ public sealed class PigBreederRune : HextechPigRuneBase
 {
     private readonly HashSet<ulong> _processedSummonsThisCombat = [];
 
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Gold;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("ExtraUpgrade", 1m)];
 

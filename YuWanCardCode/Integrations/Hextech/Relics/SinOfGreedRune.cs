@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
-using YuWanCard.Hextech;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
@@ -15,7 +14,6 @@ public sealed class SinOfGreedRune : HextechSharedRuneBase
 {
     private GoldModificationGuard? _goldGuard;
 
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Gold;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

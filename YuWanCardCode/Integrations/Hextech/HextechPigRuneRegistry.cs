@@ -3,63 +3,80 @@ using YuWanCard.Relics;
 
 namespace YuWanCard.Hextech;
 
+/// <summary>
+/// Declarative table of every pig rune: rarity, pool ownership and act flags.
+/// <see cref="HextechRuneInteropBridge"/> feeds it straight into HextechRunes' external
+/// registration API, so Hextech's pool building, config menu and compendium all see the
+/// runes with the same metadata.
+/// </summary>
 public static class HextechPigRuneRegistry
 {
-    private static readonly IReadOnlyList<Type> SilverRunes =
-    [
-        typeof(PigletDashRune),
-        typeof(PigletGuardRune),
-        typeof(GluttonsFeastRune),
-        typeof(ToughPigskinRune),
-        typeof(PigletRechargeRune),
-        typeof(ShareTheFoodRune)
-    ];
-
-    private static readonly IReadOnlyList<Type> GoldRunes =
-    [
-        typeof(PigBreederRune),
-        typeof(EndlessBuffetRune),
-        typeof(GildedPigskinRune),
-        typeof(CoinRainRune),
-        typeof(SwornBrotherRune)
-    ];
-
-    private static readonly IReadOnlyList<Type> PrismaticRunes =
-    [
-        typeof(AngelPigletRune),
-        typeof(ThroneOfPigsRune),
-        typeof(HextechShoppingCartRune),
-        typeof(PerpetualPigRune)
-    ];
-
-    private static readonly IReadOnlyList<Type> SharedSilverRunes =
-    [
-        typeof(SavingsAccountRune),
-        typeof(HeartyMealRune)
-    ];
-
-    private static readonly IReadOnlyList<Type> SharedGoldRunes =
-    [
-        typeof(SinOfGluttonyRune),
-        typeof(SinOfSlothRune),
-        typeof(SinOfPrideRune),
-        typeof(SinOfEnvyRune),
-        typeof(SinOfLustRune),
-        typeof(SinOfGreedRune),
-        typeof(SinOfWrathRune)
-    ];
-
-    private static readonly IReadOnlySet<Type> FirstActExcluded = new HashSet<Type>
+    /// <param name="IsShared">Shared runes are offered to every character; pig runes are Pig-only.</param>
+    public readonly record struct HextechRuneDefinition(
+        Type RuneType,
+        HextechRuneRarity Rarity,
+        bool IsShared = false,
+        bool FirstActExcluded = false,
+        bool ThirdActExcluded = false)
     {
-        typeof(SinOfPrideRune),
-        typeof(PerpetualPigRune)
-    };
+        /// <summary>Rarity name as HextechRunesInterop expects it (HextechRarityTier member).</summary>
+        public string RarityName => Rarity.ToString();
 
-    private static readonly IReadOnlySet<Type> ThirdActExcluded = new HashSet<Type>
-    {
-        typeof(SinOfWrathRune),
-        typeof(PigBreederRune)
-    };
+        /// <summary>Comma-separated PlayerRuneFlags names, or null when no flag applies.</summary>
+        public string? FlagsName
+        {
+            get
+            {
+                List<string> flags = [];
+                if (FirstActExcluded)
+                {
+                    flags.Add("FirstActExcluded");
+                }
+
+                if (ThirdActExcluded)
+                {
+                    flags.Add("ThirdActExcluded");
+                }
+
+                return flags.Count == 0 ? null : string.Join(",", flags);
+            }
+        }
+
+        /// <summary>HEXTECH_POOL.&lt;key&gt; source label shown on the selection screen.</summary>
+        public string PoolKey => IsShared ? HextechRunePoolKey.Generic : HextechRunePoolKey.Pig;
+    }
+
+    private static readonly IReadOnlyList<HextechRuneDefinition> Definitions =
+    [
+        new(typeof(PigletDashRune), HextechRuneRarity.Silver),
+        new(typeof(PigletGuardRune), HextechRuneRarity.Silver),
+        new(typeof(GluttonsFeastRune), HextechRuneRarity.Silver),
+        new(typeof(ToughPigskinRune), HextechRuneRarity.Silver),
+        new(typeof(PigletRechargeRune), HextechRuneRarity.Silver),
+        new(typeof(ShareTheFoodRune), HextechRuneRarity.Silver),
+
+        new(typeof(PigBreederRune), HextechRuneRarity.Gold, ThirdActExcluded: true),
+        new(typeof(EndlessBuffetRune), HextechRuneRarity.Gold),
+        new(typeof(GildedPigskinRune), HextechRuneRarity.Gold),
+        new(typeof(CoinRainRune), HextechRuneRarity.Gold),
+        new(typeof(SwornBrotherRune), HextechRuneRarity.Gold),
+
+        new(typeof(AngelPigletRune), HextechRuneRarity.Prismatic),
+        new(typeof(ThroneOfPigsRune), HextechRuneRarity.Prismatic),
+        new(typeof(HextechShoppingCartRune), HextechRuneRarity.Prismatic),
+        new(typeof(PerpetualPigRune), HextechRuneRarity.Prismatic, FirstActExcluded: true),
+
+        new(typeof(SavingsAccountRune), HextechRuneRarity.Silver, IsShared: true),
+        new(typeof(HeartyMealRune), HextechRuneRarity.Silver, IsShared: true),
+
+        new(typeof(SinOfGluttonyRune), HextechRuneRarity.Gold, IsShared: true),
+        new(typeof(SinOfSlothRune), HextechRuneRarity.Gold, IsShared: true),
+        new(typeof(SinOfPrideRune), HextechRuneRarity.Gold, IsShared: true, FirstActExcluded: true),
+        new(typeof(SinOfEnvyRune), HextechRuneRarity.Gold, IsShared: true),
+        new(typeof(SinOfLustRune), HextechRuneRarity.Gold, IsShared: true),
+        new(typeof(SinOfGreedRune), HextechRuneRarity.Gold, IsShared: true),
+        new(typeof(SinOfWrathRune), HextechRuneRarity.Gold, IsShared: true, ThirdActExcluded: true)
+    ];
 
     private static readonly IReadOnlySet<Type> SevenSinsRunes = new HashSet<Type>
     {
@@ -72,119 +89,18 @@ public static class HextechPigRuneRegistry
         typeof(SinOfWrathRune)
     };
 
-    public static IReadOnlyList<Type> GetAllRunes()
-    {
-        return SilverRunes.Concat(GoldRunes).Concat(PrismaticRunes)
-            .Concat(SharedSilverRunes).Concat(SharedGoldRunes).ToArray();
-    }
+    public static IReadOnlyList<HextechRuneDefinition> GetDefinitions() => Definitions;
 
     public static IReadOnlyList<Type> GetAllPigRunes()
     {
-        return SilverRunes.Concat(GoldRunes).Concat(PrismaticRunes).ToArray();
-    }
-
-    public static IReadOnlyList<Type> GetSharedRuneTypes()
-    {
-        return SharedSilverRunes.Concat(SharedGoldRunes).ToArray();
-    }
-
-    public static IReadOnlyList<Type> GetSharedRunesByRarity(HextechRuneRarity rarity)
-    {
-        return rarity switch
-        {
-            HextechRuneRarity.Silver => SharedSilverRunes,
-            HextechRuneRarity.Gold => SharedGoldRunes,
-            _ => Array.Empty<Type>()
-        };
-    }
-
-    public static IReadOnlyList<Type> GetRunesByRarity(HextechRuneRarity rarity)
-    {
-        return rarity switch
-        {
-            HextechRuneRarity.Silver => SilverRunes.Concat(SharedSilverRunes).ToArray(),
-            HextechRuneRarity.Gold => GoldRunes.Concat(SharedGoldRunes).ToArray(),
-            HextechRuneRarity.Prismatic => PrismaticRunes,
-            _ => Array.Empty<Type>()
-        };
-    }
-
-    public static bool IsPigRune(RelicModel? relic)
-    {
-        if (relic == null)
-        {
-            return false;
-        }
-
-        ModelId id = relic.CanonicalInstance?.Id ?? relic.Id;
-        return GetAllPigRunes().Any(type => ModelDb.GetId(type) == id);
-    }
-
-    public static bool IsSharedRune(RelicModel? relic)
-    {
-        if (relic == null)
-        {
-            return false;
-        }
-
-        ModelId id = relic.CanonicalInstance?.Id ?? relic.Id;
-        return SharedSilverRunes.Concat(SharedGoldRunes).Any(type => ModelDb.GetId(type) == id);
+        return Definitions.Where(static definition => !definition.IsShared)
+            .Select(static definition => definition.RuneType)
+            .ToArray();
     }
 
     public static bool IsPigOrSharedRune(RelicModel? relic)
     {
-        return IsPigRune(relic) || IsSharedRune(relic);
-    }
-
-    public static bool TryGetRarity(RelicModel? relic, out HextechRuneRarity rarity)
-    {
-        rarity = default;
-        if (relic == null)
-        {
-            return false;
-        }
-
-        ModelId id = relic.CanonicalInstance?.Id ?? relic.Id;
-        foreach (HextechRuneRarity value in Enum.GetValues<HextechRuneRarity>())
-        {
-            if (GetRunesByRarity(value).Any(type => ModelDb.GetId(type) == id))
-            {
-                rarity = value;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static bool IsAllowedInAct(Type runeType, int actIndex, bool isEndlessMode = false)
-    {
-        return actIndex switch
-        {
-            0 => !FirstActExcluded.Contains(runeType),
-            2 => isEndlessMode || !ThirdActExcluded.Contains(runeType),
-            _ => true
-        };
-    }
-
-    public static bool IsAvailableForPlayer(RelicModel relic, MegaCrit.Sts2.Core.Entities.Players.Player player)
-    {
-        if (IsSharedRune(relic))
-        {
-            return true;
-        }
-
-        return player.Character.Id == ModelDb.GetId<Characters.Pig>();
-    }
-
-    public static string GetPoolKey(RelicModel relic)
-    {
-        if (IsSharedRune(relic))
-        {
-            return HextechRunePoolKey.Generic;
-        }
-
-        return IsPigRune(relic) ? HextechRunePoolKey.Pig : HextechRunePoolKey.Generic;
+        return TryGetDefinition(relic, out _);
     }
 
     public static IReadOnlySet<ModelId> GetMutuallyExclusiveRuneIds(IEnumerable<ModelId> ownedIds)
@@ -207,6 +123,27 @@ public static class HextechPigRuneRegistry
         AddMutualBlock<ThroneOfPigsRune, SwornBrotherRune>(ownedSet, blocked);
 
         return blocked;
+    }
+
+    private static bool TryGetDefinition(RelicModel? relic, out HextechRuneDefinition definition)
+    {
+        definition = default;
+        if (relic == null)
+        {
+            return false;
+        }
+
+        ModelId id = relic.CanonicalInstance?.Id ?? relic.Id;
+        foreach (HextechRuneDefinition candidate in Definitions)
+        {
+            if (ModelDb.GetId(candidate.RuneType) == id)
+            {
+                definition = candidate;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void AddMutualBlock<TRuneA, TRuneB>(HashSet<ModelId> ownedSet, HashSet<ModelId> blocked)

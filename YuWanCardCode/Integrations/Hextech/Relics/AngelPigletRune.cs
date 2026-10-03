@@ -2,7 +2,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using YuWanCard.Hextech;
 using YuWanCard.Powers;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -11,7 +10,6 @@ namespace YuWanCard.Relics;
 
 public sealed class AngelPigletRune : HextechPigRuneBase
 {
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Prismatic;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<AngelPigPower>(1m)];
 

@@ -7,7 +7,6 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
-using YuWanCard.Hextech;
 using YuWanCard.Utils;
 
 namespace YuWanCard.Relics;
@@ -17,7 +16,6 @@ public sealed class SinOfGluttonyRune : HextechSharedRuneBase
     private int _exhaustTriggersThisTurn;
     private int _foodTriggersThisTurn;
 
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Gold;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

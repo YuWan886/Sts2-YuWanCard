@@ -9,7 +9,6 @@ namespace YuWanCard.Relics;
 
 public sealed class EndlessBuffetRune : HextechPigRuneBase
 {
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Gold;
 
     public override Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {

@@ -15,7 +15,6 @@ public sealed class PigletGuardRune : HextechPigRuneBase
 {
     private readonly HashSet<ulong> _guardedPigCombatIdsThisCombat = [];
 
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Silver;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

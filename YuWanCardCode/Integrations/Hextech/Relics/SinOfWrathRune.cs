@@ -7,14 +7,12 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
-using YuWanCard.Hextech;
 using YuWanCard.Powers;
 
 namespace YuWanCard.Relics;
 
 public sealed class SinOfWrathRune : HextechSharedRuneBase
 {
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Gold;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

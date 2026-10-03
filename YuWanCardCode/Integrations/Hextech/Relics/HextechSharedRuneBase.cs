@@ -9,13 +9,12 @@ namespace YuWanCard.Relics;
 [Pool(typeof(SharedRelicPool))]
 public abstract class HextechSharedRuneBase : YuWanRelicModel
 {
-    public sealed override RelicRarity Rarity => RelicRarity.None;
+    // See HextechPigRuneBase: HextechRunes requires Starter rarity for external player runes.
+    public sealed override RelicRarity Rarity => RelicRarity.Starter;
 
     protected override string IconBasePath => $"res://YuWanCard/images/integrations/hextech/relics/{RelicId}";
 
     public sealed override string? CustomRarityLabelKey => "YUWANCARD-HEXTECH_RUNE_RARITY.label";
-
-    public abstract HextechRuneRarity HextechRarity { get; }
 
     public virtual bool IsAvailableForPlayer(Player player)
     {
