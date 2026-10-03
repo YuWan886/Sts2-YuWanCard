@@ -4,14 +4,12 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YuWanCard.Hextech;
 using YuWanCard.Monsters;
 
 namespace YuWanCard.Relics;
 
 public sealed class ThroneOfPigsRune : HextechPigRuneBase
 {
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Prismatic;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>()];
 

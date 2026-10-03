@@ -7,7 +7,6 @@ namespace YuWanCard.Relics;
 
 public sealed class HextechShoppingCartRune : HextechPigRuneBase
 {
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Prismatic;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

@@ -10,13 +10,14 @@ namespace YuWanCard.Relics;
 [Pool(typeof(HextechPigRunePool))]
 public abstract class HextechPigRuneBase : YuWanRelicModel
 {
-    public sealed override RelicRarity Rarity => RelicRarity.None;
+    // HextechRunes only grants external player runes whose Rarity is Starter: vanilla has
+    // several rarity-driven relic paths beyond the pools Hextech filters, and Starter is the
+    // only tier none of them roll. Hextech renders its own runes' custom rarity on top.
+    public sealed override RelicRarity Rarity => RelicRarity.Starter;
 
     protected override string IconBasePath => $"res://YuWanCard/images/integrations/hextech/relics/{RelicId}";
 
     public sealed override string? CustomRarityLabelKey => "YUWANCARD-HEXTECH_RUNE_RARITY.label";
-
-    public abstract HextechRuneRarity HextechRarity { get; }
 
     public virtual bool IsAvailableForPlayer(Player player)
     {

@@ -12,7 +12,6 @@ public sealed class SinOfEnvyRune : HextechSharedRuneBase
 {
     private readonly Dictionary<ulong, int> _enemyTriggerCounts = [];
 
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Gold;
 
     public override Task BeforeCombatStart()
     {

@@ -14,7 +14,6 @@ public sealed class SinOfPrideRune : HextechSharedRuneBase
 {
     private int _gainedStrengthThisCombat;
 
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Gold;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

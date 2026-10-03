@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
-using YuWanCard.Hextech;
 
 namespace YuWanCard.Relics;
 
@@ -13,7 +12,6 @@ public sealed class ToughPigskinRune : HextechPigRuneBase
 {
     private int _triggersThisCombat;
 
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Silver;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

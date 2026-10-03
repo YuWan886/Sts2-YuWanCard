@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Runs;
-using YuWanCard.Hextech;
 using YuWanCard.Powers;
 using YuWanCard.Utils;
 
@@ -13,7 +12,6 @@ namespace YuWanCard.Relics;
 
 public sealed class ShareTheFoodRune : HextechPigRuneBase
 {
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Silver;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<PigChargePower>(1m)];
 

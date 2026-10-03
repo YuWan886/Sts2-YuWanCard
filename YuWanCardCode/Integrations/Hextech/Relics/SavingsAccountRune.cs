@@ -11,7 +11,6 @@ namespace YuWanCard.Relics;
 
 public sealed class SavingsAccountRune : HextechSharedRuneBase
 {
-    public override HextechRuneRarity HextechRarity => HextechRuneRarity.Silver;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new PowerVar<PigChargePower>(1m)];
 
