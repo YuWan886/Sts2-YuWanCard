@@ -107,6 +107,7 @@ public sealed class YuWanManagedGameAction(
         catch (Exception ex)
         {
             MainFile.Logger.Error($"ManagedNetAction: action opcode {DescriptorOpcode} type {ActionType} failed: {ex}");
+            throw;
         }
     }
 

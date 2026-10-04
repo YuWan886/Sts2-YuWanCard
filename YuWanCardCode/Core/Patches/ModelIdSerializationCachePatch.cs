@@ -20,11 +20,6 @@ static class PigTimelineSerializationCachePatch
 [HarmonyPatch(typeof(ModelIdSerializationCache), nameof(ModelIdSerializationCache.Init))]
 static class ModelIdSerializationCachePatch
 {
-    private static readonly MethodInfo EntryListSortMethod = AccessTools.Method(
-        typeof(List<(Type, Mod)>),
-        nameof(List<(Type, Mod)>.Sort),
-        [typeof(Comparison<(Type, Mod)>)])!;
-
     private static readonly MethodInfo DeduplicateAndSortMethod = AccessTools.Method(
         typeof(ModelIdSerializationCachePatch),
         nameof(DeduplicateAndSort))!;
@@ -35,7 +30,10 @@ static class ModelIdSerializationCachePatch
         foreach (CodeInstruction instruction in instructions)
         {
             if (instruction.opcode == OpCodes.Callvirt
-                && Equals(instruction.operand, EntryListSortMethod))
+                && instruction.operand is MethodInfo method
+                && method.Name == nameof(List<(Type, Mod)>.Sort)
+                && method.DeclaringType?.IsGenericType == true
+                && method.DeclaringType.GetGenericTypeDefinition() == typeof(List<>))
             {
                 instruction.opcode = OpCodes.Call;
                 instruction.operand = DeduplicateAndSortMethod;
@@ -74,7 +72,10 @@ static class ModelIdSerializationCachePatch
         int removedCount = entries.Count - deduplicated.Count;
         entries.Clear();
         entries.AddRange(deduplicated);
-        entries.Sort(comparison);
+        entries.Sort((left, right) =>
+            string.Equals(GetTypeIdentityKey(left.Type), GetTypeIdentityKey(right.Type), StringComparison.Ordinal)
+                ? 0
+                : comparison(left, right));
 
         if (removedCount > 0)
         {

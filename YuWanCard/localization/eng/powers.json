@@ -1,4 +1,7 @@
 {
+  "YUWANCARD-FOOD_PIG_TRACKER_POWER.title": "Food Pig Tracker",
+  "YUWANCARD-FOOD_PIG_TRACKER_POWER.description": "Tracks whether a Food Pig was played this turn and the distinct Food Pigs played this combat.",
+  "YUWANCARD-FOOD_PIG_TRACKER_POWER.smartDescription": "Tracks whether a Food Pig was played this turn and the distinct Food Pigs played this combat.",
   "YUWANCARD-PIG_DOUBT_POWER.title": "Pig Doubt",
   "YUWANCARD-PIG_DOUBT_POWER.description": "Gain 1 random [gold]Power[/gold] each turn.",
   "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "Gain {PigDoubtPower} random [gold]Powers[/gold] each turn.",

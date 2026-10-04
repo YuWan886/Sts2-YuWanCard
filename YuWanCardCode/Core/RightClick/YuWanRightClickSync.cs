@@ -59,11 +59,19 @@ internal static class YuWanRightClickManagedActions
         YuWanRightClickManagedPayload payload,
         ulong? ownerNetId = null)
     {
+        RunManager? manager = runManager ?? RunManager.Instance;
+        if (manager == null
+            || (CombatManager.Instance.IsInProgress
+                && manager.ActionQueueSynchronizer.CombatState != ActionSynchronizerCombatState.PlayPhase))
+        {
+            return false;
+        }
+
         EnsureRegistered();
         YuWanManagedNetActionDescriptor<YuWanRightClickManagedPayload> descriptor = CombatManager.Instance.IsInProgress
             ? CombatDescriptor
             : NonCombatDescriptor;
-        return YuWanManagedNetActions.Request(runManager, descriptor, payload, ownerNetId);
+        return YuWanManagedNetActions.Request(manager, descriptor, payload, ownerNetId);
     }
 
     private static async Task ExecuteManaged(YuWanManagedNetActionContext<YuWanRightClickManagedPayload> context)
@@ -83,6 +91,7 @@ internal static class YuWanRightClickManagedActions
         catch (Exception ex)
         {
             MainFile.Logger.Warn($"RightClick: managed action execution failed: {ex}");
+            throw;
         }
     }
 

@@ -1,4 +1,7 @@
 {
+  "YUWANCARD-FOOD_PIG_TRACKER_POWER.title": "食物猪记录",
+  "YUWANCARD-FOOD_PIG_TRACKER_POWER.description": "记录本回合是否打出过食物猪，以及本场战斗打出过的不同食物猪。",
+  "YUWANCARD-FOOD_PIG_TRACKER_POWER.smartDescription": "记录本回合是否打出过食物猪，以及本场战斗打出过的不同食物猪。",
   "YUWANCARD-PIG_DOUBT_POWER.title": "猪疑惑",
   "YUWANCARD-PIG_DOUBT_POWER.description": "每回合获得1个随机的[gold]能力[/gold]。",
   "YUWANCARD-PIG_DOUBT_POWER.smartDescription": "每回合获得{PigDoubtPower}个随机的[gold]能力[/gold]。",

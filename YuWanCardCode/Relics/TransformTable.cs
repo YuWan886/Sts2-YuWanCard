@@ -2,12 +2,14 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Core.Persistence;
 using YuWanCard.Core.RightClick;
@@ -56,11 +58,10 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 
     public bool CanHandleRightClickLocal(YuWanRightClickContext context)
     {
-        return Owner != null
-               && context.Player == Owner
-               && LocalContext.IsMe(Owner)
-               && CombatManager.Instance.IsInProgress
-               && !CombatManager.Instance.IsEnding
+        return Owner is { } owner
+               && context.Player == owner
+               && LocalContext.IsMe(owner)
+               && RunManager.Instance?.ActionQueueSynchronizer.CombatState == ActionSynchronizerCombatState.PlayPhase
                && !CombatManager.Instance.PlayerActionsDisabled
                && YUWANCARD_RemainingTransforms > 0
                && GetConvertibleHandCards().Count > 0;
@@ -68,12 +69,13 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 
     public bool CanExecuteRightClick(YuWanRightClickExecutionContext context)
     {
-        return Owner != null
-               && context.Player == Owner
-               && CombatManager.Instance.IsInProgress
-               && !CombatManager.Instance.IsEnding
-               && !CombatManager.Instance.PlayerActionsDisabled
-               && (!LocalContext.IsMe(Owner) || YUWANCARD_RemainingTransforms > 0);
+        return Owner is { } owner
+               && context.Player == owner
+               && RunManager.Instance?.ActionQueueSynchronizer.CombatState == ActionSynchronizerCombatState.PlayPhase
+               && !CombatManager.Instance.IsPlayerReadyToEndTurn(owner)
+               && (YUWANCARD_RemainingTransforms > 0
+                   || (!LocalContext.IsMe(owner) && !RemainingTransformsState.ContainsKey(this)))
+               && GetConvertibleHandCards().Count > 0;
     }
 
     public async Task OnRightClick(YuWanRightClickExecutionContext context)
@@ -83,6 +85,7 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
             return;
         }
 
+        EnsureRemoteCounterInitialized();
         await ExecuteTransform(context.PlayerChoiceContext);
     }
 
@@ -93,8 +96,7 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
             return;
         }
 
-        EnsureReplayCounterInitialized();
-        if (LocalContext.IsMe(Owner) && YUWANCARD_RemainingTransforms <= 0)
+        if (YUWANCARD_RemainingTransforms <= 0)
         {
             return;
         }
@@ -117,15 +119,14 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
             return;
         }
 
-        CardModel? resolvedCard = ResolveSelectedHandCard(selectedCard, convertibleCards);
-        if (resolvedCard == null)
+        if (selectedCard.Owner != Owner || selectedCard.Pile?.Type != PileType.Hand)
         {
             MainFile.Logger.Warn(
                 $"[{nameof(TransformTable)}] Failed to resolve selected hand card for owner {Owner.NetId}: {selectedCard}");
             return;
         }
 
-        int convertedEnergy = GetConvertibleEnergy(resolvedCard);
+        int convertedEnergy = GetConvertibleEnergy(selectedCard);
         if (convertedEnergy <= 0)
         {
             return;
@@ -133,21 +134,8 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
 
         Flash();
         await PlayerCmd.GainEnergy(convertedEnergy, Owner);
-        await CardPileCmd.RemoveFromCombat(resolvedCard);
+        await CardPileCmd.RemoveFromCombat(selectedCard);
         SetRemainingTransforms(YUWANCARD_RemainingTransforms - 1);
-    }
-
-    private void EnsureReplayCounterInitialized()
-    {
-        // The local owner gates dispatch with the authoritative counter. Remote replays
-        // only need a stable combat-scoped starting value so they do not silently skip.
-        if (Owner != null
-            && !LocalContext.IsMe(Owner)
-            && CombatManager.Instance.IsInProgress
-            && YUWANCARD_RemainingTransforms <= 0)
-        {
-            SetRemainingTransforms(MaxTransformsPerCombat);
-        }
     }
 
     private List<CardModel> GetConvertibleHandCards()
@@ -177,23 +165,15 @@ public class TransformTable : YuWanRelicModel, IYuWanRightClickableRelic
         return card.EnergyCost.GetResolved();
     }
 
-    private static CardModel? ResolveSelectedHandCard(CardModel? selectedCard, IReadOnlyCollection<CardModel> convertibleCards)
+    private void EnsureRemoteCounterInitialized()
     {
-        if (selectedCard == null)
+        if (Owner != null
+            && !LocalContext.IsMe(Owner)
+            && CombatManager.Instance.IsInProgress
+            && !RemainingTransformsState.ContainsKey(this))
         {
-            return null;
+            SetRemainingTransforms(MaxTransformsPerCombat);
         }
-
-        // CardSelectCmd.FromHand already synchronizes combat-card selections. Preserve that
-        // identity when possible so duplicate serialized cards in hand do not get re-matched
-        // to a different instance on another peer.
-        if (convertibleCards.Any(card => ReferenceEquals(card, selectedCard)))
-        {
-            return selectedCard;
-        }
-
-        return convertibleCards.FirstOrDefault(card => card.Id == selectedCard.Id
-            && card.EnergyCost?.GetResolved() == selectedCard.EnergyCost?.GetResolved());
     }
 
     private void SetRemainingTransforms(int value)
