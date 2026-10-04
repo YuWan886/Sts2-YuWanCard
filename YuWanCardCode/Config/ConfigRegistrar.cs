@@ -208,7 +208,7 @@ internal static class ConfigRegistrar
 
     public static void TryDeferredRegister()
     {
-        if (MainFile.Config == null)
+        if (MainFile.Config == null || LocManager.Instance == null)
             return;
 
         if (!IsRitsuLibAvailable())

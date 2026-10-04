@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://y574pbc6i7fo"]
 
-[ext_resource type="Texture2D" uid="uid://4aptonqv3slx" path="res://YuWanCard/images/monsters/ignis/ignis_1.png" id="1_texture"]
+[ext_resource type="Texture2D" path="res://YuWanCard/images/monsters/ignis/ignis_1.png" id="1_texture"]
 
 [node name="IgnisVisuals" type="Node2D"]
 

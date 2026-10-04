@@ -114,11 +114,37 @@ public static class YuWanRightClickRegistry
                 MainFile.Logger.Warn(
                     $"RightClick: binding execution failed. binding={bindingId} model={model.Id} type={model.GetType().FullName} error={ex}");
             }
+
+            if (!IsModelStillInState(model))
+            {
+                break;
+            }
         }
 
-        if (executed)
+        if (executed && IsModelStillInState(model))
         {
             model.InvokeExecutionFinished();
+        }
+    }
+
+    private static bool IsModelStillInState(AbstractModel model)
+    {
+        try
+        {
+            return model switch
+            {
+                CardModel card => !card.HasBeenRemovedFromState,
+                RelicModel relic => !relic.HasBeenRemovedFromState && relic.Owner.Relics.Contains(relic),
+                PowerModel power => power.Owner.Powers.Contains(power),
+                PotionModel potion => !potion.HasBeenRemovedFromState && potion.Owner.Potions.Contains(potion),
+                _ => true
+            };
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn(
+                $"RightClick: failed to check model state. model={model.Id} type={model.GetType().FullName} error={ex}");
+            return false;
         }
     }
 
