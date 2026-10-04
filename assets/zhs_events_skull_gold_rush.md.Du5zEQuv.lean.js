@@ -1,0 +1,5 @@
+import{_ as o}from"./chunks/skull_gold_rush.BIbK8eRS.js";import{C as l,o as d,c as _,j as e,a as r,a2 as s,E as c}from"./chunks/framework.B0QX-YtK.js";const v={class:"entity-detail"},p={class:"entity-description"},y=JSON.parse('{"title":"骷髅打金服","description":"","frontmatter":{"title":"骷髅打金服","type":"event","id":"skull_gold_rush","image":"/images/events/skull_gold_rush.png"},"headers":[],"relativePath":"zhs/events/skull_gold_rush.md","filePath":"zhs/events/skull_gold_rush.md","lastUpdated":null}'),m={name:"zhs/events/skull_gold_rush.md"},f=Object.assign(m,{setup(u){const i=`嘟嘟哒嘟嘟哒……
+
+三只戴着礼帽的骷髅正合着洗脑的节拍，在你面前跳着僵硬又魔性的舞步。绿色的荧光与耀眼的“+999%爆率”大字晃得你眼晕。
+
+空气中弥漫着廉价网游广告的气息。`,a={Gold:"0"};return(g,t)=>{const n=l("RichDescription");return d(),_("div",null,[t[2]||(t[2]=e("h1",{id:"骷髅打金服",tabindex:"-1"},[r("骷髅打金服 "),e("a",{class:"header-anchor",href:"#骷髅打金服","aria-label":'Permalink to "骷髅打金服"'},"​")],-1)),e("div",v,[t[0]||(t[0]=s("",2)),e("div",p,[c(n,{text:i,variables:a})]),t[1]||(t[1]=s("",2))])])}}});export{y as __pageData,f as default};
