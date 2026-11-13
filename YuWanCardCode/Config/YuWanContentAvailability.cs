@@ -76,6 +76,14 @@ internal static class YuWanContentAvailability
         return GetEffectiveSnapshot("ancient", ancientType).IsAncientTypeEnabled(ancientType);
     }
 
+    public static bool IsMaliceTraitTypeEnabled<TTrait>() where TTrait : PowerModel
+        => IsMaliceTraitTypeEnabled(typeof(TTrait));
+
+    public static bool IsMaliceTraitTypeEnabled(Type traitType)
+    {
+        return GetEffectiveSnapshot("malice_trait", traitType).IsMaliceTraitTypeEnabled(traitType);
+    }
+
     private static YuWanContentSettingsSnapshot GetEffectiveSnapshot(string contentKind, Type contentType)
     {
         if (YuWanContentSettingsSync.TryGetClientAuthoritativeSnapshot(out var snapshot))

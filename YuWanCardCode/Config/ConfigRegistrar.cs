@@ -21,6 +21,7 @@ internal static class ConfigRegistrar
     private const string ContentPageId = "game_content";
     private const string EventsPageId = "content_events";
     private const string ColorlessCardsPageId = "content_colorless_cards";
+    private const string MaliceTraitsPageId = "content_malice_traits";
 
     private static bool s_persistedConfigPreloaded;
     private static bool s_ritsuRegistered;
@@ -108,6 +109,8 @@ internal static class ConfigRegistrar
             "YUWANCARD-RITSU_EVENT_PAGE.title", "YUWANCARD-RITSU_EVENT_PAGE.desc"),
         new("YuWanCardRitsuColorlessCardConfigProvider", ColorlessCardsPageId, "无色卡牌设置", "控制本模组新增无色卡牌是否会出现在对局中。悬停按钮可查看卡牌提示。", 200, ContentPageId, "YuWanCard",
             "YUWANCARD-RITSU_COLORLESS_PAGE.title", "YUWANCARD-RITSU_COLORLESS_PAGE.desc"),
+        new("YuWanCardRitsuMaliceTraitConfigProvider", MaliceTraitsPageId, "恶意词条设置", "控制本模组的恶意词条是否会分配给敌人。悬停按钮可查看词条效果。", 250, ContentPageId, "YuWanCard",
+            "YUWANCARD-RITSU_MALICE_TRAIT_PAGE.title", "YUWANCARD-RITSU_MALICE_TRAIT_PAGE.desc"),
     ];
 
     private static readonly ConfigSectionDefinition[] RitsuSections =
@@ -123,6 +126,9 @@ internal static class ConfigRegistrar
             "YUWANCARD-RITSU_EVENT_SECTION.title", "YUWANCARD-RITSU_EVENT_SECTION.desc"),
         new(ColorlessCardsPageId, YuWanColorlessCardCatalog.SectionId, "无色卡牌画廊", "按按钮开启或关闭对应卡牌。", 0,
             "YUWANCARD-RITSU_COLORLESS_SECTION.title", "YUWANCARD-RITSU_COLORLESS_SECTION.desc"),
+        new(ContentPageId, "malice", "恶意词条", null, 250, "YUWANCARD-RITSU_GAME_CONTENT_MALICE.title"),
+        new(MaliceTraitsPageId, YuWanMaliceTraitCatalog.SectionId, "恶意词条画廊", "按按钮开启或关闭对应恶意词条。", 0,
+            "YUWANCARD-RITSU_MALICE_SECTION.title", "YUWANCARD-RITSU_MALICE_SECTION.desc"),
     ];
 
     // Boolean toggle settings registered into RitsuLib pages and sections.
@@ -180,6 +186,9 @@ internal static class ConfigRegistrar
         new(ContentPageId, "cards", "open_colorless_card_settings", ColorlessCardsPageId, "OpenColorlessCardSettingsPage",
             "无色卡牌设置", "使用画廊视图控制本模组新增无色卡牌是否会出现在对局中。", "打开", 0,
             "YUWANCARD-RITSU_OPEN_COLORLESS.title", "YUWANCARD-RITSU_OPEN_COLORLESS.desc", "YUWANCARD-RITSU_OPEN.button"),
+        new(ContentPageId, "malice", "open_malice_trait_settings", MaliceTraitsPageId, "OpenMaliceTraitSettingsPage",
+            "恶意词条设置", "使用画廊视图控制本模组的恶意词条是否会分配给敌人。", "打开", 0,
+            "YUWANCARD-RITSU_OPEN_MALICE_TRAIT.title", "YUWANCARD-RITSU_OPEN_MALICE_TRAIT.desc", "YUWANCARD-RITSU_OPEN.button"),
     ];
 
     private static readonly CustomEntrySettingDefinition[] CustomEntryProps =
@@ -190,6 +199,9 @@ internal static class ConfigRegistrar
         new(ColorlessCardsPageId, YuWanColorlessCardCatalog.SectionId, "colorless_card_gallery", "CreateColorlessCardSettingsControl",
             "卡牌开关", "每行 5 个按钮；按钮文字为卡牌名，悬停可查看提示框。", 0,
             "YUWANCARD-RITSU_COLORLESS_GALLERY.title", "YUWANCARD-RITSU_COLORLESS_GALLERY.desc"),
+        new(MaliceTraitsPageId, YuWanMaliceTraitCatalog.SectionId, "malice_trait_settings", "CreateMaliceTraitSettingsControl",
+            "恶意词条开关", "每行 4 个按钮；按钮文字为词条名，悬停可查看词条效果。", 0,
+            "YUWANCARD-RITSU_MALICE_GALLERY.title", "YUWANCARD-RITSU_MALICE_GALLERY.desc"),
     ];
 
     public static void PreloadPersistedConfig()
@@ -1299,6 +1311,216 @@ public static class RitsuConfigRuntimeBridge
         RefreshSummary();
         root.AddChild(grid);
         return root;
+    }
+
+    public static Control CreateMaliceTraitSettingsControl()
+    {
+        var root = new VBoxContainer
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            SizeFlagsVertical = Control.SizeFlags.ExpandFill,
+            ThemeTypeVariation = "PanelContainer"
+        };
+
+        var description = new Godot.Label
+        {
+            Text = GetSettingsLocText("YUWANCARD-RITSU_MALICE_CONTROL.desc"),
+            AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        description.AddThemeColorOverride("font_color", SummaryTextColor);
+        root.AddChild(description);
+
+        var toolbar = new HBoxContainer
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        root.AddChild(toolbar);
+
+        var summaryLabel = new Godot.Label
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        summaryLabel.AddThemeColorOverride("font_color", SummaryTextColor);
+
+        var grid = new GridContainer
+        {
+            Columns = YuWanMaliceTraitCatalog.ButtonsPerRow,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            SizeFlagsVertical = Control.SizeFlags.ExpandFill
+        };
+
+        var buttonsByKey = new Dictionary<string, Button>(StringComparer.Ordinal);
+
+        Button CreateActionButton(string text, Action onPressed)
+        {
+            var button = new Button
+            {
+                Text = text,
+                CustomMinimumSize = new Vector2(120f, 42f),
+                FocusMode = Control.FocusModeEnum.None
+            };
+            button.Pressed += onPressed;
+            return button;
+        }
+
+        void RefreshSummary()
+        {
+            int enabledCount = buttonsByKey.Values.Count(static button => button.ButtonPressed);
+            summaryLabel.Text = string.Format(GetSettingsLocText("YUWANCARD-RITSU_MALICE_SUMMARY.text"), enabledCount,
+                YuWanMaliceTraitCatalog.Traits.Count);
+        }
+
+        void RefreshButtonVisual(Button button)
+        {
+            button.Modulate = button.ButtonPressed ? Colors.White : new Color(0.78f, 0.78f, 0.78f, 0.95f);
+
+            var normalStyle = new StyleBoxFlat
+            {
+                BgColor = button.ButtonPressed ? EnabledButtonColor : DisabledButtonColor,
+                BorderWidthBottom = 2,
+                BorderWidthLeft = 2,
+                BorderWidthRight = 2,
+                BorderWidthTop = 2,
+                BorderColor = new Color(0f, 0f, 0f, 0.35f),
+                CornerRadiusBottomLeft = 8,
+                CornerRadiusBottomRight = 8,
+                CornerRadiusTopLeft = 8,
+                CornerRadiusTopRight = 8
+            };
+
+            var hoverStyle = (StyleBoxFlat)normalStyle.Duplicate();
+            hoverStyle.BgColor = button.ButtonPressed
+                ? EnabledButtonColor.Lightened(0.12f)
+                : DisabledButtonColor.Lightened(0.12f);
+
+            var pressedStyle = (StyleBoxFlat)normalStyle.Duplicate();
+            pressedStyle.BgColor = button.ButtonPressed
+                ? EnabledButtonColor.Darkened(0.08f)
+                : DisabledButtonColor.Darkened(0.08f);
+
+            button.AddThemeStyleboxOverride("normal", normalStyle);
+            button.AddThemeStyleboxOverride("hover", hoverStyle);
+            button.AddThemeStyleboxOverride("pressed", pressedStyle);
+            button.AddThemeStyleboxOverride("focus", hoverStyle);
+        }
+
+        void RefreshAllButtons()
+        {
+            foreach (var button in buttonsByKey.Values)
+            {
+                RefreshButtonVisual(button);
+            }
+
+            RefreshSummary();
+        }
+
+        toolbar.AddChild(CreateActionButton(GetSettingsLocText("YUWANCARD-RITSU_MALICE_ENABLE_ALL.button"), () =>
+        {
+            if (!YuWanMaliceTraitSettings.SetAll(true))
+            {
+                return;
+            }
+
+            foreach (var button in buttonsByKey.Values)
+            {
+                button.SetPressedNoSignal(true);
+            }
+
+            RefreshAllButtons();
+        }));
+
+        toolbar.AddChild(CreateActionButton(GetSettingsLocText("YUWANCARD-RITSU_MALICE_DISABLE_ALL.button"), () =>
+        {
+            if (!YuWanMaliceTraitSettings.SetAll(false))
+            {
+                return;
+            }
+
+            foreach (var button in buttonsByKey.Values)
+            {
+                button.SetPressedNoSignal(false);
+            }
+
+            RefreshAllButtons();
+        }));
+
+        toolbar.AddChild(CreateActionButton(GetSettingsLocText("YUWANCARD-RITSU_MALICE_INVERT.button"), () =>
+        {
+            bool changed = false;
+            foreach (var (key, button) in buttonsByKey)
+            {
+                bool nextValue = !button.ButtonPressed;
+                changed |= YuWanMaliceTraitSettings.SetEnabled(key, nextValue);
+                button.SetPressedNoSignal(nextValue);
+            }
+
+            if (changed)
+            {
+                RefreshAllButtons();
+            }
+        }));
+
+        toolbar.AddChild(summaryLabel);
+
+        foreach (var definition in YuWanMaliceTraitCatalog.Traits)
+        {
+            bool enabled = YuWanMaliceTraitSettings.IsEnabled(definition.Key);
+            var button = new Button
+            {
+                Text = YuWanMaliceTraitCatalog.GetDisplayTitle(definition),
+                ToggleMode = true,
+                ButtonPressed = enabled,
+                FocusMode = Control.FocusModeEnum.None,
+                CustomMinimumSize = new Vector2(0f, 52f),
+                ClipText = true,
+                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+            };
+
+            button.Toggled += isPressed =>
+            {
+                YuWanMaliceTraitSettings.SetEnabled(definition.Key, isPressed);
+                RefreshButtonVisual(button);
+                RefreshSummary();
+            };
+
+            button.MouseEntered += () =>
+            {
+                var hoverTips = BuildMaliceTraitHoverTips(definition);
+                if (!hoverTips.Any())
+                {
+                    return;
+                }
+
+                NHoverTipSet.Remove(button);
+                var alignment = HoverTip.GetHoverTipAlignment(button);
+                NHoverTipSet.CreateAndShow(button, hoverTips, alignment);
+            };
+
+            button.MouseExited += () => NHoverTipSet.Remove(button);
+            button.TreeExiting += () => NHoverTipSet.Remove(button);
+
+            buttonsByKey[definition.Key] = button;
+            RefreshButtonVisual(button);
+            grid.AddChild(button);
+        }
+
+        RefreshSummary();
+        root.AddChild(grid);
+        return root;
+    }
+
+    private static IReadOnlyList<IHoverTip> BuildMaliceTraitHoverTips(YuWanMaliceTraitDefinition definition)
+    {
+        try
+        {
+            return [HoverTipFactory.FromPower(YuWanMaliceTraitCatalog.CreateCanonicalPower(definition))];
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Warn($"Failed to build malice trait hover tip for {definition.PowerType.Name}: {ex.Message}");
+            return [];
+        }
     }
 
     private static IReadOnlyList<IHoverTip> BuildColorlessCardHoverTips(CardModel canonicalCard)
