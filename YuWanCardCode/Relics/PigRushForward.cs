@@ -28,7 +28,7 @@ public class PigRushForward : YuWanRelicModel
         Flash();
 
         decimal maxHpLoss = result.TotalDamage;
-        await CreatureCmd.LoseMaxHp(choiceContext, target, maxHpLoss, isFromCard: false);
+        await CreatureCmd.LoseMaxHp(choiceContext, target, maxHpLoss, cardSource: null);
 
         MainFile.Logger.Info($"PigRushForward triggered: Reduced {target.Name} max HP by {maxHpLoss}");
     }

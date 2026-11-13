@@ -23,7 +23,7 @@ public sealed class SwornBrotherRune : HextechPigRuneBase
         HoverTipFactory.FromPower<DexterityPower>()
     ];
 
-    public override async Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
+    public override async Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, MegaCrit.Sts2.Core.Models.CardModel? source, bool wasRemovalPrevented, float deathAnimLength)
     {
         if (Owner == null || creature.PetOwner?.Creature != Owner.Creature || creature.Monster is not PigMinion)
         {

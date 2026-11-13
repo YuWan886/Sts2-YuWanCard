@@ -26,7 +26,7 @@ public sealed class GreedMalice : MaliceRelicModel
         return Task.CompletedTask;
     }
 
-    public override Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
+    public override Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, MegaCrit.Sts2.Core.Models.CardModel? source, bool wasRemovalPrevented, float deathAnimLength)
     {
         if (!wasRemovalPrevented && MaliceHelper.IsTraitEnemy(creature))
         {

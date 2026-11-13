@@ -94,7 +94,13 @@ public sealed class Bite : YuWanEnchantmentModel
             }
         }
 
-        protected override decimal GetBaseValueForIConvertible() => BaseValue;
+        // 0.113: DynamicVar no longer exposes GetBaseValueForIConvertible; IConvertible now
+        // reads ShownValue from PreviewValue, so keep the preview in sync with the scaled value.
+        public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
+        {
+            base.UpdateCardPreview(card, previewMode, target, runGlobalHooks);
+            PreviewValue = BaseValue;
+        }
 
         public override string ToString() => ((int)BaseValue).ToString();
     }

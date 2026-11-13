@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Extensions;
 using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -95,7 +96,7 @@ public class CallCompanionsPower : YuWanPowerModel
             }
         }
 
-        rng.Shuffle(_drawPile);
+        { var __shuffled = _drawPile.UnstableShuffle(rng); _drawPile.Clear(); _drawPile.AddRange(__shuffled); }
 
         var playerId = player.Character.Id.Entry;
         var charId = _character.Id.Entry;
@@ -146,7 +147,7 @@ public class CallCompanionsPower : YuWanPowerModel
 
         // Ensure health bar is visible on the creature node
         var companionNode = NCombatRoom.Instance?.GetCreatureNode(_companionCreature);
-        companionNode?.ToggleIsInteractable(true);
+        companionNode?.SetIsInteractable(true, true);
 
         // Position like a second player
         PositionCompanionCreature(player.Creature);
@@ -229,7 +230,7 @@ public class CallCompanionsPower : YuWanPowerModel
                 foreach (var c in _discard)
                     _drawPile.Add(c);
                 _discard.Clear();
-                rng.Shuffle(_drawPile);
+                { var __shuffled = _drawPile.UnstableShuffle(rng); _drawPile.Clear(); _drawPile.AddRange(__shuffled); }
             }
 
             var drawn = _drawPile[^1];

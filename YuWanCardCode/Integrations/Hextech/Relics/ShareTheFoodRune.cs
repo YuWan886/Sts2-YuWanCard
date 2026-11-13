@@ -17,7 +17,7 @@ public sealed class ShareTheFoodRune : HextechPigRuneBase
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>()];
 
-    public override bool IsAllowed(IRunState runState)
+    protected override bool IsAllowedInternal(IRunState runState)
     {
         return runState.Players.Count > 1;
     }

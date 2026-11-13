@@ -47,6 +47,6 @@ public sealed class VoidCard : YuWanCardModel
 
         decimal lossRatio = IsUpgraded ? 0.05m : 0.10m;
         decimal loss = Math.Max(1m, Math.Floor(Owner.Creature.MaxHp * lossRatio));
-        await CreatureCmd.LoseMaxHp(choiceContext, Owner.Creature, loss, isFromCard: true);
+        await CreatureCmd.LoseMaxHp(choiceContext, Owner.Creature, loss, cardSource: this);
     }
 }

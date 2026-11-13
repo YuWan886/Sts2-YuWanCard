@@ -185,7 +185,7 @@ public sealed class MaliceModifier : YuWanModifierModel
         await ApplyTraitsIfNeeded(creature);
     }
 
-    public override Task AfterDeath(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
+    public override Task AfterDeath(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext choiceContext, Creature creature, MegaCrit.Sts2.Core.Models.CardModel? source, bool wasRemovalPrevented, float deathAnimLength)
     {
         if (!wasRemovalPrevented && MaliceHelper.IsTraitEnemy(creature) && MegaCrit.Sts2.Core.Hooks.Hook.ShouldCreatureBeRemovedFromCombatAfterDeath(creature.CombatState!, creature))
         {

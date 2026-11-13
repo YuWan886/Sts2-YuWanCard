@@ -21,7 +21,7 @@ public sealed class SkullGold : YuWanRelicModel
     {
     }
 
-    public override bool IsAllowed(IRunState runState) => false;
+    protected override bool IsAllowedInternal(IRunState runState) => false;
 
     public override async Task AfterCombatVictory(CombatRoom room)
     {

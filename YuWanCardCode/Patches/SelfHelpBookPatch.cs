@@ -1,3 +1,4 @@
+using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -185,7 +186,14 @@ public class SelfHelpBookPatch
 
     private static IEnumerable<IHoverTip>? CreateHoverTip(Type enchantmentType, int enchantAmount)
     {
-        var method = typeof(HoverTipFactory).GetMethod("FromEnchantment")?.MakeGenericMethod(enchantmentType);
+        // 0.113 added a non-generic FromEnchantment(EnchantmentModel, int); GetMethod(name) is now
+        // ambiguous, so pick the single-type-parameter generic definition explicitly.
+        var method = typeof(HoverTipFactory)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .FirstOrDefault(m => m.Name == "FromEnchantment"
+                                 && m.IsGenericMethodDefinition
+                                 && m.GetGenericArguments().Length == 1)
+            ?.MakeGenericMethod(enchantmentType);
         return method?.Invoke(null, [enchantAmount]) as IEnumerable<IHoverTip>;
     }
 

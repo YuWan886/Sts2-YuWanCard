@@ -55,8 +55,8 @@ internal static class ColorlessCombatGenerationAvailabilityPatch
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch(nameof(CardFactory.CreateForMerchant), typeof(Player), typeof(IEnumerable<CardModel>), typeof(CardType))]
-    [HarmonyPatch(nameof(CardFactory.CreateForMerchant), typeof(Player), typeof(IEnumerable<CardModel>), typeof(CardRarity))]
+    [HarmonyPatch(nameof(CardFactory.CreateForMerchant), typeof(Player), typeof(IEnumerable<CardModel>), typeof(IEnumerable<CardModel>), typeof(CardType))]
+    [HarmonyPatch(nameof(CardFactory.CreateForMerchant), typeof(Player), typeof(IEnumerable<CardModel>), typeof(IEnumerable<CardModel>), typeof(CardRarity))]
     private static void CreateForMerchantPrefix(ref IEnumerable<CardModel> options)
     {
         options = YuWanContentAvailability.FilterAvailableCards(options);

@@ -57,7 +57,7 @@ internal static class CharacterSelectSfxTranspiler
     }
 }
 
-[HarmonyPatch(typeof(NCharacterSelectScreen), "OnLocalCharacterChangedForRandom")]
+[HarmonyPatch(typeof(NCharacterSelectScreen), "DoRandomCharacterChange")]
 internal static class CharacterSelectRandomSfxPatch
 {
     [HarmonyTranspiler]

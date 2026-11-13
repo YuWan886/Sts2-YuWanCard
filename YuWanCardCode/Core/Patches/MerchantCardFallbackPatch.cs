@@ -10,7 +10,7 @@ namespace YuWanCard.Core.Patches;
 [HarmonyPatch(
     typeof(CardFactory),
     nameof(CardFactory.CreateForMerchant),
-    [typeof(Player), typeof(IEnumerable<CardModel>), typeof(CardRarity)])]
+    [typeof(Player), typeof(IEnumerable<CardModel>), typeof(IEnumerable<CardModel>), typeof(CardRarity)])]
 public static class MerchantCardFallbackPatch
 {
     private static readonly Action<Player, CardModel, decimal> RollForUpgrade =
@@ -24,10 +24,11 @@ public static class MerchantCardFallbackPatch
     public static bool CreateForMerchantByRarityPrefix(
         Player player,
         IEnumerable<CardModel> options,
+        IEnumerable<CardModel> blacklist,
         CardRarity rarity,
         ref CardCreationResult __result)
     {
-        CardModel[] filteredOptions = PrepareMerchantOptions(player, options).ToArray();
+        CardModel[] filteredOptions = PrepareMerchantOptions(player, options, blacklist).ToArray();
         CardRarity modifiedRarity = Hook.ModifyMerchantCardRarity(player.RunState, player, rarity);
         List<CardModel> selectedPool = GetFallbackRarities(modifiedRarity)
             .Select(candidate => filteredOptions.Where(card => card.Rarity == candidate).ToList())
@@ -45,10 +46,13 @@ public static class MerchantCardFallbackPatch
 
     private static IEnumerable<CardModel> PrepareMerchantOptions(
         Player player,
-        IEnumerable<CardModel> options)
+        IEnumerable<CardModel> options,
+        IEnumerable<CardModel> blacklist)
     {
+        // 0.113 added the blacklist parameter; honor it like the vanilla method does.
         IEnumerable<CardModel> filtered = Hook.ModifyMerchantCardPool(player.RunState, player, options)
-            .Where(card => card.Rarity != CardRarity.Basic);
+            .Where(card => card.Rarity != CardRarity.Basic)
+            .Except(blacklist);
 
         return player.RunState.Players.Count > 1
             ? filtered.Where(card => card.MultiplayerConstraint != CardMultiplayerConstraint.SingleplayerOnly)

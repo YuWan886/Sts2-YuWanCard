@@ -52,7 +52,7 @@ public sealed class PigletGuardRune : HextechPigRuneBase
         await ApplyGuardToPig(creature);
     }
 
-    public override Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
+    public override Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, MegaCrit.Sts2.Core.Models.CardModel? source, bool wasRemovalPrevented, float deathAnimLength)
     {
         if (Owner == null
             || creature.PetOwner?.Creature != Owner.Creature

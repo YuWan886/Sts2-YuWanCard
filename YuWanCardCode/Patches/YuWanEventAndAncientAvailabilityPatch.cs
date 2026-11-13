@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Random;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
@@ -101,7 +102,8 @@ public static class YuWanUnlockStateSharedAncientAvailabilityPatch
     }
 }
 
-[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]
+// 0.113 added a GenerateRooms(RunState) overload; pin the patched overload explicitly.
+[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms), [typeof(Rng), typeof(UnlockState), typeof(bool), typeof(bool)])]
 public static class YuWanGenerateRoomsAncientAvailabilityPatch
 {
     [HarmonyPostfix]

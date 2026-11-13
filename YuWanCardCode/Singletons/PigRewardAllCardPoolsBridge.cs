@@ -20,7 +20,7 @@ public class PigRewardAllCardPoolsBridge : YuWanSingletonModel
     {
         ModHelper.SubscribeForRunStateHooks(
             $"{MainFile.ModId}.PigRewardAllCardPoolsBridge",
-            _ => [ModelDb.Singleton<PigRewardAllCardPoolsBridge>()]);
+            _ => [ModelDb.RunModel<PigRewardAllCardPoolsBridge>()]);
     }
 
     public override bool TryModifyCardRewardOptions(

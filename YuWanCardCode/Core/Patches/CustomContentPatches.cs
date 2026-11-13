@@ -207,7 +207,7 @@ static class CustomAncientRunHistoryIconOutlinePath
 
 // --- Encounter custom scene path ---
 
-[HarmonyPatch(typeof(EncounterModel), nameof(EncounterModel.ScenePath), MethodType.Getter)]
+[HarmonyPatch(typeof(EncounterModel), "ScenePath", MethodType.Getter)]
 static class CustomEncounterScenePath
 {
     static bool Prefix(EncounterModel __instance, ref string? __result)

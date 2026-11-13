@@ -233,8 +233,8 @@ public class YwDebugCmd : AbstractConsoleCmd
         {
             var newInventory = MerchantInventory.CreateForNormalMerchant(player);
 
-            typeof(MerchantRoom).GetProperty("Inventory", BindingFlags.Instance | BindingFlags.Public)
-                ?.SetValue(nMerchantRoom.Room, newInventory);
+            // 0.113: MerchantRoom no longer owns the inventory; MerchantSynchronizer holds it.
+            RunManager.Instance.MerchantSynchronizer.SetMerchantInventory(player, newInventory);
 
             typeof(NMerchantInventory).GetProperty("Inventory", BindingFlags.Instance | BindingFlags.Public)
                 ?.SetValue(nInventory, null);

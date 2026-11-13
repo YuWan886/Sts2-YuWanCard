@@ -40,7 +40,7 @@ public sealed class SinOfPrideRune : HextechSharedRuneBase
         await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
     }
 
-    public override async Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)
+    public override async Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, MegaCrit.Sts2.Core.Models.CardModel? source, bool wasRemovalPrevented, float deathAnimLength)
     {
         if (Owner == null || creature.Side != MegaCrit.Sts2.Core.Combat.CombatSide.Enemy)
         {

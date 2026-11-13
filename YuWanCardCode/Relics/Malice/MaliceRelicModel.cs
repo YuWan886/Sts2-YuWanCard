@@ -20,7 +20,7 @@ public abstract class MaliceRelicModel : YuWanRelicModel
 
     public override YuWanCustomRelicRarity? CustomRarity => MaliceRarity;
 
-    public override bool IsAllowed(IRunState runState)
+    protected override bool IsAllowedInternal(IRunState runState)
     {
         if (runState is not RunState run)
             return true;

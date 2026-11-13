@@ -83,7 +83,7 @@ internal static class PigTimelineUnlockHelper
     {
         PigTimelineRegistry.EnsureRegistered();
 
-        if (localPlayer.RunState.GameMode.AreAchievementsAndEpochsLocked())
+        if (GameModeHelper.AreAchievementsAndEpochsLockedForRun(localPlayer.RunState))
         {
             return false;
         }
@@ -103,7 +103,7 @@ internal static class PigTimelineUnlockHelper
     {
         PigTimelineRegistry.EnsureRegistered();
 
-        if (serializableRun.GameMode.AreAchievementsAndEpochsLocked())
+        if (GameModeHelper.AreAchievementsAndEpochsLocked(serializableRun.GameMode, serializableRun.IsCustomGame))
         {
             return false;
         }

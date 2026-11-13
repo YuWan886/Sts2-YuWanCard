@@ -19,7 +19,7 @@ public class PigApotheosisObtainBridge : YuWanSingletonModel
     {
         ModHelper.SubscribeForRunStateHooks(
             $"{MainFile.ModId}.PigApotheosisObtainBridge",
-            _ => [ModelDb.Singleton<PigApotheosisObtainBridge>()]);
+            _ => [ModelDb.RunModel<PigApotheosisObtainBridge>()]);
     }
 
     public override async Task AfterCardChangedPilesLate(CardModel card, PileType oldPileType, AbstractModel? source)

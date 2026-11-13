@@ -16,7 +16,7 @@ public class TeammatePay : YuWanRelicModel
     {
     }
 
-    public override bool IsAllowed(IRunState runState)
+    protected override bool IsAllowedInternal(IRunState runState)
     {
         return IsMultiplayerGame();
     }

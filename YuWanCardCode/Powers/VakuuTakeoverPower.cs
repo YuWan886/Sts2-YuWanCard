@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -31,7 +32,7 @@ public class VakuuTakeoverPower : YuWanPowerModel
 
         Flash();
 
-        using (CardSelectCmd.PushSelector(new VakuuCardSelector()))
+        using (RunManager.Instance.CardSelectorStack.PushSelector(player, new VakuuCardSelector()))
         {
             int cardsPlayed;
             for (cardsPlayed = 0; cardsPlayed < MaxCardsToPlay; cardsPlayed++)

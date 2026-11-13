@@ -29,7 +29,7 @@ public static class MaliceTopBarPortraitTipPatch
 
         NHoverTipSet.Remove(__instance);
 
-        bool achievementsLocked = runState.GameMode.AreAchievementsAndEpochsLocked();
+        bool achievementsLocked = GameModeHelper.AreAchievementsAndEpochsLockedForRun(runState);
         var localPlayer = LocalContext.GetMe(runState);
         if (localPlayer?.Character == null)
         {
@@ -37,7 +37,7 @@ public static class MaliceTopBarPortraitTipPatch
         }
 
         var character = localPlayer.Character;
-        var ascensionTip = AscensionHelper.GetHoverTip(character, runState.AscensionLevel, achievementsLocked);
+        var ascensionTip = AscensionHelper.GetHoverTip(character, runState.AscensionLevel, runState.GameMode, runState.IsCustomGame);
         var maliceTip = MaliceModifier.GetHoverTip(modifier.EffectiveMaliceLevel);
 
         var hoverTips = new IHoverTip[] { ascensionTip, maliceTip };

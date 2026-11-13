@@ -152,8 +152,8 @@ public static class PetManager
                 }
             }
 
-            bool isHealthBarVisible = pet.Monster?.IsHealthBarVisible ?? true;
-            petNode.ToggleIsInteractable(isHealthBarVisible);
+            bool isHealthBarVisible = true;
+            petNode.SetIsInteractable(isHealthBarVisible, true);
 
             float petHeight = petNode.Hitbox.Size.Y;
             float effectiveHeight = petHeight + PetSpacing;
@@ -285,7 +285,7 @@ public static class PetManager
         if (petNode == null) return;
 
         petNode.SetAnimationTrigger("Idle");
-        petNode.AnimEnableUi();
+        petNode.AnimateInStateDisplayForCombatStart();
         petNode.Modulate = Colors.Transparent;
         Tween tween = petNode.CreateTween();
         tween.TweenProperty(petNode, "modulate", Colors.White, 0.35f).SetDelay(0.1f);

@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Runs;
 using HarmonyLib;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.UI;
@@ -141,7 +142,7 @@ public static class MaliceCharacterSelectSyncPatch
             _ => MultiplayerUiMode.Singleplayer
         };
 
-        malicePanel.Initialize(mode);
+        malicePanel.Initialize(mode, GameMode.Standard);
         malicePanel.SetMeta("YUWANCARD_MALICE_INITIALIZED", true);
     }
 

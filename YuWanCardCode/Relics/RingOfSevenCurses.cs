@@ -1,3 +1,4 @@
+using YuWanCard.Core.Patches;
 using YuWanCard.Core.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -221,7 +222,7 @@ public class RingOfSevenCurses : YuWanRelicModel
         if (maxHpLoss > 0)
         {
             Flash();
-            await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), Owner.Creature, maxHpLoss, isFromCard: false);
+            await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), Owner.Creature, maxHpLoss, cardSource: null);
         }
     }
 
@@ -234,7 +235,7 @@ public class RingOfSevenCurses : YuWanRelicModel
         var smithOption = options.OfType<SmithRestSiteOption>().FirstOrDefault(opt => opt.Owner == Owner);
         if (smithOption != null)
         {
-            smithOption.SmithCount += 1;
+            SmithRestSiteOptionPatch.AddSmithCount(smithOption, 1);
             return true;
         }
         return false;

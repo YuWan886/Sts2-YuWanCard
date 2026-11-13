@@ -87,7 +87,7 @@ public class GroupFriendImpact : YuWanCardModel
         CreatedThroughGroupFriend = false;
     }
 
-    public override void AfterTransformedFrom()
+    public override void AfterThisWasTransformedFrom(CardModel card)
     {
         RemoveGroupFriendNode();
     }

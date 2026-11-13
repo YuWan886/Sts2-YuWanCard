@@ -32,7 +32,7 @@ public class ThousandCurseScroll : YuWanRelicModel
     {
     }
 
-    public override bool IsAllowed(IRunState runState) => false;
+    protected override bool IsAllowedInternal(IRunState runState) => false;
 
     public override Task BeforeCombatStart()
     {

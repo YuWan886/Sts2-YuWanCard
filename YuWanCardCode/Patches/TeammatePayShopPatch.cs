@@ -257,7 +257,7 @@ public static class TeammatePayShopPatch
 
         try
         {
-            bool success = await entry.OnTryPurchaseWrapper(inventory, ignoreCost: true);
+            bool success = await entry.OnTryPurchaseUnsynchronized(inventory, ignoreCost: true);
 
             if (success)
             {

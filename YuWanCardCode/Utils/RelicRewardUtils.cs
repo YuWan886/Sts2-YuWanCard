@@ -29,7 +29,7 @@ public static class RelicRewardUtils
         int maxAttempts = Math.Max(1, ModelDb.RelicPool<SharedRelicPool>().AllRelics.Count());
         for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
-            RelicModel relic = RelicFactory.PullNextRelicFromFront(player);
+            RelicModel relic = RelicFactory.PullNextRelicFromFront(player, player.RunState.Rng.Shuffle);
             if (IsStandardSharedRewardCandidate(relic, player.RunState))
             {
                 return relic;

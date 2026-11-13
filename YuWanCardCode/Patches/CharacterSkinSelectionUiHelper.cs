@@ -454,10 +454,11 @@ public static class CharacterSkinSelectScreenReadyPatch
 [HarmonyPatch(typeof(NCharacterSelectScreen), nameof(NCharacterSelectScreen.SelectCharacter))]
 public static class CharacterSkinSelectScreenSelectPatch
 {
+    // 0.113: SelectCharacter now takes only the button; the model comes from button.Character.
     [HarmonyPostfix]
-    public static void Postfix(NCharacterSelectScreen __instance, CharacterModel characterModel)
+    public static void Postfix(NCharacterSelectScreen __instance, NCharacterSelectButton charSelectButton)
     {
-        CharacterSkinSelectScreenHelper.SyncPanel(__instance, characterModel);
+        CharacterSkinSelectScreenHelper.SyncPanel(__instance, charSelectButton.Character);
     }
 }
 
@@ -484,10 +485,11 @@ public static class CharacterSkinCustomRunReadyPatch
 [HarmonyPatch(typeof(NCustomRunScreen), nameof(NCustomRunScreen.SelectCharacter))]
 public static class CharacterSkinCustomRunSelectPatch
 {
+    // 0.113: SelectCharacter now takes only the button; the model comes from button.Character.
     [HarmonyPostfix]
-    public static void Postfix(NCustomRunScreen __instance, CharacterModel characterModel)
+    public static void Postfix(NCustomRunScreen __instance, NCharacterSelectButton charSelectButton)
     {
-        CharacterSkinCustomRunHelper.SyncPanel(__instance, characterModel);
+        CharacterSkinCustomRunHelper.SyncPanel(__instance, charSelectButton.Character);
     }
 }
 

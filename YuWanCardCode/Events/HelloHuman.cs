@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Extensions;
 using YuWanCard.Core.Abstracts;
 using YuWanCard.Cards.Event;
 using YuWanCard.Relics;
@@ -50,7 +51,7 @@ public sealed class HelloHuman : YuWanEventModel
                 .ThatDecreasesMaxHp(MaxHpLoss),
         };
 
-        Rng.Shuffle(candidates);
+        candidates = candidates.UnstableShuffle(Rng);
         return candidates.Take(OptionsShown).ToList();
     }
 
@@ -85,7 +86,7 @@ public sealed class HelloHuman : YuWanEventModel
 
     private async Task Poke()
     {
-        await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), Owner!.Creature, MaxHpLoss, isFromCard: false);
+        await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), Owner!.Creature, MaxHpLoss, cardSource: null);
         await RelicCmd.Obtain<PiggyDoll>(Owner);
 
         SetEventFinished(L10NLookup($"{Id.Entry}.pages.POKED.description"));

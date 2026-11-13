@@ -1,3 +1,5 @@
+using YuWanCard.Utils;
+using MegaCrit.Sts2.Core.Runs;
 using HarmonyLib;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.UI;
@@ -158,7 +160,7 @@ public static class MaliceCustomRunPanelSync
             _ => MultiplayerUiMode.Singleplayer
         };
 
-        malicePanel.Initialize(mode);
+        malicePanel.Initialize(mode, YuWanReflectionHelper.GetPrivateField<NCustomGameModeDropdown>(screen, "_gameModeDropdown")?.SelectedGameMode ?? GameMode.Standard);
         malicePanel.SetMeta("YUWANCARD_MALICE_INITIALIZED", true);
     }
 
