@@ -1,0 +1,5 @@
+import{_ as d}from"./chunks/zhi_zhan_zhi_shang.CntvrfCv.js";import{C as o,o as _,c as r,j as e,a as l,a2 as i,E as v}from"./chunks/framework.B0QX-YtK.js";const c={class:"entity-detail"},p={class:"entity-description"},y=JSON.parse('{"title":"止战之殇","description":"","frontmatter":{"title":"止战之殇","type":"event","id":"zhi_zhan_zhi_shang","image":"/images/events/zhi_zhan_zhi_shang.png"},"headers":[],"relativePath":"zhs/events/zhi_zhan_zhi_shang.md","filePath":"zhs/events/zhi_zhan_zhi_shang.md","lastUpdated":null}'),h={name:"zhs/events/zhi_zhan_zhi_shang.md"},T=Object.assign(h,{setup(m){const s=`[red]雷德王[/red]还有3个小时降临地球
+世界各大媒体平台将这条消息传唤的沸沸扬扬
+[sine][gold]他的到来，是救赎还是毁灭[/gold][/sine]
+我无从得知，众说纷纭
+[b]我只想先吃个汉堡吧[/b]`,a={};return(g,t)=>{const n=o("RichDescription");return _(),r("div",null,[t[2]||(t[2]=e("h1",{id:"止战之殇",tabindex:"-1"},[l("止战之殇 "),e("a",{class:"header-anchor",href:"#止战之殇","aria-label":'Permalink to "止战之殇"'},"​")],-1)),e("div",c,[t[0]||(t[0]=i("",2)),e("div",p,[v(n,{text:s,variables:a})]),t[1]||(t[1]=i("",3))])])}}});export{y as __pageData,T as default};
