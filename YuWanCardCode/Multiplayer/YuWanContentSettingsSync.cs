@@ -262,6 +262,13 @@ public static class YuWanContentSettingsSync
                     Key = definition.Key,
                     Enabled = snapshot.EnabledColorlessCards.GetValueOrDefault(definition.Key, true)
                 })
+                .ToList(),
+            EnabledMaliceTraits = YuWanMaliceTraitCatalog.Traits
+                .Select(definition => new YuWanMaliceTraitState
+                {
+                    Key = definition.Key,
+                    Enabled = snapshot.EnabledMaliceTraits.GetValueOrDefault(definition.Key, true)
+                })
                 .ToList()
         };
     }
@@ -295,6 +302,7 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
     public required bool EnablePigPigAncient { get; set; }
     public required List<YuWanEventState> EnabledEvents { get; set; }
     public required List<YuWanColorlessCardState> EnabledColorlessCards { get; set; }
+    public required List<YuWanMaliceTraitState> EnabledMaliceTraits { get; set; }
 
     public bool ShouldBroadcast => false;
     public NetTransferMode Mode => NetTransferMode.Reliable;
@@ -319,6 +327,12 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
         }
         writer.WriteInt(EnabledColorlessCards.Count);
         foreach (var entry in EnabledColorlessCards)
+        {
+            writer.WriteString(entry.Key);
+            writer.WriteBool(entry.Enabled);
+        }
+        writer.WriteInt(EnabledMaliceTraits.Count);
+        foreach (var entry in EnabledMaliceTraits)
         {
             writer.WriteString(entry.Key);
             writer.WriteBool(entry.Enabled);
@@ -356,6 +370,17 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
                 Enabled = reader.ReadBool()
             });
         }
+
+        int maliceTraitCount = reader.ReadInt();
+        EnabledMaliceTraits = new List<YuWanMaliceTraitState>(maliceTraitCount);
+        for (int i = 0; i < maliceTraitCount; i++)
+        {
+            EnabledMaliceTraits.Add(new YuWanMaliceTraitState
+            {
+                Key = reader.ReadString(),
+                Enabled = reader.ReadBool()
+            });
+        }
     }
 
     public YuWanContentSettingsSnapshot ToSnapshot()
@@ -371,6 +396,8 @@ public struct YuWanContentSettingsSnapshotMessage : INetMessage, IPacketSerializ
             EnabledEvents.ToDictionary(static entry => entry.Key, static entry => entry.Enabled,
                 StringComparer.Ordinal),
             EnabledColorlessCards.ToDictionary(static entry => entry.Key, static entry => entry.Enabled,
+                StringComparer.Ordinal),
+            EnabledMaliceTraits.ToDictionary(static entry => entry.Key, static entry => entry.Enabled,
                 StringComparer.Ordinal));
     }
 }
@@ -382,6 +409,12 @@ public struct YuWanEventState
 }
 
 public struct YuWanColorlessCardState
+{
+    public required string Key { get; set; }
+    public required bool Enabled { get; set; }
+}
+
+public struct YuWanMaliceTraitState
 {
     public required string Key { get; set; }
     public required bool Enabled { get; set; }

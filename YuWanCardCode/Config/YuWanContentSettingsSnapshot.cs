@@ -12,7 +12,8 @@ public readonly record struct YuWanContentSettingsSnapshot(
     bool EnableYuWanEvents,
     bool EnablePigPigAncient,
     IReadOnlyDictionary<string, bool> EnabledEvents,
-    IReadOnlyDictionary<string, bool> EnabledColorlessCards)
+    IReadOnlyDictionary<string, bool> EnabledColorlessCards,
+    IReadOnlyDictionary<string, bool> EnabledMaliceTraits)
 {
     private static readonly Lazy<YuWanContentSettingsSnapshot> AllDisabledSnapshot = new(CreateAllDisabled);
 
@@ -29,7 +30,8 @@ public readonly record struct YuWanContentSettingsSnapshot(
             YuWanCardConfig.EnableYuWanEvents,
             YuWanCardConfig.EnablePigPigAncient,
             YuWanEventSettings.SnapshotStates(),
-            YuWanColorlessCardSettings.SnapshotStates());
+            YuWanColorlessCardSettings.SnapshotStates(),
+            YuWanMaliceTraitSettings.SnapshotStates());
     }
 
     public bool ContentEquals(in YuWanContentSettingsSnapshot other)
@@ -42,7 +44,8 @@ public readonly record struct YuWanContentSettingsSnapshot(
                && EnableYuWanEvents == other.EnableYuWanEvents
                && EnablePigPigAncient == other.EnablePigPigAncient
                && DictionaryStatesEqual(EnabledEvents, other.EnabledEvents)
-               && DictionaryStatesEqual(EnabledColorlessCards, other.EnabledColorlessCards);
+               && DictionaryStatesEqual(EnabledColorlessCards, other.EnabledColorlessCards)
+               && DictionaryStatesEqual(EnabledMaliceTraits, other.EnabledMaliceTraits);
     }
 
     public bool IsEncounterTypeEnabled(Type encounterType)
@@ -120,6 +123,16 @@ public readonly record struct YuWanContentSettingsSnapshot(
         return EnabledColorlessCards.GetValueOrDefault(definition.Key, true);
     }
 
+    public bool IsMaliceTraitTypeEnabled(Type traitType)
+    {
+        if (!YuWanMaliceTraitCatalog.TryGetDefinition(traitType, out var definition))
+        {
+            return true;
+        }
+
+        return EnabledMaliceTraits.GetValueOrDefault(definition.Key, true);
+    }
+
     private static YuWanContentSettingsSnapshot CreateAllDisabled()
     {
         return new YuWanContentSettingsSnapshot(
@@ -133,6 +146,8 @@ public readonly record struct YuWanContentSettingsSnapshot(
             YuWanEventCatalog.Events.ToDictionary(static definition => definition.Key, static _ => false,
                 StringComparer.Ordinal),
             YuWanColorlessCardCatalog.Cards.ToDictionary(static definition => definition.Key, static _ => false,
+                StringComparer.Ordinal),
+            YuWanMaliceTraitCatalog.Traits.ToDictionary(static definition => definition.Key, static _ => false,
                 StringComparer.Ordinal));
     }
 

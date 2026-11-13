@@ -2,6 +2,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YuWanCard.Config;
 using YuWanCard.Modifiers;
 using YuWanCard.Powers;
 using YuWanCard.Powers.MaliceTraits;
@@ -10,58 +11,6 @@ namespace YuWanCard.Malice;
 
 public static class MaliceTraitDistributor
 {
-    private enum TraitRarity
-    {
-        Common,
-        Uncommon,
-        Rare,
-        Legendary
-    }
-
-    private static readonly IReadOnlyList<(Type PowerType, TraitRarity Rarity)> TraitPool =
-
-    [
-        (typeof(TankTrait), TraitRarity.Common),
-        (typeof(SpeedyTrait), TraitRarity.Common),
-        (typeof(RegenTrait), TraitRarity.Common),
-        (typeof(FieryTrait), TraitRarity.Common),
-        (typeof(WeaknessTrait), TraitRarity.Common),
-        (typeof(SlownessTrait), TraitRarity.Common),
-        (typeof(GravityTrait), TraitRarity.Common),
-        (typeof(VampiricTrait), TraitRarity.Common),
-        (typeof(BulwarkTrait), TraitRarity.Common),
-
-        (typeof(PoisonTrait), TraitRarity.Uncommon),
-        (typeof(ResistTrait), TraitRarity.Uncommon),
-        (typeof(ProtectionTrait), TraitRarity.Uncommon),
-        (typeof(BlindnessTrait), TraitRarity.Uncommon),
-        (typeof(ShulkerTrait), TraitRarity.Uncommon),
-        (typeof(ExposeTrait), TraitRarity.Uncommon),
-        (typeof(ScorchTrait), TraitRarity.Uncommon),
-        (typeof(EntangleTrait), TraitRarity.Uncommon),
-
-        (typeof(WitherTrait), TraitRarity.Rare),
-        (typeof(DrainTrait), TraitRarity.Rare),
-        (typeof(GrowthTrait), TraitRarity.Rare),
-        (typeof(CounterStrikeTrait), TraitRarity.Rare),
-        (typeof(CorrosionTrait), TraitRarity.Rare),
-        (typeof(AdaptiveTrait), TraitRarity.Rare),
-        (typeof(InvisibleTrait), TraitRarity.Rare),
-        (typeof(DispellTrait), TraitRarity.Rare),
-        (typeof(SteelTrait), TraitRarity.Rare),
-        (typeof(BerserkTrait), TraitRarity.Rare),
-        (typeof(PhantomTrait), TraitRarity.Rare),
-
-        (typeof(UndyingTrait), TraitRarity.Legendary),
-        (typeof(DementorTrait), TraitRarity.Legendary),
-        (typeof(SplitTrait), TraitRarity.Legendary),
-        (typeof(MasterTrait), TraitRarity.Legendary),
-        (typeof(KillerAuraTrait), TraitRarity.Legendary),
-        (typeof(RagnarokTrait), TraitRarity.Legendary),
-        (typeof(CataclysmTrait), TraitRarity.Legendary),
-        (typeof(EnervateTrait), TraitRarity.Legendary)
-    ];
-
     public static async Task AssignTraits(Creature creature, int maliceLevel, MaliceModifier modifier)
     {
         if (!MaliceHelper.IsEnemyCombat(creature))
@@ -203,31 +152,34 @@ public static class MaliceTraitDistributor
         return normalBudget;
     }
 
-    private static List<(Type PowerType, TraitRarity Rarity)> GetAvailableTraits(int maliceLevel, bool isMinion)
+    private static List<YuWanMaliceTraitDefinition> GetAvailableTraits(int maliceLevel, bool isMinion)
     {
-        return TraitPool.Where(t => IsTraitAvailableAtMalice(t.Rarity, maliceLevel, isMinion)).ToList();
+        return YuWanMaliceTraitCatalog.Traits
+            .Where(t => IsTraitAvailableAtMalice(t.Rarity, maliceLevel, isMinion))
+            .Where(t => YuWanContentAvailability.IsMaliceTraitTypeEnabled(t.PowerType))
+            .ToList();
     }
 
-    private static bool IsTraitAvailableAtMalice(TraitRarity rarity, int maliceLevel, bool isMinion)
+    private static bool IsTraitAvailableAtMalice(MaliceTraitRarity rarity, int maliceLevel, bool isMinion)
     {
         if (isMinion)
         {
-            return rarity is TraitRarity.Common or TraitRarity.Uncommon;
+            return rarity is MaliceTraitRarity.Common or MaliceTraitRarity.Uncommon;
         }
 
         return rarity switch
         {
-            TraitRarity.Common => maliceLevel >= 1,
-            TraitRarity.Uncommon => maliceLevel >= 4,
-            TraitRarity.Rare => maliceLevel >= 6,
-            TraitRarity.Legendary => maliceLevel >= 9,
+            MaliceTraitRarity.Common => maliceLevel >= 1,
+            MaliceTraitRarity.Uncommon => maliceLevel >= 4,
+            MaliceTraitRarity.Rare => maliceLevel >= 6,
+            MaliceTraitRarity.Legendary => maliceLevel >= 9,
             _ => false
         };
     }
 
     private static int ChooseWeightedTraitIndex(
         Creature creature,
-        List<(Type PowerType, TraitRarity Rarity)> available,
+        List<YuWanMaliceTraitDefinition> available,
         int actNumber,
         bool isMinion)
     {
@@ -256,14 +208,14 @@ public static class MaliceTraitDistributor
         return weighted[^1].Index;
     }
 
-    private static int GetTraitWeight(TraitRarity rarity, int actNumber, bool isMinion)
+    private static int GetTraitWeight(MaliceTraitRarity rarity, int actNumber, bool isMinion)
     {
         if (isMinion)
         {
             return rarity switch
             {
-                TraitRarity.Common => Math.Max(20, 80 - (actNumber - 1) * 20),
-                TraitRarity.Uncommon => Math.Min(80, 20 + (actNumber - 1) * 20),
+                MaliceTraitRarity.Common => Math.Max(20, 80 - (actNumber - 1) * 20),
+                MaliceTraitRarity.Uncommon => Math.Min(80, 20 + (actNumber - 1) * 20),
                 _ => 0
             };
         }
@@ -272,31 +224,31 @@ public static class MaliceTraitDistributor
         {
             <= 1 => rarity switch
             {
-                TraitRarity.Common => 70,
-                TraitRarity.Uncommon => 30,
+                MaliceTraitRarity.Common => 70,
+                MaliceTraitRarity.Uncommon => 30,
                 _ => 0
             },
             2 => rarity switch
             {
-                TraitRarity.Common => 50,
-                TraitRarity.Uncommon => 35,
-                TraitRarity.Rare => 15,
+                MaliceTraitRarity.Common => 50,
+                MaliceTraitRarity.Uncommon => 35,
+                MaliceTraitRarity.Rare => 15,
                 _ => 0
             },
             3 => rarity switch
             {
-                TraitRarity.Common => 35,
-                TraitRarity.Uncommon => 35,
-                TraitRarity.Rare => 22,
-                TraitRarity.Legendary => 8,
+                MaliceTraitRarity.Common => 35,
+                MaliceTraitRarity.Uncommon => 35,
+                MaliceTraitRarity.Rare => 22,
+                MaliceTraitRarity.Legendary => 8,
                 _ => 0
             },
             _ => rarity switch
             {
-                TraitRarity.Common => 25,
-                TraitRarity.Uncommon => 35,
-                TraitRarity.Rare => 25,
-                TraitRarity.Legendary => 15,
+                MaliceTraitRarity.Common => 25,
+                MaliceTraitRarity.Uncommon => 35,
+                MaliceTraitRarity.Rare => 25,
+                MaliceTraitRarity.Legendary => 15,
                 _ => 0
             }
         };
