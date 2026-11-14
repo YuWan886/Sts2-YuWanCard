@@ -186,7 +186,10 @@ public static class MaliceStartNewMultiplayerRunPatch
     [HarmonyPrefix]
     public static void Prefix(ref IReadOnlyList<ModifierModel> modifiers, StartRunLobby lobby)
     {
-        if (lobby.GameMode != GameMode.Standard)
+        // Blitz/Dread used to be skipped here, but their screens now offer the malice selector
+        // too, so the pending/lobby modifier list has to reach those runs as well.
+        // Daily runs are left alone on purpose.
+        if (lobby.GameMode is not (GameMode.Standard or GameMode.Blitz or GameMode.Dread))
         {
             return;
         }
@@ -210,7 +213,10 @@ public static class MaliceStartNewSingleplayerRunPatch
     [HarmonyPrefix]
     public static void Prefix(ref IReadOnlyList<ModifierModel> modifiers, GameMode gameMode)
     {
-        if (gameMode != GameMode.Standard)
+        // Blitz/Dread singleplayer runs pass an empty list from their screens; the malice
+        // selection is carried over through the pending singleplayer box instead.
+        // Daily runs are left alone on purpose.
+        if (gameMode is not (GameMode.Standard or GameMode.Blitz or GameMode.Dread))
         {
             return;
         }

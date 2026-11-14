@@ -233,9 +233,11 @@ public class RingOfSevenCurses : YuWanRelicModel
             return false;
         }
         var smithOption = options.OfType<SmithRestSiteOption>().FirstOrDefault(opt => opt.Owner == Owner);
+        MainFile.Logger.Info($"[Smith] Ring hook player={player.Character.Id.Entry} options={options.Count} smith={(smithOption != null)}");
         if (smithOption != null)
         {
             SmithRestSiteOptionPatch.AddSmithCount(smithOption, 1);
+            MainFile.Logger.Info($"[Smith] Ring hook set count={SmithRestSiteOptionPatch.GetSmithCount(smithOption)}");
             return true;
         }
         return false;

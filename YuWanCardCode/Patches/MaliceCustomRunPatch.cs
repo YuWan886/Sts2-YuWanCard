@@ -160,7 +160,9 @@ public static class MaliceCustomRunPanelSync
             _ => MultiplayerUiMode.Singleplayer
         };
 
-        malicePanel.Initialize(mode, YuWanReflectionHelper.GetPrivateField<NCustomGameModeDropdown>(screen, "_gameModeDropdown")?.SelectedGameMode ?? GameMode.Standard);
+        // Always Standard: the malice selector is its own panel and must keep its arrows
+        // usable even when the custom run is set to Dread (which hides them on the vanilla panel).
+        malicePanel.Initialize(mode, GameMode.Standard);
         malicePanel.SetMeta("YUWANCARD_MALICE_INITIALIZED", true);
     }
 
