@@ -14,10 +14,6 @@ public sealed class Pig1Epoch : PigEpochBase
 
     public override string Id => EpochId;
 
-    public override EpochEra Era => EpochEra.Invitation2;
-
-    public override int EraPosition => 3;
-
     public override string UnlockText => new LocString("epochs", $"{Id}.unlockText").GetFormattedText();
 
     public override EpochModel[] GetTimelineExpansion() =>
@@ -44,10 +40,6 @@ public sealed class Pig2Epoch : PigEpochBase
 
     public override string Id => EpochId;
 
-    public override EpochEra Era => EpochEra.Flourish0;
-
-    public override int EraPosition => 3;
-
     public static IReadOnlyList<CardModel> Cards =>
     [
         ModelDb.Card<PigEat>(),
@@ -69,10 +61,6 @@ public sealed class Pig3Epoch : PigEpochBase
 
     public override string Id => EpochId;
 
-    public override EpochEra Era => EpochEra.Flourish2;
-
-    public override int EraPosition => 2;
-
     public static IReadOnlyList<RelicModel> Relics =>
     [
         ModelDb.Relic<SoftWarmth>(),
@@ -93,10 +81,6 @@ public sealed class Pig4Epoch : PigEpochBase
     public const string EpochId = "PIG4_EPOCH";
 
     public override string Id => EpochId;
-
-    public override EpochEra Era => EpochEra.Flourish3;
-
-    public override int EraPosition => 4;
 
     public static List<PotionModel> Potions =>
     [
@@ -121,10 +105,6 @@ public sealed class Pig5Epoch : PigEpochBase
 
     public override string Id => EpochId;
 
-    public override EpochEra Era => EpochEra.Blight1;
-
-    public override int EraPosition => 4;
-
     public static IReadOnlyList<CardModel> Cards =>
     [
         ModelDb.Card<PigUnity>(),
@@ -146,10 +126,6 @@ public sealed class Pig6Epoch : PigEpochBase
 
     public override string Id => EpochId;
 
-    public override EpochEra Era => EpochEra.Blight2;
-
-    public override int EraPosition => 2;
-
     public static IReadOnlyList<RelicModel> Relics =>
     [
         ModelDb.Relic<AllIWant>(),
@@ -170,10 +146,6 @@ public sealed class Pig7Epoch : PigEpochBase
     public const string EpochId = "PIG7_EPOCH";
 
     public override string Id => EpochId;
-
-    public override EpochEra Era => EpochEra.Invitation7;
-
-    public override int EraPosition => 2;
 
     public static IReadOnlyList<CardModel> Cards =>
     [
