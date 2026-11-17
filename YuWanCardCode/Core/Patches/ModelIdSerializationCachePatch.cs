@@ -23,7 +23,6 @@ static class ModelIdSerializationCachePatch
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> DeduplicateModelTypes(IEnumerable<CodeInstruction> instructions)
     {
-        bool replaced = false;
         foreach (CodeInstruction instruction in instructions)
         {
             if (instruction.opcode == OpCodes.Callvirt
@@ -34,17 +33,13 @@ static class ModelIdSerializationCachePatch
             {
                 instruction.opcode = OpCodes.Call;
                 instruction.operand = DeduplicateAndSortMethod;
-                replaced = true;
             }
 
             yield return instruction;
         }
 
-        if (!replaced)
-        {
-            throw new InvalidOperationException(
-                "Could not locate ModelIdSerializationCache model-entry sort call.");
-        }
+        // 0.109+（含 0.111.1）改为从 ModelDb.All 经 ContentSorter 构建缓存，
+        // 旧的 List.Sort 调用已不存在，无需再做类型列表去重。
     }
 
     private static void DeduplicateAndSort(

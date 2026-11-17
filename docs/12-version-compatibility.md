@@ -12,14 +12,16 @@ mods/YuWanCard/
 ├─ yuwan-variants.manifest        ← 变体清单
 ├─ posthog.analytics.local.yaml   ← 本地分析配置
 └─ lib/
-   ├─ 0.107.1/compat-target.txt + YuWanCard.Content.dll
-   └─ 0.110.0/compat-target.txt + YuWanCard.Content.dll   ← 内容适配后加入
+   ├─ 0.107.1/compat-target.txt + YuWanCard.Content.dll   ← 历史变体（预构建保留）
+   ├─ 0.111.1/compat-target.txt + YuWanCard.Content.dll   ← 当前正式版编译目标
+   └─ 0.113.1/compat-target.txt + YuWanCard.Content.dll   ← beta 分支变体（可选）
 ```
 
 ### 为什么需要它
 
-游戏大版本更新时，`sts2.dll` 的 API 可能变化（例如 0.110.x 给伤害修正 Hook 增加了
-`CardPlay` 参数、把 `BeforeTurnEnd` 改名为 `BeforeSideTurnEnd` 等）。内容程序集按某个
+游戏大版本更新时，`sts2.dll` 的 API 可能变化（例如 0.111.1 给伤害/格挡修正 Hook 与
+`CreatureCmd.Damage`/`GainBlock` 增加了 `CardPlay` 参数、把 `BeforeTurnEnd` 改名为
+`BeforeSideTurnEnd`、`GetResultPileTypeForCardPlay` 改为返回 `CardLocation` 等）。内容程序集按某个
 游戏版本编译后，在另一个版本上可能无法加载。loader 机制让**一个 mod 安装包同时覆盖
 多个游戏版本**：每个游戏版本一个内容变体，运行时选「≤ 宿主版本的最新变体」。
 
@@ -64,7 +66,7 @@ dotnet build
 
 会同时编译 loader（ProjectReference）与内容，并把当前游戏版本的内容部署到
 `mods/YuWanCard/lib/<当前版本>/`，重生成 `yuwan-variants.manifest`。版本号取自
-`$(Sts2DataDir)/../release_info.json`，也可用 `/p:VariantTarget=0.107.1` 显式指定。
+`$(Sts2DataDir)/../release_info.json`，也可用 `/p:VariantTarget=0.111.1` 显式指定。
 
 ### 多版本构建
 
@@ -73,7 +75,8 @@ dotnet build
 ```
 F:\sts2-mod\sts2-versions\
 ├─ 0.107.1\sts2.dll
-└─ 0.110.0\sts2.dll
+├─ 0.111.1\sts2.dll
+└─ 0.113.1\sts2.dll
 ```
 
 ```powershell
@@ -103,11 +106,34 @@ powershell -ExecutionPolicy Bypass -File tools/build-variants.ps1 -ApiRoot F:\st
 
 | 游戏版本 | 模组变体 | 说明 |
 |----------|----------|------|
-| 0.107.1 | 有（当前发布） | 内容使用 0.107.1 的 Hook 签名 |
-| 0.110.x | 待适配 | API 变更：伤害 Hook 增加 `CardPlay` 参数、`BeforeTurnEnd/AfterTurnEnd` → `BeforeSideTurnEnd/AfterSideTurnEnd`、`ModifyCardPlayResultPileTypeAndPosition` → `ModifyCardPlayResultLocation`、移除 `GetResultPileTypeForCardPlay`、`EpochModel.IsArtPlaceholder` 变更 |
+| 0.107.1 | 有（历史变体） | 内容使用 0.107.1 的 Hook 签名；预构建保留，不再用当前源码重建 |
+| 0.111.1 | 有（当前编译目标 · 正式版） | 源码已适配 0.111.1（见下表 API 变更清单） |
+| 0.113.x | 有（fuck-beta 分支） | beta 测试用；注意 0.113 的 `AfterDeath` 多一个 `CardModel? source`，与 0.111.1 不同 |
 
-> 0.110.x 的适配已排期但尚未完成；当前发布的变体目标为 0.107.1。loader 机制就绪，
-> 内容适配完成后加入对应变体即可。
+### 0.107.1 → 0.111.1 API 变更清单
+
+| 旧 API | 0.111.1 |
+|--------|---------|
+| `AttackCommand.FromCard(card)` | `FromCard(CardModel card, CardPlay? cardPlay)`（必填，无默认值；无 play 传 `null`） |
+| `CreatureCmd.Damage(ctx, t, amount, props, dealer, source)` | 6/7 参重载，尾部加 `CardPlay? cardPlay` |
+| `CreatureCmd.GainBlock(c, amount, props, cardPlay)` | 已有 `CardPlay?` 参数；另有 `BlockVar` 重载 |
+| `CreatureCmd.LoseBlock(target, amount)` | `LoseBlock(ctx, target, decimal amount, Creature? remover)` |
+| `ModifyDamageAdditive/Multiplicative(…, CardModel? cardSource)` | 尾部加 `CardPlay? cardPlay` |
+| `ModifyBlockAdditive/Multiplicative(…, CardModel? cardSource)` | 尾部加 `CardPlay? cardPlay` |
+| `GetResultPileTypeForCardPlay()` | `GetResultLocationForCardPlay()` → `CardLocation(player, pileType, position)` |
+| `ModifyCardPlayResultPileTypeAndPosition(…, PileType, CardPilePosition)` | `ModifyCardPlayResultLocation(…, CardLocation)`（record struct，改字段后返回） |
+| `Hook.BeforeTurnEnd/AfterTurnEnd` | `Hook.BeforeSideTurnEnd/AfterSideTurnEnd`（参数不变） |
+| `OrbModel.Trigger()` | `OrbModel.ActivatePassive()` |
+| `CardCreationOptions.WithCustomPool(...)` | 移除；用 `ForNonCombatWithUniformOdds(pools)` + `WithFilter(...)` + `WithRarityOdds(...)`；ctor 接 `IEnumerable<CardPoolModel>` |
+| `SavedPropertiesTypeCache` | `ModelIdSerializationCache`（`MegaCrit.Sts2.Core.Multiplayer.Serialization`） |
+| `Mod.assembly` | `Mod.assemblies`（`List<Assembly>`） |
+| `LobbyPlayer` | `StartRunLobbyPlayer`（`id` 为 `ulong`） |
+| `NControllerManager.IsUsingController` | `NControllerManager.IsUsingDirectionalNavigation` |
+| `PlayerChoiceContext.SignalPlayerChoiceBegun(Player)` | `SignalPlayerChoiceBegun(Player chooser, PlayerChoiceOptions options)` |
+| `EpochModel.IsArtPlaceholder` | 已移除（时间线占位立绘补丁删除） |
+
+> 当前正式版 0.111.1：源码按 0.111.1 编译，`min_game_version` 仍保持 0.107.1，靠 0.107.1 变体兜底。
+> 详细说明与反编译速查见 `.agents/skills/yuwan-mod-dev/references/version-compat.md`。
 
 ---
 

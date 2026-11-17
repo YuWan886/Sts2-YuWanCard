@@ -39,7 +39,7 @@ public class BlackFlash : YuWanRelicModel
         return Task.CompletedTask;
     }
 
-    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
     {
         if (!props.IsPoweredAttack()) return 1m;
         if (dealer != Owner?.Creature) return 1m;

@@ -10,7 +10,7 @@ public static class StartRunLobbyReadyGuardPatch
     [HarmonyPrefix]
     public static bool Prefix(StartRunLobby __instance, bool ready)
     {
-        LobbyPlayer localPlayer = __instance.LocalPlayer;
+        StartRunLobbyPlayer localPlayer = __instance.LocalPlayer;
         if (localPlayer.id == 0)
         {
             return true;

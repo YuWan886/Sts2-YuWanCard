@@ -20,6 +20,6 @@ public sealed class CounterStrikeTrait : MaliceTraitPowerBase
         }
 
         Flash();
-        await CreatureCmd.Damage(choiceContext, dealer, 6 * Amount, ValueProp.Unpowered, Owner, null);
+        await CreatureCmd.Damage(choiceContext, dealer, 6 * Amount, ValueProp.Unpowered, Owner, null, null);
     }
 }

@@ -34,7 +34,7 @@ public class TiaoJiao : YuWanCardModel
     {
         if (cardPlay.Target == null) return;
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, null).Targeting(cardPlay.Target)
             .Unpowered()
             .Execute(choiceContext);
 

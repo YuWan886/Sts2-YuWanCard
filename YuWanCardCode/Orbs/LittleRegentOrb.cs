@@ -29,7 +29,7 @@ public class LittleRegentOrb : YuWanOrbModel
 
     public override async Task Passive(PlayerChoiceContext choiceContext, Creature? target)
     {
-        Trigger();
+        ActivatePassive();
         await ForgeCmd.Forge(PassiveVal, Owner, this);
     }
 

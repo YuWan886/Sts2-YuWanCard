@@ -72,7 +72,7 @@ public class PigBlackHole : YuWanCardModel
             foreach (var enemy in enemies)
             {
                 await DamageCmd.Attack(totalDamage)
-                    .FromCard(this)
+                    .FromCard(this, null)
                     .Targeting(enemy)
                     .Execute(choiceContext);
             }

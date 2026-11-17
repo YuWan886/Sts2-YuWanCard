@@ -57,7 +57,7 @@ public class GroupFriendImpact : YuWanCardModel
         float delay = Owner.Character is Regent ? 0.25f : Owner.Character.CastAnimDelay;
 
         AttackCommand attackCommand = DamageCmd.Attack(DynamicVars.CalculatedDamage)
-            .FromCard(this)
+            .FromCard(this, null)
             .WithAttackerAnim(animName, delay)
             .WithAttackerFx(null, "event:/sfx/characters/regent/regent_sovereign_blade")
             .Targeting(cardPlay.Target)

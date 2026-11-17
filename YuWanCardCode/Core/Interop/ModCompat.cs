@@ -16,7 +16,7 @@ public static class ModCompat
         Dictionary<string, Assembly> map = [];
         foreach (var mod in ModManager.GetLoadedMods())
         {
-            if (mod.manifest?.id is { } id && mod.assembly is { } asm)
+            if (mod.manifest?.id is { } id && mod.assemblies is { Count: > 0 } && mod.assemblies[0] is { } asm)
             {
                 map[id] = asm;
             }

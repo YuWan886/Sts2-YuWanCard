@@ -28,7 +28,7 @@ public class PigStrike : YuWanCardModel
         if (cardPlay.Target != null)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);
@@ -99,7 +99,7 @@ public class PigCleave : YuWanCardModel
         foreach (var enemy in choiceContext.CombatState.Enemies)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(enemy)
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);

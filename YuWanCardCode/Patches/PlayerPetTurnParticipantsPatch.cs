@@ -41,8 +41,8 @@ file static class PlayerPetTurnParticipantsHelper
     }
 }
 
-[HarmonyPatch(typeof(Hook), nameof(Hook.BeforeTurnEnd), typeof(ICombatState), typeof(CombatSide), typeof(IEnumerable<Creature>))]
-public static class PlayerPetBeforeTurnEndParticipantsPatch
+[HarmonyPatch(typeof(Hook), nameof(Hook.BeforeSideTurnEnd), typeof(ICombatState), typeof(CombatSide), typeof(IEnumerable<Creature>))]
+public static class PlayerPetBeforeSideTurnEndParticipantsPatch
 {
     [HarmonyPrefix]
     static void Prefix(CombatSide side, ref IEnumerable<Creature> participants)
@@ -51,8 +51,8 @@ public static class PlayerPetBeforeTurnEndParticipantsPatch
     }
 }
 
-[HarmonyPatch(typeof(Hook), nameof(Hook.AfterTurnEnd), typeof(ICombatState), typeof(CombatSide), typeof(IEnumerable<Creature>))]
-public static class PlayerPetAfterTurnEndParticipantsPatch
+[HarmonyPatch(typeof(Hook), nameof(Hook.AfterSideTurnEnd), typeof(ICombatState), typeof(CombatSide), typeof(IEnumerable<Creature>))]
+public static class PlayerPetAfterSideTurnEndParticipantsPatch
 {
     [HarmonyPrefix]
     static void Prefix(CombatSide side, ref IEnumerable<Creature> participants)

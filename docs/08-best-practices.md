@@ -182,7 +182,7 @@ protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay
     if (cardPlay.Target != null)
     {
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
+            .FromCard(this, cardPlay).Targeting(cardPlay.Target).Execute(choiceContext);
     }
 }
 ```
@@ -194,7 +194,7 @@ protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay
     foreach (var enemy in choiceContext.CombatState.Enemies)
     {
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this).Targeting(enemy).Execute(choiceContext);
+            .FromCard(this, cardPlay).Targeting(enemy).Execute(choiceContext);
     }
 }
 ```
@@ -235,7 +235,7 @@ protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay
     if (cardPlay.Target != null)
     {
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this).Targeting(cardPlay.Target)
+            .FromCard(this, cardPlay).Targeting(cardPlay.Target)
             .WithHitCount(DynamicVars.Repeat.IntValue)
             .Execute(choiceContext);
     }
@@ -268,7 +268,7 @@ public class MyCard : YuWanCardModel
         if (cardPlay.Target != null)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);

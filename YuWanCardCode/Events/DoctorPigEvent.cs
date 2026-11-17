@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using YuWanCard.Cards.Event;
@@ -53,8 +54,10 @@ public sealed class DoctorPigEvent : YuWanEventModel
 
         if (colorlessCards.Count > 0)
         {
-            var creationOptions = CardCreationOptions.ForNonCombatWithDefaultOdds(colorlessCards)
-                .WithCustomPool(colorlessCards, CardRarityOddsType.Uniform)
+            var allowedIds = colorlessCards.Select(card => card.Id).ToHashSet();
+            var creationOptions = CardCreationOptions
+                .ForNonCombatWithUniformOdds([ModelDb.CardPool<ColorlessCardPool>()])
+                .WithFilter(card => allowedIds.Contains(card.Id))
                 .WithFlags(CardCreationFlags.NoCardPoolModifications);
             var cards = CardFactory.CreateForReward(owner, Math.Min(KnowledgeChoiceCount, colorlessCards.Count), creationOptions)
                 .ToList();

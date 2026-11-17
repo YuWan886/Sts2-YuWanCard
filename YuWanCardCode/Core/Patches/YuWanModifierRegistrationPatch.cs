@@ -83,14 +83,15 @@ public class YuWanGoodModifiersPatch
 
 /// <summary>
 /// Sets <see cref="YuWanGoodModifiersPatch.IsDailyRunContext"/> around
-/// <see cref="NDailyRunScreen.RollModifiers"/> so that the GoodModifiers getter
+/// <see cref="NDailyRunScreen.SetupLobbyParams"/> (0.111.1：原 RollModifiers 已并入该方法)
+/// so that the GoodModifiers getter
 /// can exclude daily-unsafe YuWan modifiers only when the daily challenge is
 /// rolling its modifier set.
 /// Excluded from auto-discovery on all platforms — applied manually in MainFile.cs
 /// (on Android accessing NDailyRunScreen triggers its static constructor which
 /// has a known NRE bug on Mono AOT, so it's skipped entirely there).
 /// </summary>
-[HarmonyPatch(typeof(NDailyRunScreen), "RollModifiers")]
+[HarmonyPatch(typeof(NDailyRunScreen), "SetupLobbyParams")]
 public class YuWanDailyRunModifierFilterPatch
 {
     [HarmonyPrefix]

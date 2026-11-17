@@ -307,7 +307,7 @@ internal static class NControllerCardPlaySingleTargetingCustomTargetTypePatch
                 cardNode,
                 TargetMode.Controller,
                 () => !GodotObject.IsInstanceValid(instance)
-                      || !NControllerManager.Instance!.IsUsingController,
+                      || !NControllerManager.Instance!.IsUsingDirectionalNavigation,
                 null);
 
             room.RestrictControllerNavigation(nodes.Select(n => n.Hitbox));

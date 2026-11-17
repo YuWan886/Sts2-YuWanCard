@@ -30,7 +30,7 @@ public class PigStrike : YuWanCardModel
         if (cardPlay.Target != null)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);
@@ -289,7 +289,7 @@ public override Texture2D? CustomFrame => ResourceLoader.Load<Texture2D>(
 
 ```csharp
 await DamageCmd.Attack(damage)           // 攻击伤害（受力量加成）
-    .FromCard(this)                      // 来源卡牌（用于触发相关效果）
+    .FromCard(this, cardPlay)                      // 来源卡牌（用于触发相关效果）
     .Targeting(target)                   // 目标生物
     .WithHitFx("vfx/vfx_attack_slash")   // 命中特效
     .WithHitCount(hitCount)              // 命中次数
@@ -299,7 +299,7 @@ await DamageCmd.Attack(damage)           // 攻击伤害（受力量加成）
 
 // 直接伤害（不受力量加成，如中毒）
 await DamageCmd.DealDamage(amount)
-    .FromCard(this)
+    .FromCard(this, cardPlay)
     .Targeting(target)
     .Execute(choiceContext);
 ```
@@ -599,10 +599,10 @@ public class PigCarrot : YuWanRelicModel
 **数值修改钩子**：
 | 方法 | 说明 |
 |------|------|
-| `ModifyDamage(decimal, DamageInfo, Player)` | 修改伤害值（加法） |
-| `ModifyDamageMultiplicative(decimal, Player)` | 修改伤害倍率 |
-| `ModifyBlock(decimal, Player)` | 修改格挡值（加法） |
-| `ModifyBlockMultiplicative(decimal, Player)` | 修改格挡倍率 |
+| `ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)` | 修改伤害值（加法） |
+| `ModifyDamageMultiplicative(…同上 6 参)` | 修改伤害倍率 |
+| `ModifyBlockAdditive(Creature target, decimal block, ValueProp props, CardModel? cardSource, CardPlay? cardPlay)` | 修改格挡值（加法） |
+| `ModifyBlockMultiplicative(…同上 5 参)` | 修改格挡倍率 |
 | `ModifyMaxEnergy(Player, decimal)` | 修改最大能量 |
 | `ModifyHandDraw(Player, int)` | 修改抽牌数 |
 | `ModifyRestSiteHealAmount(Player, decimal)` | 修改休息处回复量 |

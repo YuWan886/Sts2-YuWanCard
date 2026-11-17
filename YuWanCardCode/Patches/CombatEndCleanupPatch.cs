@@ -8,7 +8,7 @@ namespace YuWanCard.Patches;
 public class CombatEndCleanupPatch
 {
     [HarmonyPostfix]
-    [HarmonyPatch(nameof(CombatManager.EndCombatInternal))]
+    [HarmonyPatch(nameof(CombatManager.EndCombatInternal), new Type[0])] // 0.111.1 起有两个重载，必须指定参数类型
     public static void EndCombatInternalPostfix()
     {
         RainDarkEffectPatch.CleanupAfterCombat();

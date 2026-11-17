@@ -103,10 +103,16 @@ public class PigRewardAllCardPoolsBridge : YuWanSingletonModel
         int count,
         CardCreationOptions sourceOptions)
     {
+        HashSet<ModelId> candidateIds = candidates.Select(static card => card.Id).ToHashSet();
+        CardPoolModel[] candidatePools = candidates
+            .Select(static card => card.Pool)
+            .Distinct()
+            .ToArray();
         CardCreationOptions replacementOptions = new CardCreationOptions(
-                candidates,
+                candidatePools,
                 sourceOptions.Source,
-                GetRarityOddsForCandidatePool(sourceOptions, candidates))
+                GetRarityOddsForCandidatePool(sourceOptions, candidates),
+                card => candidateIds.Contains(card.Id))
             // These candidates already include every eligible non-Pig pool. Letting reward hooks
             // rewrite the custom pool can discard it entirely before CardFactory performs its roll.
             .WithFlags(sourceOptions.Flags
