@@ -60,8 +60,14 @@ internal static class PigTimelineRegistry
             typeof(StoryModel),
             "_storyTypeDictionary");
 
+    private static readonly List<Type> AllEpochTypes =
+        AccessTools.StaticFieldRefAccess<List<Type>>(typeof(EpochModel), "_allEpochs");
+
     private static readonly FieldInfo? AllEpochIdsField =
         AccessTools.Field(typeof(EpochModel), "_allEpochIds");
+
+    private static readonly FieldInfo? EpochIdsHashSetField =
+        AccessTools.Field(typeof(EpochModel), "_epochIdsHashSet");
 
     public static void EnsureRegistered()
     {
@@ -99,6 +105,7 @@ internal static class PigTimelineRegistry
         }
 
         AllEpochIdsField?.SetValue(null, existing);
+        EpochIdsHashSetField?.SetValue(null, null);
     }
 
     private static void RegisterEpochs()
@@ -113,6 +120,12 @@ internal static class PigTimelineRegistry
 
             EpochTypeDictionary[epoch.Id] = epochType;
             EpochIdDictionary[epochType] = epoch.Id;
+
+            // ModelIdSerializationCache builds epoch net IDs from AllEpochs.
+            if (!AllEpochTypes.Contains(epochType))
+            {
+                AllEpochTypes.Add(epochType);
+            }
         }
     }
 
