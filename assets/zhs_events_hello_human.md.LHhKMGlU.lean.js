@@ -1,0 +1,5 @@
+import{_ as o}from"./chunks/hello_human.DxkoyTfA.js";import{C as d,o as l,c as r,j as e,a as p,a2 as s,E as v}from"./chunks/framework.B0QX-YtK.js";const c={class:"entity-detail"},m={class:"entity-description"},T=JSON.parse('{"title":"人，你好。","description":"","frontmatter":{"title":"人，你好。","type":"event","id":"hello_human","image":"/images/events/hello_human.png"},"headers":[],"relativePath":"zhs/events/hello_human.md","filePath":"zhs/events/hello_human.md","lastUpdated":null}'),_={name:"zhs/events/hello_human.md"},f=Object.assign(_,{setup(g){const i=`你推开一扇门，发现房间中央摆着一台正在发光的笔记本电脑。屏幕里，四只圆滚滚的粉色小猪正扒着边框朝你看，最右边的小猪还举着一朵红玫瑰，像是在和你打招呼。温暖的阳光从窗户洒进来，整个场景透着一种软乎乎的、不属于尖塔的温柔感。
+
+[gold]“你好呀，外面的人。”[/gold]最左边的小猪开口了，声音软得像棉花糖。
+[gold]“来和我们一起待一会儿吧~”[/gold]中间的小猪晃了晃耳朵。
+最右边的小猪把玫瑰往你面前递了递，眼睛亮晶晶的。`,a={};return(x,t)=>{const n=d("RichDescription");return l(),r("div",null,[t[2]||(t[2]=e("h1",{id:"人-你好。",tabindex:"-1"},[p("人，你好。 "),e("a",{class:"header-anchor",href:"#人-你好。","aria-label":'Permalink to "人，你好。"'},"​")],-1)),e("div",c,[t[0]||(t[0]=s("",2)),e("div",m,[v(n,{text:i,variables:a})]),t[1]||(t[1]=s("",5))])])}}});export{T as __pageData,f as default};
